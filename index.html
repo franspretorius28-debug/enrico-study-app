@@ -31,6 +31,7 @@
     .tabBtn.active{background:var(--dark);color:white;border-color:var(--dark)}
     .smallStat{border:1px solid var(--line);border-radius:20px;background:white;padding:12px;text-align:center}
     .smallStat b{display:block;font-size:22px}
+    .syncBox{border:1px solid var(--line);border-radius:20px;background:#f8fafc;padding:12px;font-size:14px}
     .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
     .space{justify-content:space-between}
     .card{background:white;border:1px solid var(--line);border-radius:28px;padding:18px;box-shadow:0 6px 18px rgba(15,23,42,.05)}
@@ -71,6 +72,7 @@
 <script>
 const STUDENT_NAME = "Enrico";
 const STUDENT_PIN = "1234";
+const RESULTS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbylvLXva-qg01pxJQJeHcfY3VygyzXYEQRN5DRTPb6Cr2pPOEDzuj_CPNzElfBuSAiT3g/exec";
 
 const subjects = [
   {id:"k53", title:"K53 Learner’s Licence", subtitle:"Road signs, rules, markings, and controls", status:"Active", icon:"🚗"},
@@ -3490,7 +3492,7 @@ const questions = [
 
 let state = {
   student:null, screen:"login", selectedSubject:"k53", selectedModule:"overview",
-  quizMode:"all", answers:{}, showAnswers:false, parentMode:false, k53Tab:"study", scoreHistory:[], wrongBank:{},
+  quizMode:"all", answers:{}, showAnswers:false, parentMode:false, k53Tab:"study", scoreHistory:[], wrongBank:{}, lastSyncStatus:"Not sent yet",
   examStarted:false, examFinished:false, examIndex:0, examAnswers:{}, examSecondsLeft:30*60, examSet:null
 };
 let timer = null;
@@ -3571,28 +3573,100 @@ function resetPractice(){ filteredQuestions().forEach((_,i)=>delete state.answer
 function chooseExam(o){ state.examAnswers[state.examIndex]=o; save(); render(); }
 
 
+
+function moduleLabel(module){
+  const labels = {
+    controls: "Vehicle Controls",
+    defensive: "Defensive Driving",
+    signs: "Road Signs",
+    markings: "Road Markings",
+    rules: "Rules of the Road",
+    overview: "Overview"
+  };
+  return labels[module] || module || "General";
+}
+function calculateWeakAreas(wrongQuestionsList){
+  const counts = {};
+  wrongQuestionsList.forEach(q=>{
+    const label = moduleLabel(q.module);
+    counts[label] = (counts[label] || 0) + 1;
+  });
+  return Object.entries(counts)
+    .sort((a,b)=>b[1]-a[1])
+    .map(([k,v])=>`${k} (${v})`)
+    .join(", ");
+}
+function sendResultToParent(payload){
+  if(!RESULTS_WEB_APP_URL || RESULTS_WEB_APP_URL.indexOf("script.google.com") === -1){
+    state.lastSyncStatus = "Results URL not configured";
+    save();
+    return;
+  }
+  state.lastSyncStatus = "Sending result...";
+  save();
+  fetch(RESULTS_WEB_APP_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {"Content-Type": "text/plain;charset=utf-8"},
+    body: JSON.stringify(payload)
+  }).then(()=>{
+    state.lastSyncStatus = "Result sent to parent sheet";
+    save();
+    render();
+  }).catch((err)=>{
+    state.lastSyncStatus = "Could not send result. It is saved on this device.";
+    save();
+    render();
+  });
+}
+
 function saveExamResult(){
   const eq = examQuestions();
   const score = examScore();
   const pct = eq.length ? Math.round(score / eq.length * 100) : 0;
-  const wrong = [];
+  const wrongItems = [];
+  const wrongKeys = [];
   eq.forEach((q,i)=>{
     if(state.examAnswers[i] !== q.answer){
       const key = q.id || q.q;
       state.wrongBank[key] = q;
-      wrong.push(key);
+      wrongKeys.push(key);
+      wrongItems.push(q);
     }
   });
+  const weakAreas = calculateWeakAreas(wrongItems);
+  const wrongQuestionsText = wrongItems
+    .slice(0, 40)
+    .map(q => `[${moduleLabel(q.module)}] ${q.q} | Correct: ${q.options[q.answer]}`)
+    .join("
+");
+
   const result = {
     date: new Date().toLocaleString(),
     score,
     total: eq.length,
     percent: pct,
     passed: pct >= 75,
-    wrong: wrong.length
+    wrong: wrongItems.length,
+    weakAreas
   };
   state.scoreHistory = [result, ...(state.scoreHistory || [])].slice(0, 20);
+  state.lastSyncStatus = "Saved locally. Sending to parent sheet...";
   save();
+
+  sendResultToParent({
+    student: state.student || "Enrico",
+    subject: "K53",
+    mode: "Exam",
+    score,
+    total: eq.length,
+    percent: pct,
+    passed: pct >= 75,
+    wrongCount: wrongItems.length,
+    weakAreas: weakAreas || "None",
+    wrongQuestions: wrongQuestionsText || "None",
+    device: navigator.userAgent || ""
+  });
 }
 function wrongQuestions(){
   return Object.values(state.wrongBank || {});
@@ -3624,6 +3698,7 @@ function k53DashboardHTML(){
         <div class="smallStat"><b>${wrong}</b><span class="muted">Wrong questions saved</span></div>
         <div class="smallStat"><b>${best}%</b><span class="muted">Best score</span></div>
       </div>
+      <div class="syncBox" style="margin-top:14px"><b>Last parent sync:</b> ${state.lastSyncStatus || "Not sent yet"}<br><span class="muted">When Enrico finishes an exam, the result is sent automatically to your Google Sheet.</span></div>
       <div class="row" style="margin-top:14px">
         <button class="btn" onclick="startExam()">Start 64 Question Exam</button>
         <button class="btn secondary" onclick="state.quizMode='all';state.k53Tab='practice';save();render()">Practice Mixed Questions</button>
@@ -3764,7 +3839,7 @@ function examHTML(){
       <div class="row space"><button class="btn secondary" ${state.examIndex===0?'disabled':''} onclick="setState({examIndex:Math.max(0,state.examIndex-1)})">Previous</button>${state.examIndex<eq.length-1?`<button class="btn" onclick="setState({examIndex:Math.min(${eq.length-1},state.examIndex+1)})">Next</button>`:`<button class="btn" onclick="finishExam()">Finish Exam</button>`}</div>
     </div>`:""}
     ${state.examStarted && state.examFinished ? `<div class="grid" style="margin-top:14px">
-      <div class="card ${passed?'resultGood':'resultBad'}" style="text-align:center"><div style="font-size:42px;font-weight:900">${score}/${eq.length}</div><h2>${pct}% — ${passed?"PASS":"TRY AGAIN"}</h2><p>K53 practice score. Each exam randomly selects 64 questions from the larger practice bank.</p></div>
+      <div class="card ${passed?'resultGood':'resultBad'}" style="text-align:center"><div style="font-size:42px;font-weight:900">${score}/${eq.length}</div><h2>${pct}% — ${passed?"PASS":"TRY AGAIN"}</h2><p>K53 practice score. Each exam randomly selects 64 questions from the larger practice bank.</p><div class="syncBox" style="margin-top:12px"><b>Parent result sync:</b> ${state.lastSyncStatus || "Not sent yet"}</div></div>
       ${eq.map((qq,i)=>{
         const chosen=state.examAnswers[i]; const correct=chosen===qq.answer;
         return `<div class="questionBox ${correct?'resultGood':'resultBad'}">${imageHTML(qq)}<b>${i+1}. ${esc(qq.q)}</b><div>Your answer: ${chosen===undefined?"None":`${String.fromCharCode(65+chosen)}. ${esc(qq.options[chosen])}`}</div>${!correct?`<div><b>Correct answer:</b> ${String.fromCharCode(65+qq.answer)}. ${esc(qq.options[qq.answer])}</div>`:""}<div class="muted">${esc(qq.why)}</div></div>`;
