@@ -1421,20 +1421,6 @@ const questions = [
     "why": "A Yield/Give Way sign means you must slow down and give way where required."
   },
   {
-    "id": "img_no_entry_001",
-    "module": "signs",
-    "image": "noentry",
-    "q": "Look at the sign. What does it mean?",
-    "options": [
-      "You may not enter this road or entrance",
-      "You may enter slowly",
-      "The road is one-way toward you",
-      "Parking is allowed"
-    ],
-    "answer": 0,
-    "why": "A No Entry sign prohibits vehicles from entering that road or entrance."
-  },
-  {
     "id": "img_speed60_001",
     "module": "signs",
     "image": "speed60",
@@ -1461,20 +1447,6 @@ const questions = [
     ],
     "answer": 0,
     "why": "A No U-turn sign means you may not make a U-turn there."
-  },
-  {
-    "id": "img_keep_left_001",
-    "module": "signs",
-    "image": "keepleft",
-    "q": "Look at the sign. What must you do?",
-    "options": [
-      "Keep left of the obstruction or sign",
-      "Drive on the right",
-      "Stop immediately",
-      "Make a U-turn"
-    ],
-    "answer": 0,
-    "why": "A keep-left sign is compulsory and must be obeyed."
   },
   {
     "id": "img_oneway_001",
@@ -1561,48 +1533,6 @@ const questions = [
     "why": "At railway crossings, slow down, look and listen, and obey signals."
   },
   {
-    "id": "img_roundabout_001",
-    "module": "signs",
-    "image": "roundabout",
-    "q": "Look at the sign. What is ahead?",
-    "options": [
-      "A traffic circle or roundabout",
-      "A tunnel",
-      "A speed hump only",
-      "No right turn"
-    ],
-    "answer": 0,
-    "why": "A roundabout sign warns you that a traffic circle is ahead."
-  },
-  {
-    "id": "img_no_parking_001",
-    "module": "signs",
-    "image": "noparking",
-    "q": "Look at the sign. What does it mean?",
-    "options": [
-      "No parking",
-      "No stopping at all times",
-      "Parking for trucks only",
-      "Taxi rank"
-    ],
-    "answer": 0,
-    "why": "No Parking means you may not park where the sign applies."
-  },
-  {
-    "id": "img_no_stopping_001",
-    "module": "signs",
-    "image": "nostopping",
-    "q": "Look at the sign. What does it mean?",
-    "options": [
-      "No stopping except when required by law or emergency",
-      "Parking is allowed",
-      "Stop here for passengers",
-      "Loading zone"
-    ],
-    "answer": 0,
-    "why": "No Stopping is stricter than No Parking."
-  },
-  {
     "id": "img_stop_line_001",
     "module": "markings",
     "image": "stopline",
@@ -1671,6 +1601,1886 @@ const questions = [
     ],
     "answer": 0,
     "why": "Pedestrian crossing markings show where pedestrians may cross."
+  },
+  {
+    "id": "bulk_5a16c43f71",
+    "module": "signs",
+    "q": "What does a STOP sign mean?",
+    "options": [
+      "Stop completely and proceed only when safe",
+      "Drive faster to clear the area",
+      "It is only information and not a rule",
+      "Ignore it if the road is quiet"
+    ],
+    "answer": 0,
+    "why": "A STOP sign is a regulatory sign and must be obeyed.",
+    "image": "stop"
+  },
+  {
+    "id": "bulk_a5754881f5",
+    "module": "signs",
+    "q": "You see a STOP sign. What is the safest correct action?",
+    "options": [
+      "Ignore it if the road is quiet",
+      "Drive faster to clear the area",
+      "Stop completely and proceed only when safe",
+      "It is only information and not a rule"
+    ],
+    "answer": 2,
+    "why": "Follow the meaning of the STOP sign; it is there to control traffic safely.",
+    "image": "stop"
+  },
+  {
+    "id": "bulk_1118d79a36",
+    "module": "signs",
+    "q": "What does a Yield / Give Way sign mean?",
+    "options": [
+      "Hoot and continue",
+      "It is only information and not a rule",
+      "Drive faster to clear the area",
+      "Slow down and give way to traffic that has right of way"
+    ],
+    "answer": 3,
+    "why": "A Yield / Give Way sign is a regulatory sign and must be obeyed.",
+    "image": "yield"
+  },
+  {
+    "id": "bulk_758481cbff",
+    "module": "signs",
+    "q": "You see a Yield / Give Way sign. What is the safest correct action?",
+    "options": [
+      "Drive faster to clear the area",
+      "It is only information and not a rule",
+      "Slow down and give way to traffic that has right of way",
+      "Hoot and continue"
+    ],
+    "answer": 2,
+    "why": "Follow the meaning of the Yield / Give Way sign; it is there to control traffic safely.",
+    "image": "yield"
+  },
+  {
+    "id": "bulk_2887da0a15",
+    "module": "signs",
+    "q": "You see a No Entry sign. What is the safest correct action?",
+    "options": [
+      "Only heavy vehicles must obey it",
+      "It is only information and not a rule",
+      "Do not enter that road or entrance",
+      "Park next to the sign"
+    ],
+    "answer": 2,
+    "why": "Follow the meaning of the No Entry sign; it is there to control traffic safely.",
+    "image": "noentry"
+  },
+  {
+    "id": "bulk_dadebeaf99",
+    "module": "signs",
+    "q": "You see a No U-turn sign. What is the safest correct action?",
+    "options": [
+      "Park next to the sign",
+      "Do not make a U-turn",
+      "Ignore it if the road is quiet",
+      "Hoot and continue"
+    ],
+    "answer": 1,
+    "why": "Follow the meaning of the No U-turn sign; it is there to control traffic safely.",
+    "image": "nouturn"
+  },
+  {
+    "id": "bulk_7e219c8f46",
+    "module": "signs",
+    "q": "You see a Keep Left sign. What is the safest correct action?",
+    "options": [
+      "It is only information and not a rule",
+      "Keep left of the sign or obstruction",
+      "Park next to the sign",
+      "Only heavy vehicles must obey it"
+    ],
+    "answer": 1,
+    "why": "Follow the meaning of the Keep Left sign; it is there to control traffic safely.",
+    "image": "keepleft"
+  },
+  {
+    "id": "bulk_2752ee346e",
+    "module": "signs",
+    "q": "You see a One-way sign. What is the safest correct action?",
+    "options": [
+      "Travel only in the direction indicated",
+      "Only heavy vehicles must obey it",
+      "Hoot and continue",
+      "Park next to the sign"
+    ],
+    "answer": 0,
+    "why": "Follow the meaning of the One-way sign; it is there to control traffic safely.",
+    "image": "oneway"
+  },
+  {
+    "id": "bulk_3d65ac3c64",
+    "module": "signs",
+    "q": "You see a No Parking sign. What is the safest correct action?",
+    "options": [
+      "Only heavy vehicles must obey it",
+      "Do not park where the sign applies",
+      "Ignore it if the road is quiet",
+      "Hoot and continue"
+    ],
+    "answer": 1,
+    "why": "Follow the meaning of the No Parking sign; it is there to control traffic safely.",
+    "image": "noparking"
+  },
+  {
+    "id": "bulk_aa802aad5e",
+    "module": "signs",
+    "q": "You see a No Stopping sign. What is the safest correct action?",
+    "options": [
+      "Drive faster to clear the area",
+      "Hoot and continue",
+      "Do not stop there except when required by law or emergency",
+      "Only heavy vehicles must obey it"
+    ],
+    "answer": 2,
+    "why": "Follow the meaning of the No Stopping sign; it is there to control traffic safely.",
+    "image": "nostopping"
+  },
+  {
+    "id": "bulk_e1d39611ae",
+    "module": "signs",
+    "q": "What does a Speed Limit 60 sign mean?",
+    "options": [
+      "Do not exceed 60 km/h",
+      "It is only information and not a rule",
+      "Drive faster to clear the area",
+      "Hoot and continue"
+    ],
+    "answer": 0,
+    "why": "A Speed Limit 60 sign is a regulatory sign and must be obeyed.",
+    "image": "speed60"
+  },
+  {
+    "id": "bulk_f3c713edbd",
+    "module": "signs",
+    "q": "You see a Speed Limit 60 sign. What is the safest correct action?",
+    "options": [
+      "Only heavy vehicles must obey it",
+      "Do not exceed 60 km/h",
+      "Drive faster to clear the area",
+      "Hoot and continue"
+    ],
+    "answer": 1,
+    "why": "Follow the meaning of the Speed Limit 60 sign; it is there to control traffic safely.",
+    "image": "speed60"
+  },
+  {
+    "id": "bulk_e5bdbe888b",
+    "module": "signs",
+    "q": "What does a slippery road warning sign warn you about?",
+    "options": [
+      "The road may be slippery, especially when wet",
+      "No vehicles may enter",
+      "Parking is allowed",
+      "You may increase speed"
+    ],
+    "answer": 0,
+    "why": "This warning sign prepares you for a possible hazard ahead.",
+    "image": "slippery"
+  },
+  {
+    "id": "bulk_72600d4230",
+    "module": "signs",
+    "q": "When approaching a slippery road warning sign, what should you do?",
+    "options": [
+      "Only taxis may proceed",
+      "Slow down, be alert, and be ready to react safely",
+      "It marks a shopping area",
+      "The road is closed to all vehicles"
+    ],
+    "answer": 1,
+    "why": "Warning signs are there so you can prepare early and drive safely.",
+    "image": "slippery"
+  },
+  {
+    "id": "bulk_632ca17220",
+    "module": "signs",
+    "q": "What does a pedestrian warning sign warn you about?",
+    "options": [
+      "Pedestrians may be nearby or crossing",
+      "No vehicles may enter",
+      "Only taxis may proceed",
+      "Parking is allowed"
+    ],
+    "answer": 0,
+    "why": "This warning sign prepares you for a possible hazard ahead.",
+    "image": "pedestrian"
+  },
+  {
+    "id": "bulk_705855f453",
+    "module": "signs",
+    "q": "When approaching a pedestrian warning sign, what should you do?",
+    "options": [
+      "Only taxis may proceed",
+      "The road is closed to all vehicles",
+      "Slow down, be alert, and be ready to react safely",
+      "No vehicles may enter"
+    ],
+    "answer": 2,
+    "why": "Warning signs are there so you can prepare early and drive safely.",
+    "image": "pedestrian"
+  },
+  {
+    "id": "bulk_9847372de0",
+    "module": "signs",
+    "q": "What does a children / school warning sign warn you about?",
+    "options": [
+      "Children may be near the road",
+      "Only taxis may proceed",
+      "No vehicles may enter",
+      "You may increase speed"
+    ],
+    "answer": 0,
+    "why": "This warning sign prepares you for a possible hazard ahead.",
+    "image": "children"
+  },
+  {
+    "id": "bulk_879f4830db",
+    "module": "signs",
+    "q": "When approaching a children / school warning sign, what should you do?",
+    "options": [
+      "Slow down, be alert, and be ready to react safely",
+      "It marks a shopping area",
+      "You may increase speed",
+      "No vehicles may enter"
+    ],
+    "answer": 0,
+    "why": "Warning signs are there so you can prepare early and drive safely.",
+    "image": "children"
+  },
+  {
+    "id": "bulk_91545bcfcf",
+    "module": "signs",
+    "q": "What does a traffic signals ahead sign warn you about?",
+    "options": [
+      "You may increase speed",
+      "Traffic lights are ahead",
+      "No vehicles may enter",
+      "Only taxis may proceed"
+    ],
+    "answer": 1,
+    "why": "This warning sign prepares you for a possible hazard ahead.",
+    "image": "trafficlight"
+  },
+  {
+    "id": "bulk_b791e806d6",
+    "module": "signs",
+    "q": "When approaching a traffic signals ahead sign, what should you do?",
+    "options": [
+      "No vehicles may enter",
+      "It marks a shopping area",
+      "You may increase speed",
+      "Slow down, be alert, and be ready to react safely"
+    ],
+    "answer": 3,
+    "why": "Warning signs are there so you can prepare early and drive safely.",
+    "image": "trafficlight"
+  },
+  {
+    "id": "bulk_f6ec5cc6c1",
+    "module": "signs",
+    "q": "What does a railway crossing warning sign warn you about?",
+    "options": [
+      "The road is closed to all vehicles",
+      "No vehicles may enter",
+      "You may increase speed",
+      "A railway crossing is ahead"
+    ],
+    "answer": 3,
+    "why": "This warning sign prepares you for a possible hazard ahead.",
+    "image": "railway"
+  },
+  {
+    "id": "bulk_bf52dddb3f",
+    "module": "signs",
+    "q": "When approaching a railway crossing warning sign, what should you do?",
+    "options": [
+      "Only taxis may proceed",
+      "Slow down, be alert, and be ready to react safely",
+      "No vehicles may enter",
+      "It marks a shopping area"
+    ],
+    "answer": 1,
+    "why": "Warning signs are there so you can prepare early and drive safely.",
+    "image": "railway"
+  },
+  {
+    "id": "bulk_b8fbc2295c",
+    "module": "signs",
+    "q": "What does a traffic circle / roundabout warning sign warn you about?",
+    "options": [
+      "No vehicles may enter",
+      "A roundabout or traffic circle is ahead",
+      "It marks a shopping area",
+      "You may increase speed"
+    ],
+    "answer": 1,
+    "why": "This warning sign prepares you for a possible hazard ahead.",
+    "image": "roundabout"
+  },
+  {
+    "id": "bulk_9c2c9c0201",
+    "module": "signs",
+    "q": "When approaching a traffic circle / roundabout warning sign, what should you do?",
+    "options": [
+      "No vehicles may enter",
+      "The road is closed to all vehicles",
+      "Slow down, be alert, and be ready to react safely",
+      "It marks a shopping area"
+    ],
+    "answer": 2,
+    "why": "Warning signs are there so you can prepare early and drive safely.",
+    "image": "roundabout"
+  },
+  {
+    "id": "bulk_7a19594f7a",
+    "module": "signs",
+    "q": "What does a sharp bend warning sign warn you about?",
+    "options": [
+      "It marks a shopping area",
+      "No vehicles may enter",
+      "Only taxis may proceed",
+      "A sharp bend or curve is ahead"
+    ],
+    "answer": 3,
+    "why": "This warning sign prepares you for a possible hazard ahead."
+  },
+  {
+    "id": "bulk_09713e2972",
+    "module": "signs",
+    "q": "When approaching a sharp bend warning sign, what should you do?",
+    "options": [
+      "Only taxis may proceed",
+      "Parking is allowed",
+      "No vehicles may enter",
+      "Slow down, be alert, and be ready to react safely"
+    ],
+    "answer": 3,
+    "why": "Warning signs are there so you can prepare early and drive safely."
+  },
+  {
+    "id": "bulk_0a26e45876",
+    "module": "signs",
+    "q": "What does a road narrows warning sign warn you about?",
+    "options": [
+      "The road becomes narrower ahead",
+      "It marks a shopping area",
+      "You may increase speed",
+      "Only taxis may proceed"
+    ],
+    "answer": 0,
+    "why": "This warning sign prepares you for a possible hazard ahead."
+  },
+  {
+    "id": "bulk_5328ecd2b8",
+    "module": "signs",
+    "q": "When approaching a road narrows warning sign, what should you do?",
+    "options": [
+      "The road is closed to all vehicles",
+      "It marks a shopping area",
+      "No vehicles may enter",
+      "Slow down, be alert, and be ready to react safely"
+    ],
+    "answer": 3,
+    "why": "Warning signs are there so you can prepare early and drive safely."
+  },
+  {
+    "id": "bulk_34e9c8440f",
+    "module": "signs",
+    "q": "What does a roadworks warning sign warn you about?",
+    "options": [
+      "Roadworks or workers may be ahead",
+      "Parking is allowed",
+      "It marks a shopping area",
+      "No vehicles may enter"
+    ],
+    "answer": 0,
+    "why": "This warning sign prepares you for a possible hazard ahead."
+  },
+  {
+    "id": "bulk_a1c7fc6e8e",
+    "module": "signs",
+    "q": "When approaching a roadworks warning sign, what should you do?",
+    "options": [
+      "It marks a shopping area",
+      "Parking is allowed",
+      "Only taxis may proceed",
+      "Slow down, be alert, and be ready to react safely"
+    ],
+    "answer": 3,
+    "why": "Warning signs are there so you can prepare early and drive safely."
+  },
+  {
+    "id": "bulk_179d1665b7",
+    "module": "markings",
+    "q": "What does a stop line mean?",
+    "options": [
+      "You must overtake immediately",
+      "Stop before or at the line",
+      "It means speed up",
+      "Only trucks may use it"
+    ],
+    "answer": 1,
+    "why": "This road marking controls or guides your position on the road.",
+    "image": "stopline"
+  },
+  {
+    "id": "bulk_66b7f4b991",
+    "module": "markings",
+    "q": "What should you do when you see a stop line?",
+    "options": [
+      "You must overtake immediately",
+      "Stop before or at the line",
+      "Only trucks may use it",
+      "It is only road decoration"
+    ],
+    "answer": 1,
+    "why": "Road markings must be followed together with signs and traffic conditions.",
+    "image": "stopline"
+  },
+  {
+    "id": "bulk_f79adc7cc5",
+    "module": "markings",
+    "q": "What does a solid white line mean?",
+    "options": [
+      "It means speed up",
+      "You must park there",
+      "It is only road decoration",
+      "Do not cross where it is prohibited or unsafe"
+    ],
+    "answer": 3,
+    "why": "This road marking controls or guides your position on the road.",
+    "image": "solidline"
+  },
+  {
+    "id": "bulk_bf7851c510",
+    "module": "markings",
+    "q": "What should you do when you see a solid white line?",
+    "options": [
+      "Do not cross where it is prohibited or unsafe",
+      "It cancels all road signs",
+      "Only trucks may use it",
+      "It is only road decoration"
+    ],
+    "answer": 0,
+    "why": "Road markings must be followed together with signs and traffic conditions.",
+    "image": "solidline"
+  },
+  {
+    "id": "bulk_640762fd02",
+    "module": "markings",
+    "q": "What does a broken white line mean?",
+    "options": [
+      "You may change lanes only when it is safe and legal",
+      "It is only road decoration",
+      "You must park there",
+      "Only trucks may use it"
+    ],
+    "answer": 0,
+    "why": "This road marking controls or guides your position on the road.",
+    "image": "brokenline"
+  },
+  {
+    "id": "bulk_3414b24a4e",
+    "module": "markings",
+    "q": "What should you do when you see a broken white line?",
+    "options": [
+      "You must park there",
+      "It means speed up",
+      "It cancels all road signs",
+      "You may change lanes only when it is safe and legal"
+    ],
+    "answer": 3,
+    "why": "Road markings must be followed together with signs and traffic conditions.",
+    "image": "brokenline"
+  },
+  {
+    "id": "bulk_222ef4e1a7",
+    "module": "markings",
+    "q": "What does a left-turn arrow marking mean?",
+    "options": [
+      "You must overtake immediately",
+      "Only trucks may use it",
+      "You must turn left from that lane",
+      "You must park there"
+    ],
+    "answer": 2,
+    "why": "This road marking controls or guides your position on the road.",
+    "image": "leftarrow"
+  },
+  {
+    "id": "bulk_b25d46d235",
+    "module": "markings",
+    "q": "What should you do when you see a left-turn arrow marking?",
+    "options": [
+      "You must overtake immediately",
+      "You must turn left from that lane",
+      "It means speed up",
+      "You must park there"
+    ],
+    "answer": 1,
+    "why": "Road markings must be followed together with signs and traffic conditions.",
+    "image": "leftarrow"
+  },
+  {
+    "id": "bulk_6e9773c2b9",
+    "module": "markings",
+    "q": "What does a pedestrian crossing marking mean?",
+    "options": [
+      "Only trucks may use it",
+      "Pedestrians may cross there",
+      "It means speed up",
+      "It cancels all road signs"
+    ],
+    "answer": 1,
+    "why": "This road marking controls or guides your position on the road.",
+    "image": "pedcrossing"
+  },
+  {
+    "id": "bulk_12693bccd3",
+    "module": "markings",
+    "q": "What should you do when you see a pedestrian crossing marking?",
+    "options": [
+      "It is only road decoration",
+      "Pedestrians may cross there",
+      "You must overtake immediately",
+      "You must park there"
+    ],
+    "answer": 1,
+    "why": "Road markings must be followed together with signs and traffic conditions.",
+    "image": "pedcrossing"
+  },
+  {
+    "id": "bulk_897a8d534c",
+    "module": "markings",
+    "q": "What does a yellow line at the side of the road mean?",
+    "options": [
+      "It means speed up",
+      "Stopping or parking restrictions may apply",
+      "It is only road decoration",
+      "It cancels all road signs"
+    ],
+    "answer": 1,
+    "why": "This road marking controls or guides your position on the road."
+  },
+  {
+    "id": "bulk_33ba8ba612",
+    "module": "markings",
+    "q": "What should you do when you see a yellow line at the side of the road?",
+    "options": [
+      "It means speed up",
+      "Stopping or parking restrictions may apply",
+      "Only trucks may use it",
+      "You must overtake immediately"
+    ],
+    "answer": 1,
+    "why": "Road markings must be followed together with signs and traffic conditions."
+  },
+  {
+    "id": "bulk_d223564e5c",
+    "module": "markings",
+    "q": "What does a box junction marking mean?",
+    "options": [
+      "Do not enter unless you can clear the box",
+      "You must park there",
+      "You must overtake immediately",
+      "It means speed up"
+    ],
+    "answer": 0,
+    "why": "This road marking controls or guides your position on the road."
+  },
+  {
+    "id": "bulk_f8bb4dbda2",
+    "module": "markings",
+    "q": "What should you do when you see a box junction marking?",
+    "options": [
+      "You must overtake immediately",
+      "Do not enter unless you can clear the box",
+      "Only trucks may use it",
+      "It cancels all road signs"
+    ],
+    "answer": 1,
+    "why": "Road markings must be followed together with signs and traffic conditions."
+  },
+  {
+    "id": "bulk_53d4ba8f9d",
+    "module": "markings",
+    "q": "What does a painted island / chevron marking mean?",
+    "options": [
+      "Keep out unless it is safe and legally allowed",
+      "You must overtake immediately",
+      "It means speed up",
+      "You must park there"
+    ],
+    "answer": 0,
+    "why": "This road marking controls or guides your position on the road."
+  },
+  {
+    "id": "bulk_597735c4ab",
+    "module": "markings",
+    "q": "What should you do when you see a painted island / chevron marking?",
+    "options": [
+      "It is only road decoration",
+      "Keep out unless it is safe and legally allowed",
+      "Only trucks may use it",
+      "You must overtake immediately"
+    ],
+    "answer": 1,
+    "why": "Road markings must be followed together with signs and traffic conditions."
+  },
+  {
+    "id": "bulk_4c1f72bb34",
+    "module": "controls",
+    "q": "What is the main use of the accelerator?",
+    "options": [
+      "to decorate the vehicle",
+      "Increase speed or engine power",
+      "to park in a no parking zone",
+      "to make other drivers move faster"
+    ],
+    "answer": 1,
+    "why": "The accelerator increases power and speed."
+  },
+  {
+    "id": "bulk_891c5e8a4a",
+    "module": "controls",
+    "q": "Which control would you use to increase speed or engine power?",
+    "options": [
+      "Windscreen wipers",
+      "Accelerator",
+      "Headlights",
+      "Clutch"
+    ],
+    "answer": 1,
+    "why": "The accelerator increases power and speed."
+  },
+  {
+    "id": "bulk_f1faa8152c",
+    "module": "controls",
+    "q": "What is the main use of the brakes?",
+    "options": [
+      "Slow down or stop",
+      "to park in a no parking zone",
+      "to cancel speed limits",
+      "to avoid checking blind spots"
+    ],
+    "answer": 0,
+    "why": "Brakes are used to slow or stop the vehicle."
+  },
+  {
+    "id": "bulk_4e5cf123c1",
+    "module": "controls",
+    "q": "Which control would you use to slow down or stop?",
+    "options": [
+      "Windscreen wipers",
+      "Brakes",
+      "Indicator",
+      "Horn"
+    ],
+    "answer": 1,
+    "why": "Brakes are used to slow or stop the vehicle."
+  },
+  {
+    "id": "bulk_b57740a560",
+    "module": "controls",
+    "q": "What is the main use of the clutch?",
+    "options": [
+      "to avoid checking blind spots",
+      "Change gears in a manual vehicle",
+      "to replace road signs",
+      "to decorate the vehicle"
+    ],
+    "answer": 1,
+    "why": "The clutch assists smooth gear changes in a manual vehicle."
+  },
+  {
+    "id": "bulk_efc67b6308",
+    "module": "controls",
+    "q": "Which control would you use to change gears in a manual vehicle?",
+    "options": [
+      "Brakes",
+      "Indicator",
+      "Clutch",
+      "Hazard lights"
+    ],
+    "answer": 2,
+    "why": "The clutch assists smooth gear changes in a manual vehicle."
+  },
+  {
+    "id": "bulk_7dd1933d22",
+    "module": "controls",
+    "q": "What is the main use of the indicator?",
+    "options": [
+      "to replace road signs",
+      "to decorate the vehicle",
+      "Show your intention to turn or change lanes",
+      "to avoid checking blind spots"
+    ],
+    "answer": 2,
+    "why": "Indicators warn other road users what you intend to do."
+  },
+  {
+    "id": "bulk_c72306c1f9",
+    "module": "controls",
+    "q": "Which control would you use to show your intention to turn or change lanes?",
+    "options": [
+      "Handbrake / parking brake",
+      "Windscreen wipers",
+      "Indicator",
+      "Horn"
+    ],
+    "answer": 2,
+    "why": "Indicators warn other road users what you intend to do."
+  },
+  {
+    "id": "bulk_ca79eeb213",
+    "module": "controls",
+    "q": "What is the main use of the handbrake / parking brake?",
+    "options": [
+      "Keep the vehicle stationary when parked",
+      "to replace road signs",
+      "to cancel speed limits",
+      "to decorate the vehicle"
+    ],
+    "answer": 0,
+    "why": "The handbrake helps prevent the vehicle from rolling."
+  },
+  {
+    "id": "bulk_070aaed6e1",
+    "module": "controls",
+    "q": "Which control would you use to keep the vehicle stationary when parked?",
+    "options": [
+      "Horn",
+      "Handbrake / parking brake",
+      "Windscreen wipers",
+      "Indicator"
+    ],
+    "answer": 1,
+    "why": "The handbrake helps prevent the vehicle from rolling."
+  },
+  {
+    "id": "bulk_de308a324b",
+    "module": "controls",
+    "q": "What is the main use of the windscreen wipers?",
+    "options": [
+      "to replace road signs",
+      "Clear rain or water from the windscreen",
+      "to decorate the vehicle",
+      "to make other drivers move faster"
+    ],
+    "answer": 1,
+    "why": "Wipers improve visibility in rain."
+  },
+  {
+    "id": "bulk_2836d40f92",
+    "module": "controls",
+    "q": "Which control would you use to clear rain or water from the windscreen?",
+    "options": [
+      "Accelerator",
+      "Horn",
+      "Windscreen wipers",
+      "Hazard lights"
+    ],
+    "answer": 2,
+    "why": "Wipers improve visibility in rain."
+  },
+  {
+    "id": "bulk_7ee4eb4a6f",
+    "module": "controls",
+    "q": "What is the main use of the headlights?",
+    "options": [
+      "to replace road signs",
+      "to park in a no parking zone",
+      "to avoid checking blind spots",
+      "Help you see and be seen in poor visibility or at night"
+    ],
+    "answer": 3,
+    "why": "Headlights are important when visibility is poor."
+  },
+  {
+    "id": "bulk_798b908002",
+    "module": "controls",
+    "q": "Which control would you use to help you see and be seen in poor visibility or at night?",
+    "options": [
+      "Handbrake / parking brake",
+      "Windscreen wipers",
+      "Headlights",
+      "Horn"
+    ],
+    "answer": 2,
+    "why": "Headlights are important when visibility is poor."
+  },
+  {
+    "id": "bulk_13a147b44a",
+    "module": "controls",
+    "q": "What is the main use of the hazard lights?",
+    "options": [
+      "to cancel speed limits",
+      "to make other drivers move faster",
+      "Warn others that your vehicle is a hazard",
+      "to decorate the vehicle"
+    ],
+    "answer": 2,
+    "why": "Hazard lights warn of danger or obstruction."
+  },
+  {
+    "id": "bulk_e569cae2ee",
+    "module": "controls",
+    "q": "Which control would you use to warn others that your vehicle is a hazard?",
+    "options": [
+      "Brakes",
+      "Indicator",
+      "Mirrors",
+      "Hazard lights"
+    ],
+    "answer": 3,
+    "why": "Hazard lights warn of danger or obstruction."
+  },
+  {
+    "id": "bulk_e852868dff",
+    "module": "controls",
+    "q": "What is the main use of the horn?",
+    "options": [
+      "to cancel speed limits",
+      "to avoid checking blind spots",
+      "to replace road signs",
+      "Warn other road users of danger"
+    ],
+    "answer": 3,
+    "why": "The horn is a warning device, not a frustration tool."
+  },
+  {
+    "id": "bulk_f2b52cae6b",
+    "module": "controls",
+    "q": "Which control would you use to warn other road users of danger?",
+    "options": [
+      "Windscreen wipers",
+      "Mirrors",
+      "Horn",
+      "Accelerator"
+    ],
+    "answer": 2,
+    "why": "The horn is a warning device, not a frustration tool."
+  },
+  {
+    "id": "bulk_c5e68fb856",
+    "module": "controls",
+    "q": "What is the main use of the mirrors?",
+    "options": [
+      "to decorate the vehicle",
+      "to make other drivers move faster",
+      "to avoid checking blind spots",
+      "Observe traffic behind and beside you"
+    ],
+    "answer": 3,
+    "why": "Mirrors help you maintain awareness around your vehicle."
+  },
+  {
+    "id": "bulk_2da265ac7a",
+    "module": "controls",
+    "q": "Which control would you use to observe traffic behind and beside you?",
+    "options": [
+      "Mirrors",
+      "Brakes",
+      "Headlights",
+      "Windscreen wipers"
+    ],
+    "answer": 0,
+    "why": "Mirrors help you maintain awareness around your vehicle."
+  },
+  {
+    "id": "bulk_4359b07216",
+    "module": "defensive",
+    "q": "What is the correct defensive action for safe following distance?",
+    "options": [
+      "Give you enough time to react and stop safely",
+      "make a sudden movement without checking",
+      "look only straight ahead",
+      "drive faster immediately"
+    ],
+    "answer": 0,
+    "why": "Following too closely reduces reaction time and increases crash risk."
+  },
+  {
+    "id": "bulk_71bd8b2b1e",
+    "module": "defensive",
+    "q": "Why is safe following distance important?",
+    "options": [
+      "Following too closely reduces reaction time and increases crash risk.",
+      "drive faster immediately",
+      "look only straight ahead",
+      "ignore other traffic"
+    ],
+    "answer": 0,
+    "why": "Following too closely reduces reaction time and increases crash risk."
+  },
+  {
+    "id": "bulk_b15e17d201",
+    "module": "defensive",
+    "q": "What is the correct defensive action for blind spot check?",
+    "options": [
+      "drive faster immediately",
+      "ignore other traffic",
+      "See areas that mirrors may not show",
+      "use the horn continuously"
+    ],
+    "answer": 2,
+    "why": "Blind spots must be checked before changing direction or lanes."
+  },
+  {
+    "id": "bulk_0a1f79dcd3",
+    "module": "defensive",
+    "q": "Why is blind spot check important?",
+    "options": [
+      "ignore other traffic",
+      "make a sudden movement without checking",
+      "use the horn continuously",
+      "Blind spots must be checked before changing direction or lanes."
+    ],
+    "answer": 3,
+    "why": "Blind spots must be checked before changing direction or lanes."
+  },
+  {
+    "id": "bulk_a335014d00",
+    "module": "defensive",
+    "q": "What is the correct defensive action for scanning ahead?",
+    "options": [
+      "drive faster immediately",
+      "use the horn continuously",
+      "close the gap to the vehicle ahead",
+      "Identify hazards early"
+    ],
+    "answer": 3,
+    "why": "Looking far ahead gives more time to plan safely."
+  },
+  {
+    "id": "bulk_a9f5b2fc5c",
+    "module": "defensive",
+    "q": "Why is scanning ahead important?",
+    "options": [
+      "Looking far ahead gives more time to plan safely.",
+      "use the horn continuously",
+      "close the gap to the vehicle ahead",
+      "drive faster immediately"
+    ],
+    "answer": 0,
+    "why": "Looking far ahead gives more time to plan safely."
+  },
+  {
+    "id": "bulk_346245e675",
+    "module": "defensive",
+    "q": "What is the correct defensive action for driving in rain?",
+    "options": [
+      "close the gap to the vehicle ahead",
+      "Reduce speed and increase following distance",
+      "look only straight ahead",
+      "use the horn continuously"
+    ],
+    "answer": 1,
+    "why": "Wet roads increase stopping distance."
+  },
+  {
+    "id": "bulk_b4b9331c7b",
+    "module": "defensive",
+    "q": "Why is driving in rain important?",
+    "options": [
+      "use the horn continuously",
+      "close the gap to the vehicle ahead",
+      "Wet roads increase stopping distance.",
+      "look only straight ahead"
+    ],
+    "answer": 2,
+    "why": "Wet roads increase stopping distance."
+  },
+  {
+    "id": "bulk_57bf91675e",
+    "module": "defensive",
+    "q": "What is the correct defensive action for driving in fog?",
+    "options": [
+      "drive faster immediately",
+      "use the horn continuously",
+      "ignore other traffic",
+      "Reduce speed, use appropriate lights, and leave more space"
+    ],
+    "answer": 3,
+    "why": "Fog reduces visibility."
+  },
+  {
+    "id": "bulk_3a8cb06536",
+    "module": "defensive",
+    "q": "Why is driving in fog important?",
+    "options": [
+      "look only straight ahead",
+      "ignore other traffic",
+      "Fog reduces visibility.",
+      "use the horn continuously"
+    ],
+    "answer": 2,
+    "why": "Fog reduces visibility."
+  },
+  {
+    "id": "bulk_d044571013",
+    "module": "defensive",
+    "q": "What is the correct defensive action for approaching children near the road?",
+    "options": [
+      "use the horn continuously",
+      "Slow down and be prepared to stop",
+      "make a sudden movement without checking",
+      "look only straight ahead"
+    ],
+    "answer": 1,
+    "why": "Children can act unpredictably."
+  },
+  {
+    "id": "bulk_0d8822d8b4",
+    "module": "defensive",
+    "q": "Why is approaching children near the road important?",
+    "options": [
+      "use the horn continuously",
+      "Children can act unpredictably.",
+      "close the gap to the vehicle ahead",
+      "ignore other traffic"
+    ],
+    "answer": 1,
+    "why": "Children can act unpredictably."
+  },
+  {
+    "id": "bulk_0a68348a51",
+    "module": "defensive",
+    "q": "What is the correct defensive action for tired driving?",
+    "options": [
+      "Stop and rest",
+      "drive faster immediately",
+      "look only straight ahead",
+      "close the gap to the vehicle ahead"
+    ],
+    "answer": 0,
+    "why": "Driving tired is dangerous and reduces reaction time."
+  },
+  {
+    "id": "bulk_4b99e191e1",
+    "module": "defensive",
+    "q": "Why is tired driving important?",
+    "options": [
+      "Driving tired is dangerous and reduces reaction time.",
+      "close the gap to the vehicle ahead",
+      "use the horn continuously",
+      "ignore other traffic"
+    ],
+    "answer": 0,
+    "why": "Driving tired is dangerous and reduces reaction time."
+  },
+  {
+    "id": "bulk_bbda1e71f6",
+    "module": "defensive",
+    "q": "What is the correct defensive action for tailgater behind you?",
+    "options": [
+      "make a sudden movement without checking",
+      "drive faster immediately",
+      "use the horn continuously",
+      "Stay calm and allow safe passing if possible"
+    ],
+    "answer": 3,
+    "why": "Do not respond aggressively to a tailgater."
+  },
+  {
+    "id": "bulk_57135d6202",
+    "module": "defensive",
+    "q": "Why is tailgater behind you important?",
+    "options": [
+      "Do not respond aggressively to a tailgater.",
+      "use the horn continuously",
+      "look only straight ahead",
+      "make a sudden movement without checking"
+    ],
+    "answer": 0,
+    "why": "Do not respond aggressively to a tailgater."
+  },
+  {
+    "id": "bulk_3a19c5bb1a",
+    "module": "defensive",
+    "q": "What is the correct defensive action for freeway merging?",
+    "options": [
+      "look only straight ahead",
+      "ignore other traffic",
+      "Match speed safely, signal and merge only when safe",
+      "make a sudden movement without checking"
+    ],
+    "answer": 2,
+    "why": "Freeway merging needs observation and correct speed."
+  },
+  {
+    "id": "bulk_6bc5b06c44",
+    "module": "defensive",
+    "q": "Why is freeway merging important?",
+    "options": [
+      "make a sudden movement without checking",
+      "use the horn continuously",
+      "look only straight ahead",
+      "Freeway merging needs observation and correct speed."
+    ],
+    "answer": 3,
+    "why": "Freeway merging needs observation and correct speed."
+  },
+  {
+    "id": "bulk_5cadfc46d9",
+    "module": "defensive",
+    "q": "What is the correct defensive action for night driving?",
+    "options": [
+      "look only straight ahead",
+      "Use lights correctly and do not dazzle others",
+      "drive faster immediately",
+      "make a sudden movement without checking"
+    ],
+    "answer": 1,
+    "why": "Correct headlight use improves safety at night."
+  },
+  {
+    "id": "bulk_cb7a98acaa",
+    "module": "defensive",
+    "q": "Why is night driving important?",
+    "options": [
+      "use the horn continuously",
+      "Correct headlight use improves safety at night.",
+      "close the gap to the vehicle ahead",
+      "ignore other traffic"
+    ],
+    "answer": 1,
+    "why": "Correct headlight use improves safety at night."
+  },
+  {
+    "id": "bulk_51875f7007",
+    "module": "rules",
+    "q": "What is the correct rule/action for red traffic light?",
+    "options": [
+      "Ignore it if the road is quiet",
+      "Follow the closest vehicle blindly",
+      "Stop",
+      "Drive on the wrong side"
+    ],
+    "answer": 2,
+    "why": "A red traffic light means stop."
+  },
+  {
+    "id": "bulk_d69a0c4771",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about red traffic light?",
+    "options": [
+      "Stop",
+      "Drive on the wrong side",
+      "Park in the intersection",
+      "Speed up"
+    ],
+    "answer": 0,
+    "why": "A red traffic light means stop."
+  },
+  {
+    "id": "bulk_75c4a009bb",
+    "module": "rules",
+    "q": "What is the correct rule/action for amber traffic light?",
+    "options": [
+      "Speed up",
+      "Stop if it is safe to do so",
+      "Park in the intersection",
+      "Drive on the wrong side"
+    ],
+    "answer": 1,
+    "why": "Amber warns that the signal is changing."
+  },
+  {
+    "id": "bulk_8c5a0b888c",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about amber traffic light?",
+    "options": [
+      "Ignore it if the road is quiet",
+      "Follow the closest vehicle blindly",
+      "Stop if it is safe to do so",
+      "Speed up"
+    ],
+    "answer": 2,
+    "why": "Amber warns that the signal is changing."
+  },
+  {
+    "id": "bulk_3b91200cf6",
+    "module": "rules",
+    "q": "What is the correct rule/action for green traffic light?",
+    "options": [
+      "Ignore it if the road is quiet",
+      "Drive on the wrong side",
+      "Proceed only if it is safe and legal",
+      "Hoot and continue"
+    ],
+    "answer": 2,
+    "why": "Green permits movement, but you must still be safe."
+  },
+  {
+    "id": "bulk_a7c0cbeb29",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about green traffic light?",
+    "options": [
+      "Speed up",
+      "Proceed only if it is safe and legal",
+      "Ignore it if the road is quiet",
+      "Hoot and continue"
+    ],
+    "answer": 1,
+    "why": "Green permits movement, but you must still be safe."
+  },
+  {
+    "id": "bulk_f446ca5a7c",
+    "module": "rules",
+    "q": "What is the correct rule/action for urban speed limit unless a sign says otherwise?",
+    "options": [
+      "Ignore it if the road is quiet",
+      "60 km/h",
+      "Drive on the wrong side",
+      "Hoot and continue"
+    ],
+    "answer": 1,
+    "why": "The common general urban limit is 60 km/h."
+  },
+  {
+    "id": "bulk_e0534496d4",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about urban speed limit unless a sign says otherwise?",
+    "options": [
+      "Speed up",
+      "60 km/h",
+      "Hoot and continue",
+      "Park in the intersection"
+    ],
+    "answer": 1,
+    "why": "The common general urban limit is 60 km/h."
+  },
+  {
+    "id": "bulk_86a742a05b",
+    "module": "rules",
+    "q": "What is the correct rule/action for public road outside an urban area unless a sign says otherwise?",
+    "options": [
+      "Follow the closest vehicle blindly",
+      "Ignore it if the road is quiet",
+      "100 km/h",
+      "Drive on the wrong side"
+    ],
+    "answer": 2,
+    "why": "The common general limit outside urban areas is 100 km/h."
+  },
+  {
+    "id": "bulk_912558d856",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about public road outside an urban area unless a sign says otherwise?",
+    "options": [
+      "Park in the intersection",
+      "100 km/h",
+      "Drive on the wrong side",
+      "Hoot and continue"
+    ],
+    "answer": 1,
+    "why": "The common general limit outside urban areas is 100 km/h."
+  },
+  {
+    "id": "bulk_4f21b086f1",
+    "module": "rules",
+    "q": "What is the correct rule/action for freeway speed limit unless a sign says otherwise?",
+    "options": [
+      "Speed up",
+      "Park in the intersection",
+      "120 km/h",
+      "Ignore it if the road is quiet"
+    ],
+    "answer": 2,
+    "why": "The common general freeway limit is 120 km/h."
+  },
+  {
+    "id": "bulk_fd0e05ced4",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about freeway speed limit unless a sign says otherwise?",
+    "options": [
+      "Ignore it if the road is quiet",
+      "Follow the closest vehicle blindly",
+      "Hoot and continue",
+      "120 km/h"
+    ],
+    "answer": 3,
+    "why": "The common general freeway limit is 120 km/h."
+  },
+  {
+    "id": "bulk_6bee76e11c",
+    "module": "rules",
+    "q": "What is the correct rule/action for hand-held cellphone while driving?",
+    "options": [
+      "Speed up",
+      "Hoot and continue",
+      "Ignore it if the road is quiet",
+      "You may not use a hand-held cellphone while driving"
+    ],
+    "answer": 3,
+    "why": "Hand-held cellphone use while driving is dangerous and illegal."
+  },
+  {
+    "id": "bulk_583526c7b8",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about hand-held cellphone while driving?",
+    "options": [
+      "Speed up",
+      "Follow the closest vehicle blindly",
+      "You may not use a hand-held cellphone while driving",
+      "Hoot and continue"
+    ],
+    "answer": 2,
+    "why": "Hand-held cellphone use while driving is dangerous and illegal."
+  },
+  {
+    "id": "bulk_a45f0e3eba",
+    "module": "rules",
+    "q": "What is the correct rule/action for emergency vehicle with siren and lights?",
+    "options": [
+      "Follow the closest vehicle blindly",
+      "Give way safely",
+      "Speed up",
+      "Hoot and continue"
+    ],
+    "answer": 1,
+    "why": "Emergency vehicles need to pass quickly and safely."
+  },
+  {
+    "id": "bulk_d306cf1038",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about emergency vehicle with siren and lights?",
+    "options": [
+      "Give way safely",
+      "Drive on the wrong side",
+      "Speed up",
+      "Park in the intersection"
+    ],
+    "answer": 0,
+    "why": "Emergency vehicles need to pass quickly and safely."
+  },
+  {
+    "id": "bulk_e60f1d2125",
+    "module": "rules",
+    "q": "What is the correct rule/action for pedestrian crossing with people waiting?",
+    "options": [
+      "Slow down and stop if necessary to give way",
+      "Hoot and continue",
+      "Follow the closest vehicle blindly",
+      "Park in the intersection"
+    ],
+    "answer": 0,
+    "why": "Pedestrians at crossings must be protected."
+  },
+  {
+    "id": "bulk_f246ba984e",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about pedestrian crossing with people waiting?",
+    "options": [
+      "Park in the intersection",
+      "Speed up",
+      "Slow down and stop if necessary to give way",
+      "Hoot and continue"
+    ],
+    "answer": 2,
+    "why": "Pedestrians at crossings must be protected."
+  },
+  {
+    "id": "bulk_65102032a1",
+    "module": "rules",
+    "q": "What is the correct rule/action for traffic officer instruction?",
+    "options": [
+      "Speed up",
+      "Ignore it if the road is quiet",
+      "Hoot and continue",
+      "Obey the lawful instruction"
+    ],
+    "answer": 3,
+    "why": "A lawful traffic officer instruction must be obeyed."
+  },
+  {
+    "id": "bulk_37b91157af",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about traffic officer instruction?",
+    "options": [
+      "Obey the lawful instruction",
+      "Ignore it if the road is quiet",
+      "Follow the closest vehicle blindly",
+      "Hoot and continue"
+    ],
+    "answer": 0,
+    "why": "A lawful traffic officer instruction must be obeyed."
+  },
+  {
+    "id": "bulk_7fe798b2e4",
+    "module": "rules",
+    "q": "What is the correct rule/action for missed turn?",
+    "options": [
+      "Continue safely and turn around where it is legal and safe",
+      "Drive on the wrong side",
+      "Park in the intersection",
+      "Ignore it if the road is quiet"
+    ],
+    "answer": 0,
+    "why": "Do not reverse or make sudden illegal turns."
+  },
+  {
+    "id": "bulk_d9121b6b39",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about missed turn?",
+    "options": [
+      "Speed up",
+      "Park in the intersection",
+      "Continue safely and turn around where it is legal and safe",
+      "Hoot and continue"
+    ],
+    "answer": 2,
+    "why": "Do not reverse or make sudden illegal turns."
+  },
+  {
+    "id": "bulk_61d362394f",
+    "module": "rules",
+    "q": "What is the correct rule/action for vehicle breakdown?",
+    "options": [
+      "Park in the intersection",
+      "Ignore it if the road is quiet",
+      "Warn others and move safely out of danger if possible",
+      "Follow the closest vehicle blindly"
+    ],
+    "answer": 2,
+    "why": "Reduce danger to yourself and other road users."
+  },
+  {
+    "id": "bulk_20309f9010",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about vehicle breakdown?",
+    "options": [
+      "Drive on the wrong side",
+      "Speed up",
+      "Warn others and move safely out of danger if possible",
+      "Hoot and continue"
+    ],
+    "answer": 2,
+    "why": "Reduce danger to yourself and other road users."
+  },
+  {
+    "id": "bulk_ba6a74337b",
+    "module": "rules",
+    "q": "What is the correct rule/action for railway crossing?",
+    "options": [
+      "Slow down, look, listen and obey signals",
+      "Ignore it if the road is quiet",
+      "Drive on the wrong side",
+      "Hoot and continue"
+    ],
+    "answer": 0,
+    "why": "Railway crossings are high-risk areas."
+  },
+  {
+    "id": "bulk_96ba2fafb2",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about railway crossing?",
+    "options": [
+      "Follow the closest vehicle blindly",
+      "Ignore it if the road is quiet",
+      "Hoot and continue",
+      "Slow down, look, listen and obey signals"
+    ],
+    "answer": 3,
+    "why": "Railway crossings are high-risk areas."
+  },
+  {
+    "id": "bulk_b67c6e6e56",
+    "module": "rules",
+    "q": "What is the correct rule/action for overtaking?",
+    "options": [
+      "Park in the intersection",
+      "Hoot and continue",
+      "Overtake only when it is safe and legal",
+      "Drive on the wrong side"
+    ],
+    "answer": 2,
+    "why": "Overtaking must only happen where legal and safe."
+  },
+  {
+    "id": "bulk_f3d49fac67",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about overtaking?",
+    "options": [
+      "Hoot and continue",
+      "Follow the closest vehicle blindly",
+      "Overtake only when it is safe and legal",
+      "Drive on the wrong side"
+    ],
+    "answer": 2,
+    "why": "Overtaking must only happen where legal and safe."
+  },
+  {
+    "id": "bulk_3dd401bacd",
+    "module": "rules",
+    "q": "What is the correct rule/action for seat belt?",
+    "options": [
+      "Park in the intersection",
+      "Wear it to reduce injury in a crash",
+      "Ignore it if the road is quiet",
+      "Follow the closest vehicle blindly"
+    ],
+    "answer": 1,
+    "why": "Seat belts help protect occupants."
+  },
+  {
+    "id": "bulk_45250cdb87",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about seat belt?",
+    "options": [
+      "Follow the closest vehicle blindly",
+      "Drive on the wrong side",
+      "Wear it to reduce injury in a crash",
+      "Ignore it if the road is quiet"
+    ],
+    "answer": 2,
+    "why": "Seat belts help protect occupants."
+  },
+  {
+    "id": "bulk_f15310f090",
+    "module": "rules",
+    "q": "What is the correct rule/action for cyclist ahead?",
+    "options": [
+      "Slow down if needed and pass with safe space",
+      "Ignore it if the road is quiet",
+      "Hoot and continue",
+      "Drive on the wrong side"
+    ],
+    "answer": 0,
+    "why": "Cyclists are vulnerable road users."
+  },
+  {
+    "id": "bulk_dd390eb1b0",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about cyclist ahead?",
+    "options": [
+      "Ignore it if the road is quiet",
+      "Speed up",
+      "Drive on the wrong side",
+      "Slow down if needed and pass with safe space"
+    ],
+    "answer": 3,
+    "why": "Cyclists are vulnerable road users."
+  },
+  {
+    "id": "bulk_cda8d73ea9",
+    "module": "rules",
+    "q": "What is the correct rule/action for uncontrolled intersection?",
+    "options": [
+      "Slow down, observe carefully and apply right-of-way rules",
+      "Park in the intersection",
+      "Drive on the wrong side",
+      "Ignore it if the road is quiet"
+    ],
+    "answer": 0,
+    "why": "Uncontrolled intersections require extra caution."
+  },
+  {
+    "id": "bulk_bb36b461f9",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about uncontrolled intersection?",
+    "options": [
+      "Park in the intersection",
+      "Hoot and continue",
+      "Slow down, observe carefully and apply right-of-way rules",
+      "Speed up"
+    ],
+    "answer": 2,
+    "why": "Uncontrolled intersections require extra caution."
+  },
+  {
+    "id": "bulk_c79a4ec0a8",
+    "module": "rules",
+    "q": "What is the correct rule/action for non-working traffic lights?",
+    "options": [
+      "Park in the intersection",
+      "Follow the closest vehicle blindly",
+      "Ignore it if the road is quiet",
+      "Treat the intersection with caution and follow applicable right-of-way rules"
+    ],
+    "answer": 3,
+    "why": "When lights fail, drivers must be cautious and cooperative."
+  },
+  {
+    "id": "bulk_fb478476fb",
+    "module": "rules",
+    "q": "In a K53 test, what should you remember about non-working traffic lights?",
+    "options": [
+      "Treat the intersection with caution and follow applicable right-of-way rules",
+      "Speed up",
+      "Follow the closest vehicle blindly",
+      "Park in the intersection"
+    ],
+    "answer": 0,
+    "why": "When lights fail, drivers must be cautious and cooperative."
+  },
+  {
+    "id": "bulk_6f96e3704a",
+    "module": "rules",
+    "q": "You arrive at a STOP sign and no other vehicle is visible. What must you do?",
+    "options": [
+      "Ignore it",
+      "Stop completely, then proceed only when safe",
+      "Stop in the middle of the lane",
+      "Follow the car ahead blindly"
+    ],
+    "answer": 1,
+    "why": "A STOP sign must be obeyed even when the road looks quiet."
+  },
+  {
+    "id": "bulk_1d32708367",
+    "module": "rules",
+    "q": "You are first at a red traffic light late at night. What must you do?",
+    "options": [
+      "Stop and wait for the signal to allow you to go",
+      "Follow the car ahead blindly",
+      "Speed up",
+      "Hoot and continue"
+    ],
+    "answer": 0,
+    "why": "Red means stop regardless of the time of day."
+  },
+  {
+    "id": "bulk_dd9831e882",
+    "module": "rules",
+    "q": "A pedestrian steps onto a marked crossing ahead. What must you do?",
+    "options": [
+      "Drive on the wrong side",
+      "Ignore it",
+      "Slow down and stop if necessary",
+      "Follow the car ahead blindly"
+    ],
+    "answer": 2,
+    "why": "Pedestrians at crossings must be protected."
+  },
+  {
+    "id": "bulk_8964423bbe",
+    "module": "rules",
+    "q": "You are approaching a school zone with children near the road. What is safest?",
+    "options": [
+      "Slow down and be ready to stop",
+      "Ignore it",
+      "Stop in the middle of the lane",
+      "Speed up"
+    ],
+    "answer": 0,
+    "why": "Children may behave unpredictably."
+  },
+  {
+    "id": "bulk_e1365774ce",
+    "module": "rules",
+    "q": "You missed your turn on a busy road. What should you do?",
+    "options": [
+      "Continue and turn around where it is legal and safe",
+      "Speed up",
+      "Follow the car ahead blindly",
+      "Ignore it"
+    ],
+    "answer": 0,
+    "why": "Never make a sudden illegal turn or reverse in traffic."
+  },
+  {
+    "id": "bulk_e229c6487d",
+    "module": "rules",
+    "q": "An ambulance with siren and flashing lights approaches from behind. What should you do?",
+    "options": [
+      "Give way safely",
+      "Ignore it",
+      "Speed up",
+      "Follow the car ahead blindly"
+    ],
+    "answer": 0,
+    "why": "Emergency vehicles need safe passage."
+  },
+  {
+    "id": "bulk_cd656882c3",
+    "module": "rules",
+    "q": "You want to overtake near a blind rise. What should you do?",
+    "options": [
+      "Do not overtake",
+      "Speed up",
+      "Follow the car ahead blindly",
+      "Stop in the middle of the lane"
+    ],
+    "answer": 0,
+    "why": "Visibility is limited and overtaking is dangerous."
+  },
+  {
+    "id": "bulk_ace76f8d28",
+    "module": "rules",
+    "q": "A traffic officer signals you to stop while the light is green. What do you do?",
+    "options": [
+      "Obey the officer",
+      "Ignore it",
+      "Follow the car ahead blindly",
+      "Speed up"
+    ],
+    "answer": 0,
+    "why": "A lawful instruction from a traffic officer overrides signals."
+  },
+  {
+    "id": "bulk_0eb092967c",
+    "module": "defensive",
+    "q": "It starts raining heavily while you are driving. What should you do?",
+    "options": [
+      "Drive on the wrong side",
+      "Stop in the middle of the lane",
+      "Reduce speed and increase following distance",
+      "Ignore it"
+    ],
+    "answer": 2,
+    "why": "Wet roads increase stopping distance and reduce grip."
+  },
+  {
+    "id": "bulk_cdbedcd74d",
+    "module": "defensive",
+    "q": "A vehicle is following too close behind you. What is safest?",
+    "options": [
+      "Stay calm and allow safe passing if possible",
+      "Ignore it",
+      "Hoot and continue",
+      "Speed up"
+    ],
+    "answer": 0,
+    "why": "Aggressive reactions increase danger."
+  },
+  {
+    "id": "bulk_a54f2096b4",
+    "module": "defensive",
+    "q": "You want to change lanes on a freeway. What must you do first?",
+    "options": [
+      "Check mirrors, check blind spot, signal and move only when safe",
+      "Drive on the wrong side",
+      "Follow the car ahead blindly",
+      "Ignore it"
+    ],
+    "answer": 0,
+    "why": "Safe lane changes need observation and communication."
+  },
+  {
+    "id": "bulk_b6a3f15709",
+    "module": "defensive",
+    "q": "Your windscreen is dirty and glare makes it hard to see. What should you do?",
+    "options": [
+      "Stop in the middle of the lane",
+      "Hoot and continue",
+      "Drive on the wrong side",
+      "Clean it and ensure clear visibility"
+    ],
+    "answer": 3,
+    "why": "You must be able to see clearly."
+  },
+  {
+    "id": "bulk_db2e3c4103",
+    "module": "controls",
+    "q": "Before reversing out of a driveway, what must you do?",
+    "options": [
+      "Stop in the middle of the lane",
+      "Follow the car ahead blindly",
+      "Ignore it",
+      "Check behind, mirrors and blind spots"
+    ],
+    "answer": 3,
+    "why": "Reversing without checking is dangerous."
+  },
+  {
+    "id": "bulk_04cee49000",
+    "module": "controls",
+    "q": "Your vehicle starts rolling back on a hill. Which control helps hold it?",
+    "options": [
+      "Ignore it",
+      "Drive on the wrong side",
+      "Stop in the middle of the lane",
+      "Handbrake / parking brake"
+    ],
+    "answer": 3,
+    "why": "The handbrake can help hold the vehicle stationary."
+  },
+  {
+    "id": "bulk_17664c26f0",
+    "module": "markings",
+    "q": "Your lane has a straight arrow only. What should you do?",
+    "options": [
+      "Proceed straight if it is safe and legal",
+      "Hoot and continue",
+      "Speed up",
+      "Follow the car ahead blindly"
+    ],
+    "answer": 0,
+    "why": "Lane arrows tell you the permitted direction."
+  },
+  {
+    "id": "bulk_e8c4c552cc",
+    "module": "markings",
+    "q": "A solid line separates your lane from the next lane. What should you remember?",
+    "options": [
+      "Speed up",
+      "Follow the car ahead blindly",
+      "Do not cross where it is prohibited or unsafe",
+      "Stop in the middle of the lane"
+    ],
+    "answer": 2,
+    "why": "Solid lines restrict crossing and overtaking."
+  },
+  {
+    "id": "bulk_cd87ac1855",
+    "module": "signs",
+    "q": "You see a roadworks warning sign. What is safest?",
+    "options": [
+      "Speed up",
+      "Hoot and continue",
+      "Slow down and watch for workers or temporary controls",
+      "Ignore it"
+    ],
+    "answer": 2,
+    "why": "Roadworks can change traffic flow and create hazards."
+  },
+  {
+    "id": "bulk_8e0d7986b1",
+    "module": "signs",
+    "q": "You see a slippery road warning sign during rain. What should you do?",
+    "options": [
+      "Follow the car ahead blindly",
+      "Drive on the wrong side",
+      "Stop in the middle of the lane",
+      "Reduce speed and avoid sudden braking or steering"
+    ],
+    "answer": 3,
+    "why": "Slippery roads reduce grip."
+  },
+  {
+    "id": "bulk_e63bee1436",
+    "module": "signs",
+    "q": "You see a No Entry sign at a road entrance. What should you do?",
+    "options": [
+      "Do not enter",
+      "Speed up",
+      "Stop in the middle of the lane",
+      "Ignore it"
+    ],
+    "answer": 0,
+    "why": "The sign prohibits entry."
+  },
+  {
+    "id": "bulk_09de50729e",
+    "module": "signs",
+    "q": "You see a Keep Left sign at an island. What should you do?",
+    "options": [
+      "Follow the car ahead blindly",
+      "Keep left of the island/sign",
+      "Stop in the middle of the lane",
+      "Speed up"
+    ],
+    "answer": 1,
+    "why": "Compulsory signs must be obeyed."
   }
 ];
 
@@ -1781,7 +3591,7 @@ function topbar(){
 function dashboardHTML(){
   return `${topbar()}<div class="wrap grid">
     <div class="card">
-      <div class="row" style="margin-bottom:14px"><div style="font-size:28px">📱</div><div><h2>Choose a subject</h2><p class="muted">K53 is active now. The other subjects will be added here.</p></div></div>
+      <div class="row" style="margin-bottom:14px"><div style="font-size:28px">📱</div><div><h2>Choose a subject</h2><p class="muted">K53 is active now. The other subjects will be added here.</p><p class="muted"><b>Question bank:</b> 264 K53 questions, including picture-style questions.</p></div></div>
       <div class="grid subjects">
         ${subjects.map(s=>`<button class="subjectBtn ${s.id===state.selectedSubject?'active':''}" onclick="selectSubject('${s.id}')">
           <div style="font-size:34px;margin-bottom:10px">${s.icon}</div><h3>${esc(s.title)}</h3><p class="muted">${esc(s.subtitle)}</p><span class="pill ${s.status==='Active'?'active':''}">${esc(s.status)}</span>

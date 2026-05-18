@@ -1,23 +1,26 @@
-ENRICO STUDY APP - K53 IMAGE QUESTIONS VERSION
+ENRICO STUDY APP - K53 LARGE QUESTION BANK VERSION
 
 Login:
 Name: Enrico
 PIN: 1234
 
 What changed:
-- Added 20 picture-style K53 questions.
-- Uses original simple sign/road-marking drawings inside the app.
-- Total question bank: 127 questions.
+- K53 question bank expanded to 264 questions.
+- Keeps the picture-style road sign / road marking questions.
 - Exam Mode randomly selects 64 questions.
+- This is still the same app and the same GitHub Pages link.
 
 Update fixed GitHub Pages link:
 1. Extract this ZIP.
-2. Copy/replace the updated enrico_study_app folder on your PC.
-3. In PowerShell:
+2. Replace/copy into:
+   C:\Users\pos\Documents\Enrico Study App\enrico_study_app
+3. Run:
    cd "$env:USERPROFILE\Documents\Enrico Study App\enrico_study_app"
    git add .
-   git commit -m "Add K53 picture questions"
+   git commit -m "Expand K53 question bank"
    git push
 4. Same link:
    https://franspretorius28-debug.github.io/enrico-study-app/
 
+Note:
+These are original practice questions based on the K53 topics, not copied verbatim from a book.
