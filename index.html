@@ -41,6 +41,7 @@
     .progress{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden}
     .progress>div{height:100%;background:#0f172a}
     .questionBox{border:1px solid var(--line);border-radius:24px;background:white;padding:16px}
+    .qImage{max-width:260px;margin:0 auto 14px;background:#f8fafc;border:1px solid var(--line);border-radius:22px;padding:10px}.qImage svg{width:100%;height:auto;display:block}
     .optionGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
     .optionBtn.correct{background:var(--good);border-color:var(--goodLine);color:#14532d}
     .optionBtn.wrong{background:var(--bad);border-color:var(--badLine);color:#7f1d1d}
@@ -1390,6 +1391,286 @@ const questions = [
     ],
     "answer": 0,
     "why": "Roadworthy vehicles meet safety requirements."
+  },
+  {
+    "id": "img_stop_001",
+    "module": "signs",
+    "image": "stop",
+    "q": "Look at the sign. What must you do?",
+    "options": [
+      "Stop completely and proceed only when safe",
+      "Slow down only if there is traffic",
+      "Park next to the sign",
+      "Drive faster"
+    ],
+    "answer": 0,
+    "why": "A STOP sign means you must stop completely and only move when it is safe."
+  },
+  {
+    "id": "img_yield_001",
+    "module": "signs",
+    "image": "yield",
+    "q": "Look at the sign. What does it mean?",
+    "options": [
+      "Give way to traffic that has right of way",
+      "Stop for exactly one minute",
+      "Parking is allowed",
+      "No pedestrians allowed"
+    ],
+    "answer": 0,
+    "why": "A Yield/Give Way sign means you must slow down and give way where required."
+  },
+  {
+    "id": "img_no_entry_001",
+    "module": "signs",
+    "image": "noentry",
+    "q": "Look at the sign. What does it mean?",
+    "options": [
+      "You may not enter this road or entrance",
+      "You may enter slowly",
+      "The road is one-way toward you",
+      "Parking is allowed"
+    ],
+    "answer": 0,
+    "why": "A No Entry sign prohibits vehicles from entering that road or entrance."
+  },
+  {
+    "id": "img_speed60_001",
+    "module": "signs",
+    "image": "speed60",
+    "q": "Look at the sign. What is the maximum speed allowed?",
+    "options": [
+      "60 km/h",
+      "80 km/h",
+      "100 km/h",
+      "120 km/h"
+    ],
+    "answer": 0,
+    "why": "A speed limit sign shows the maximum speed allowed unless conditions require a lower speed."
+  },
+  {
+    "id": "img_no_u_turn_001",
+    "module": "signs",
+    "image": "nouturn",
+    "q": "Look at the sign. What is prohibited?",
+    "options": [
+      "Making a U-turn",
+      "Turning left",
+      "Driving straight",
+      "Parking"
+    ],
+    "answer": 0,
+    "why": "A No U-turn sign means you may not make a U-turn there."
+  },
+  {
+    "id": "img_keep_left_001",
+    "module": "signs",
+    "image": "keepleft",
+    "q": "Look at the sign. What must you do?",
+    "options": [
+      "Keep left of the obstruction or sign",
+      "Drive on the right",
+      "Stop immediately",
+      "Make a U-turn"
+    ],
+    "answer": 0,
+    "why": "A keep-left sign is compulsory and must be obeyed."
+  },
+  {
+    "id": "img_oneway_001",
+    "module": "signs",
+    "image": "oneway",
+    "q": "Look at the sign. What does it show?",
+    "options": [
+      "Traffic may move only in the indicated direction",
+      "Two-way traffic starts",
+      "No vehicles may enter",
+      "Pedestrians only"
+    ],
+    "answer": 0,
+    "why": "A one-way sign shows the only direction traffic may travel."
+  },
+  {
+    "id": "img_pedestrian_001",
+    "module": "signs",
+    "image": "pedestrian",
+    "q": "Look at the sign. What should you expect?",
+    "options": [
+      "Pedestrians may be nearby or crossing",
+      "Only trucks may drive",
+      "No people are allowed",
+      "A fuel station ahead"
+    ],
+    "answer": 0,
+    "why": "Pedestrian warning signs tell you to slow down and watch for pedestrians."
+  },
+  {
+    "id": "img_children_001",
+    "module": "signs",
+    "image": "children",
+    "q": "Look at the sign. What should you do?",
+    "options": [
+      "Slow down and watch for children",
+      "Speed up before the school",
+      "Hoot continuously",
+      "Park in the road"
+    ],
+    "answer": 0,
+    "why": "Children can be unpredictable, so reduce speed and prepare to stop."
+  },
+  {
+    "id": "img_slippery_001",
+    "module": "signs",
+    "image": "slippery",
+    "q": "Look at the sign. What danger is ahead?",
+    "options": [
+      "The road may be slippery",
+      "The road is closed",
+      "Parking starts",
+      "A toll gate ahead"
+    ],
+    "answer": 0,
+    "why": "A slippery road warning means you must reduce speed and drive carefully."
+  },
+  {
+    "id": "img_traffic_light_001",
+    "module": "signs",
+    "image": "trafficlight",
+    "q": "Look at the sign. What is ahead?",
+    "options": [
+      "Traffic signals ahead",
+      "A railway crossing",
+      "No stopping zone",
+      "A hospital"
+    ],
+    "answer": 0,
+    "why": "This warning sign tells you there are traffic lights ahead."
+  },
+  {
+    "id": "img_rail_001",
+    "module": "signs",
+    "image": "railway",
+    "q": "Look at the sign. What should you watch for?",
+    "options": [
+      "A railway crossing",
+      "A traffic circle",
+      "A pedestrian bridge",
+      "A parking area"
+    ],
+    "answer": 0,
+    "why": "At railway crossings, slow down, look and listen, and obey signals."
+  },
+  {
+    "id": "img_roundabout_001",
+    "module": "signs",
+    "image": "roundabout",
+    "q": "Look at the sign. What is ahead?",
+    "options": [
+      "A traffic circle or roundabout",
+      "A tunnel",
+      "A speed hump only",
+      "No right turn"
+    ],
+    "answer": 0,
+    "why": "A roundabout sign warns you that a traffic circle is ahead."
+  },
+  {
+    "id": "img_no_parking_001",
+    "module": "signs",
+    "image": "noparking",
+    "q": "Look at the sign. What does it mean?",
+    "options": [
+      "No parking",
+      "No stopping at all times",
+      "Parking for trucks only",
+      "Taxi rank"
+    ],
+    "answer": 0,
+    "why": "No Parking means you may not park where the sign applies."
+  },
+  {
+    "id": "img_no_stopping_001",
+    "module": "signs",
+    "image": "nostopping",
+    "q": "Look at the sign. What does it mean?",
+    "options": [
+      "No stopping except when required by law or emergency",
+      "Parking is allowed",
+      "Stop here for passengers",
+      "Loading zone"
+    ],
+    "answer": 0,
+    "why": "No Stopping is stricter than No Parking."
+  },
+  {
+    "id": "img_stop_line_001",
+    "module": "markings",
+    "image": "stopline",
+    "q": "Look at the road marking. What must you do?",
+    "options": [
+      "Stop before or at the stop line",
+      "Stop after the line",
+      "Ignore the line",
+      "Park on the line"
+    ],
+    "answer": 0,
+    "why": "You must stop before or at the stop line."
+  },
+  {
+    "id": "img_solid_line_001",
+    "module": "markings",
+    "image": "solidline",
+    "q": "Look at the road marking. What does the solid line mean?",
+    "options": [
+      "Do not cross where it is prohibited or unsafe",
+      "Always overtake",
+      "Pedestrians only",
+      "Parking lane"
+    ],
+    "answer": 0,
+    "why": "A solid line restricts crossing or overtaking."
+  },
+  {
+    "id": "img_broken_line_001",
+    "module": "markings",
+    "image": "brokenline",
+    "q": "Look at the road marking. What may you do?",
+    "options": [
+      "Change lanes only when it is safe and legal",
+      "Park on the line",
+      "Ignore all traffic",
+      "Drive on the wrong side"
+    ],
+    "answer": 0,
+    "why": "A broken line may be crossed if it is safe and legal."
+  },
+  {
+    "id": "img_left_arrow_001",
+    "module": "markings",
+    "image": "leftarrow",
+    "q": "Look at the road marking. What must you do from this lane?",
+    "options": [
+      "Turn left",
+      "Turn right",
+      "Make a U-turn",
+      "Stop and park"
+    ],
+    "answer": 0,
+    "why": "Lane arrows show the direction you must follow from that lane."
+  },
+  {
+    "id": "img_ped_crossing_001",
+    "module": "markings",
+    "image": "pedcrossing",
+    "q": "Look at the road marking. What is it?",
+    "options": [
+      "A pedestrian crossing",
+      "A racing line",
+      "Truck parking",
+      "A no-road area"
+    ],
+    "answer": 0,
+    "why": "Pedestrian crossing markings show where pedestrians may cross."
   }
 ];
 
@@ -1409,6 +1690,34 @@ function load(){
 }
 function setState(p){ state={...state,...p}; save(); render(); }
 function esc(v){ return String(v ?? "").replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m])); }
+
+function imageHTML(q){
+  if(!q.image) return "";
+  const signs = {
+    stop:`<svg viewBox="0 0 220 160"><polygon points="80,10 140,10 190,60 190,100 140,150 80,150 30,100 30,60" fill="#dc2626" stroke="#991b1b" stroke-width="6"/><text x="110" y="92" text-anchor="middle" font-size="34" font-weight="900" fill="white">STOP</text></svg>`,
+    yield:`<svg viewBox="0 0 220 160"><polygon points="110,145 25,20 195,20" fill="white" stroke="#dc2626" stroke-width="12"/><text x="110" y="72" text-anchor="middle" font-size="18" font-weight="900" fill="#111827">YIELD</text></svg>`,
+    noentry:`<svg viewBox="0 0 220 160"><circle cx="110" cy="80" r="58" fill="#dc2626"/><rect x="62" y="68" width="96" height="24" rx="8" fill="white"/></svg>`,
+    speed60:`<svg viewBox="0 0 220 160"><circle cx="110" cy="80" r="60" fill="white" stroke="#dc2626" stroke-width="10"/><text x="110" y="98" text-anchor="middle" font-size="52" font-weight="900" fill="#111827">60</text></svg>`,
+    nouturn:`<svg viewBox="0 0 220 160"><circle cx="110" cy="80" r="60" fill="white" stroke="#dc2626" stroke-width="10"/><path d="M80 112 C80 72 118 70 118 70 L118 45 L152 84 L118 123 L118 96 C100 96 98 102 98 112" fill="none" stroke="#111827" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/><line x1="65" y1="35" x2="155" y2="125" stroke="#dc2626" stroke-width="12"/></svg>`,
+    keepleft:`<svg viewBox="0 0 220 160"><circle cx="110" cy="80" r="60" fill="#2563eb"/><path d="M125 38 L80 80 L125 122" fill="none" stroke="white" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    oneway:`<svg viewBox="0 0 220 160"><rect x="25" y="45" width="170" height="70" rx="8" fill="#2563eb"/><path d="M65 80 H145" stroke="white" stroke-width="16" stroke-linecap="round"/><path d="M132 50 L165 80 L132 110" fill="none" stroke="white" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    pedestrian:`<svg viewBox="0 0 220 160"><polygon points="110,10 200,80 110,150 20,80" fill="#facc15" stroke="#111827" stroke-width="5"/><circle cx="110" cy="55" r="11" fill="#111827"/><path d="M110 68 L98 100 L82 125 M110 68 L130 98 L145 125 M105 82 L85 85 M115 82 L138 78" stroke="#111827" stroke-width="8" stroke-linecap="round"/></svg>`,
+    children:`<svg viewBox="0 0 220 160"><polygon points="110,10 200,80 110,150 20,80" fill="#facc15" stroke="#111827" stroke-width="5"/><circle cx="92" cy="58" r="9" fill="#111827"/><circle cx="128" cy="58" r="9" fill="#111827"/><path d="M92 70 L82 108 M92 70 L105 104 M128 70 L118 108 M128 70 L142 104 M72 85 H145" stroke="#111827" stroke-width="7" stroke-linecap="round"/></svg>`,
+    slippery:`<svg viewBox="0 0 220 160"><polygon points="110,10 200,80 110,150 20,80" fill="#facc15" stroke="#111827" stroke-width="5"/><path d="M70 60 H150 L135 90 H85 Z" fill="#111827"/><path d="M75 118 C95 95 115 140 135 118 M70 98 C90 78 110 120 130 98" fill="none" stroke="#111827" stroke-width="8" stroke-linecap="round"/></svg>`,
+    trafficlight:`<svg viewBox="0 0 220 160"><polygon points="110,10 200,80 110,150 20,80" fill="#facc15" stroke="#111827" stroke-width="5"/><rect x="88" y="38" width="44" height="86" rx="10" fill="#111827"/><circle cx="110" cy="58" r="9" fill="#ef4444"/><circle cx="110" cy="81" r="9" fill="#facc15"/><circle cx="110" cy="104" r="9" fill="#22c55e"/></svg>`,
+    railway:`<svg viewBox="0 0 220 160"><polygon points="110,10 200,80 110,150 20,80" fill="#facc15" stroke="#111827" stroke-width="5"/><path d="M70 120 L98 45 H122 L150 120 M88 72 H132 M80 96 H140" stroke="#111827" stroke-width="8" stroke-linecap="round"/></svg>`,
+    roundabout:`<svg viewBox="0 0 220 160"><circle cx="110" cy="80" r="60" fill="#2563eb"/><path d="M110 42 C140 42 158 65 150 92 M150 92 L168 82 M150 92 L145 72 M110 118 C80 118 62 95 70 68 M70 68 L52 78 M70 68 L75 88" fill="none" stroke="white" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    noparking:`<svg viewBox="0 0 220 160"><circle cx="110" cy="80" r="60" fill="white" stroke="#dc2626" stroke-width="10"/><text x="110" y="100" text-anchor="middle" font-size="58" font-weight="900" fill="#2563eb">P</text><line x1="65" y1="35" x2="155" y2="125" stroke="#dc2626" stroke-width="12"/></svg>`,
+    nostopping:`<svg viewBox="0 0 220 160"><circle cx="110" cy="80" r="60" fill="#2563eb" stroke="#dc2626" stroke-width="10"/><line x1="65" y1="35" x2="155" y2="125" stroke="#dc2626" stroke-width="12"/><line x1="155" y1="35" x2="65" y2="125" stroke="#dc2626" stroke-width="12"/></svg>`,
+    stopline:`<svg viewBox="0 0 220 160"><rect width="220" height="160" fill="#475569"/><line x1="30" y1="80" x2="190" y2="80" stroke="white" stroke-width="16"/><text x="110" y="55" text-anchor="middle" font-size="22" font-weight="900" fill="white">STOP LINE</text></svg>`,
+    solidline:`<svg viewBox="0 0 220 160"><rect width="220" height="160" fill="#475569"/><line x1="110" y1="15" x2="110" y2="145" stroke="white" stroke-width="12"/></svg>`,
+    brokenline:`<svg viewBox="0 0 220 160"><rect width="220" height="160" fill="#475569"/><line x1="110" y1="15" x2="110" y2="45" stroke="white" stroke-width="12"/><line x1="110" y1="65" x2="110" y2="95" stroke="white" stroke-width="12"/><line x1="110" y1="115" x2="110" y2="145" stroke="white" stroke-width="12"/></svg>`,
+    leftarrow:`<svg viewBox="0 0 220 160"><rect width="220" height="160" fill="#475569"/><path d="M145 80 H70 M95 48 L65 80 L95 112" fill="none" stroke="white" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    pedcrossing:`<svg viewBox="0 0 220 160"><rect width="220" height="160" fill="#475569"/><g fill="white"><rect x="35" y="28" width="22" height="104"/><rect x="72" y="28" width="22" height="104"/><rect x="109" y="28" width="22" height="104"/><rect x="146" y="28" width="22" height="104"/></g></svg>`
+  };
+  return `<div class="qImage">${signs[q.image] || ""}</div>`;
+}
+
 function fmtTime(seconds){ const m=Math.floor(seconds/60); const s=seconds%60; return `${m}:${String(s).padStart(2,"0")}`; }
 function filteredQuestions(){ return state.quizMode==="all" ? questions : questions.filter(q=>q.module===state.quizMode); }
 function examQuestions(){ return (state.examSet && state.examSet.length ? state.examSet : questions.slice(0,64)); }
@@ -1523,7 +1832,7 @@ function studyHTML(){
 }
 function questionHTML(q,i){
   const key=`${state.quizMode}-${i}`; const chosen=state.answers[key]; const reveal=state.showAnswers||state.parentMode;
-  return `<div class="questionBox"><b>${i+1}. ${esc(q.q)}</b><div class="optionGrid" style="margin-top:12px">
+  return `<div class="questionBox">${imageHTML(q)}<b>${i+1}. ${esc(q.q)}</b><div class="optionGrid" style="margin-top:12px">
     ${q.options.map((o,oi)=>{
       let cls="optionBtn";
       if(chosen===oi && !reveal) cls+=" selected";
@@ -1542,14 +1851,14 @@ function examHTML(){
     ${!state.examStarted?`<div class="note" style="margin-top:14px"><b>Instructions:</b><br>Read each question carefully. Choose only one answer. When you are done, click Finish to see your score.</div>`:""}
     ${state.examStarted && q && !state.examFinished ? `<div class="grid" style="margin-top:14px">
       <div class="examHeader"><b>Question ${state.examIndex+1} of ${eq.length}</b><b>Answered: ${Object.keys(state.examAnswers).length}/${eq.length}</b><div class="timer">${fmtTime(state.examSecondsLeft)}</div></div>
-      <div class="questionBox"><h2>${esc(q.q)}</h2><div class="optionGrid" style="margin-top:14px">${q.options.map((o,oi)=>`<button class="optionBtn ${state.examAnswers[state.examIndex]===oi?'selected':''}" onclick="chooseExam(${oi})">${String.fromCharCode(65+oi)}. ${esc(o)}</button>`).join("")}</div></div>
+      <div class="questionBox">${imageHTML(q)}<h2>${esc(q.q)}</h2><div class="optionGrid" style="margin-top:14px">${q.options.map((o,oi)=>`<button class="optionBtn ${state.examAnswers[state.examIndex]===oi?'selected':''}" onclick="chooseExam(${oi})">${String.fromCharCode(65+oi)}. ${esc(o)}</button>`).join("")}</div></div>
       <div class="row space"><button class="btn secondary" ${state.examIndex===0?'disabled':''} onclick="setState({examIndex:Math.max(0,state.examIndex-1)})">Previous</button>${state.examIndex<eq.length-1?`<button class="btn" onclick="setState({examIndex:Math.min(${eq.length-1},state.examIndex+1)})">Next</button>`:`<button class="btn" onclick="finishExam()">Finish Exam</button>`}</div>
     </div>`:""}
     ${state.examStarted && state.examFinished ? `<div class="grid" style="margin-top:14px">
       <div class="card ${passed?'resultGood':'resultBad'}" style="text-align:center"><div style="font-size:42px;font-weight:900">${score}/${eq.length}</div><h2>${pct}% — ${passed?"PASS":"TRY AGAIN"}</h2><p>K53 practice score. Each exam randomly selects 64 questions from the larger practice bank.</p></div>
       ${eq.map((qq,i)=>{
         const chosen=state.examAnswers[i]; const correct=chosen===qq.answer;
-        return `<div class="questionBox ${correct?'resultGood':'resultBad'}"><b>${i+1}. ${esc(qq.q)}</b><div>Your answer: ${chosen===undefined?"None":`${String.fromCharCode(65+chosen)}. ${esc(qq.options[chosen])}`}</div>${!correct?`<div><b>Correct answer:</b> ${String.fromCharCode(65+qq.answer)}. ${esc(qq.options[qq.answer])}</div>`:""}<div class="muted">${esc(qq.why)}</div></div>`;
+        return `<div class="questionBox ${correct?'resultGood':'resultBad'}">${imageHTML(qq)}<b>${i+1}. ${esc(qq.q)}</b><div>Your answer: ${chosen===undefined?"None":`${String.fromCharCode(65+chosen)}. ${esc(qq.options[chosen])}`}</div>${!correct?`<div><b>Correct answer:</b> ${String.fromCharCode(65+qq.answer)}. ${esc(qq.options[qq.answer])}</div>`:""}<div class="muted">${esc(qq.why)}</div></div>`;
       }).join("")}
     </div>`:""}
   </div></div>`;
