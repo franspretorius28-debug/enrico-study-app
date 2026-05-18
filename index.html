@@ -27,6 +27,10 @@
     .btn.secondary{background:white;color:var(--ink);border:1px solid var(--line)}
     .btn.ghost{background:#f1f5f9;color:var(--ink)}
     .btn:disabled{opacity:.45;cursor:not-allowed}
+    .tabBtn{border:1px solid var(--line);background:white;border-radius:999px;padding:10px 14px;font-weight:800;cursor:pointer}
+    .tabBtn.active{background:var(--dark);color:white;border-color:var(--dark)}
+    .smallStat{border:1px solid var(--line);border-radius:20px;background:white;padding:12px;text-align:center}
+    .smallStat b{display:block;font-size:22px}
     .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
     .space{justify-content:space-between}
     .card{background:white;border:1px solid var(--line);border-radius:28px;padding:18px;box-shadow:0 6px 18px rgba(15,23,42,.05)}
@@ -3486,7 +3490,7 @@ const questions = [
 
 let state = {
   student:null, screen:"login", selectedSubject:"k53", selectedModule:"overview",
-  quizMode:"all", answers:{}, showAnswers:false, parentMode:false,
+  quizMode:"all", answers:{}, showAnswers:false, parentMode:false, k53Tab:"study", scoreHistory:[], wrongBank:{},
   examStarted:false, examFinished:false, examIndex:0, examAnswers:{}, examSecondsLeft:30*60, examSet:null
 };
 let timer = null;
@@ -3540,7 +3544,7 @@ function startExam(){
   setState({screen:"exam", examStarted:true, examFinished:false, examIndex:0, examAnswers:{}, examSecondsLeft:30*60, examSet:shuffleQuestions(questions).slice(0,64)});
   startTimer();
 }
-function finishExam(){ setState({examFinished:true}); stopTimer(); }
+function finishExam(){ if(!state.examFinished){ state.examFinished=true; saveExamResult(); save(); } stopTimer(); render(); }
 function startTimer(){
   stopTimer();
   timer=setInterval(()=>{
@@ -3565,6 +3569,101 @@ function logout(){
 function choosePractice(i,o){ state.answers[`${state.quizMode}-${i}`]=o; save(); render(); }
 function resetPractice(){ filteredQuestions().forEach((_,i)=>delete state.answers[`${state.quizMode}-${i}`]); setState({showAnswers:false}); }
 function chooseExam(o){ state.examAnswers[state.examIndex]=o; save(); render(); }
+
+
+function saveExamResult(){
+  const eq = examQuestions();
+  const score = examScore();
+  const pct = eq.length ? Math.round(score / eq.length * 100) : 0;
+  const wrong = [];
+  eq.forEach((q,i)=>{
+    if(state.examAnswers[i] !== q.answer){
+      const key = q.id || q.q;
+      state.wrongBank[key] = q;
+      wrong.push(key);
+    }
+  });
+  const result = {
+    date: new Date().toLocaleString(),
+    score,
+    total: eq.length,
+    percent: pct,
+    passed: pct >= 75,
+    wrong: wrong.length
+  };
+  state.scoreHistory = [result, ...(state.scoreHistory || [])].slice(0, 20);
+  save();
+}
+function wrongQuestions(){
+  return Object.values(state.wrongBank || {});
+}
+function clearWrongQuestions(){
+  state.wrongBank = {};
+  save();
+  render();
+}
+function clearScores(){
+  state.scoreHistory = [];
+  save();
+  render();
+}
+function k53DashboardHTML(){
+  const total = questions.length;
+  const wrong = wrongQuestions().length;
+  const scores = state.scoreHistory || [];
+  const best = scores.length ? Math.max(...scores.map(s=>s.percent||0)) : 0;
+  const latest = scores.length ? scores[0].percent : 0;
+  return `<div class="grid">
+    <div class="card">
+      <div class="row space">
+        <div><h2>🚗 K53 Final Prep</h2><p class="muted">Everything for K53 in one place: study, practice, exam mode, wrong questions and results.</p></div>
+        <span class="pill active">Active</span>
+      </div>
+      <div class="grid subjects" style="margin-top:14px">
+        <div class="smallStat"><b>${total}</b><span class="muted">Question bank</span></div>
+        <div class="smallStat"><b>${wrong}</b><span class="muted">Wrong questions saved</span></div>
+        <div class="smallStat"><b>${best}%</b><span class="muted">Best score</span></div>
+      </div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn" onclick="startExam()">Start 64 Question Exam</button>
+        <button class="btn secondary" onclick="state.quizMode='all';state.k53Tab='practice';save();render()">Practice Mixed Questions</button>
+        <button class="btn secondary" onclick="state.k53Tab='wrong';save();render()">Revise Wrong Questions</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>✅ K53 readiness checklist</h2>
+      <div class="grid subjects" style="margin-top:14px">
+        <div class="note"><b>1. Road Signs</b><br>Know regulatory, warning, information and guidance signs.</div>
+        <div class="note"><b>2. Road Markings</b><br>Know solid lines, broken lines, arrows, stop lines and pedestrian crossings.</div>
+        <div class="note"><b>3. Rules of the Road</b><br>Know speed limits, traffic lights, overtaking, right of way and parking.</div>
+        <div class="note"><b>4. Vehicle Controls</b><br>Know brakes, accelerator, clutch, handbrake, mirrors and indicators.</div>
+        <div class="note"><b>5. Defensive Driving</b><br>Know following distance, blind spots, hazards and safe reactions.</div>
+        <div class="note"><b>6. Exam Target</b><br>Write until he gets 85%+ three times.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row space">
+        <div><h2>📊 Score History</h2><p class="muted">Latest score: ${scores.length ? latest + "%" : "No exams yet"}</p></div>
+        <button class="btn secondary" onclick="clearScores()">Clear Scores</button>
+      </div>
+      <div class="grid" style="margin-top:12px">
+        ${scores.length ? scores.map(s=>`<div class="note row space"><span>${s.date}</span><b>${s.score}/${s.total} (${s.percent}%) ${s.passed ? "PASS" : "TRY AGAIN"}</b><span class="muted">Wrong: ${s.wrong}</span></div>`).join("") : `<div class="note">No exam scores saved yet. Start an exam to save results.</div>`}
+      </div>
+    </div>
+  </div>`;
+}
+function wrongPracticeHTML(){
+  const wq = wrongQuestions();
+  if(!wq.length){
+    return `<div class="card"><h2>🎯 Wrong Questions</h2><div class="note" style="margin-top:12px">No wrong questions saved yet. Let Enrico write an exam first, then wrong answers will appear here.</div></div>`;
+  }
+  return `<div class="card">
+    <div class="row space"><div><h2>🎯 Wrong Questions</h2><p class="muted">Practise only the questions he got wrong.</p></div><button class="btn secondary" onclick="clearWrongQuestions()">Clear Wrong Questions</button></div>
+    <div class="grid" style="margin-top:14px">${wq.map((q,i)=>questionHTML(q,i)).join("")}</div>
+  </div>`;
+}
 
 function loginHTML(){
   return `<div class="center"><div class="login">
@@ -3610,7 +3709,7 @@ function studyHTML(){
   const fq = filteredQuestions();
   const score = quizScore(); const ans = answeredCount();
   const pct = fq.length?Math.round(score/fq.length*100):0;
-  return `${topbar()}<div class="wrap grid two">
+  return `${topbar()}<div class="wrap"><div class="row" style="margin-bottom:12px"><button class="tabBtn ${state.k53Tab==='home'?'active':''}" onclick="state.k53Tab='home';save();render()">K53 Home</button><button class="tabBtn ${state.k53Tab==='study'?'active':''}" onclick="state.k53Tab='study';save();render()">Study</button><button class="tabBtn ${state.k53Tab==='practice'?'active':''}" onclick="state.k53Tab='practice';save();render()">Practice</button><button class="tabBtn ${state.k53Tab==='wrong'?'active':''}" onclick="state.k53Tab='wrong';save();render()">Wrong Questions</button><button class="tabBtn" onclick="startExam()">Exam Mode</button></div>${state.k53Tab==='home' ? k53DashboardHTML() : state.k53Tab==='wrong' ? wrongPracticeHTML() : `<div class="grid two">
     <div class="grid">
       <div class="card"><h2>📚 K53 Modules</h2><div style="height:12px"></div>
         ${modules.map(m=>`<button class="moduleBtn ${m.id===state.selectedModule?'active':''}" onclick="setState({selectedModule:'${m.id}'})"><b>${esc(m.title)}</b><br><span class="muted">${esc(m.badge)}</span></button>`).join("")}
@@ -3655,7 +3754,7 @@ function questionHTML(q,i){
 function examHTML(){
   const eq=examQuestions(); const q=eq[state.examIndex]; const score=examScore(); const pct=eq.length?Math.round(score/eq.length*100):0; const passed=pct>=75;
   return `${topbar()}<div class="wrap"><div class="card">
-    <div class="row space"><div><h2>🏆 K53 Exam Mode</h2><p class="muted">One question at a time, timer, finish button, and score.</p></div>
+    <div class="row space"><div><h2>🏆 K53 Exam Mode</h2><p class="muted">One question at a time, timer, finish button, score and saved wrong questions.</p></div>
       <div class="row">${!state.examStarted?`<button class="btn" onclick="startExam()">Start Exam</button>`:""}${state.examStarted&&!state.examFinished?`<button class="btn secondary" onclick="finishExam()">Finish</button>`:""}</div>
     </div>
     ${!state.examStarted?`<div class="note" style="margin-top:14px"><b>Instructions:</b><br>Read each question carefully. Choose only one answer. When you are done, click Finish to see your score.</div>`:""}
