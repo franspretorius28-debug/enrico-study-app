@@ -1,0 +1,1567 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Enrico Study App</title>
+  <meta name="theme-color" content="#0f172a" />
+  <style>
+    :root{
+      --bg:#f8fafc; --card:#ffffff; --ink:#0f172a; --muted:#64748b;
+      --line:#e2e8f0; --dark:#0f172a; --good:#dcfce7; --bad:#fee2e2;
+      --goodLine:#22c55e; --badLine:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    button,input,select{font:inherit}
+    .wrap{max-width:1100px;margin:0 auto;padding:14px}
+    .center{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
+    .login{width:100%;max-width:430px;background:white;border-radius:28px;padding:24px;box-shadow:0 20px 50px rgba(15,23,42,.18)}
+    .logo{width:68px;height:68px;border-radius:24px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:36px}
+    h1,h2,h3{margin:0}
+    .muted{color:var(--muted)}
+    .field{display:block;margin:12px 0 6px;font-weight:700;font-size:14px}
+    input,select{width:100%;border:1px solid var(--line);border-radius:18px;padding:13px 14px;background:white;outline:none}
+    input:focus,select:focus{border-color:#0f172a}
+    .btn{border:0;border-radius:18px;padding:12px 16px;background:var(--dark);color:#fff;font-weight:800;cursor:pointer}
+    .btn.secondary{background:white;color:var(--ink);border:1px solid var(--line)}
+    .btn.ghost{background:#f1f5f9;color:var(--ink)}
+    .btn:disabled{opacity:.45;cursor:not-allowed}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .space{justify-content:space-between}
+    .card{background:white;border:1px solid var(--line);border-radius:28px;padding:18px;box-shadow:0 6px 18px rgba(15,23,42,.05)}
+    .topbar{position:sticky;top:0;background:rgba(248,250,252,.92);backdrop-filter:blur(10px);z-index:10;padding:10px 0}
+    .grid{display:grid;gap:14px}
+    .subjects{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .two{grid-template-columns:320px 1fr}
+    .moduleBtn,.subjectBtn,.optionBtn{width:100%;text-align:left;border:1px solid var(--line);background:white;border-radius:22px;padding:14px;cursor:pointer}
+    .moduleBtn.active,.subjectBtn.active,.optionBtn.selected{background:var(--dark);color:white;border-color:var(--dark)}
+    .pill{display:inline-flex;border-radius:999px;padding:5px 10px;background:#f1f5f9;font-weight:800;font-size:12px}
+    .pill.active{background:#dcfce7;color:#166534}
+    .progress{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden}
+    .progress>div{height:100%;background:#0f172a}
+    .questionBox{border:1px solid var(--line);border-radius:24px;background:white;padding:16px}
+    .optionGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .optionBtn.correct{background:var(--good);border-color:var(--goodLine);color:#14532d}
+    .optionBtn.wrong{background:var(--bad);border-color:var(--badLine);color:#7f1d1d}
+    .examHeader{background:#0f172a;color:white;border-radius:24px;padding:14px;display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+    .timer{background:white;color:#0f172a;border-radius:18px;padding:9px 14px;font-weight:900}
+    .resultGood{background:var(--good)} .resultBad{background:var(--bad)}
+    .hidden{display:none!important}
+    .note{background:#f8fafc;border:1px solid var(--line);border-radius:22px;padding:14px}
+    @media(max-width:820px){
+      .subjects,.two,.optionGrid{grid-template-columns:1fr}
+      .wrap{padding:10px}
+      .card{padding:14px;border-radius:22px}
+      .topbar .row{align-items:stretch}
+      .topbar .btn{flex:1}
+      h1{font-size:24px}
+      h2{font-size:21px}
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+<script>
+const STUDENT_NAME = "Enrico";
+const STUDENT_PIN = "1234";
+
+const subjects = [
+  {id:"k53", title:"K53 Learner’s Licence", subtitle:"Road signs, rules, markings, and controls", status:"Active", icon:"🚗"},
+  {id:"cat", title:"CAT / Computers", subtitle:"Next subject will be added here", status:"Coming soon", icon:"💻"},
+  {id:"next", title:"Next Test Subject", subtitle:"Upload the book and answers, then we add it here", status:"Coming soon", icon:"➕"}
+];
+
+const modules = [
+  {id:"overview", title:"1. Learner’s Test Overview", badge:"Start here", notes:[
+    "The K53 learner’s test checks whether you understand road signs, rules of the road, and vehicle controls.",
+    "Read every question carefully. Many mistakes happen because the question is not read properly.",
+    "Practise one section at a time, then write mixed tests like the real exam."
+  ]},
+  {id:"controls", title:"2. Controls of the Vehicle", badge:"Controls", notes:[
+    "You must know which control is used for turning, stopping, speed, gears, and parking.",
+    "Car and motorcycle controls may differ, but the functions are similar.",
+    "The correct order is important: observe, signal, control speed, and move safely."
+  ]},
+  {id:"defensive", title:"3. Defensive Driving", badge:"Safe driving", notes:[
+    "K53 expects you to notice danger early and react safely.",
+    "Use the sequence: Search, Identify, Predict, Decide, Execute.",
+    "Keep a safe following distance and check mirrors and blind spots regularly."
+  ]},
+  {id:"signs", title:"4–8. Road Signs", badge:"Road signs", notes:[
+    "Regulatory signs tell you what you must or must not do.",
+    "Warning signs warn you about danger ahead.",
+    "Information and guidance signs help you with routes, places, and directions."
+  ]},
+  {id:"markings", title:"9. Road Surface Markings", badge:"Road markings", notes:[
+    "Road markings show lanes, stop lines, no-overtaking areas, and special lanes.",
+    "Yellow lines, white lines, and arrows each have a specific meaning.",
+    "Do not cross solid lines when it is prohibited or unsafe."
+  ]},
+  {id:"rules", title:"10. Rules of the Road", badge:"Rules", notes:[
+    "Know speed limits, parking rules, stop rules, traffic circles, and overtaking.",
+    "Safety and right of way are major parts of the test.",
+    "Rules apply to cars, motorcycles, and other road users."
+  ]}
+];
+
+const questions = [
+  {
+    "module": "controls",
+    "q": "Which control is mainly used to increase the speed of the vehicle?",
+    "options": [
+      "Accelerator",
+      "Brakes",
+      "Indicator",
+      "Mirror"
+    ],
+    "answer": 0,
+    "why": "The accelerator increases engine power and speed."
+  },
+  {
+    "module": "controls",
+    "q": "Which control is mainly used to reduce speed or stop the vehicle?",
+    "options": [
+      "Accelerator",
+      "Brakes",
+      "Indicator",
+      "Mirror"
+    ],
+    "answer": 1,
+    "why": "The brakes slow the vehicle down or stop it."
+  },
+  {
+    "module": "controls",
+    "q": "What should you do before moving off from the side of the road?",
+    "options": [
+      "Check mirrors and blind spot, signal if necessary, then move when safe",
+      "Move immediately",
+      "Hoot and move",
+      "Only check the radio"
+    ],
+    "answer": 0,
+    "why": "You must observe properly and make sure it is safe."
+  },
+  {
+    "module": "controls",
+    "q": "Which control shows other road users that you intend to turn or change lanes?",
+    "options": [
+      "Indicator",
+      "Clutch",
+      "Handbrake",
+      "Wipers"
+    ],
+    "answer": 0,
+    "why": "Indicators warn other road users of your intention."
+  },
+  {
+    "module": "controls",
+    "q": "What is the clutch mainly used for in a manual vehicle?",
+    "options": [
+      "Changing gears smoothly",
+      "Switching on headlights",
+      "Hooting",
+      "Cleaning the windscreen"
+    ],
+    "answer": 0,
+    "why": "The clutch is used when changing gears."
+  },
+  {
+    "module": "controls",
+    "q": "What is the handbrake mainly used for?",
+    "options": [
+      "Keeping the vehicle stationary when parked",
+      "Driving faster",
+      "Changing lanes",
+      "Steering"
+    ],
+    "answer": 0,
+    "why": "The handbrake helps keep the vehicle from moving when parked."
+  },
+  {
+    "module": "controls",
+    "q": "What should you use to clear rain from the windscreen?",
+    "options": [
+      "Windscreen wipers",
+      "Hazard lights",
+      "Horn",
+      "Gear lever"
+    ],
+    "answer": 0,
+    "why": "Wipers improve visibility in rain."
+  },
+  {
+    "module": "controls",
+    "q": "When should headlights be used?",
+    "options": [
+      "When visibility is poor or at night",
+      "Only when parking",
+      "Only on gravel roads",
+      "Never in town"
+    ],
+    "answer": 0,
+    "why": "Headlights help you see and be seen."
+  },
+  {
+    "module": "controls",
+    "q": "What is the horn mainly used for?",
+    "options": [
+      "Warning other road users of danger",
+      "Greeting friends",
+      "Hurrying traffic",
+      "Replacing indicators"
+    ],
+    "answer": 0,
+    "why": "The horn should be used as a warning."
+  },
+  {
+    "module": "controls",
+    "q": "What must you check before reversing?",
+    "options": [
+      "Mirrors, blind spots, and the area behind the vehicle",
+      "Only the fuel gauge",
+      "Only the radio",
+      "Nothing if reversing slowly"
+    ],
+    "answer": 0,
+    "why": "Reversing is unsafe if you do not check behind and around you."
+  },
+  {
+    "module": "controls",
+    "q": "What should you do if your windscreen is misted up?",
+    "options": [
+      "Clear it before driving",
+      "Drive with your head out the window",
+      "Ignore it",
+      "Speed up"
+    ],
+    "answer": 0,
+    "why": "You must have clear visibility."
+  },
+  {
+    "module": "controls",
+    "q": "Which control helps you steer the vehicle?",
+    "options": [
+      "Steering wheel or handlebars",
+      "Brake light",
+      "Number plate",
+      "Seat belt"
+    ],
+    "answer": 0,
+    "why": "The steering wheel or handlebars control direction."
+  },
+  {
+    "module": "controls",
+    "q": "Why adjust your seat and mirrors before driving?",
+    "options": [
+      "To drive comfortably and see properly",
+      "To make the car look nice",
+      "To save fuel only",
+      "To make the horn louder"
+    ],
+    "answer": 0,
+    "why": "Correct position improves control and observation."
+  },
+  {
+    "module": "controls",
+    "q": "What does the hazard warning switch do?",
+    "options": [
+      "Switches on all indicators to warn of danger",
+      "Makes the car faster",
+      "Locks the wheels",
+      "Changes gears"
+    ],
+    "answer": 0,
+    "why": "Hazards warn others of danger or obstruction."
+  },
+  {
+    "module": "controls",
+    "q": "When should hazard lights be used?",
+    "options": [
+      "When your vehicle is a hazard or emergency warning is needed",
+      "Every time you park normally",
+      "To thank another driver",
+      "Instead of braking"
+    ],
+    "answer": 0,
+    "why": "Hazard lights are for warning, not normal driving."
+  },
+  {
+    "module": "defensive",
+    "q": "What is defensive driving?",
+    "options": [
+      "Driving in a way that avoids danger and prevents collisions",
+      "Driving aggressively",
+      "Driving as fast as possible",
+      "Only looking forward"
+    ],
+    "answer": 0,
+    "why": "Defensive driving means anticipating hazards and acting safely."
+  },
+  {
+    "module": "defensive",
+    "q": "What should you do first when you see a possible hazard ahead?",
+    "options": [
+      "Search for and identify the hazard",
+      "Accelerate",
+      "Close your eyes",
+      "Brake without checking"
+    ],
+    "answer": 0,
+    "why": "You must first observe and understand the hazard."
+  },
+  {
+    "module": "defensive",
+    "q": "Why must you keep a safe following distance?",
+    "options": [
+      "To have time to react and stop safely",
+      "To block other cars",
+      "To drive faster",
+      "To save tyres"
+    ],
+    "answer": 0,
+    "why": "Safe following distance gives time and space to react."
+  },
+  {
+    "module": "defensive",
+    "q": "When should you increase following distance?",
+    "options": [
+      "In rain, fog, heavy traffic, or poor road conditions",
+      "Only on sunny days",
+      "When parked",
+      "Never"
+    ],
+    "answer": 0,
+    "why": "Poor conditions increase stopping distance and risk."
+  },
+  {
+    "module": "defensive",
+    "q": "What is a blind spot?",
+    "options": [
+      "An area not easily seen in mirrors",
+      "A dirty windscreen",
+      "A dark road",
+      "A broken headlight"
+    ],
+    "answer": 0,
+    "why": "Blind spots are areas mirrors may not show."
+  },
+  {
+    "module": "defensive",
+    "q": "When should you check your blind spot?",
+    "options": [
+      "Before turning, changing lanes, or moving off",
+      "Only after a crash",
+      "Only in parking lots",
+      "Never"
+    ],
+    "answer": 0,
+    "why": "Blind spot checks help avoid vehicles or people beside you."
+  },
+  {
+    "module": "defensive",
+    "q": "What should you do if a driver behind you follows too closely?",
+    "options": [
+      "Keep calm and allow them to pass safely if possible",
+      "Brake hard to scare them",
+      "Speed dangerously",
+      "Wave angrily"
+    ],
+    "answer": 0,
+    "why": "Do not create more danger; stay calm and safe."
+  },
+  {
+    "module": "defensive",
+    "q": "What should you do near children at the roadside?",
+    "options": [
+      "Slow down and be prepared to stop",
+      "Hoot and speed up",
+      "Ignore them",
+      "Drive closer"
+    ],
+    "answer": 0,
+    "why": "Children can act unpredictably."
+  },
+  {
+    "module": "defensive",
+    "q": "What should you do in fog?",
+    "options": [
+      "Reduce speed, use appropriate lights, and increase following distance",
+      "Use bright lights only and speed up",
+      "Drive without lights",
+      "Follow closely"
+    ],
+    "answer": 0,
+    "why": "Fog reduces visibility."
+  },
+  {
+    "module": "defensive",
+    "q": "What should you do before changing lanes?",
+    "options": [
+      "Check mirrors, blind spot, signal, and move only when safe",
+      "Signal only after moving",
+      "Move quickly without checking",
+      "Hoot and force in"
+    ],
+    "answer": 0,
+    "why": "Safe lane changes require observation and signalling."
+  },
+  {
+    "module": "defensive",
+    "q": "Why scan far ahead while driving?",
+    "options": [
+      "To identify hazards early",
+      "To ignore nearby traffic",
+      "To drive faster",
+      "To avoid mirrors"
+    ],
+    "answer": 0,
+    "why": "Scanning ahead gives more time to react."
+  },
+  {
+    "module": "defensive",
+    "q": "What should you do if you are tired while driving?",
+    "options": [
+      "Stop and rest",
+      "Open a window and continue for hours",
+      "Drive faster",
+      "Drink alcohol"
+    ],
+    "answer": 0,
+    "why": "Tired driving is dangerous."
+  },
+  {
+    "module": "defensive",
+    "q": "What does driving according to conditions mean?",
+    "options": [
+      "Adjust speed and behaviour to weather, traffic, road and visibility",
+      "Always drive at the speed limit",
+      "Ignore weather",
+      "Drive only at night"
+    ],
+    "answer": 0,
+    "why": "The speed limit may still be too fast for poor conditions."
+  },
+  {
+    "module": "defensive",
+    "q": "What is the safest attitude when driving?",
+    "options": [
+      "Be patient, alert and considerate",
+      "Be impatient",
+      "Compete with other drivers",
+      "Ignore rules"
+    ],
+    "answer": 0,
+    "why": "A safe attitude prevents risky decisions."
+  },
+  {
+    "module": "signs",
+    "q": "What does a red STOP sign mean?",
+    "options": [
+      "Stop completely",
+      "Slow down only",
+      "Park here",
+      "Proceed without looking"
+    ],
+    "answer": 0,
+    "why": "At a STOP sign, stop completely and proceed only when safe."
+  },
+  {
+    "module": "signs",
+    "q": "What does a Yield/Give Way sign mean?",
+    "options": [
+      "Give way to traffic that has right of way",
+      "Always stop for one minute",
+      "Drive faster",
+      "Park here"
+    ],
+    "answer": 0,
+    "why": "Slow down and give way where required."
+  },
+  {
+    "module": "signs",
+    "q": "What does a No Entry sign mean?",
+    "options": [
+      "You may not enter that road or entrance",
+      "You may enter slowly",
+      "Parking allowed",
+      "One-way ahead"
+    ],
+    "answer": 0,
+    "why": "No Entry prohibits vehicles from entering."
+  },
+  {
+    "module": "signs",
+    "q": "What does a speed limit sign show?",
+    "options": [
+      "The maximum legal speed allowed",
+      "The minimum speed only",
+      "A suggested speed for racing",
+      "The distance to town"
+    ],
+    "answer": 0,
+    "why": "It shows the maximum speed allowed unless conditions require slower driving."
+  },
+  {
+    "module": "signs",
+    "q": "What does a one-way sign mean?",
+    "options": [
+      "Traffic may move only in the indicated direction",
+      "Two-way traffic starts",
+      "No vehicles allowed",
+      "Pedestrians only"
+    ],
+    "answer": 0,
+    "why": "One-way signs control traffic flow direction."
+  },
+  {
+    "module": "signs",
+    "q": "What does a No U-turn sign mean?",
+    "options": [
+      "You may not make a U-turn",
+      "You must make a U-turn",
+      "Only taxis may turn",
+      "Parking allowed"
+    ],
+    "answer": 0,
+    "why": "A No U-turn sign prohibits U-turns."
+  },
+  {
+    "module": "signs",
+    "q": "What does a No Parking sign mean?",
+    "options": [
+      "You may not park there",
+      "You may stop for hours",
+      "You may park if lights are on",
+      "Only trucks may park"
+    ],
+    "answer": 0,
+    "why": "Parking is prohibited where the sign applies."
+  },
+  {
+    "module": "signs",
+    "q": "What does a No Stopping sign mean?",
+    "options": [
+      "You may not stop there except in an emergency or when required by law",
+      "You may park there",
+      "You may load goods there",
+      "You may stop for shopping"
+    ],
+    "answer": 0,
+    "why": "No Stopping is stricter than No Parking."
+  },
+  {
+    "module": "signs",
+    "q": "What does a pedestrian crossing sign warn you about?",
+    "options": [
+      "Pedestrians may cross ahead",
+      "A fuel station ahead",
+      "A toll gate ahead",
+      "A hospital only"
+    ],
+    "answer": 0,
+    "why": "Be ready to slow down or stop for pedestrians."
+  },
+  {
+    "module": "signs",
+    "q": "What does a school/children warning sign mean?",
+    "options": [
+      "Children may be near or crossing the road",
+      "Only teachers may drive",
+      "No school nearby",
+      "Parking for buses only"
+    ],
+    "answer": 0,
+    "why": "Slow down and watch carefully for children."
+  },
+  {
+    "module": "signs",
+    "q": "What does a slippery road warning sign mean?",
+    "options": [
+      "The road may be slippery, especially when wet",
+      "The road is closed",
+      "No trucks allowed",
+      "Parking only"
+    ],
+    "answer": 0,
+    "why": "Reduce speed and drive carefully."
+  },
+  {
+    "module": "signs",
+    "q": "What does a sharp bend warning sign mean?",
+    "options": [
+      "A sharp bend is ahead",
+      "You must stop forever",
+      "No road ahead",
+      "Only motorcycles allowed"
+    ],
+    "answer": 0,
+    "why": "Slow down and prepare for the bend."
+  },
+  {
+    "module": "signs",
+    "q": "What does a road narrows sign mean?",
+    "options": [
+      "The road becomes narrower ahead",
+      "The road becomes wider",
+      "Parking starts",
+      "No vehicles allowed"
+    ],
+    "answer": 0,
+    "why": "Be ready to slow down and position safely."
+  },
+  {
+    "module": "signs",
+    "q": "What does a traffic signals ahead sign mean?",
+    "options": [
+      "Traffic lights are ahead",
+      "No lights allowed",
+      "Road closed",
+      "Hospital ahead"
+    ],
+    "answer": 0,
+    "why": "Be prepared to stop at traffic lights ahead."
+  },
+  {
+    "module": "signs",
+    "q": "What does a traffic circle warning sign mean?",
+    "options": [
+      "A traffic circle is ahead",
+      "A railway crossing only",
+      "A tunnel ahead",
+      "No turning allowed"
+    ],
+    "answer": 0,
+    "why": "Approach carefully and follow traffic circle rules."
+  },
+  {
+    "module": "signs",
+    "q": "What does a railway crossing warning sign mean?",
+    "options": [
+      "A railway crossing is ahead",
+      "Airport ahead",
+      "Pedestrian zone only",
+      "No trains ever"
+    ],
+    "answer": 0,
+    "why": "Slow down and look/listen for trains."
+  },
+  {
+    "module": "signs",
+    "q": "What does a roadworks sign mean?",
+    "options": [
+      "Roadworks or workers may be ahead",
+      "No workers allowed",
+      "Free parking",
+      "End of all rules"
+    ],
+    "answer": 0,
+    "why": "Slow down and obey temporary signs."
+  },
+  {
+    "module": "signs",
+    "q": "What does a keep left sign mean?",
+    "options": [
+      "You must keep left of the sign or obstruction",
+      "Drive on the right",
+      "Stop immediately",
+      "Make a U-turn"
+    ],
+    "answer": 0,
+    "why": "Mandatory direction signs must be obeyed."
+  },
+  {
+    "module": "signs",
+    "q": "What does a compulsory direction arrow mean?",
+    "options": [
+      "You must travel in the direction shown",
+      "You may choose any direction",
+      "Parking only",
+      "No vehicles"
+    ],
+    "answer": 0,
+    "why": "Compulsory signs tell you what you must do."
+  },
+  {
+    "module": "signs",
+    "q": "What does an information sign usually do?",
+    "options": [
+      "Gives useful information like services or destinations",
+      "Always prohibits an action",
+      "Always warns of danger",
+      "Cancels your licence"
+    ],
+    "answer": 0,
+    "why": "Information signs guide and inform road users."
+  },
+  {
+    "module": "markings",
+    "q": "What does a stop line at an intersection mean?",
+    "options": [
+      "Stop before or at the line",
+      "Stop after the line",
+      "Ignore the line",
+      "Park on the line"
+    ],
+    "answer": 0,
+    "why": "Stop before crossing the stop line."
+  },
+  {
+    "module": "markings",
+    "q": "What does a solid white line between lanes usually mean?",
+    "options": [
+      "Do not cross where prohibited or unsafe",
+      "Always overtake",
+      "Pedestrians only",
+      "Parking lane"
+    ],
+    "answer": 0,
+    "why": "Solid lines restrict movement between lanes."
+  },
+  {
+    "module": "markings",
+    "q": "What does a broken white line between lanes usually allow?",
+    "options": [
+      "Changing lanes when safe and legal",
+      "Parking in the road",
+      "Driving on the wrong side",
+      "Ignoring traffic"
+    ],
+    "answer": 0,
+    "why": "A broken line may be crossed if safe and legal."
+  },
+  {
+    "module": "markings",
+    "q": "What do arrows painted on the road show?",
+    "options": [
+      "The direction vehicles in that lane must follow",
+      "The nearest shop",
+      "The weather forecast",
+      "The fuel price"
+    ],
+    "answer": 0,
+    "why": "Lane arrows guide permitted direction."
+  },
+  {
+    "module": "markings",
+    "q": "What is the purpose of pedestrian crossing markings?",
+    "options": [
+      "To show where pedestrians may cross",
+      "To wash cars",
+      "To park trucks",
+      "To increase speed"
+    ],
+    "answer": 0,
+    "why": "Drivers must be alert for pedestrians."
+  },
+  {
+    "module": "markings",
+    "q": "What does a yellow line along the road edge often indicate?",
+    "options": [
+      "Stopping or parking restrictions may apply",
+      "The road is private",
+      "You must drive on it",
+      "Only bicycles may use it"
+    ],
+    "answer": 0,
+    "why": "Yellow side lines are linked to stopping/parking restrictions."
+  },
+  {
+    "module": "markings",
+    "q": "What does a painted island or chevron area usually mean?",
+    "options": [
+      "Keep out unless it is safe and allowed",
+      "Use it as a parking area",
+      "Drive over it at speed",
+      "It is a loading zone"
+    ],
+    "answer": 0,
+    "why": "Painted islands separate traffic."
+  },
+  {
+    "module": "markings",
+    "q": "What should you do if lane arrows show left turn only?",
+    "options": [
+      "Turn left from that lane",
+      "Go straight if you want",
+      "Turn right",
+      "Stop and park"
+    ],
+    "answer": 0,
+    "why": "Lane arrows must be followed."
+  },
+  {
+    "module": "markings",
+    "q": "What does a bus lane marking mean?",
+    "options": [
+      "The lane is reserved for buses or authorised vehicles as indicated",
+      "Any vehicle may race there",
+      "Parking for all cars",
+      "Pedestrians only"
+    ],
+    "answer": 0,
+    "why": "Special lane markings indicate reserved use."
+  },
+  {
+    "module": "markings",
+    "q": "What does a no-overtaking line mean?",
+    "options": [
+      "You may not overtake across that marking",
+      "You must overtake",
+      "Parking allowed",
+      "No pedestrians"
+    ],
+    "answer": 0,
+    "why": "No-overtaking markings are used where overtaking is dangerous or prohibited."
+  },
+  {
+    "module": "markings",
+    "q": "What should you do at a yield line?",
+    "options": [
+      "Give way where required and proceed only when safe",
+      "Always speed up",
+      "Always park",
+      "Ignore other traffic"
+    ],
+    "answer": 0,
+    "why": "Yield lines support Give Way control."
+  },
+  {
+    "module": "markings",
+    "q": "What does a box junction marking usually require?",
+    "options": [
+      "Do not enter unless you can clear the box",
+      "Stop inside it to wait",
+      "Park inside it",
+      "Use it as a loading zone"
+    ],
+    "answer": 0,
+    "why": "Do not block intersections."
+  },
+  {
+    "module": "markings",
+    "q": "What should you do before crossing any lane marking?",
+    "options": [
+      "Check that it is legal and safe",
+      "Close your eyes",
+      "Accelerate only",
+      "Ignore mirrors"
+    ],
+    "answer": 0,
+    "why": "Changing position requires observation and safety."
+  },
+  {
+    "module": "markings",
+    "q": "What does a bicycle lane marking indicate?",
+    "options": [
+      "A lane intended for cyclists",
+      "A lane for trucks only",
+      "Parking for cars",
+      "No road users allowed"
+    ],
+    "answer": 0,
+    "why": "Cyclist lane markings identify space for cyclists."
+  },
+  {
+    "module": "rules",
+    "q": "What is the general speed limit in an urban area unless a sign says otherwise?",
+    "options": [
+      "60 km/h",
+      "80 km/h",
+      "100 km/h",
+      "120 km/h"
+    ],
+    "answer": 0,
+    "why": "The general urban speed limit is 60 km/h unless a sign indicates otherwise."
+  },
+  {
+    "module": "rules",
+    "q": "What is the general speed limit on a public road outside an urban area unless a sign says otherwise?",
+    "options": [
+      "100 km/h",
+      "40 km/h",
+      "60 km/h",
+      "160 km/h"
+    ],
+    "answer": 0,
+    "why": "Outside urban areas, the general limit is commonly 100 km/h unless signs indicate otherwise."
+  },
+  {
+    "module": "rules",
+    "q": "What is the general speed limit on a freeway unless a sign says otherwise?",
+    "options": [
+      "120 km/h",
+      "80 km/h",
+      "60 km/h",
+      "40 km/h"
+    ],
+    "answer": 0,
+    "why": "On freeways, the general limit is commonly 120 km/h unless signs indicate otherwise."
+  },
+  {
+    "module": "rules",
+    "q": "What must you do at a red traffic light?",
+    "options": [
+      "Stop",
+      "Drive if it is quiet",
+      "Hoot and continue",
+      "Park in the intersection"
+    ],
+    "answer": 0,
+    "why": "Red means stop."
+  },
+  {
+    "module": "rules",
+    "q": "What does an amber traffic light mean?",
+    "options": [
+      "Stop if it is safe to do so",
+      "Always speed up",
+      "Park immediately",
+      "Ignore the light"
+    ],
+    "answer": 0,
+    "why": "Amber warns that the signal is changing; stop if safe."
+  },
+  {
+    "module": "rules",
+    "q": "What does a green traffic light mean?",
+    "options": [
+      "You may proceed if it is safe and legal",
+      "You must speed",
+      "Pedestrians must run",
+      "No vehicles may move"
+    ],
+    "answer": 0,
+    "why": "Green allows movement only if the way is clear and safe."
+  },
+  {
+    "module": "rules",
+    "q": "What should you do at a pedestrian crossing when people want to cross?",
+    "options": [
+      "Give way and stop if necessary",
+      "Accelerate",
+      "Hoot and force through",
+      "Drive on the pavement"
+    ],
+    "answer": 0,
+    "why": "Drivers must give way at pedestrian crossings."
+  },
+  {
+    "module": "rules",
+    "q": "When may you overtake?",
+    "options": [
+      "Only when it is safe, legal, and you have enough visibility",
+      "At any blind rise",
+      "Across any solid line",
+      "When you are impatient"
+    ],
+    "answer": 0,
+    "why": "Overtaking is only allowed when safe and legal."
+  },
+  {
+    "module": "rules",
+    "q": "Where should you not park?",
+    "options": [
+      "Where signs or rules prohibit it",
+      "Anywhere with space",
+      "In a shop only",
+      "In your driveway only"
+    ],
+    "answer": 0,
+    "why": "Parking is controlled by road rules, signs and safety."
+  },
+  {
+    "module": "rules",
+    "q": "What must you do if a traffic officer gives a lawful instruction?",
+    "options": [
+      "Obey the instruction",
+      "Ignore it if the robot is green",
+      "Follow GPS only",
+      "Stop forever"
+    ],
+    "answer": 0,
+    "why": "A traffic officer’s lawful instruction must be obeyed."
+  },
+  {
+    "module": "rules",
+    "q": "What should you do when an emergency vehicle approaches with siren and lights?",
+    "options": [
+      "Give way safely",
+      "Block it",
+      "Race it",
+      "Follow closely"
+    ],
+    "answer": 0,
+    "why": "Emergency vehicles need space to respond quickly."
+  },
+  {
+    "module": "rules",
+    "q": "When may you use a hand-held cellphone while driving?",
+    "options": [
+      "You may not use a hand-held cellphone while driving",
+      "When the road is quiet",
+      "Only at traffic lights",
+      "When driving slowly"
+    ],
+    "answer": 0,
+    "why": "Hand-held cellphone use while driving is dangerous and illegal."
+  },
+  {
+    "module": "rules",
+    "q": "What must you do before turning left or right?",
+    "options": [
+      "Signal in good time and check that it is safe",
+      "Turn without looking",
+      "Hoot only",
+      "Move into any lane"
+    ],
+    "answer": 0,
+    "why": "Signalling and observation are required before turning."
+  },
+  {
+    "module": "rules",
+    "q": "What must you do before entering a traffic circle?",
+    "options": [
+      "Slow down, check traffic, and give way where required",
+      "Enter at high speed",
+      "Stop in the circle",
+      "Ignore other traffic"
+    ],
+    "answer": 0,
+    "why": "Traffic circles require caution and correct right-of-way."
+  },
+  {
+    "module": "rules",
+    "q": "Why must seat belts be worn?",
+    "options": [
+      "They reduce injury in a crash",
+      "They make the car faster",
+      "They replace brakes",
+      "They are only decoration"
+    ],
+    "answer": 0,
+    "why": "Seat belts help protect occupants in a collision."
+  },
+  {
+    "module": "rules",
+    "q": "What must you do if your vehicle breaks down on a road?",
+    "options": [
+      "Move it safely if possible, warn other road users, and use hazards/triangle where needed",
+      "Leave it in the lane without warning",
+      "Stand in the road",
+      "Switch off all lights at night"
+    ],
+    "answer": 0,
+    "why": "You must reduce danger to yourself and others."
+  },
+  {
+    "module": "rules",
+    "q": "What is safest when approaching a railway crossing?",
+    "options": [
+      "Slow down, look and listen, and obey signals",
+      "Speed over it",
+      "Stop on the tracks",
+      "Ignore warning lights"
+    ],
+    "answer": 0,
+    "why": "Railway crossings are high-risk."
+  },
+  {
+    "module": "rules",
+    "q": "What should you do when approaching a stop street?",
+    "options": [
+      "Stop completely and proceed only when safe",
+      "Roll through slowly",
+      "Only stop if another car is there",
+      "Accelerate"
+    ],
+    "answer": 0,
+    "why": "A stop street requires a complete stop."
+  },
+  {
+    "module": "rules",
+    "q": "When driving at night, what should you do for oncoming traffic?",
+    "options": [
+      "Dip your headlights when required",
+      "Use brights at all times",
+      "Switch off all lights",
+      "Look away completely"
+    ],
+    "answer": 0,
+    "why": "Dipping headlights prevents dazzling other drivers."
+  },
+  {
+    "module": "rules",
+    "q": "What must you do if another vehicle is overtaking you?",
+    "options": [
+      "Do not increase speed and allow safe passing",
+      "Speed up to block them",
+      "Move suddenly",
+      "Brake hard without reason"
+    ],
+    "answer": 0,
+    "why": "Do not make overtaking more dangerous."
+  },
+  {
+    "module": "rules",
+    "q": "What should you do near a bus stopped for passengers?",
+    "options": [
+      "Slow down and watch for pedestrians",
+      "Speed past closely",
+      "Hoot continuously",
+      "Drive on the pavement"
+    ],
+    "answer": 0,
+    "why": "Passengers may step into the road."
+  },
+  {
+    "module": "rules",
+    "q": "What should you do if a road is flooded?",
+    "options": [
+      "Avoid crossing if depth or safety is uncertain",
+      "Drive through fast",
+      "Stop in the water",
+      "Follow any car blindly"
+    ],
+    "answer": 0,
+    "why": "Flooded roads can hide hazards."
+  },
+  {
+    "module": "rules",
+    "q": "What must you do when transporting passengers?",
+    "options": [
+      "Drive safely and do not overload the vehicle",
+      "Overload if space allows",
+      "Let passengers sit anywhere",
+      "Ignore seat belts"
+    ],
+    "answer": 0,
+    "why": "Overloading and unsafe seating are dangerous."
+  },
+  {
+    "module": "rules",
+    "q": "What is the main reason for obeying road signs?",
+    "options": [
+      "To keep traffic safe and orderly",
+      "To waste time",
+      "Only to avoid police",
+      "Because signs are colourful"
+    ],
+    "answer": 0,
+    "why": "Road signs provide rules, warnings and guidance."
+  },
+  {
+    "module": "rules",
+    "q": "When should you reduce speed?",
+    "options": [
+      "Near schools, pedestrians, intersections, bends, poor weather or hazards",
+      "Only when fuel is low",
+      "Never",
+      "Only when the car is old"
+    ],
+    "answer": 0,
+    "why": "High-risk areas require lower speed."
+  },
+  {
+    "module": "rules",
+    "q": "What should you do if you miss your turn?",
+    "options": [
+      "Continue safely and turn around where legal and safe",
+      "Reverse on the road",
+      "Make a sudden illegal turn",
+      "Stop in the lane"
+    ],
+    "answer": 0,
+    "why": "Do not make dangerous sudden manoeuvres."
+  },
+  {
+    "module": "rules",
+    "q": "What does right of way mean?",
+    "options": [
+      "The right to proceed before another road user, but only when safe",
+      "The right to ignore everyone",
+      "The right to speed",
+      "The right to park anywhere"
+    ],
+    "answer": 0,
+    "why": "Even with right of way, avoid danger."
+  },
+  {
+    "module": "rules",
+    "q": "What must you do before opening a vehicle door on the traffic side?",
+    "options": [
+      "Check for traffic, cyclists and pedestrians",
+      "Open it quickly",
+      "Leave it open",
+      "Hoot first only"
+    ],
+    "answer": 0,
+    "why": "Opening doors can endanger passing road users."
+  },
+  {
+    "module": "rules",
+    "q": "What should you do when dazzled by oncoming headlights?",
+    "options": [
+      "Slow down if needed and look toward the left edge/road markings",
+      "Look directly at the lights",
+      "Switch your lights off",
+      "Drive faster"
+    ],
+    "answer": 0,
+    "why": "Avoid staring into bright lights and keep control."
+  },
+  {
+    "module": "rules",
+    "q": "What should you do at an uncontrolled intersection?",
+    "options": [
+      "Slow down, observe carefully and apply right-of-way rules",
+      "Enter without looking",
+      "Hoot and speed up",
+      "Stop in the middle"
+    ],
+    "answer": 0,
+    "why": "Uncontrolled intersections need extra caution."
+  },
+  {
+    "module": "rules",
+    "q": "What is reckless driving?",
+    "options": [
+      "Driving with disregard for safety",
+      "Driving carefully",
+      "Driving slowly in poor weather",
+      "Obeying signs"
+    ],
+    "answer": 0,
+    "why": "Reckless driving endangers people and is illegal."
+  },
+  {
+    "module": "rules",
+    "q": "What should you do if traffic lights are not working?",
+    "options": [
+      "Treat the intersection with caution and follow applicable stop/right-of-way rules",
+      "Drive through fast",
+      "Ignore other vehicles",
+      "Park in the intersection"
+    ],
+    "answer": 0,
+    "why": "Non-working lights require caution."
+  },
+  {
+    "module": "rules",
+    "q": "When may you drive on the shoulder of the road?",
+    "options": [
+      "Only when legal and safe, or in an emergency/allowed situation",
+      "Whenever you want to pass traffic",
+      "Always at night",
+      "To avoid traffic lights"
+    ],
+    "answer": 0,
+    "why": "The shoulder is not a normal driving lane."
+  },
+  {
+    "module": "rules",
+    "q": "What should you do when approaching a cyclist?",
+    "options": [
+      "Slow down if needed and pass with safe space",
+      "Pass very close",
+      "Hoot loudly and force past",
+      "Ignore them"
+    ],
+    "answer": 0,
+    "why": "Cyclists are vulnerable road users."
+  },
+  {
+    "module": "rules",
+    "q": "What must a driver do after an accident where someone is injured?",
+    "options": [
+      "Stop, assist where possible and report according to the law",
+      "Drive away",
+      "Move all evidence and leave",
+      "Only post online"
+    ],
+    "answer": 0,
+    "why": "Accidents involving injury have legal duties."
+  },
+  {
+    "module": "rules",
+    "q": "What is the safest action at a blind rise?",
+    "options": [
+      "Keep left, reduce risk and do not overtake",
+      "Overtake quickly",
+      "Drive in the middle",
+      "Stop without reason"
+    ],
+    "answer": 0,
+    "why": "Visibility is limited at a blind rise."
+  },
+  {
+    "module": "rules",
+    "q": "What should you do when following a motorcycle?",
+    "options": [
+      "Keep a safe following distance",
+      "Follow very closely",
+      "Drive beside it in the same lane",
+      "Hoot constantly"
+    ],
+    "answer": 0,
+    "why": "Motorcycles can stop quickly and are vulnerable."
+  },
+  {
+    "module": "rules",
+    "q": "What is the purpose of indicators?",
+    "options": [
+      "To show your intention to turn or change position",
+      "To give automatic right of way",
+      "To park the car",
+      "To stop the engine"
+    ],
+    "answer": 0,
+    "why": "Indicators warn others; they do not give automatic right of way."
+  },
+  {
+    "module": "rules",
+    "q": "What should you do before overtaking a slower vehicle?",
+    "options": [
+      "Check mirrors, blind spot, markings, oncoming traffic and signal",
+      "Just accelerate",
+      "Flash lights and force past",
+      "Overtake on any side"
+    ],
+    "answer": 0,
+    "why": "Safe overtaking requires observation and legal conditions."
+  },
+  {
+    "module": "rules",
+    "q": "What must you do when a pedestrian is already crossing in front of you?",
+    "options": [
+      "Stop or slow down and allow the pedestrian to cross safely",
+      "Drive around them fast",
+      "Hoot until they run",
+      "Ignore them"
+    ],
+    "answer": 0,
+    "why": "Drivers must not endanger pedestrians."
+  },
+  {
+    "module": "rules",
+    "q": "What should you do if your brakes feel weak or fail?",
+    "options": [
+      "Slow down using safe methods, move off the road if possible and stop safely",
+      "Accelerate",
+      "Continue normally",
+      "Switch off steering"
+    ],
+    "answer": 0,
+    "why": "Brake problems require safe stopping."
+  },
+  {
+    "module": "rules",
+    "q": "What should you do when entering a freeway?",
+    "options": [
+      "Match traffic speed safely, signal, check mirrors/blind spot and merge when safe",
+      "Stop at the end of the ramp",
+      "Enter without looking",
+      "Reverse if busy"
+    ],
+    "answer": 0,
+    "why": "Freeway merging requires speed control and observation."
+  },
+  {
+    "module": "rules",
+    "q": "What should you do when leaving a freeway?",
+    "options": [
+      "Signal in good time and move to the exit lane safely",
+      "Cut across lanes at the last second",
+      "Stop in the fast lane",
+      "Reverse to the exit"
+    ],
+    "answer": 0,
+    "why": "Plan exits early and change lanes safely."
+  },
+  {
+    "module": "rules",
+    "q": "What does it mean if a vehicle is roadworthy?",
+    "options": [
+      "It is safe and legally fit to be used on the road",
+      "It has a loud radio",
+      "It is newly washed",
+      "It has many stickers"
+    ],
+    "answer": 0,
+    "why": "Roadworthy vehicles meet safety requirements."
+  }
+];
+
+let state = {
+  student:null, screen:"login", selectedSubject:"k53", selectedModule:"overview",
+  quizMode:"all", answers:{}, showAnswers:false, parentMode:false,
+  examStarted:false, examFinished:false, examIndex:0, examAnswers:{}, examSecondsLeft:30*60, examSet:null
+};
+let timer = null;
+
+function save(){ localStorage.setItem("enricoStudyApp", JSON.stringify(state)); }
+function load(){
+  try{
+    const s = JSON.parse(localStorage.getItem("enricoStudyApp")||"{}");
+    state = {...state, ...s, screen: s.student ? "dashboard" : "login"};
+  }catch(e){}
+}
+function setState(p){ state={...state,...p}; save(); render(); }
+function esc(v){ return String(v ?? "").replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m])); }
+function fmtTime(seconds){ const m=Math.floor(seconds/60); const s=seconds%60; return `${m}:${String(s).padStart(2,"0")}`; }
+function filteredQuestions(){ return state.quizMode==="all" ? questions : questions.filter(q=>q.module===state.quizMode); }
+function examQuestions(){ return (state.examSet && state.examSet.length ? state.examSet : questions.slice(0,64)); }
+function shuffleQuestions(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function examScore(){ return examQuestions().reduce((sum,q,i)=>sum+(state.examAnswers[i]===q.answer?1:0),0); }
+function answeredCount(){ return filteredQuestions().filter((_,i)=>state.answers[`${state.quizMode}-${i}`]!==undefined).length; }
+function quizScore(){ return filteredQuestions().reduce((sum,q,i)=>sum+(state.answers[`${state.quizMode}-${i}`]===q.answer?1:0),0); }
+
+function startExam(){
+  setState({screen:"exam", examStarted:true, examFinished:false, examIndex:0, examAnswers:{}, examSecondsLeft:30*60, examSet:shuffleQuestions(questions).slice(0,64)});
+  startTimer();
+}
+function finishExam(){ setState({examFinished:true}); stopTimer(); }
+function startTimer(){
+  stopTimer();
+  timer=setInterval(()=>{
+    if(state.screen!=="exam" || !state.examStarted || state.examFinished) return stopTimer();
+    if(state.examSecondsLeft<=0){ finishExam(); return; }
+    state.examSecondsLeft -= 1; save(); render();
+  },1000);
+}
+function stopTimer(){ if(timer){ clearInterval(timer); timer=null; } }
+
+function login(){
+  const name = document.getElementById("loginName").value.trim();
+  const pin = document.getElementById("loginPin").value.trim();
+  if(!name){ alert("Enter student name"); return; }
+  if(pin !== STUDENT_PIN){ alert("Wrong PIN"); return; }
+  setState({student:name, screen:"dashboard"});
+}
+function logout(){
+  stopTimer();
+  setState({student:null, screen:"login", examStarted:false, examFinished:false});
+}
+function choosePractice(i,o){ state.answers[`${state.quizMode}-${i}`]=o; save(); render(); }
+function resetPractice(){ filteredQuestions().forEach((_,i)=>delete state.answers[`${state.quizMode}-${i}`]); setState({showAnswers:false}); }
+function chooseExam(o){ state.examAnswers[state.examIndex]=o; save(); render(); }
+
+function loginHTML(){
+  return `<div class="center"><div class="login">
+    <div class="logo">🎓</div>
+    <h1 style="text-align:center">Study App</h1>
+    <p class="muted" style="text-align:center;margin-top:8px">Login and choose your subject.</p>
+    <label class="field">Student name</label><input id="loginName" value="${esc(STUDENT_NAME)}" />
+    <label class="field">PIN</label><input id="loginPin" type="password" value="${esc(STUDENT_PIN)}" />
+    <button class="btn" style="width:100%;margin-top:16px;padding:16px" onclick="login()">Login</button>
+    <div class="note" style="margin-top:16px">PIN for now: <b>1234</b>. Later we can connect real accounts and save progress online.</div>
+  </div></div>`;
+}
+function topbar(){
+  return `<div class="topbar"><div class="wrap"><div class="card row space">
+    <div class="row"><div style="font-size:30px">🎓</div><div><h1>Student Study App</h1><div class="muted">Logged in as ${esc(state.student)}</div></div></div>
+    <div class="row">
+      <button class="btn secondary" onclick="setState({screen:'dashboard'})">Subjects</button>
+      <button class="btn secondary" onclick="setState({screen:'study'})">Study</button>
+      <button class="btn" onclick="startExam()">Start K53 Exam</button>
+      <button class="btn secondary" onclick="logout()">Logout</button>
+    </div>
+  </div></div></div>`;
+}
+function dashboardHTML(){
+  return `${topbar()}<div class="wrap grid">
+    <div class="card">
+      <div class="row" style="margin-bottom:14px"><div style="font-size:28px">📱</div><div><h2>Choose a subject</h2><p class="muted">K53 is active now. The other subjects will be added here.</p></div></div>
+      <div class="grid subjects">
+        ${subjects.map(s=>`<button class="subjectBtn ${s.id===state.selectedSubject?'active':''}" onclick="selectSubject('${s.id}')">
+          <div style="font-size:34px;margin-bottom:10px">${s.icon}</div><h3>${esc(s.title)}</h3><p class="muted">${esc(s.subtitle)}</p><span class="pill ${s.status==='Active'?'active':''}">${esc(s.status)}</span>
+        </button>`).join("")}
+      </div>
+    </div>
+  </div>`;
+}
+function selectSubject(id){
+  state.selectedSubject=id;
+  state.screen = id==="k53" ? "study" : "dashboard";
+  save(); render();
+}
+function studyHTML(){
+  const active = modules.find(m=>m.id===state.selectedModule)||modules[0];
+  const fq = filteredQuestions();
+  const score = quizScore(); const ans = answeredCount();
+  const pct = fq.length?Math.round(score/fq.length*100):0;
+  return `${topbar()}<div class="wrap grid two">
+    <div class="grid">
+      <div class="card"><h2>📚 K53 Modules</h2><div style="height:12px"></div>
+        ${modules.map(m=>`<button class="moduleBtn ${m.id===state.selectedModule?'active':''}" onclick="setState({selectedModule:'${m.id}'})"><b>${esc(m.title)}</b><br><span class="muted">${esc(m.badge)}</span></button>`).join("")}
+      </div>
+      <div class="card"><h2>🏆 Progress</h2><p class="row space"><span>Answers completed</span><b>${ans}/${fq.length}</b></p>
+        <div class="progress"><div style="width:${fq.length?ans/fq.length*100:0}%"></div></div>
+        <div class="note" style="text-align:center;margin-top:14px"><div style="font-size:30px;font-weight:900">${state.showAnswers||state.parentMode?`${score}/${fq.length}`:"?"}</div><div>${state.showAnswers||state.parentMode?`${pct}%`:"Write first, then mark."}</div></div>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="card"><div class="row space"><div><h2>${esc(active.title)}</h2><p class="muted">Short study notes for this section.</p></div><span class="pill">${esc(active.badge)}</span></div>
+        <div class="grid subjects" style="margin-top:14px">${active.notes.map(n=>`<div class="note">${esc(n)}</div>`).join("")}</div>
+      </div>
+      <div class="card">
+        <div class="row space"><div><h2>📝 Practice Test</h2><p class="muted">Choose answers and mark when finished.</p></div>
+          <div class="row">
+            <select style="width:auto" onchange="state.quizMode=this.value;state.showAnswers=false;save();render()">
+              ${[["all","Mixed test"],["controls","Controls"],["defensive","Defensive Driving"],["signs","Road Signs"],["markings","Road Markings"],["rules","Rules"]].map(([v,l])=>`<option value="${v}" ${state.quizMode===v?'selected':''}>${l}</option>`).join("")}
+            </select>
+            <button class="btn secondary" onclick="setState({parentMode:!state.parentMode})">${state.parentMode?"Unlock":"Lock"} Parent</button>
+            <button class="btn" onclick="setState({showAnswers:true})">Mark Answers</button>
+            <button class="btn secondary" onclick="resetPractice()">Reset</button>
+          </div>
+        </div>
+        <div class="grid" style="margin-top:14px">${fq.map((q,i)=>questionHTML(q,i)).join("")}</div>
+      </div>
+    </div>
+  </div>`;
+}
+function questionHTML(q,i){
+  const key=`${state.quizMode}-${i}`; const chosen=state.answers[key]; const reveal=state.showAnswers||state.parentMode;
+  return `<div class="questionBox"><b>${i+1}. ${esc(q.q)}</b><div class="optionGrid" style="margin-top:12px">
+    ${q.options.map((o,oi)=>{
+      let cls="optionBtn";
+      if(chosen===oi && !reveal) cls+=" selected";
+      if(reveal && q.answer===oi) cls+=" correct";
+      if(reveal && chosen===oi && q.answer!==oi) cls+=" wrong";
+      return `<button class="${cls}" onclick="choosePractice(${i},${oi})">${String.fromCharCode(65+oi)}. ${esc(o)}</button>`;
+    }).join("")}
+  </div>${reveal?`<div class="note" style="margin-top:12px"><b>Explanation:</b> ${esc(q.why)}</div>`:""}</div>`;
+}
+function examHTML(){
+  const eq=examQuestions(); const q=eq[state.examIndex]; const score=examScore(); const pct=eq.length?Math.round(score/eq.length*100):0; const passed=pct>=75;
+  return `${topbar()}<div class="wrap"><div class="card">
+    <div class="row space"><div><h2>🏆 K53 Exam Mode</h2><p class="muted">One question at a time, timer, finish button, and score.</p></div>
+      <div class="row">${!state.examStarted?`<button class="btn" onclick="startExam()">Start Exam</button>`:""}${state.examStarted&&!state.examFinished?`<button class="btn secondary" onclick="finishExam()">Finish</button>`:""}</div>
+    </div>
+    ${!state.examStarted?`<div class="note" style="margin-top:14px"><b>Instructions:</b><br>Read each question carefully. Choose only one answer. When you are done, click Finish to see your score.</div>`:""}
+    ${state.examStarted && q && !state.examFinished ? `<div class="grid" style="margin-top:14px">
+      <div class="examHeader"><b>Question ${state.examIndex+1} of ${eq.length}</b><b>Answered: ${Object.keys(state.examAnswers).length}/${eq.length}</b><div class="timer">${fmtTime(state.examSecondsLeft)}</div></div>
+      <div class="questionBox"><h2>${esc(q.q)}</h2><div class="optionGrid" style="margin-top:14px">${q.options.map((o,oi)=>`<button class="optionBtn ${state.examAnswers[state.examIndex]===oi?'selected':''}" onclick="chooseExam(${oi})">${String.fromCharCode(65+oi)}. ${esc(o)}</button>`).join("")}</div></div>
+      <div class="row space"><button class="btn secondary" ${state.examIndex===0?'disabled':''} onclick="setState({examIndex:Math.max(0,state.examIndex-1)})">Previous</button>${state.examIndex<eq.length-1?`<button class="btn" onclick="setState({examIndex:Math.min(${eq.length-1},state.examIndex+1)})">Next</button>`:`<button class="btn" onclick="finishExam()">Finish Exam</button>`}</div>
+    </div>`:""}
+    ${state.examStarted && state.examFinished ? `<div class="grid" style="margin-top:14px">
+      <div class="card ${passed?'resultGood':'resultBad'}" style="text-align:center"><div style="font-size:42px;font-weight:900">${score}/${eq.length}</div><h2>${pct}% — ${passed?"PASS":"TRY AGAIN"}</h2><p>K53 practice score. Each exam randomly selects 64 questions from the larger practice bank.</p></div>
+      ${eq.map((qq,i)=>{
+        const chosen=state.examAnswers[i]; const correct=chosen===qq.answer;
+        return `<div class="questionBox ${correct?'resultGood':'resultBad'}"><b>${i+1}. ${esc(qq.q)}</b><div>Your answer: ${chosen===undefined?"None":`${String.fromCharCode(65+chosen)}. ${esc(qq.options[chosen])}`}</div>${!correct?`<div><b>Correct answer:</b> ${String.fromCharCode(65+qq.answer)}. ${esc(qq.options[qq.answer])}</div>`:""}<div class="muted">${esc(qq.why)}</div></div>`;
+      }).join("")}
+    </div>`:""}
+  </div></div>`;
+}
+function render(){
+  const app=document.getElementById("app");
+  if(!state.student) app.innerHTML=loginHTML();
+  else if(state.screen==="dashboard") app.innerHTML=dashboardHTML();
+  else if(state.screen==="exam") app.innerHTML=examHTML();
+  else app.innerHTML=studyHTML();
+}
+load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFinished) startTimer();
+</script>
+</body>
+</html>
