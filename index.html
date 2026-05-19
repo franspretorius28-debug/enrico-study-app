@@ -3811,7 +3811,7 @@ function studyHTML(){
         <div class="grid" style="margin-top:14px">${fq.map((q,i)=>questionHTML(q,i)).join("")}</div>
       </div>
     </div>
-  </div>`;
+  </div>`}</div>`;
 }
 function questionHTML(q,i){
   const key=`${state.quizMode}-${i}`; const chosen=state.answers[key]; const reveal=state.showAnswers||state.parentMode;
@@ -3857,5 +3857,6 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
