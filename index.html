@@ -4681,14 +4681,16 @@ function catExcelSimulatorHTML(){
     html += '<td><input class="cellInput" value="' + esc(row.product) + '" oninput="excelSet(' + i + ',\'product\',this.value)"></td>';
     html += '<td><input class="cellInput" value="' + esc(row.qty) + '" oninput="excelSet(' + i + ',\'qty\',this.value)"></td>';
     html += '<td><input class="cellInput" value="' + esc(row.price) + '" oninput="excelSet(' + i + ',\'price\',this.value)"></td>';
-    html += '<td><input class="cellInput" value="' + esc(row.formula) + '" oninput="excelSet(' + i + ',\'formula\',this.value)"></td>';
-    html += '<td class="calcCell">R ' + excelRowTotal(i).toFixed(2) + '</td>';
+    html += '<td><input class="cellInput" value="' + esc(row.formula) + '" oninput="excelSet(' + i + ',\'formula\',this.value)" onchange="render()"></td>';
+    const cleanFormula = String(row.formula || "").toUpperCase().replace(/\s/g,"");
+    const correctFormula = cleanFormula === excelExpectedFormula(i);
+    html += '<td class="calcCell">' + (correctFormula ? ('R ' + excelRowTotal(i).toFixed(2)) : '') + '</td>';
     html += '</tr>';
   });
 
-  html += '<tr><th class="rowHead">7</th><td colspan="3"><b>Grand Total</b></td><td><input class="cellInput" value="' + esc(e.sumFormula) + '" oninput="excelSetSummary(\'sumFormula\',this.value)"></td><td class="calcCell">R ' + excelGrandTotal().toFixed(2) + '</td></tr>';
-  html += '<tr><th class="rowHead">8</th><td colspan="3"><b>Average</b></td><td><input class="cellInput" value="' + esc(e.avgFormula) + '" oninput="excelSetSummary(\'avgFormula\',this.value)"></td><td class="calcCell">R ' + excelAverage().toFixed(2) + '</td></tr>';
-  html += '<tr><th class="rowHead">9</th><td colspan="3"><b>Highest</b></td><td><input class="cellInput" value="' + esc(e.maxFormula) + '" oninput="excelSetSummary(\'maxFormula\',this.value)"></td><td class="calcCell">R ' + excelMax().toFixed(2) + '</td></tr>';
+  html += '<tr><th class="rowHead">7</th><td colspan="3"><b>Grand Total</b></td><td><input class="cellInput" value="' + esc(e.sumFormula) + '" oninput="excelSetSummary(\'sumFormula\',this.value)" onchange="render()"></td><td class="calcCell">' + (String(e.sumFormula||"").toUpperCase().replace(/\s/g,"") === "=SUM(E2:E6)" ? ("R " + excelGrandTotal().toFixed(2)) : "") + '</td></tr>';
+  html += '<tr><th class="rowHead">8</th><td colspan="3"><b>Average</b></td><td><input class="cellInput" value="' + esc(e.avgFormula) + '" oninput="excelSetSummary(\'avgFormula\',this.value)" onchange="render()"></td><td class="calcCell">' + (String(e.avgFormula||"").toUpperCase().replace(/\s/g,"") === "=AVERAGE(E2:E6)" ? ("R " + excelAverage().toFixed(2)) : "") + '</td></tr>';
+  html += '<tr><th class="rowHead">9</th><td colspan="3"><b>Highest</b></td><td><input class="cellInput" value="' + esc(e.maxFormula) + '" oninput="excelSetSummary(\'maxFormula\',this.value)" onchange="render()"></td><td class="calcCell">' + (String(e.maxFormula||"").toUpperCase().replace(/\s/g,"") === "=MAX(E2:E6)" ? ("R " + excelMax().toFixed(2)) : "") + '</td></tr>';
   html += '</table></div></div>';
 
   html += '</div></div>';
@@ -5017,6 +5019,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
