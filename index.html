@@ -4366,6 +4366,7 @@ function render(){
   if(!state.student) app.innerHTML=loginHTML();
   else if(state.screen==="dashboard") app.innerHTML=dashboardHTML();
   else if(state.screen==="exam") app.innerHTML=examHTML();
+  else if(state.screen==="cat_word") app.innerHTML=catWordSimulatorHTML();
   else if(state.screen==="cat") app.innerHTML=catExamHTML();
   else app.innerHTML=studyHTML();
 }
@@ -4373,6 +4374,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
