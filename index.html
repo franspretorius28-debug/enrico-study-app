@@ -4530,6 +4530,191 @@ function rttExamHTML(){
   return html;
 }
 
+
+// === RTT EXAM OVERRIDE V2 TIMER EXCEL ===
+var rttExamTimerHandleV2 = null;
+
+function startRttExam(){
+  state.selectedSubject = "cat";
+  state.screen = "rtt_exam";
+  state.rttExamFinished = false;
+  state.rttExamAnswers = {};
+  state.rttExamSet = shuffleQuestions(catQ2Questions).slice(0, 60);
+  state.rttExamSecondsLeft = 60 * 60;
+  state.rttLastResult = null;
+  save();
+  startRttExamTimer();
+  render();
+}
+
+function rttExamQuestions(){
+  return state.rttExamSet && state.rttExamSet.length ? state.rttExamSet : catQ2Questions.slice(0, 60);
+}
+
+function startRttExamTimer(){
+  if(rttExamTimerHandleV2) return;
+  rttExamTimerHandleV2 = setInterval(function(){
+    if(state.rttExamFinished){
+      clearInterval(rttExamTimerHandleV2);
+      rttExamTimerHandleV2 = null;
+      return;
+    }
+    if(typeof state.rttExamSecondsLeft !== "number") state.rttExamSecondsLeft = 60 * 60;
+    state.rttExamSecondsLeft = Math.max(0, state.rttExamSecondsLeft - 1);
+    save();
+
+    if(state.rttExamSecondsLeft <= 0){
+      clearInterval(rttExamTimerHandleV2);
+      rttExamTimerHandleV2 = null;
+      finishRttExam();
+      return;
+    }
+
+    if(state.screen === "rtt_exam") render();
+  }, 1000);
+}
+
+function rttExamTimeText(){
+  const s = typeof state.rttExamSecondsLeft === "number" ? state.rttExamSecondsLeft : 60 * 60;
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return String(m).padStart(2,"0") + ":" + String(sec).padStart(2,"0");
+}
+
+function rttExamChoose(i, oi){
+  if(!state.rttExamAnswers) state.rttExamAnswers = {};
+  state.rttExamAnswers[i] = oi;
+  save();
+  render();
+}
+
+function rttExamScore(){
+  const qs = rttExamQuestions();
+  let score = 0;
+  qs.forEach(function(q,i){
+    if((state.rttExamAnswers || {})[i] === q.a) score++;
+  });
+  return score;
+}
+
+function finishRttExam(){
+  state.rttExamFinished = true;
+  if(rttExamTimerHandleV2){
+    clearInterval(rttExamTimerHandleV2);
+    rttExamTimerHandleV2 = null;
+  }
+
+  const qs = rttExamQuestions();
+  const theoryScore = rttExamScore();
+  const wordResult = wordSimResult();
+  const excelResultNow = excelResult();
+
+  const totalScore = theoryScore + wordResult.score + excelResultNow.score;
+  const totalMarks = qs.length + wordResult.total + excelResultNow.total;
+  const pct = Math.round(totalScore / totalMarks * 100);
+
+  state.rttLastResult = {
+    theoryScore: theoryScore,
+    theoryTotal: qs.length,
+    wordScore: wordResult.score,
+    wordTotal: wordResult.total,
+    excelScore: excelResultNow.score,
+    excelTotal: excelResultNow.total,
+    practicalScore: wordResult.score + excelResultNow.score,
+    practicalTotal: wordResult.total + excelResultNow.total,
+    totalScore: totalScore,
+    totalMarks: totalMarks,
+    percent: pct,
+    passed: pct >= 70
+  };
+
+  save();
+  render();
+
+  sendResultToParent({
+    student: state.student || "Enrico",
+    subject: "RTT / CAT",
+    mode: "Term 2 Exam",
+    score: totalScore,
+    total: totalMarks,
+    percent: pct,
+    passed: pct >= 70,
+    wrongCount: totalMarks - totalScore,
+    weakAreas: "Theory + Word + Excel practical checked",
+    wrongQuestions: "RTT Term 2 exam completed. Theory: " + theoryScore + "/" + qs.length + ", Word practical: " + wordResult.score + "/" + wordResult.total + ", Excel practical: " + excelResultNow.score + "/" + excelResultNow.total,
+    device: navigator.userAgent || ""
+  });
+}
+
+function resetRttExam(){
+  if(rttExamTimerHandleV2){
+    clearInterval(rttExamTimerHandleV2);
+    rttExamTimerHandleV2 = null;
+  }
+  state.rttExamFinished = false;
+  state.rttExamAnswers = {};
+  state.rttExamSet = shuffleQuestions(catQ2Questions).slice(0, 60);
+  state.rttExamSecondsLeft = 60 * 60;
+  state.rttLastResult = null;
+  save();
+  render();
+}
+
+function rttExamHTML(){
+  if(!state.rttExamFinished) startRttExamTimer();
+
+  const qs = rttExamQuestions();
+  const theoryScore = rttExamScore();
+  const wordResult = wordSimResult();
+  const excelResultNow = excelResult();
+
+  let html = topbar();
+  html += '<div class="wrap grid">';
+
+  html += '<div class="card"><div class="row space"><div><h2>RTT Kwartaal 2 Eksamen</h2><p class="muted">60 gemengde teorie vrae plus Word en Excel practical.</p></div><div class="row"><span class="pill active">Timer: ' + rttExamTimeText() + '</span><button class="btn secondary" onclick="resetRttExam()">Reset Exam</button><button class="btn" onclick="finishRttExam()">Finish RTT Exam</button></div></div></div>';
+
+  if(state.rttExamFinished && state.rttLastResult){
+    const r = state.rttLastResult;
+    html += '<div class="card"><h2>Resultaat: ' + r.totalScore + '/' + r.totalMarks + ' (' + r.percent + '%)</h2>';
+    html += '<div class="grid subjects" style="margin-top:14px">';
+    html += '<div class="smallStat"><b>' + r.theoryScore + '/' + r.theoryTotal + '</b><span class="muted">Theory</span></div>';
+    html += '<div class="smallStat"><b>' + r.wordScore + '/' + r.wordTotal + '</b><span class="muted">Word Practical</span></div>';
+    html += '<div class="smallStat"><b>' + r.excelScore + '/' + r.excelTotal + '</b><span class="muted">Excel Practical</span></div>';
+    html += '<div class="smallStat"><b>' + (r.passed ? "PASS" : "TRY AGAIN") + '</b><span class="muted">Status</span></div>';
+    html += '</div></div>';
+  }
+
+  html += '<div class="card"><div class="row space"><div><h2>Deel A: Teorie Vrae</h2><p class="muted">Beantwoord die 60 vrae. Hierdie punte tel saam met Word en Excel practical.</p></div><span class="pill active">' + theoryScore + '/' + qs.length + '</span></div>';
+  html += '<div class="grid" style="margin-top:14px">';
+
+  qs.forEach(function(q,i){
+    const chosen = (state.rttExamAnswers || {})[i];
+    const reveal = !!state.rttExamFinished;
+    html += '<div class="questionBox"><b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
+    q.o.forEach(function(o,oi){
+      let cls = "optionBtn";
+      if(chosen===oi && !reveal) cls += " selected";
+      if(reveal && q.a===oi) cls += " correct";
+      if(reveal && chosen===oi && q.a!==oi) cls += " wrong";
+      html += '<button class="' + cls + '" onclick="rttExamChoose(' + i + ',' + oi + ')">' + String.fromCharCode(65+oi) + '. ' + esc(o) + '</button>';
+    });
+    html += '</div>';
+    if(reveal) html += '<div class="note" style="margin-top:12px"><b>Verduideliking:</b> ' + esc(q.w) + '</div>';
+    html += '</div>';
+  });
+
+  html += '</div></div>';
+
+  html += '<div class="card"><div class="row space"><div><h2>Deel B: Word Practical</h2><p class="muted">Maak die Word Practical oop en voltooi dit. Die timer bly aan.</p></div><button class="btn" onclick="state.screen=\'cat_word\';save();render()">Open Word Practical</button></div>';
+  html += '<div class="note" style="margin-top:12px"><b>Word practical huidige punt:</b> ' + wordResult.score + '/' + wordResult.total + ' (' + wordResult.percent + '%)</div></div>';
+
+  html += '<div class="card"><div class="row space"><div><h2>Deel C: Excel Practical</h2><p class="muted">Maak die Excel Practical oop en voltooi dit. Die punt tel saam met die eksamen.</p></div><button class="btn" onclick="state.screen=\'cat_excel\';save();render()">Open Excel Practical</button></div>';
+  html += '<div class="note" style="margin-top:12px"><b>Excel practical huidige punt:</b> ' + excelResultNow.score + '/' + excelResultNow.total + ' (' + excelResultNow.percent + '%)</div></div>';
+
+  html += '</div>';
+  return html;
+}
+
 // === RTT WORD PRACTICAL SIMULATOR V1 ===
 function ensureWordSim(){
   if(!state.wordSim){
@@ -5361,6 +5546,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
