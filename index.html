@@ -4685,6 +4685,166 @@ function catExcelSimulatorHTML(){
   return html;
 }
 
+
+// === WORD PRACTICAL OVERRIDE V2 ===
+const wordPracticalTasksV2 = [
+  {
+    id:"word_basic_format",
+    title:"Practical 1: Basiese dokument formatering",
+    module:"3.5 Verdere formatering",
+    instructions:[
+      "Skep n dokument oor Computer Hardware and Software.",
+      "Voeg n geskikte opskrif by.",
+      "Maak die opskrif bold en center.",
+      "Tik minstens twee kort paragrawe.",
+      "Voeg n header en footer by.",
+      "Voeg page number by.",
+      "Gebruik Mark Practical wanneer jy klaar is."
+    ]
+  },
+  {
+    id:"word_columns",
+    title:"Practical 2: Kolomme",
+    module:"3.5 Verdere formatering",
+    instructions:[
+      "Skep n dokument oor Input and Output Devices.",
+      "Voeg n geskikte opskrif by.",
+      "Tik minstens twee kort paragrawe.",
+      "Gebruik columns om die teks in twee kolomme te wys.",
+      "Maak die opskrif bold.",
+      "Voeg n footer by.",
+      "Merk die practical wanneer jy klaar is."
+    ]
+  },
+  {
+    id:"word_table",
+    title:"Practical 3: Tabelle",
+    module:"3.6 Tabelle",
+    instructions:[
+      "Skep n dokument oor Computer Devices.",
+      "Voeg n geskikte opskrif by.",
+      "Voeg n table in.",
+      "Die table moet items soos Keyboard, Mouse, Monitor en Printer bevat.",
+      "Gebruik kolomme soos Item, Type en Example.",
+      "Voeg n header of footer by.",
+      "Merk die practical wanneer jy klaar is."
+    ]
+  },
+  {
+    id:"word_landscape",
+    title:"Practical 4: Page setup",
+    module:"3.5 Verdere formatering",
+    instructions:[
+      "Skep n dokument oor Network Devices.",
+      "Gebruik landscape orientation.",
+      "Voeg n opskrif by.",
+      "Tik kort notas oor routers, switches en Wi-Fi.",
+      "Voeg page number by.",
+      "Gebruik minstens een ander Word-funksie.",
+      "Merk die practical wanneer jy klaar is."
+    ]
+  },
+  {
+    id:"word_hardware_software",
+    title:"Practical 5: Hardware en software",
+    module:"1.6 / 1.7 Konsepte",
+    instructions:[
+      "Skep n dokument wat hardware en software vergelyk.",
+      "Gebruik n duidelike opskrif.",
+      "Tik n kort paragraaf oor hardware.",
+      "Tik n kort paragraaf oor software.",
+      "Voeg n table by met ten minste twee examples.",
+      "Voeg n header en footer by.",
+      "Merk die practical wanneer jy klaar is."
+    ]
+  },
+  {
+    id:"word_mixed_exam",
+    title:"Practical 6: Gemengde Word eksamen",
+    module:"Mixed Term 2",
+    instructions:[
+      "Skep n volledige RTT document.",
+      "Gebruik n opskrif, header en footer.",
+      "Gebruik bold en center vir die opskrif.",
+      "Gebruik columns of landscape.",
+      "Voeg n table in.",
+      "Tik genoeg inhoud om die dokument volledig te maak.",
+      "Merk die practical wanneer jy klaar is."
+    ]
+  }
+];
+
+function currentWordTaskV2(){
+  if(!state.wordTaskId) state.wordTaskId = "word_basic_format";
+  return wordPracticalTasksV2.find(function(t){ return t.id === state.wordTaskId; }) || wordPracticalTasksV2[0];
+}
+
+function chooseWordTaskV2(id){
+  state.wordTaskId = id;
+  wordSimReset();
+  save();
+  render();
+}
+
+function catWordSimulatorHTML(){
+  const w = ensureWordSim();
+  const r = wordSimResult();
+  const task = currentWordTaskV2();
+
+  let html = topbar();
+  html += '<div class="wrap grid">';
+
+  html += '<div class="card"><div class="row space"><div><h2>RTT Word Practical</h2><p class="muted">Werk soos in Microsoft Word. Die document begin leeg; Enrico moet self die instruksies uitvoer.</p></div><button class="btn secondary" onclick="selectSubject(\'cat\')">Back to CAT</button></div></div>';
+
+  html += '<div class="officeApp">';
+  html += '<div class="officeTitleBar"><span>Word - Enrico RTT Practical.docx</span><div class="officeWindowBtns"><span class="officeDot"></span><span class="officeDot"></span><span class="officeDot"></span></div></div>';
+
+  html += '<div class="officeRibbon">';
+  html += '<div class="ribbonGroup"><button class="ribbonBtn ' + (w.boldHeading ? "active" : "") + '" onclick="wordSimToggle(\'boldHeading\')">B Bold</button><button class="ribbonBtn ' + (w.centeredHeading ? "active" : "") + '" onclick="wordSimToggle(\'centeredHeading\')">Center</button></div>';
+  html += '<div class="ribbonGroup"><button class="ribbonBtn ' + (w.landscape ? "active" : "") + '" onclick="wordSimToggle(\'landscape\')">Landscape</button><button class="ribbonBtn ' + (w.columns ? "active" : "") + '" onclick="wordSimToggle(\'columns\')">Columns</button></div>';
+  html += '<div class="ribbonGroup"><button class="ribbonBtn ' + (w.pageNumbers ? "active" : "") + '" onclick="wordSimToggle(\'pageNumbers\')">Page Number</button><button class="ribbonBtn ' + (w.table ? "active" : "") + '" onclick="wordSimToggle(\'table\')">Insert Table</button></div>';
+  html += '<div class="row"><button class="btn secondary" onclick="wordSimReset()">Reset</button><button class="btn" onclick="wordSimMark()">Mark Practical</button></div>';
+  html += '</div>';
+
+  html += '<div class="officeBody">';
+  html += '<div class="taskPane"><h3>Word practicals</h3><div class="grid" style="margin-top:12px">';
+  wordPracticalTasksV2.forEach(function(t){
+    const active = t.id === task.id ? " active" : "";
+    html += '<button class="tabBtn' + active + '" onclick="chooseWordTaskV2(\'' + t.id + '\')">' + esc(t.title) + '</button>';
+  });
+  html += '</div>';
+
+  html += '<div class="note" style="margin-top:14px"><b>' + esc(task.title) + '</b><br><span class="muted">' + esc(task.module) + '</span></div>';
+  html += '<ol style="padding-left:18px;line-height:1.65">';
+  task.instructions.forEach(function(step){
+    html += '<li>' + esc(step) + '</li>';
+  });
+  html += '</ol>';
+
+  if(w.marked){
+    html += '<div class="note"><b>Resultaat:</b> ' + r.score + '/' + r.total + ' (' + r.percent + '%)</div>';
+    r.checks.forEach(function(c){
+      html += '<div class="note" style="margin-top:8px">' + (c.ok ? "✅ " : "❌ ") + esc(c.text) + '</div>';
+    });
+  }
+  html += '</div>';
+
+  html += '<div class="wordCanvas">';
+  html += '<div class="wordPage ' + (w.landscape ? "landscape" : "") + '">';
+  html += '<div class="wordHeaderEdit" contenteditable="true" oninput="wordSimSet(\'header\',this.innerText)">' + esc(w.header || "") + '</div>';
+  html += '<div class="wordTitleEdit ' + (w.boldHeading ? "bold " : "") + (w.centeredHeading ? "center" : "") + '" contenteditable="true" oninput="wordSimSet(\'title\',this.innerText)">' + esc(w.title || "") + '</div>';
+  html += '<div class="wordBodyEdit ' + (w.columns ? "columns" : "") + '" contenteditable="true" oninput="wordSimSet(\'body\',this.innerText)">' + esc(w.body || "") + '</div>';
+  if(w.table){
+    html += '<table class="wordFakeTable"><tr><th></th><th></th><th></th></tr><tr><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr></table>';
+  }
+  html += '<div class="wordFooterEdit" contenteditable="true" oninput="wordSimSet(\'footer\',this.innerText)">' + esc(w.footer || (w.pageNumbers ? "Page 1" : "")) + '</div>';
+  html += '</div></div>';
+
+  html += '</div></div>';
+  html += '</div>';
+  return html;
+}
+
 function render(){
   const app=document.getElementById("app");
   if(!state.student) app.innerHTML=loginHTML();
@@ -4700,6 +4860,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
