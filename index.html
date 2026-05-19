@@ -4532,15 +4532,15 @@ function ensureExcelSim(){
   if(!state.excelSim){
     state.excelSim = {
       rows:[
-        {product:"Sweets", qty:"5", price:"4.50", formula:"=B2*C2"},
-        {product:"Chocolate", qty:"3", price:"7.50", formula:"=B3*C3"},
-        {product:"Chips", qty:"2", price:"12.00", formula:"=B4*C4"},
-        {product:"Juice", qty:"4", price:"6.00", formula:"=B5*C5"},
-        {product:"Biscuits", qty:"6", price:"5.00", formula:"=B6*C6"}
+        {product:"", qty:"", price:"", formula:""},
+        {product:"", qty:"", price:"", formula:""},
+        {product:"", qty:"", price:"", formula:""},
+        {product:"", qty:"", price:"", formula:""},
+        {product:"", qty:"", price:"", formula:""}
       ],
-      sumFormula:"=SUM(E2:E6)",
-      avgFormula:"=AVERAGE(E2:E6)",
-      maxFormula:"=MAX(E2:E6)",
+      sumFormula:"",
+      avgFormula:"",
+      maxFormula:"",
       marked:false
     };
   }
@@ -5017,6 +5017,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
