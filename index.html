@@ -4684,6 +4684,8 @@ function rttExamHTML(){
     html += '</div></div>';
   }
 
+  html += rttExamReviewHTML();
+
   html += '<div class="card"><div class="row space"><div><h2>Deel A: Teorie Vrae</h2><p class="muted">Beantwoord die 60 vrae. Hierdie punte tel saam met Word en Excel practical.</p></div><span class="pill active">' + theoryScore + '/' + qs.length + '</span></div>';
   html += '<div class="grid" style="margin-top:14px">';
 
@@ -4710,6 +4712,90 @@ function rttExamHTML(){
 
   html += '<div class="card"><div class="row space"><div><h2>Deel C: Excel Practical</h2><p class="muted">Maak die Excel Practical oop en voltooi dit. Die punt tel saam met die eksamen.</p></div><button class="btn" onclick="state.screen=\'cat_excel\';save();render()">Open Excel Practical</button></div>';
   html += '<div class="note" style="margin-top:12px"><b>Excel practical huidige punt:</b> ' + excelResultNow.score + '/' + excelResultNow.total + ' (' + excelResultNow.percent + '%)</div></div>';
+
+  html += '</div>';
+  return html;
+}
+
+
+// === RTT EXAM REVIEW + WEAK AREAS V1 ===
+function catModuleTitleById(id){
+  const mod = catQ2Modules.find(function(m){ return m.id === id; });
+  return mod ? (mod.badge + " " + mod.title) : id;
+}
+
+function rttExamReviewData(){
+  const qs = rttExamQuestions();
+  const wrong = [];
+  const moduleStats = {};
+
+  qs.forEach(function(q,i){
+    const chosen = (state.rttExamAnswers || {})[i];
+    if(!moduleStats[q.m]) moduleStats[q.m] = {total:0, wrong:0};
+    moduleStats[q.m].total++;
+
+    if(chosen !== q.a){
+      moduleStats[q.m].wrong++;
+      wrong.push({
+        number:i+1,
+        module:q.m,
+        question:q.q,
+        chosen: typeof chosen === "number" ? q.o[chosen] : "Nie beantwoord nie",
+        correct:q.o[q.a],
+        explanation:q.w
+      });
+    }
+  });
+
+  const weak = Object.keys(moduleStats)
+    .map(function(id){
+      return {
+        id:id,
+        title:catModuleTitleById(id),
+        wrong:moduleStats[id].wrong,
+        total:moduleStats[id].total
+      };
+    })
+    .filter(function(x){ return x.wrong > 0; })
+    .sort(function(a,b){ return b.wrong - a.wrong; });
+
+  return {wrong:wrong, weak:weak};
+}
+
+function rttExamReviewHTML(){
+  if(!state.rttExamFinished) return "";
+
+  const data = rttExamReviewData();
+  let html = "";
+
+  html += '<div class="card"><div class="row space"><div><h2>Exam Review</h2><p class="muted">Kyk waar Enrico punte verloor het en watter modules hy weer moet oefen.</p></div><span class="pill active">' + data.wrong.length + ' verkeerd</span></div>';
+
+  if(data.weak.length){
+    html += '<h3 style="margin-top:14px">Weak Areas</h3>';
+    html += '<div class="grid subjects" style="margin-top:12px">';
+    data.weak.forEach(function(w){
+      const pct = Math.round(((w.total - w.wrong) / w.total) * 100);
+      html += '<div class="smallStat"><b>' + w.wrong + '/' + w.total + ' verkeerd</b><span>' + esc(w.title) + '</span><br><span class="muted">' + pct + '% reg</span></div>';
+    });
+    html += '</div>';
+  } else {
+    html += '<div class="note" style="margin-top:12px">Mooi! Geen teorie vrae verkeerd nie.</div>';
+  }
+
+  if(data.wrong.length){
+    html += '<h3 style="margin-top:18px">Verkeerde vrae</h3>';
+    html += '<div class="grid" style="margin-top:12px">';
+    data.wrong.forEach(function(w){
+      html += '<div class="questionBox">';
+      html += '<b>Vraag ' + w.number + ': ' + esc(w.question) + '</b>';
+      html += '<div class="note" style="margin-top:10px"><b>Module:</b> ' + esc(catModuleTitleById(w.module)) + '</div>';
+      html += '<div class="note" style="margin-top:8px"><b>Enrico se antwoord:</b> ' + esc(w.chosen) + '</div>';
+      html += '<div class="note" style="margin-top:8px"><b>Regte antwoord:</b> ' + esc(w.correct) + '</div>';
+      html += '<div class="note" style="margin-top:8px"><b>Verduideliking:</b> ' + esc(w.explanation) + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
 
   html += '</div>';
   return html;
@@ -5546,6 +5632,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
