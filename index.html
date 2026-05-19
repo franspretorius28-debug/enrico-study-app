@@ -3807,12 +3807,30 @@ function loginHTML(){
   </div></div>`;
 }
 function topbar(){
-  const isCat = state.screen==="cat" || state.selectedSubject==="cat";
-  const studyAction = isCat ? "selectSubject('cat')" : "setState({screen:'study'})";
-  const examText = isCat ? "Start RTT Exam" : "Start K53 Exam";
-  const examAction = isCat ? "startRttExam()" : "startExam()";
+  const isCat = state.screen==="cat" || state.screen==="rtt_exam" || state.screen==="cat_excel" || state.screen==="cat_word" || state.selectedSubject==="cat";
+  const isAgri = state.screen==="agri" || state.screen==="agri_exam" || state.selectedSubject==="agri";
+
+  let subjectText = "• K53";
+  let studyAction = "setState({screen:'study'})";
+  let examText = "Start K53 Exam";
+  let examAction = "startExam()";
+
+  if(isCat){
+    subjectText = "• RTT / CAT Kwartaal 2";
+    studyAction = "selectSubject('cat')";
+    examText = "Start RTT Exam";
+    examAction = "startRttExam()";
+  }
+
+  if(isAgri){
+    subjectText = "• Landbou Wetenskappe";
+    studyAction = "selectSubject('agri')";
+    examText = "Start Landbou Test";
+    examAction = "state.screen='agri_exam';save();render()";
+  }
+
   return `<div class="topbar"><div class="wrap"><div class="card row space">
-    <div class="row"><div style="font-size:30px">🎓</div><div><h1>Student Study App</h1><div class="muted">Logged in as ${esc(state.student)} ${isCat ? "• RTT / CAT Kwartaal 2" : "• K53"}</div></div></div>
+    <div class="row"><div style="font-size:30px">🎓</div><div><h1>Student Study App</h1><div class="muted">Logged in as ${esc(state.student)} ${subjectText}</div></div></div>
     <div class="row">
       <button class="btn secondary" onclick="setState({screen:'dashboard'})">Subjects</button>
       <button class="btn secondary" onclick="${studyAction}">Study</button>
@@ -3821,6 +3839,8 @@ function topbar(){
     </div>
   </div></div></div>`;
 }
+// === AGRI PATCH 2B-A: topbar recognises Landbou ===
+
 function dashboardHTML(){
   return `${topbar()}<div class="wrap grid">
     <div class="card">
@@ -6142,6 +6162,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
