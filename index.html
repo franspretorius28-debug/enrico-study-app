@@ -4222,7 +4222,7 @@ function catExamHTML(){
   html += '<div class="grid subjects" style="margin-top:14px">';
   html += '<button class="subjectBtn" onclick="startRttExam()"><div style="font-size:34px;margin-bottom:10px">💻</div><h3>Start RTT Exam</h3><p class="muted">Teorie vrae plus practical marks saam.</p><span class="pill active">Exam</span></button>';
   html += '<button class="subjectBtn" onclick="state.screen=\'cat_word\';save();render()"><div style="font-size:34px;margin-bottom:10px">📝</div><h3>Word Practical</h3><p class="muted">Oefen opskrif, paragrawe, header/footer, columns en table.</p><span class="pill active">Word</span></button>';
-  html += '<button class="subjectBtn" onclick="alert(\'Excel Practical is volgende. Ons bou hom nou na Word.\')"><div style="font-size:34px;margin-bottom:10px">📊</div><h3>Excel Practical</h3><p class="muted">Spreadsheet simulator kom volgende: formulas, SUM, AVERAGE, MAX.</p><span class="pill">Next</span></button>';
+  html += '<button class="subjectBtn" onclick="state.screen=\"cat_excel\";save();render()"><div style="font-size:34px;margin-bottom:10px">📊</div><h3>Excel Practical</h3><p class="muted">Oefen sigblad, formulas, SUM, AVERAGE en MAX.</p><span class="pill active">Excel</span></button>';
   html += '</div></div>';
 
   html += '<div class="card"><div class="row space"><div><h2>Oefenvrae</h2><p class="muted">Teorie vrae vir Kwartaal 2. Die practical word apart in die Werkarea gedoen.</p></div><div class="row"><button class="btn" onclick="state.catShowAnswers=true;save();render()">Merk Antwoorde</button><button class="btn secondary" onclick="catReset()">Begin weer</button></div></div>';
@@ -5017,6 +5017,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
