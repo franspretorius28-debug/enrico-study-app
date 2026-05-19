@@ -4162,6 +4162,8 @@ function catExamHTML(){
   });
   html += '</div></div>';
 
+    html += '<div class="card"><div class="row space"><div><h2>📝 Practical Simulator</h2><p class="muted">Doen ’n Word practical direk in die app en kry dadelik ’n punt.</p></div><button class="btn" onclick="state.screen=\'cat_word\';save();render()">Open Word Simulator</button></div></div>';
+
   html += catTasksHTML();
 
   html += '<div class="card"><div class="row space"><div><h2>Practice Questions</h2><p class="muted">Score wys eers nadat jy Mark Answers druk.</p></div><div class="row"><button class="btn" onclick="state.catShowAnswers=true;save();render()">Mark Answers</button><button class="btn secondary" onclick="catReset()">Reset</button></div></div>';
@@ -4189,6 +4191,176 @@ function catExamHTML(){
   return html;
 }
 
+
+// === RTT WORD PRACTICAL SIMULATOR V1 ===
+function ensureWordSim(){
+  if(!state.wordSim){
+    state.wordSim = {
+      title:"",
+      body:"",
+      header:"",
+      footer:"",
+      landscape:false,
+      pageNumbers:false,
+      columns:false,
+      table:false,
+      boldHeading:false,
+      centeredHeading:false,
+      marked:false
+    };
+  }
+  return state.wordSim;
+}
+
+function wordSimSet(field, value){
+  const w = ensureWordSim();
+  w[field] = value;
+  w.marked = false;
+  save();
+}
+
+function wordSimToggle(field){
+  const w = ensureWordSim();
+  w[field] = !w[field];
+  w.marked = false;
+  save();
+  render();
+}
+
+function wordSimReset(){
+  state.wordSim = {
+    title:"",
+    body:"",
+    header:"",
+    footer:"",
+    landscape:false,
+    pageNumbers:false,
+    columns:false,
+    table:false,
+    boldHeading:false,
+    centeredHeading:false,
+    marked:false
+  };
+  save();
+  render();
+}
+
+function wordSimMark(){
+  const w = ensureWordSim();
+  w.marked = true;
+  save();
+  render();
+
+  const r = wordSimResult();
+  sendResultToParent({
+    student: state.student || "Enrico",
+    subject: "RTT / CAT",
+    mode: "Word Practical Simulator",
+    task: "Kwartaal 2 Word practical",
+    module: "3.5 Verdere formatering / 3.6 Tabelle",
+    status: r.passed ? "Passed" : "Needs practice",
+    score: r.score,
+    total: r.total,
+    percent: r.percent,
+    passed: r.passed,
+    wrongCount: r.total - r.score,
+    weakAreas: r.missing.length ? r.missing.join(", ") : "None",
+    wrongQuestions: r.missing.length ? "Improve: " + r.missing.join(", ") : "None",
+    device: navigator.userAgent || ""
+  });
+}
+
+function wordSimResult(){
+  const w = ensureWordSim();
+  const checks = [
+    {ok: w.title.trim().length >= 5, text:"Opskrif is ingevul"},
+    {ok: w.boldHeading, text:"Opskrif is bold gemaak"},
+    {ok: w.centeredHeading, text:"Opskrif is gesentreer"},
+    {ok: w.body.trim().length >= 80, text:"Minstens twee kort paragrawe is ingevul"},
+    {ok: w.header.trim().length >= 3, text:"Header is ingevul"},
+    {ok: w.footer.trim().length >= 3 || w.pageNumbers, text:"Footer of page number is ingevul"},
+    {ok: w.landscape || w.columns || w.table, text:"Minstens een gevorderde Word-funksie is gebruik"}
+  ];
+  const score = checks.filter(function(c){ return c.ok; }).length;
+  const total = checks.length;
+  const percent = Math.round(score / total * 100);
+  return {
+    checks: checks,
+    score: score,
+    total: total,
+    percent: percent,
+    passed: percent >= 70,
+    missing: checks.filter(function(c){ return !c.ok; }).map(function(c){ return c.text; })
+  };
+}
+
+function catWordSimulatorHTML(){
+  const w = ensureWordSim();
+  const r = wordSimResult();
+
+  let html = topbar();
+  html += '<div class="wrap grid">';
+
+  html += '<div class="card"><div class="row space"><div><h2>📝 RTT Word Practical Simulator</h2><p class="muted">Kwartaal 2 oefening: Verdere formatering en Tabelle. Hierdie is soos ’n klein online Word-oefening.</p></div><button class="btn secondary" onclick="selectSubject(\'cat\')">Back to CAT</button></div></div>';
+
+  html += '<div class="card"><h2>Instruksies</h2><div class="note" style="margin-top:12px">';
+  html += '<b>Taak:</b> Skep ’n kort dokument oor Computer Hardware and Software. Vul ’n opskrif, paragrawe, header/footer in, en gebruik minstens een Word-funksie soos landscape, columns of table.';
+  html += '</div></div>';
+
+  html += '<div class="card"><div class="row space"><div><h2>Jou dokument</h2><p class="muted">Tik jou werk hieronder. Klik dan Mark Practical.</p></div><div class="row"><button class="btn secondary" onclick="wordSimReset()">Reset</button><button class="btn" onclick="wordSimMark()">Mark Practical</button></div></div>';
+
+  html += '<div class="grid two" style="margin-top:14px">';
+  html += '<div>';
+  html += '<label class="field">Header</label><input value="' + esc(w.header) + '" oninput="wordSimSet(\'header\',this.value)" placeholder="Byvoorbeeld: Enrico - RTT Term 2">';
+  html += '</div>';
+  html += '<div>';
+  html += '<label class="field">Footer</label><input value="' + esc(w.footer) + '" oninput="wordSimSet(\'footer\',this.value)" placeholder="Byvoorbeeld: Page 1">';
+  html += '</div>';
+  html += '</div>';
+
+  html += '<label class="field">Opskrif</label>';
+  html += '<input value="' + esc(w.title) + '" oninput="wordSimSet(\'title\',this.value)" placeholder="Computer Hardware and Software">';
+
+  html += '<div class="row" style="margin-top:12px">';
+  html += '<button class="btn secondary" onclick="wordSimToggle(\'boldHeading\')">' + (w.boldHeading ? "✓ " : "") + 'Bold heading</button>';
+  html += '<button class="btn secondary" onclick="wordSimToggle(\'centeredHeading\')">' + (w.centeredHeading ? "✓ " : "") + 'Centre heading</button>';
+  html += '<button class="btn secondary" onclick="wordSimToggle(\'landscape\')">' + (w.landscape ? "✓ " : "") + 'Landscape</button>';
+  html += '<button class="btn secondary" onclick="wordSimToggle(\'pageNumbers\')">' + (w.pageNumbers ? "✓ " : "") + 'Page numbers</button>';
+  html += '<button class="btn secondary" onclick="wordSimToggle(\'columns\')">' + (w.columns ? "✓ " : "") + 'Columns</button>';
+  html += '<button class="btn secondary" onclick="wordSimToggle(\'table\')">' + (w.table ? "✓ " : "") + 'Table</button>';
+  html += '</div>';
+
+  html += '<label class="field">Paragrawe</label>';
+  html += '<textarea style="width:100%;min-height:170px;border:1px solid #e2e8f0;border-radius:18px;padding:14px;font:inherit" oninput="wordSimSet(\'body\',this.value)" placeholder="Tik twee kort paragrawe hier...">' + esc(w.body) + '</textarea>';
+
+  html += '<div class="note" style="margin-top:14px">';
+  html += '<b>Preview:</b><br>';
+  html += '<div style="margin-top:10px;border:1px solid #e2e8f0;border-radius:16px;padding:16px;background:white">';
+  html += '<div class="muted">' + esc(w.header || "Header kom hier") + '</div>';
+  html += '<h2 style="' + (w.centeredHeading ? "text-align:center;" : "") + (w.boldHeading ? "font-weight:900;" : "font-weight:500;") + '">' + esc(w.title || "Opskrif kom hier") + '</h2>';
+  html += '<div style="' + (w.columns ? "columns:2;column-gap:26px;" : "") + '">' + esc(w.body || "Paragrawe kom hier...").replace(/\n/g,"<br>") + '</div>';
+  if(w.table){
+    html += '<table style="width:100%;margin-top:14px;border-collapse:collapse"><tr><th style="border:1px solid #cbd5e1;padding:8px">Item</th><th style="border:1px solid #cbd5e1;padding:8px">Type</th></tr><tr><td style="border:1px solid #cbd5e1;padding:8px">Keyboard</td><td style="border:1px solid #cbd5e1;padding:8px">Input</td></tr><tr><td style="border:1px solid #cbd5e1;padding:8px">Monitor</td><td style="border:1px solid #cbd5e1;padding:8px">Output</td></tr></table>';
+  }
+  html += '<div class="muted" style="margin-top:14px">' + esc(w.footer || (w.pageNumbers ? "Page 1" : "Footer kom hier")) + '</div>';
+  html += '</div></div>';
+
+  if(w.marked){
+    html += '<div class="card" style="margin-top:14px"><h2>Resultaat: ' + r.score + '/' + r.total + ' (' + r.percent + '%)</h2>';
+    html += '<div class="grid" style="margin-top:12px">';
+    r.checks.forEach(function(c){
+      html += '<div class="note">' + (c.ok ? "✅ " : "❌ ") + esc(c.text) + '</div>';
+    });
+    html += '</div>';
+    html += '<div class="note" style="margin-top:12px"><b>' + (r.passed ? "Goed gedoen!" : "Oefen weer.") + '</b></div>';
+    html += '</div>';
+  }
+
+  html += '</div>';
+  html += '</div>';
+  return html;
+}
+
 function render(){
   const app=document.getElementById("app");
   if(!state.student) app.innerHTML=loginHTML();
@@ -4201,6 +4373,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
