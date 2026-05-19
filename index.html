@@ -4334,6 +4334,24 @@ function catScore(){
   });
   return score;
 }
+
+// === CAT Q2 COVERAGE COUNTER V1 ===
+function catModuleQuestionCount(moduleId){
+  if(moduleId === "all") return catQ2Questions.length;
+  return catQ2Questions.filter(function(q){ return q.m === moduleId; }).length;
+}
+
+function catCoverageHTML(){
+  let html = '<div class="card"><div class="row space"><div><h2>Term 2 Coverage</h2><p class="muted">Vrae per module in die study app.</p></div><span class="pill active">' + catQ2Questions.length + ' vrae total</span></div>';
+  html += '<div class="grid subjects" style="margin-top:14px">';
+  catQ2Modules.filter(function(m){ return m.id !== "all"; }).forEach(function(m){
+    const count = catModuleQuestionCount(m.id);
+    html += '<div class="smallStat"><b>' + count + '</b><span>' + esc(m.title) + '</span><br><span class="muted">' + esc(m.badge) + '</span></div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
 function catExamHTML(){
   state.catModule = state.catModule || "all";
   const qs = catFilteredQuestions();
@@ -4356,6 +4374,8 @@ function catExamHTML(){
   html += '<button class="subjectBtn" onclick="state.screen=\'cat_word\';save();render()"><div style="font-size:34px;margin-bottom:10px">📝</div><h3>Word Practical</h3><p class="muted">Oefen opskrif, paragrawe, header/footer, columns en table.</p><span class="pill active">Word</span></button>';
   html += '<button class="subjectBtn" onclick="state.screen=\'cat_excel\';save();render()"><div style="font-size:34px;margin-bottom:10px">📊</div><h3>Excel Practical</h3><p class="muted">Oefen sigblad, formulas, SUM, AVERAGE en MAX.</p><span class="pill active">Excel</span></button>';
   html += '</div></div>';
+
+  html += catCoverageHTML();
 
   html += '<div class="card"><div class="row space"><div><h2>Oefenvrae</h2><p class="muted">Teorie vrae vir Kwartaal 2. Die practical word apart in die Werkarea gedoen.</p></div><div class="row"><button class="btn" onclick="state.catShowAnswers=true;save();render()">Merk Antwoorde</button><button class="btn secondary" onclick="catReset()">Begin weer</button></div></div>';
   html += '<div class="note" style="text-align:center;margin-top:12px"><b>Questions:</b> ' + qs.length + ' | <b>Score:</b> ' + (state.catShowAnswers ? (score + "/" + qs.length + " (" + pct + "%)") : "?") + '</div>';
@@ -5341,6 +5361,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
