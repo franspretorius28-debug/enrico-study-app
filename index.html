@@ -76,7 +76,7 @@ const RESULTS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbylvLXva-qg
 
 const subjects = [
   {id:"k53", title:"K53 Learner’s Licence", subtitle:"Road signs, rules, markings, and controls", status:"Active", icon:"🚗"},
-  {id:"cat", title:"CAT / Computers", subtitle:"Next subject will be added here", status:"Coming soon", icon:"💻"},
+  {id:"cat", title:"CAT / Computers", subtitle:"Graad 10 RTT - Kwartaal 2 eksamenvoorbereiding", status:"Active", icon:"💻"},
   {id:"next", title:"Next Test Subject", subtitle:"Upload the book and answers, then we add it here", status:"Coming soon", icon:"➕"}
 ];
 
@@ -3775,7 +3775,9 @@ function dashboardHTML(){
 }
 function selectSubject(id){
   state.selectedSubject=id;
-  state.screen = id==="k53" ? "study" : "dashboard";
+  if(id==="k53") state.screen = "study";
+  else if(id==="cat") state.screen = "cat";
+  else state.screen = "dashboard";
   save(); render();
 }
 function studyHTML(){
@@ -3846,17 +3848,150 @@ function examHTML(){
     </div>`:""}
   </div></div>`;
 }
+
+// === ENRICO CAT / RTT TERM 2 MODULE ===
+const catQ2Modules = [
+  {id:"all", title:"Mixed Term 2 Exam", badge:"Alles"},
+  {id:"m35", title:"3.5 Verdere formatering", badge:"Word"},
+  {id:"m16", title:"1.6 Uitgebreide konsepte van sagteware", badge:"Theory"},
+  {id:"m36", title:"3.6 Tabelle", badge:"Word tables"},
+  {id:"m17", title:"1.7 Uitgebreide konsepte van hardeware", badge:"Hardware"},
+  {id:"m41", title:"4.1 Inleiding tot sigbladverwerking", badge:"Excel basics"},
+  {id:"m21", title:"2.1 Inleiding tot netwerke", badge:"Networks"},
+  {id:"m42", title:"4.2 Berekeninge", badge:"Excel formulas"},
+  {id:"m61", title:"6.1 Strategie vir probleemoplossing", badge:"Info management"}
+];
+
+const catQ2Questions = [
+  {m:"m35", q:"Wat beteken page orientation in Word?", o:["Die rigting van die bladsy, soos portrait of landscape","Die spellingtaal","Die tipe printer","Die naam van die dokument"], a:0, w:"Page orientation verander hoe die bladsy lê: portrait of landscape."},
+  {m:"m35", q:"Waarvoor gebruik jy headers en footers?", o:["Om teks bo of onder elke bladsy te herhaal","Om ’n dokument te delete","Om ’n rekenaar aan te skakel","Om net prente te crop"], a:0, w:"Headers en footers word gebruik vir herhalende inligting soos name, bladsynommers of datums."},
+  {m:"m35", q:"Wat is die doel van page numbers?", o:["Om bladsye maklik te identifiseer","Om spelling te toets","Om ’n tabel te sorteer","Om internet vinniger te maak"], a:0, w:"Bladsynommers help met volgorde en verwysings."},
+  {m:"m35", q:"Wat doen columns in ’n Word dokument?", o:["Verdeel teks in meer as een vertikale kolom","Maak die teks net rooi","Stoor die dokument","Maak ’n formule"], a:0, w:"Columns word gebruik vir koerantstyl of brosjure-uitleg."},
+  {m:"m35", q:"Wat beteken hyphenation?", o:["Woorde word aan die einde van ’n lyn afgekap","Alle woorde word vetdruk gemaak","Die dokument word gesluit","Die font word verander"], a:0, w:"Hyphenation help om teks netjieser in kolomme te laat vloei."},
+
+  {m:"m16", q:"Wat is stelselsagteware?", o:["Sagteware wat die rekenaar en hardeware help bestuur","’n Speletjie","’n Foto","’n Tipe netwerk kabel"], a:0, w:"Stelselsagteware soos ’n bedryfstelsel laat die rekenaar en programme werk."},
+  {m:"m16", q:"Wat is toepassingsagteware?", o:["Programme wat gebruikers help om take te doen","Slegs die CPU","’n Muis aksie","Net ’n monitor"], a:0, w:"Toepassingsagteware sluit programme soos Word, Excel en PowerPoint in."},
+  {m:"m16", q:"Wat is ’n bedryfstelsel?", o:["Die hoofprogram wat die rekenaar bestuur","’n Webblad","’n Printer cartridge","’n Dokument se naam"], a:0, w:"Windows, macOS, Android en Linux is voorbeelde van bedryfstelsels."},
+  {m:"m16", q:"Wat beteken GUI?", o:["Graphical User Interface","General USB Input","Graphic Update Internet","Global User Install"], a:0, w:"GUI beteken die gebruiker werk met vensters, ikone, knoppies en menus."},
+  {m:"m16", q:"Wat is ’n utility program?", o:["’n Program wat help met onderhoud of bestuur van die rekenaar","’n Tipe sjokolade","’n Monitor","’n Netwerkkabel"], a:0, w:"Utilities help byvoorbeeld met antivirus, backup, compression of disk cleanup."},
+
+  {m:"m36", q:"Waarvoor gebruik jy ’n table in Word?", o:["Om inligting in rye en kolomme te organiseer","Om Windows te update","Om ’n netwerk te bou","Om net spelling te check"], a:0, w:"Tabelle maak vergelykings en netjiese uitleg makliker."},
+  {m:"m36", q:"Wat is ’n row in ’n table?", o:["’n Horisontale ry selle","’n Vertikale kolom","’n Formule","’n File tipe"], a:0, w:"Rows loop links na regs."},
+  {m:"m36", q:"Wat is ’n column in ’n table?", o:["’n Vertikale kolom selle","’n Paragraaf","’n Hardeskyf","’n Browser"], a:0, w:"Columns loop bo na onder."},
+  {m:"m36", q:"Wat beteken merge cells?", o:["Selle word saamgevoeg","Selle word alfabeties gesorteer","Selle word verwyder sonder inhoud","Selle word geprint"], a:0, w:"Merge cells maak een groter sel uit twee of meer selle."},
+  {m:"m36", q:"Wat beteken split cells?", o:["Een sel word in meer selle verdeel","Die dokument word gesluit","Die font word groter","Die tabel word ’n prent"], a:0, w:"Split cells verdeel ’n sel in aparte rye of kolomme."},
+
+  {m:"m17", q:"Wat is hardeware?", o:["Fisiese dele van ’n rekenaar wat jy kan aanraak","Programme op die rekenaar","’n Webadres","’n Wagwoord"], a:0, w:"Hardeware is fisies, soos CPU, RAM, monitor, keyboard en printer."},
+  {m:"m17", q:"Wat is RAM?", o:["Tydelike geheue wat programme gebruik terwyl die rekenaar aan is","Permanente berging","’n Printer tipe","’n Netwerknaam"], a:0, w:"RAM is vinnige tydelike geheue; dit word skoongemaak wanneer krag af is."},
+  {m:"m17", q:"Wat is die CPU?", o:["Die verwerker wat instruksies uitvoer","’n Muis","’n Monitor","’n USB-poort"], a:0, w:"CPU verwerk instruksies en word dikwels die brein van die rekenaar genoem."},
+  {m:"m17", q:"Wat is ’n input device?", o:["’n Toestel waarmee data ingevoer word","’n Toestel wat net druk","’n Webblad","’n Antivirus"], a:0, w:"Keyboard, mouse, scanner en microphone is input devices."},
+  {m:"m17", q:"Wat is ’n output device?", o:["’n Toestel wat resultate wys of gee","’n Toestel wat data net invoer","’n Spreadsheet formule","’n Password"], a:0, w:"Monitor, printer en speakers is output devices."},
+
+  {m:"m41", q:"Wat is Excel hoofsaaklik?", o:["’n Sigbladprogram vir data en berekeninge","’n Antivirus","’n Webbrowser","’n Bedryfstelsel"], a:0, w:"Excel word gebruik vir berekeninge, lyste, data en grafieke."},
+  {m:"m41", q:"Wat is ’n cell in Excel?", o:["Die plek waar ’n ry en kolom kruis","’n Hele dokument","’n Printer","’n Netwerkkabel"], a:0, w:"’n Sel is byvoorbeeld A1 of B3."},
+  {m:"m41", q:"Wat is ’n workbook?", o:["Die hele Excel lêer","Net een sel","Net een ry","Net ’n formule"], a:0, w:"’n Workbook kan een of meer worksheets bevat."},
+  {m:"m41", q:"Wat is ’n worksheet?", o:["Een blad binne ’n workbook","’n Printer setting","’n USB toestel","’n Internet adres"], a:0, w:"Sheet1, Sheet2 en Sheet3 is worksheets."},
+  {m:"m41", q:"Wat moet ’n Excel formule gewoonlik mee begin?", o:["=","#","@","&"], a:0, w:"Formules begin gewoonlik met ’n gelyk-aan teken."},
+
+  {m:"m21", q:"Wat is ’n netwerk?", o:["Rekenaars/toestelle wat gekoppel is om hulpbronne of data te deel","Net ’n enkele printer","’n Word dokument","’n Tipe tabel"], a:0, w:"Netwerke laat toestelle data, internet, printers of lêers deel."},
+  {m:"m21", q:"Wat is ’n LAN?", o:["Local Area Network","Large Access Note","Linked App Name","Local Antivirus Number"], a:0, w:"LAN is ’n netwerk in ’n klein area soos ’n huis, kantoor of skool."},
+  {m:"m21", q:"Wat is ’n WAN?", o:["Wide Area Network","Windows App Note","Wireless Audio Name","Word Area Number"], a:0, w:"WAN dek ’n groot area; die internet is ’n bekende voorbeeld."},
+  {m:"m21", q:"Wat is Wi-Fi?", o:["Draadlose netwerkkommunikasie","’n Tipe papier","’n Word style","’n Printer cartridge"], a:0, w:"Wi-Fi verbind toestelle draadloos aan ’n netwerk."},
+  {m:"m21", q:"Wat is die voordeel van ’n netwerk?", o:["Deel van lêers, internet en toestelle soos printers","Dit maak altyd rekenaars goedkoper","Dit maak spelling reg","Dit vervang ’n monitor"], a:0, w:"Netwerke help met deel van hulpbronne en kommunikasie."},
+
+  {m:"m42", q:"Wat beteken selverwysing in Excel?", o:["Die naam/adres van ’n sel soos A1","’n Printer se IP","’n File extension","’n Word font"], a:0, w:"Selverwysings maak formules dinamies."},
+  {m:"m42", q:"Watter formule tel A1 en A2 bymekaar?", o:["=A1+A2","A1+A2","=A1xA2","SUM A1 A2"], a:0, w:"Excel formules begin met = en gebruik operators."},
+  {m:"m42", q:"Watter funksie tel ’n reeks getalle bymekaar?", o:["SUM","MAX","MIN","AVERAGE"], a:0, w:"SUM tel waardes op."},
+  {m:"m42", q:"Watter funksie kry die grootste waarde?", o:["MAX","MIN","SUM","COUNT"], a:0, w:"MAX gee die hoogste waarde."},
+  {m:"m42", q:"Watter funksie kry die gemiddelde?", o:["AVERAGE","MAX","MIN","LEFT"], a:0, w:"AVERAGE bereken die gemiddelde."},
+
+  {m:"m61", q:"Wat is die eerste stap in probleemoplossing?", o:["Verstaan/identifiseer die probleem","Druk dadelik print","Maak enige grafiek","Delete alle data"], a:0, w:"Jy moet eers seker maak wat die probleem vra."},
+  {m:"m61", q:"Hoekom moet jy relevante data kies?", o:["Sodat jou oplossing op bruikbare inligting gebaseer is","Om die lêer groter te maak","Om Excel stadiger te maak","Om alle antwoorde weg te steek"], a:0, w:"Nie alle data is nuttig vir elke probleem nie."},
+  {m:"m61", q:"Wat beteken verwerking van data?", o:["Data verander of organiseer om betekenisvolle inligting te kry","Net data oortik sonder doel","Rekenaar afskakel","Internet delete"], a:0, w:"Verwerking verander rou data in bruikbare inligting."},
+  {m:"m61", q:"Hoekom moet ’n oplossing geëvalueer word?", o:["Om te kyk of dit die probleem reg oplos","Om net kleur te verander","Om die monitor te toets","Om RAM uit te haal"], a:0, w:"Evaluering wys of die oplossing akkuraat en bruikbaar is."},
+  {m:"m61", q:"Watter een is ’n goeie probleemoplossing gewoonte?", o:["Lees die instruksies deeglik en beplan voor jy begin","Raai die antwoord","Ignoreer data","Begin sonder om te stoor"], a:0, w:"Beplanning voorkom foute en mors van tyd."}
+];
+
+function catFilteredQuestions(){
+  const mod = state.catModule || "all";
+  if(mod==="all") return catQ2Questions.slice();
+  return catQ2Questions.filter(function(q){ return q.m===mod; });
+}
+function catChoose(i, oi){
+  if(!state.catAnswers) state.catAnswers = {};
+  const mod = state.catModule || "all";
+  state.catAnswers[mod + "-" + i] = oi;
+  save(); render();
+}
+function catReset(){
+  state.catAnswers = {};
+  state.catShowAnswers = false;
+  save(); render();
+}
+function catScore(){
+  const qs = catFilteredQuestions();
+  const mod = state.catModule || "all";
+  let score = 0;
+  qs.forEach(function(q,i){
+    if((state.catAnswers||{})[mod + "-" + i] === q.a) score++;
+  });
+  return score;
+}
+function catExamHTML(){
+  state.catModule = state.catModule || "all";
+  const qs = catFilteredQuestions();
+  const score = catScore();
+  const pct = qs.length ? Math.round(score / qs.length * 100) : 0;
+  let html = topbar();
+  html += '<div class="wrap grid">';
+  html += '<div class="card"><div class="row space"><div><h2>💻 RTT / CAT Kwartaal 2</h2><p class="muted">Eksamenvoorbereiding vir Graad 10. Kies ’n module of oefen alles gemeng.</p></div><button class="btn secondary" onclick="selectSubject(\'k53\')">Back to K53</button></div></div>';
+
+  html += '<div class="card"><h2>Modules</h2><div class="row" style="margin-top:12px">';
+  catQ2Modules.forEach(function(m){
+    const active = (state.catModule || "all") === m.id ? " active" : "";
+    html += '<button class="tabBtn' + active + '" onclick="state.catModule=\'' + m.id + '\';state.catShowAnswers=false;save();render()">' + esc(m.title) + '</button>';
+  });
+  html += '</div></div>';
+
+  html += '<div class="card"><div class="row space"><div><h2>Practice Questions</h2><p class="muted">Score wys eers nadat jy Mark Answers druk.</p></div><div class="row"><button class="btn" onclick="state.catShowAnswers=true;save();render()">Mark Answers</button><button class="btn secondary" onclick="catReset()">Reset</button></div></div>';
+  html += '<div class="note" style="text-align:center;margin-top:12px"><b>Questions:</b> ' + qs.length + ' | <b>Score:</b> ' + (state.catShowAnswers ? (score + "/" + qs.length + " (" + pct + "%)") : "?") + '</div>';
+  html += '<div class="grid" style="margin-top:14px">';
+
+  qs.forEach(function(q,i){
+    const mod = state.catModule || "all";
+    const chosen = (state.catAnswers||{})[mod + "-" + i];
+    const reveal = !!state.catShowAnswers;
+    html += '<div class="questionBox"><b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
+    q.o.forEach(function(o,oi){
+      let cls = "optionBtn";
+      if(chosen===oi && !reveal) cls += " selected";
+      if(reveal && q.a===oi) cls += " correct";
+      if(reveal && chosen===oi && q.a!==oi) cls += " wrong";
+      html += '<button class="' + cls + '" onclick="catChoose(' + i + ',' + oi + ')">' + String.fromCharCode(65+oi) + '. ' + esc(o) + '</button>';
+    });
+    html += '</div>';
+    if(reveal) html += '<div class="note" style="margin-top:12px"><b>Verduideliking:</b> ' + esc(q.w) + '</div>';
+    html += '</div>';
+  });
+
+  html += '</div></div></div>';
+  return html;
+}
+
 function render(){
   const app=document.getElementById("app");
   if(!state.student) app.innerHTML=loginHTML();
   else if(state.screen==="dashboard") app.innerHTML=dashboardHTML();
   else if(state.screen==="exam") app.innerHTML=examHTML();
+  else if(state.screen==="cat") app.innerHTML=catExamHTML();
   else app.innerHTML=studyHTML();
 }
 load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFinished) startTimer();
 </script>
 </body>
 </html>
+
+
 
 
 
