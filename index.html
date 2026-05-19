@@ -3987,17 +3987,101 @@ const catQ2Tasks = [
   ]}
 ];
 
+function catTaskKey(idx){ return "catTask_" + idx; }
+
+function catTaskState(idx){
+  if(!state.catTaskProgress) state.catTaskProgress = {};
+  const key = catTaskKey(idx);
+  if(!state.catTaskProgress[key]){
+    state.catTaskProgress[key] = {steps:{}, status:"Not started", note:""};
+  }
+  return state.catTaskProgress[key];
+}
+
+function catToggleTaskStep(idx, stepIdx){
+  const t = catTaskState(idx);
+  t.steps[stepIdx] = !t.steps[stepIdx];
+  const task = catQ2Tasks[idx];
+  const doneCount = Object.values(t.steps).filter(Boolean).length;
+  if(doneCount === 0) t.status = "Not started";
+  else if(doneCount < task.steps.length) t.status = "Busy";
+  else t.status = "Completed";
+  save(); render();
+}
+
+function catSetTaskStatus(idx, status){
+  const t = catTaskState(idx);
+  t.status = status;
+  t.reviewedAt = new Date().toLocaleString();
+  save(); render();
+
+  if(status === "Parent approved" || status === "Needs fix"){
+    const task = catQ2Tasks[idx];
+    const doneCount = Object.values(t.steps || {}).filter(Boolean).length;
+    sendResultToParent({
+      student: state.student || "Enrico",
+      subject: "RTT / CAT",
+      mode: "Practical Task",
+      task: task.title,
+      module: task.module,
+      status: status,
+      score: doneCount,
+      total: task.steps.length,
+      percent: Math.round(doneCount / task.steps.length * 100),
+      passed: status === "Parent approved",
+      wrongCount: status === "Needs fix" ? 1 : 0,
+      weakAreas: status === "Needs fix" ? task.module : "None",
+      wrongQuestions: status === "Needs fix" ? "Practical task needs correction: " + task.title : "None",
+      device: navigator.userAgent || ""
+    });
+  }
+}
+
+function catTaskStatusClass(status){
+  if(status === "Parent approved") return "active";
+  if(status === "Needs fix") return "";
+  if(status === "Completed") return "active";
+  return "";
+}
+
 function catTasksHTML(){
-  let html = '<div class="card"><div class="row space"><div><h2>🧰 Practical Tasks</h2><p class="muted">Word, Excel and theory tasks for Term 2 exam preparation.</p></div><span class="pill active">Term 2</span></div>';
+  let html = '<div class="card"><div class="row space"><div><h2>🧰 Practical Tasks</h2><p class="muted">Enrico ticks each step, then parent checks the Word/Excel file and approves it.</p></div><span class="pill active">Term 2</span></div>';
   html += '<div class="grid" style="margin-top:14px">';
+
   catQ2Tasks.forEach(function(t,idx){
+    const progress = catTaskState(idx);
+    const doneCount = Object.values(progress.steps || {}).filter(Boolean).length;
+    const percent = Math.round(doneCount / t.steps.length * 100);
+
     html += '<div class="questionBox">';
-    html += '<div class="row space"><div><b>' + esc(t.title) + '</b><br><span class="muted">' + esc(t.type + " • " + t.module) + '</span></div><span class="pill">' + esc(t.type) + '</span></div>';
+    html += '<div class="row space">';
+    html += '<div><b>' + esc(t.title) + '</b><br><span class="muted">' + esc(t.type + " • " + t.module) + '</span></div>';
+    html += '<div class="row"><span class="pill">' + esc(t.type) + '</span><span class="pill ' + catTaskStatusClass(progress.status) + '">' + esc(progress.status) + '</span></div>';
+    html += '</div>';
+
+    html += '<div class="progress" style="margin-top:12px"><div style="width:' + percent + '%"></div></div>';
+    html += '<div class="muted" style="margin-top:8px">Progress: ' + doneCount + '/' + t.steps.length + ' steps completed (' + percent + '%)</div>';
+
     html += '<ol style="margin-top:12px">';
-    t.steps.forEach(function(step){ html += '<li>' + esc(step) + '</li>'; });
+    t.steps.forEach(function(step,stepIdx){
+      const checked = progress.steps && progress.steps[stepIdx] ? "checked" : "";
+      html += '<li style="margin:8px 0"><label style="display:flex;gap:10px;align-items:flex-start"><input type="checkbox" ' + checked + ' onchange="catToggleTaskStep(' + idx + ',' + stepIdx + ')"><span>' + esc(step) + '</span></label></li>';
+    });
     html += '</ol>';
+
+    html += '<div class="row" style="margin-top:12px">';
+    html += '<button class="btn secondary" onclick="catSetTaskStatus(' + idx + ',\'Completed\')">Mark Complete</button>';
+    html += '<button class="btn" onclick="catSetTaskStatus(' + idx + ',\'Parent approved\')">Parent Approved</button>';
+    html += '<button class="btn secondary" onclick="catSetTaskStatus(' + idx + ',\'Needs fix\')">Needs Fix</button>';
+    html += '</div>';
+
+    if(progress.reviewedAt){
+      html += '<div class="note" style="margin-top:12px"><b>Last reviewed:</b> ' + esc(progress.reviewedAt) + '</div>';
+    }
+
     html += '</div>';
   });
+
   html += '</div></div>';
   return html;
 }
@@ -4082,6 +4166,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
