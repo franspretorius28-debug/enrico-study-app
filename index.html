@@ -4658,11 +4658,11 @@ function catExcelSimulatorHTML(){
   html += '<div class="officeApp">';
   html += '<div class="officeTitleBar excel"><span>Excel - RTT Term 2 Spreadsheet.xlsx</span><div class="officeWindowBtns"><span class="officeDot"></span><span class="officeDot"></span><span class="officeDot"></span></div></div>';
   html += '<div class="officeRibbon"><div class="ribbonGroup"><button class="ribbonBtn active">Home</button><button class="ribbonBtn">Insert</button><button class="ribbonBtn">Formulas</button></div><div class="row"><button class="btn" onclick="excelMark()">Mark Excel Practical</button></div></div>';
-  html += '<div class="formulaBar"><div class="nameBox">fx</div><div class="formulaInput">Use formulas: =B2*C2, =SUM(E2:E6), =AVERAGE(E2:E6), =MAX(E2:E6)</div></div>';
+  html += '<div class="formulaBar"><div class="nameBox">fx</div><div class="formulaInput">Type formulas in column D. Example: D2 =B2*C2. Then use =SUM(E2:E6), =AVERAGE(E2:E6), =MAX(E2:E6)</div></div>';
 
   html += '<div class="officeBody">';
-  html += '<div class="taskPane"><h3>Excel instruksies</h3><div class="note" style="margin-top:12px">Vul products, qty en price in. Gebruik formulas vir Total, SUM, AVERAGE en MAX.</div>';
-  html += '<ol style="padding-left:18px;line-height:1.65"><li>Vul 5 products in.</li><li>Vul Qty en Price in.</li><li>Gebruik Total formulas.</li><li>Gebruik SUM.</li><li>Gebruik AVERAGE.</li><li>Gebruik MAX.</li></ol>';
+  html += '<div class="taskPane"><h3>Excel instruksies</h3><div class="note" style="margin-top:12px">Vul products, qty en price in. Tik Total formulas in kolom D. Die antwoord wys in kolom E.</div>';
+  html += '<ol style="padding-left:18px;line-height:1.65"><li>Vul 5 products in.</li><li>Vul Qty en Price in.</li><li>Tik die Total formulas in kolom D, bv. D2 =B2*C2.</li><li>Die antwoord wys in kolom E.</li><li>Gebruik SUM.</li><li>Gebruik AVERAGE.</li><li>Gebruik MAX.</li></ol>';
   if(e.marked){
     html += '<div class="note"><b>Resultaat:</b> ' + r.score + '/' + r.total + ' (' + r.percent + '%)</div>';
     r.checks.forEach(function(c){ html += '<div class="note" style="margin-top:8px">' + (c.ok ? "✅ " : "❌ ") + esc(c.text) + '</div>'; });
@@ -4672,7 +4672,7 @@ function catExcelSimulatorHTML(){
   html += '<div class="excelShell">';
   html += '<div class="excelGridWrap"><table class="excelGrid">';
   html += '<tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr>';
-  html += '<tr><th class="rowHead">1</th><th>Product</th><th>Qty</th><th>Price</th><th>Formula</th><th>Total</th></tr>';
+  html += '<tr><th class="rowHead">1</th><th>Product</th><th>Qty</th><th>Price</th><th>Total Formula</th><th>Answer</th></tr>';
 
   e.rows.forEach(function(row,i){
     const rn = i + 2;
@@ -4681,7 +4681,7 @@ function catExcelSimulatorHTML(){
     html += '<td><input class="cellInput" value="' + esc(row.product) + '" oninput="excelSet(' + i + ',\'product\',this.value)"></td>';
     html += '<td><input class="cellInput" value="' + esc(row.qty) + '" oninput="excelSet(' + i + ',\'qty\',this.value)"></td>';
     html += '<td><input class="cellInput" value="' + esc(row.price) + '" oninput="excelSet(' + i + ',\'price\',this.value)"></td>';
-    html += '<td><input class="cellInput" value="' + esc(row.formula) + '" oninput="excelSet(' + i + ',\'formula\',this.value)" onchange="render()"></td>';
+    html += '<td><input class="cellInput" placeholder="=B' + rn + '*C' + rn" value="' + esc(row.formula) + '" oninput="excelSet(' + i + ',\'formula\',this.value)" onchange="render()"></td>';
     const cleanFormula = String(row.formula || "").toUpperCase().replace(/\s/g,"");
     const correctFormula = cleanFormula === excelExpectedFormula(i);
     html += '<td class="calcCell">' + (correctFormula ? ('R ' + excelRowTotal(i).toFixed(2)) : '') + '</td>';
@@ -5019,6 +5019,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
