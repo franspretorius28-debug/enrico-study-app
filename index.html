@@ -6175,6 +6175,7 @@ function agriStudyHTML(){
   html += '</div></div>';
 
   html += agriCoverageHTML();
+  html += agriPracticalTasksHTML();
 
   html += '<div class="grid two">';
   html += '<div class="grid"><div class="card"><h2>Modules</h2><div style="height:12px"></div>';
@@ -6364,6 +6365,235 @@ function agriExamHTML(){
   html += '</div></div></div>';
   return html;
 }
+
+// === AGRI PATCH 4: PRACTICAL TASKS ===
+const agriPracticalTasks = [
+  {
+    id:"resources",
+    title:"Practical 1: Landbouhulpbronne identifiseer",
+    module:"Module 3 Eenheid 1",
+    scenario:"Jy besoek 'n klein plaas. Identifiseer die belangrikste hulpbronne wat nodig is vir volhoubare produksie.",
+    steps:[
+      "Noem minstens 5 landbouhulpbronne.",
+      "Se of elke hulpbron natuurlik, menslik of kapitaal is.",
+      "Verduidelik hoekom elke hulpbron belangrik is.",
+      "Skryf een risiko as die hulpbron swak bestuur word."
+    ],
+    prompts:[
+      "Lys 5 landbouhulpbronne wat jy op 'n plaas sal kry.",
+      "Klassifiseer die hulpbronne: natuurlik / menslik / kapitaal.",
+      "Verduidelik hoe die boer hierdie hulpbronne volhoubaar kan gebruik."
+    ],
+    keywords:["grond","water","arbeid","kapitaal","diere","plante","sonlig","volhoubaar"]
+  },
+  {
+    id:"soil_conservation",
+    title:"Practical 2: Grondbewaring plan",
+    module:"Module 3 Eenheid 2",
+    scenario:"'n Landery teen 'n helling verloor bogrond wanneer dit reen. Maak 'n eenvoudige grondbewaringsplan.",
+    steps:[
+      "Identifiseer die erosieprobleem.",
+      "Kies minstens 3 praktyke om erosie te verminder.",
+      "Verduidelik hoekom elke praktyk werk.",
+      "Noem hoe die boer kan monitor of die plan werk."
+    ],
+    prompts:[
+      "Wat is die erosieprobleem in die scenario?",
+      "Watter grondbewaringspraktyke sal jy gebruik?",
+      "Hoe sal jy weet die plan werk?"
+    ],
+    keywords:["erosie","kontour","deklaag","plante","bedekking","wisselbou","afloop","bogrond"]
+  },
+  {
+    id:"water_management",
+    title:"Practical 3: Waterbestuur vergelyking",
+    module:"Module 3 Eenheid 3",
+    scenario:"Vergelyk twee waterbestuurmetodes vir 'n groentetuin: drupbesproeiing en vloedbesproeiing.",
+    steps:[
+      "Beskryf elke metode kortliks.",
+      "Vergelyk watervermorsing, koste en doeltreffendheid.",
+      "Kies die beste metode vir droogtetoestande.",
+      "Motiveer jou keuse."
+    ],
+    prompts:[
+      "Hoe werk drupbesproeiing?",
+      "Hoe werk vloedbesproeiing?",
+      "Watter metode is beter tydens droogte en hoekom?"
+    ],
+    keywords:["drupbesproeiing","vloedbesproeiing","water","droogte","wortels","vermorsing","doeltreffend"]
+  },
+  {
+    id:"pollution_investigation",
+    title:"Practical 4: Besoedeling ondersoek",
+    module:"Module 3 Eenheid 4",
+    scenario:"Na swaar reen loop water vanaf 'n bemeste landery na 'n plaasdam. Ondersoek die moontlike besoedeling.",
+    steps:[
+      "Identifiseer die bron van besoedeling.",
+      "Verduidelik hoe dit waterkwaliteit kan beinvloed.",
+      "Noem twee gevolge vir plante, diere of mense.",
+      "Stel voorkomingsmaatreels voor."
+    ],
+    prompts:[
+      "Wat is die moontlike besoedelingsbron?",
+      "Hoe kan dit die dam beinvloed?",
+      "Wat kan die boer doen om dit te voorkom?"
+    ],
+    keywords:["kunsmis","plaagdoder","afloop","waterkwaliteit","dam","besoedeling","bufferstrook","veilig"]
+  },
+  {
+    id:"soil_components",
+    title:"Practical 5: Grondkomponente klassifikasie",
+    module:"Module 4 Eenheid 1",
+    scenario:"Jy kry 'n grondmonster met sand, slik, klei, humus, water en lug. Klassifiseer en verduidelik die komponente.",
+    steps:[
+      "Noem die basiese grondkomponente.",
+      "Verduidelik die verskil tussen sand, slik en klei.",
+      "Se hoekom humus belangrik is.",
+      "Verduidelik die rol van water en lug in grond."
+    ],
+    prompts:[
+      "Watter komponente is in grond?",
+      "Hoe verskil sand, slik en klei?",
+      "Hoekom is humus, water en lug belangrik?"
+    ],
+    keywords:["sand","slik","klei","humus","water","lug","deeltjies","vrugbaarheid"]
+  },
+  {
+    id:"rocks_minerals",
+    title:"Practical 6: Rotse en minerale klassifikasie",
+    module:"Module 4 Eenheid 2-3",
+    scenario:"Jy moet monsters klassifiseer as stollingsrots, sedimentere rots, metamorfe rots, primere mineraal of sekondere mineraal.",
+    steps:[
+      "Beskryf die drie hoof tipes rotse.",
+      "Verduidelik hoe elke rots vorm.",
+      "Verduidelik die verskil tussen primere en sekondere minerale.",
+      "Gee 'n voorbeeld van leidrade waarna jy in 'n monster sal kyk."
+    ],
+    prompts:[
+      "Hoe vorm stollings-, sedimentere en metamorfe rotse?",
+      "Wat is die verskil tussen primere en sekondere minerale?",
+      "Watter leidrade help jou om 'n rots te klassifiseer?"
+    ],
+    keywords:["stollingsrots","sedimentere","metamorfe","magma","lava","hitte","druk","primere","sekondere","minerale"]
+  }
+];
+
+function agriPracticalState(){
+  if(!state.agriPracticals) state.agriPracticals = {};
+  return state.agriPracticals;
+}
+
+function agriCurrentPractical(){
+  if(!state.agriPracticalId) state.agriPracticalId = agriPracticalTasks[0].id;
+  return agriPracticalTasks.find(function(t){ return t.id === state.agriPracticalId; }) || agriPracticalTasks[0];
+}
+
+function agriChoosePractical(id){
+  state.agriPracticalId = id;
+  save();
+  render();
+}
+
+function agriPracticalAnswer(taskId, idx){
+  const p = agriPracticalState();
+  if(!p[taskId]) p[taskId] = {answers:{}, marked:false};
+  return p[taskId].answers[idx] || "";
+}
+
+function agriSetPracticalAnswer(taskId, idx, value){
+  const p = agriPracticalState();
+  if(!p[taskId]) p[taskId] = {answers:{}, marked:false};
+  p[taskId].answers[idx] = value;
+  p[taskId].marked = false;
+  save();
+}
+
+function agriPracticalResult(task){
+  const p = agriPracticalState();
+  const saved = p[task.id] || {answers:{}};
+  const joined = task.prompts.map(function(x,i){ return saved.answers[i] || ""; }).join(" ").toLowerCase();
+  const wordCount = joined.split(/\s+/).filter(function(x){ return x.trim().length > 0; }).length;
+  const keywordHits = task.keywords.filter(function(k){ return joined.indexOf(k.toLowerCase()) >= 0; }).length;
+
+  const checks = [
+    {ok: wordCount >= 35, text:"Antwoorde is volledig genoeg"},
+    {ok: keywordHits >= 3, text:"Gebruik minstens 3 belangrike vakterme"},
+    {ok: task.prompts.every(function(x,i){ return String(saved.answers[i] || "").trim().length >= 15; }), text:"Elke vraag is beantwoord"},
+    {ok: joined.indexOf("hoekom") >= 0 || joined.indexOf("omdat") >= 0 || joined.indexOf("want") >= 0 || joined.indexOf("verduidelik") >= 0, text:"Antwoord gee redes/verduideliking"}
+  ];
+
+  const score = checks.filter(function(c){ return c.ok; }).length;
+  return {
+    checks:checks,
+    score:score,
+    total:checks.length,
+    percent:Math.round(score / checks.length * 100),
+    passed:score >= 3,
+    wordCount:wordCount,
+    keywordHits:keywordHits
+  };
+}
+
+function agriMarkPractical(){
+  const task = agriCurrentPractical();
+  const p = agriPracticalState();
+  if(!p[task.id]) p[task.id] = {answers:{}, marked:false};
+  p[task.id].marked = true;
+  save();
+  render();
+}
+
+function agriResetPractical(){
+  const task = agriCurrentPractical();
+  const p = agriPracticalState();
+  p[task.id] = {answers:{}, marked:false};
+  save();
+  render();
+}
+
+function agriPracticalTasksHTML(){
+  const task = agriCurrentPractical();
+  const p = agriPracticalState();
+  const saved = p[task.id] || {answers:{}, marked:false};
+  const result = agriPracticalResult(task);
+
+  let html = '<div id="agriPracticalTasks" class="card"><div class="row space"><div><h2>Practical Tasks</h2><p class="muted">Skryf kort antwoorde soos ' + "'n" + ' werkboek/praktiese aktiwiteit. Merk daarna jou werk.</p></div><span class="pill active">' + agriPracticalTasks.length + ' tasks</span></div>';
+
+  html += '<div class="grid subjects" style="margin-top:14px">';
+  agriPracticalTasks.forEach(function(t){
+    const active = t.id === task.id ? " active" : "";
+    html += '<button class="subjectBtn' + active + '" onclick="agriChoosePractical(\'' + t.id + '\')"><div style="font-size:30px;margin-bottom:8px">Task</div><h3>' + esc(t.title) + '</h3><p class="muted">' + esc(t.module) + '</p></button>';
+  });
+  html += '</div>';
+
+  html += '<div class="note" style="margin-top:14px"><b>' + esc(task.title) + '</b><br><span class="muted">' + esc(task.module) + '</span><p style="margin-bottom:0">' + esc(task.scenario) + '</p></div>';
+
+  html += '<div class="grid two" style="margin-top:14px">';
+  html += '<div class="note"><h3>Instruksies</h3><ol style="padding-left:18px;line-height:1.65">';
+  task.steps.forEach(function(step){ html += '<li>' + esc(step) + '</li>'; });
+  html += '</ol><p class="muted"><b>Vakterme om te probeer gebruik:</b> ' + esc(task.keywords.join(", ")) + '</p></div>';
+
+  html += '<div class="grid">';
+  task.prompts.forEach(function(prompt, i){
+    html += '<label class="field">' + (i+1) + '. ' + esc(prompt) + '</label>';
+    html += '<textarea style="width:100%;min-height:90px;border:1px solid var(--line);border-radius:18px;padding:12px;font:inherit" oninput="agriSetPracticalAnswer(\'' + task.id + '\',' + i + ',this.value)">' + esc(agriPracticalAnswer(task.id, i)) + '</textarea>';
+  });
+  html += '<div class="row"><button class="btn" onclick="agriMarkPractical()">Mark Practical</button><button class="btn secondary" onclick="agriResetPractical()">Reset Task</button></div>';
+  html += '</div></div>';
+
+  if(saved.marked){
+    html += '<div class="card ' + (result.passed ? 'resultGood' : 'resultBad') + '" style="margin-top:14px"><h2>Practical Result: ' + result.score + '/' + result.total + ' (' + result.percent + '%)</h2>';
+    html += '<p class="muted">Woorde: ' + result.wordCount + ' | Vakterme raakgesien: ' + result.keywordHits + '</p>';
+    result.checks.forEach(function(c){
+      html += '<div class="note" style="margin-top:8px">' + (c.ok ? 'OK - ' : 'FIX - ') + esc(c.text) + '</div>';
+    });
+    html += '</div>';
+  }
+
+  html += '</div>';
+  return html;
+}
+// === END AGRI PATCH 4 ===
 // === AGRI PATCH 2B-B SAFE: random agriculture exam with timer ===
 // === END AGRI PATCH 1 ===
 
@@ -6384,6 +6614,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
