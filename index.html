@@ -133,7 +133,8 @@ const RESULTS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbylvLXva-qg
 const subjects = [
   {id:"k53", title:"K53 Learner’s Licence", subtitle:"Road signs, rules, markings, and controls", status:"Active", icon:"🚗"},
   {id:"cat", title:"CAT / Computers", subtitle:"Graad 10 RTT - Kwartaal 2 eksamenvoorbereiding", status:"Active", icon:"💻"},
-  {id:"agri", title:"Landbou Wetenskappe", subtitle:"Graad 10 Landbouwetenskappe - Kwartaal 2", status:"Active", icon:"🌱"}
+  {id:"agri", title:"Landbou Wetenskappe", subtitle:"Graad 10 Landbouwetenskappe - Kwartaal 2", status:"Active", icon:"🌱"},
+  {id:"mathlit", title:"Wiskundige Geletterdheid", subtitle:"Graad 10 - Kwartaal 2 eksamenvoorbereiding", status:"Active", icon:"123"}
 ];
 
 const modules = [
@@ -3809,28 +3810,36 @@ function loginHTML(){
 function topbar(){
   const isCat = state.screen==="cat" || state.screen==="rtt_exam" || state.screen==="cat_excel" || state.screen==="cat_word" || state.selectedSubject==="cat";
   const isAgri = state.screen==="agri" || state.screen==="agri_exam" || state.selectedSubject==="agri";
+  const isMathlit = state.screen==="mathlit" || state.screen==="mathlit_exam" || state.selectedSubject==="mathlit";
 
-  let subjectText = "• K53";
+  let subjectText = "- K53";
   let studyAction = "setState({screen:'study'})";
   let examText = "Start K53 Exam";
   let examAction = "startExam()";
 
   if(isCat){
-    subjectText = "• RTT / CAT Kwartaal 2";
+    subjectText = "- RTT / CAT Kwartaal 2";
     studyAction = "selectSubject('cat')";
     examText = "Start RTT Exam";
     examAction = "startRttExam()";
   }
 
   if(isAgri){
-    subjectText = "• Landbou Wetenskappe";
+    subjectText = "- Landbou Wetenskappe";
     studyAction = "selectSubject('agri')";
     examText = "Start Landbou Test";
     examAction = "startAgriExam()";
   }
 
+  if(isMathlit){
+    subjectText = "- Wiskundige Geletterdheid";
+    studyAction = "selectSubject('mathlit')";
+    examText = "Start MathLit Test";
+    examAction = "state.screen='mathlit_exam';save();render()";
+  }
+
   return `<div class="topbar"><div class="wrap"><div class="card row space">
-    <div class="row"><div style="font-size:30px">🎓</div><div><h1>Student Study App</h1><div class="muted">Logged in as ${esc(state.student)} ${subjectText}</div></div></div>
+    <div class="row"><div style="font-size:30px">ðŸŽ“</div><div><h1>Student Study App</h1><div class="muted">Logged in as ${esc(state.student)} ${subjectText}</div></div></div>
     <div class="row">
       <button class="btn secondary" onclick="setState({screen:'dashboard'})">Subjects</button>
       <button class="btn secondary" onclick="${studyAction}">Study</button>
@@ -3840,7 +3849,7 @@ function topbar(){
   </div></div></div>`;
 }
 // === AGRI PATCH 2B-A: topbar recognises Landbou ===
-
+// === MATHLIT PATCH 1: topbar recognises Wiskundige Geletterdheid ===
 function dashboardHTML(){
   return `${topbar()}<div class="wrap grid">
     <div class="card">
@@ -3858,6 +3867,7 @@ function selectSubject(id){
   if(id==="k53") state.screen = "study";
   else if(id==="cat") state.screen = "cat";
   else if(id==="agri") state.screen = "agri";
+  else if(id==="mathlit") state.screen = "mathlit";
   else state.screen = "dashboard";
   save(); render();
 }
@@ -6749,6 +6759,194 @@ function agriPracticalTasksHTML(){
 // === AGRI PATCH 2B-B SAFE: random agriculture exam with timer ===
 // === END AGRI PATCH 1 ===
 
+
+// === MATHLIT PATCH 1: WISKUNDIGE GELETTERDHEID SHELL / FRAMEWORK ===
+const mathlitModules = [
+  {id:"ml4", title:"Hoofstuk 4: Finansies", badge:"Finansiele dokumente en tariefstelsels", units:[
+    "Afdeling 1: Leer van huishoudelike finansiele dokumente",
+    "Afdeling 2: Algemene huishoudelike tariewe"
+  ], notes:[
+    "Lees en interpreteer huishoudelike dokumente soos rekeninge en state.",
+    "Werk met tariewe soos water, elektrisiteit, telefoon en ander koste.",
+    "Fokus op konteks, eenhede, berekeninge en verduideliking van antwoorde."
+  ]},
+  {id:"ml5", title:"Hoofstuk 5: Meting", badge:"Lengte, gewig/massa, volume en temperatuur", units:[
+    "Afdeling 1: Werk met afstand en lengte",
+    "Afdeling 2: Massa",
+    "Afdeling 3: Volume",
+    "Afdeling 4: Temperatuur"
+  ], notes:[
+    "Werk met meeteenhede en omskakelings.",
+    "Gebruik praktiese konteks soos afstande, inhoud, massa en temperatuur.",
+    "Kontroleer of die eenheid by die antwoord pas."
+  ]},
+  {id:"ml6", title:"Hoofstuk 6: Kaarte, planne en voorstellings", badge:"Skaal en kaartwerk", units:[
+    "Afdeling 1: Verstaan uitlegkaarte",
+    "Afdeling 2: Beskryf relatiewe posisie op 'n uitlegkaart",
+    "Afdeling 3: Volg en ontwikkel aanwysings",
+    "Afdeling 4: Gebruik syfer- en staafskaal om afstand te skat"
+  ], notes:[
+    "Lees kaarte, planne en roetes.",
+    "Gebruik posisie, rigting en skaal.",
+    "Skat of bereken afstande in werklike kontekste."
+  ]},
+  {id:"ml7", title:"Hoofstuk 7: Waarskynlikheid", badge:"Uitkomste en moontlike gebeurtenisse", units:[
+    "Afdeling 1: Uitdrukking van waarskynlikheid",
+    "Afdeling 2: Voorspelling",
+    "Afdeling 3: Metodes om moontlike uitkomste te bepaal"
+  ], notes:[
+    "Gebruik woorde en getalle om waarskynlikheid te beskryf.",
+    "Voorspel moontlike uitkomste.",
+    "Gebruik eenvoudige metodes om uitkomste te organiseer."
+  ]}
+];
+
+const mathlitQuestions = [
+  {m:"ml4", type:"mcq", q:"Watter dokument wys gewoonlik hoeveel 'n huishouding vir water of elektrisiteit moet betaal?", o:["Munisipale rekening","Skoolrapport","Padkaart","Weervoorspelling"], a:0, w:"Finansiele dokumente sluit rekeninge en state in wat koste wys."},
+  {m:"ml4", type:"mcq", q:"As 'n tarief R2 per kWh is en 50 kWh gebruik is, wat is die koste?", o:["R100","R52","R25","R2"], a:0, w:"Koste = tarief x gebruik = R2 x 50 = R100."},
+  {m:"ml5", type:"mcq", q:"Hoeveel meter is 2,5 km?", o:["2 500 m","250 m","25 m","25 000 m"], a:0, w:"1 km = 1 000 m, dus 2,5 km = 2 500 m."},
+  {m:"ml5", type:"mcq", q:"Watter eenheid pas die beste by die massa van 'n sak mieliemeel?", o:["kg","ml","km","grade Celsius"], a:0, w:"Massa word dikwels in gram of kilogram gemeet."},
+  {m:"ml6", type:"mcq", q:"Wat beteken 'n skaal van 1:100 op 'n plan?", o:["1 eenheid op die plan stel 100 eenhede in werklikheid voor","100 planne is nodig","1 meter is altyd 100 km","Die plan het 100 bladsye"], a:0, w:"Skaal vergelyk plan-afstand met werklike afstand."},
+  {m:"ml6", type:"mcq", q:"Watter vaardigheid gebruik jy wanneer jy 'n roete op 'n kaart volg?", o:["Aanwysings en relatiewe posisie","Rente bereken","Temperatuur meet","Kans uitwerk"], a:0, w:"Kaarte en planne vra dat jy posisie, rigting en aanwysings verstaan."},
+  {m:"ml7", type:"mcq", q:"As 'n muntstuk gegooi word, wat is die moontlike uitkomste?", o:["Kop of stert","Maandag of Dinsdag","Warm of koud","Rand of sent"], a:0, w:"'n Muntstuk het twee basiese uitkomste: kop of stert."},
+  {m:"ml7", type:"mcq", q:"Watter woord beskryf 'n gebeurtenis wat beslis sal gebeur?", o:["Seker","Onmoontlik","Onwaarskynlik","Gelyk"], a:0, w:"'Seker' beteken die gebeurtenis sal gebeur."}
+];
+
+function mathlitModuleQuestionCount(moduleId){
+  return mathlitQuestions.filter(function(q){ return q.m === moduleId; }).length;
+}
+
+function mathlitFilteredQuestions(){
+  const mod = state.mathlitModule || "ml4";
+  return mathlitQuestions.filter(function(q){ return q.m === mod; });
+}
+
+function mathlitChoose(i, oi){
+  if(!state.mathlitAnswers) state.mathlitAnswers = {};
+  const mod = state.mathlitModule || "ml4";
+  state.mathlitAnswers[mod + "-" + i] = oi;
+  save();
+  render();
+}
+
+function mathlitReset(){
+  state.mathlitAnswers = {};
+  state.mathlitShowAnswers = false;
+  save();
+  render();
+}
+
+function mathlitScore(){
+  const qs = mathlitFilteredQuestions();
+  const mod = state.mathlitModule || "ml4";
+  let score = 0;
+  qs.forEach(function(q,i){
+    if((state.mathlitAnswers || {})[mod + "-" + i] === q.a) score++;
+  });
+  return score;
+}
+
+function mathlitStudyHTML(){
+  state.selectedSubject = "mathlit";
+  state.mathlitModule = state.mathlitModule || "ml4";
+
+  const active = mathlitModules.find(function(m){ return m.id === state.mathlitModule; }) || mathlitModules[0];
+  const qs = mathlitFilteredQuestions();
+  const score = mathlitScore();
+  const pct = qs.length ? Math.round(score / qs.length * 100) : 0;
+
+  let html = topbar();
+  html += '<div class="wrap grid">';
+
+  html += '<div class="card"><div class="row space"><div><h2>Wiskundige Geletterdheid</h2><p class="muted">Graad 10 - Kwartaal 2 - PATCH 1 framework toets</p></div><div class="row"><button class="btn secondary" onclick="setState({screen:\'dashboard\'})">Subjects</button><button class="btn" onclick="state.screen=\'mathlit_exam\';save();render()">Start MathLit Test</button></div></div></div>';
+
+  html += '<div class="card"><div class="row space"><div><h2>Study Hub</h2><p class="muted">Kwartaal 2 dek Finansies, Meting, Kaarte/Planne en Waarskynlikheid. Groot vraagbank, prentvrae, praktiese take, weak areas en history kom in volgende patches.</p></div><span class="pill active">' + mathlitQuestions.length + ' starter vrae</span></div>';
+  html += '<div class="grid subjects" style="margin-top:14px">';
+  mathlitModules.forEach(function(m){
+    html += '<button class="subjectBtn" onclick="state.mathlitModule=\'' + m.id + '\';state.mathlitShowAnswers=false;save();render()"><div style="font-size:28px;margin-bottom:8px">ML</div><h3>' + esc(m.title) + '</h3><p class="muted">' + esc(m.badge) + '</p><span class="pill active">' + mathlitModuleQuestionCount(m.id) + ' vrae</span></button>';
+  });
+  html += '<button class="subjectBtn" onclick="state.screen=\'mathlit_exam\';save();render()"><div style="font-size:28px;margin-bottom:8px">TEST</div><h3>Quick Test</h3><p class="muted">Klein toets om die route te toets.</p><span class="pill active">Test</span></button>';
+  html += '</div></div>';
+
+  html += '<div class="grid two">';
+  html += '<div class="grid"><div class="card"><h2>Modules</h2><div style="height:12px"></div>';
+  mathlitModules.forEach(function(m){
+    const activeClass = m.id === state.mathlitModule ? " active" : "";
+    html += '<button class="moduleBtn' + activeClass + '" onclick="state.mathlitModule=\'' + m.id + '\';state.mathlitShowAnswers=false;save();render()"><b>' + esc(m.title) + '</b><br><span class="muted">' + esc(m.badge) + '</span></button>';
+  });
+  html += '</div></div>';
+
+  html += '<div class="grid">';
+  html += '<div class="card"><div class="row space"><div><h2>' + esc(active.title) + '</h2><p class="muted">' + esc(active.badge) + '</p></div><span class="pill active">' + qs.length + ' vrae</span></div>';
+  html += '<h3 style="margin-top:14px">Eenhede</h3><div class="grid" style="margin-top:10px">';
+  active.units.forEach(function(u){ html += '<div class="note">' + esc(u) + '</div>'; });
+  html += '</div><h3 style="margin-top:14px">Study Notes</h3><div class="grid subjects" style="margin-top:10px">';
+  active.notes.forEach(function(n){ html += '<div class="note">' + esc(n) + '</div>'; });
+  html += '</div></div>';
+
+  html += '<div class="card"><div class="row space"><div><h2>Starter Oefenvrae</h2><p class="muted">Net 2 vrae per module vir PATCH 1. Groot vraagbank kom in PATCH 2.</p></div><div class="row"><button class="btn" onclick="state.mathlitShowAnswers=true;save();render()">Merk Antwoorde</button><button class="btn secondary" onclick="mathlitReset()">Begin weer</button></div></div>';
+  html += '<div class="note" style="text-align:center;margin-top:12px"><b>Score:</b> ' + (state.mathlitShowAnswers ? (score + "/" + qs.length + " (" + pct + "%)") : "?") + '</div>';
+  html += '<div class="grid" style="margin-top:14px">';
+
+  qs.forEach(function(q,i){
+    const mod = state.mathlitModule || "ml4";
+    const chosen = (state.mathlitAnswers || {})[mod + "-" + i];
+    const reveal = !!state.mathlitShowAnswers;
+    html += '<div class="questionBox"><b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
+    q.o.forEach(function(o,oi){
+      let cls = "optionBtn";
+      if(chosen===oi && !reveal) cls += " selected";
+      if(reveal && q.a===oi) cls += " correct";
+      if(reveal && chosen===oi && q.a!==oi) cls += " wrong";
+      html += '<button class="' + cls + '" onclick="mathlitChoose(' + i + ',' + oi + ')">' + String.fromCharCode(65+oi) + '. ' + esc(o) + '</button>';
+    });
+    html += '</div>';
+    if(reveal) html += '<div class="note" style="margin-top:12px"><b>Verduideliking:</b> ' + esc(q.w) + '</div>';
+    html += '</div>';
+  });
+
+  html += '</div></div></div></div></div>';
+  return html;
+}
+
+function mathlitExamHTML(){
+  state.selectedSubject = "mathlit";
+  const qs = mathlitQuestions.slice();
+  let score = 0;
+  qs.forEach(function(q,i){
+    if((state.mathlitExamAnswers || {})[i] === q.a) score++;
+  });
+  const pct = qs.length ? Math.round(score / qs.length * 100) : 0;
+
+  let html = topbar();
+  html += '<div class="wrap grid">';
+  html += '<div class="card"><div class="row space"><div><h2>Wiskundige Geletterdheid Quick Test</h2><p class="muted">PATCH 1 toets: bevestig dat MathLit routes werk. Full exam kom later.</p></div><div class="row"><button class="btn secondary" onclick="state.screen=\'mathlit\';save();render()">Back to MathLit</button><button class="btn" onclick="state.mathlitExamFinished=true;save();render()">Finish Test</button></div></div></div>';
+
+  if(state.mathlitExamFinished){
+    html += '<div class="card"><h2>Resultaat: ' + score + '/' + qs.length + ' (' + pct + '%)</h2><p class="muted">Hierdie is net die klein framework toets.</p></div>';
+  }
+
+  html += '<div class="card"><h2>Starter Test Questions</h2><div class="grid" style="margin-top:14px">';
+  qs.forEach(function(q,i){
+    const chosen = (state.mathlitExamAnswers || {})[i];
+    const reveal = !!state.mathlitExamFinished;
+    html += '<div class="questionBox"><b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
+    q.o.forEach(function(o,oi){
+      let cls = "optionBtn";
+      if(chosen===oi && !reveal) cls += " selected";
+      if(reveal && q.a===oi) cls += " correct";
+      if(reveal && chosen===oi && q.a!==oi) cls += " wrong";
+      html += '<button class="' + cls + '" onclick="if(!state.mathlitExamAnswers) state.mathlitExamAnswers={}; state.mathlitExamAnswers[' + i + ']=' + oi + '; save(); render();">' + String.fromCharCode(65+oi) + '. ' + esc(o) + '</button>';
+    });
+    html += '</div>';
+    if(reveal) html += '<div class="note" style="margin-top:12px"><b>Verduideliking:</b> ' + esc(q.w) + '</div>';
+    html += '</div>';
+  });
+  html += '</div></div></div>';
+  return html;
+}
+// === END MATHLIT PATCH 1 ===
+
 function render(){
   const app=document.getElementById("app");
   if(!state.student) app.innerHTML=loginHTML();
@@ -6760,12 +6958,17 @@ function render(){
   else if(state.screen==="cat") app.innerHTML=catExamHTML();
   else if(state.screen==="agri") app.innerHTML=agriStudyHTML();
   else if(state.screen==="agri_exam") app.innerHTML=agriExamHTML();
+  else if(state.screen==="mathlit") app.innerHTML=mathlitStudyHTML();
+  else if(state.screen==="mathlit_exam") app.innerHTML=mathlitExamHTML();
   else app.innerHTML=studyHTML();
 }
 load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFinished) startTimer();
 </script>
 </body>
 </html>
+
+
+
 
 
 
