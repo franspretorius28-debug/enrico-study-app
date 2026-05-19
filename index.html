@@ -133,7 +133,7 @@ const RESULTS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbylvLXva-qg
 const subjects = [
   {id:"k53", title:"K53 Learner’s Licence", subtitle:"Road signs, rules, markings, and controls", status:"Active", icon:"🚗"},
   {id:"cat", title:"CAT / Computers", subtitle:"Graad 10 RTT - Kwartaal 2 eksamenvoorbereiding", status:"Active", icon:"💻"},
-  {id:"next", title:"Next Test Subject", subtitle:"Upload the book and answers, then we add it here", status:"Coming soon", icon:"➕"}
+  {id:"agri", title:"Landbou Wetenskappe", subtitle:"Graad 10 Landbouwetenskappe - Kwartaal 2", status:"Active", icon:"🌱"}
 ];
 
 const modules = [
@@ -3837,6 +3837,7 @@ function selectSubject(id){
   state.selectedSubject=id;
   if(id==="k53") state.screen = "study";
   else if(id==="cat") state.screen = "cat";
+  else if(id==="agri") state.screen = "agri";
   else state.screen = "dashboard";
   save(); render();
 }
@@ -5819,6 +5820,172 @@ function excelTaskPaneV1(){
   return html;
 }
 
+// === AGRI PATCH 1: LANDBOU WETENSKAPPE SHELL / FRAMEWORK ===
+const agriModules = [
+  {id:"m3", title:"Module 3: Volhoubare natuurlike hulpbronbenutting", badge:"Natuurlike hulpbronne", units:[
+    "Eenheid 1: Landbouhulpbronne",
+    "Eenheid 2: Grondbewaring en -bestuur",
+    "Eenheid 3: Waterbestuur",
+    "Eenheid 4: Landboubesoedeling",
+    "Opsomming en Hersiening"
+  ], notes:[
+    "Fokus op volhoubare gebruik van landbouhulpbronne.",
+    "Kyk na grondbewaring, waterbestuur en hoe besoedeling landbou benadeel.",
+    "Hierdie module bou die basis vir praktiese plaasbesluite."
+  ]},
+  {id:"m4", title:"Module 4: Grondkunde", badge:"Grond, minerale en rotse", units:[
+    "Eenheid 1: Basiese komponente van grond",
+    "Eenheid 2: Primêre en sekondêre minerale",
+    "Eenheid 3: Die vorming van rotse"
+  ], notes:[
+    "Fokus op waaruit grond bestaan en hoekom dit belangrik is vir plantgroei.",
+    "Leer die verskil tussen primêre en sekondêre minerale.",
+    "Begin met die vorming van rotse as grondkundige basis."
+  ]}
+];
+
+const agriQuestions = [
+  {m:"m3", type:"mcq", q:"Watter een is ’n voorbeeld van ’n landbouhulpbron?", o:["Grond", "Televisie", "Speletjie", "Skoene"], a:0, w:"Grond is ’n belangrike natuurlike hulpbron in landbou."},
+  {m:"m3", type:"mcq", q:"Hoekom is waterbestuur belangrik in landbou?", o:["Dit help om water volhoubaar te gebruik", "Dit maak plante sonder grond groei", "Dit keer alle siektes permanent", "Dit vervang sonlig"], a:0, w:"Goeie waterbestuur help boere om water te spaar en gewasse beter te ondersteun."},
+  {m:"m4", type:"mcq", q:"Watter komponent van grond kom van dooie plant- en diermateriaal?", o:["Humus", "Plastiek", "Metaal", "Glas"], a:0, w:"Humus vorm uit organiese materiaal en help met grondvrugbaarheid."},
+  {m:"m4", type:"mcq", q:"Watter onderwerp pas die beste by grondkunde?", o:["Grondkomponente, minerale en rotse", "Padtekens", "Word tables", "Motorremme"], a:0, w:"Module 4 handel oor grondkomponente, minerale en rotse."}
+];
+
+function agriModuleQuestionCount(moduleId){
+  if(moduleId === "all") return agriQuestions.length;
+  return agriQuestions.filter(function(q){ return q.m === moduleId; }).length;
+}
+
+function agriFilteredQuestions(){
+  const mod = state.agriModule || "m3";
+  return agriQuestions.filter(function(q){ return q.m === mod; });
+}
+
+function agriChoose(i, oi){
+  if(!state.agriAnswers) state.agriAnswers = {};
+  const mod = state.agriModule || "m3";
+  state.agriAnswers[mod + "-" + i] = oi;
+  save();
+  render();
+}
+
+function agriReset(){
+  state.agriAnswers = {};
+  state.agriShowAnswers = false;
+  save();
+  render();
+}
+
+function agriScore(){
+  const qs = agriFilteredQuestions();
+  const mod = state.agriModule || "m3";
+  let score = 0;
+  qs.forEach(function(q,i){
+    if((state.agriAnswers || {})[mod + "-" + i] === q.a) score++;
+  });
+  return score;
+}
+
+function agriStudyHTML(){
+  state.selectedSubject = "agri";
+  state.agriModule = state.agriModule || "m3";
+
+  const active = agriModules.find(function(m){ return m.id === state.agriModule; }) || agriModules[0];
+  const qs = agriFilteredQuestions();
+  const score = agriScore();
+  const pct = qs.length ? Math.round(score / qs.length * 100) : 0;
+
+  let html = topbar();
+  html += '<div class="wrap grid">';
+
+  html += '<div class="card"><div class="row space"><div><h2>🌱 Landbou Wetenskappe</h2><p class="muted">Graad 10 • Kwartaal 2 • PATCH 1 framework toets</p></div><div class="row"><button class="btn secondary" onclick="setState({screen:\'dashboard\'})">Subjects</button><button class="btn" onclick="state.screen=\'agri_exam\';save();render()">Start Landbou Test</button></div></div></div>';
+
+  html += '<div class="card"><div class="row space"><div><h2>Study Hub</h2><p class="muted">Hier gaan ons later Study by Module, Book Activities, Quick Test, Full Exam, Image Questions, Practical Tasks, Weak Areas en Result History uitbrei.</p></div><span class="pill active">' + agriQuestions.length + ' starter vrae</span></div>';
+  html += '<div class="grid subjects" style="margin-top:14px">';
+  html += '<button class="subjectBtn" onclick="state.agriModule=\'m3\';state.agriShowAnswers=false;save();render()"><div style="font-size:32px;margin-bottom:8px">🌾</div><h3>Study by Module</h3><p class="muted">Module 3: Volhoubare natuurlike hulpbronbenutting.</p><span class="pill active">' + agriModuleQuestionCount("m3") + ' vrae</span></button>';
+  html += '<button class="subjectBtn" onclick="state.agriModule=\'m4\';state.agriShowAnswers=false;save();render()"><div style="font-size:32px;margin-bottom:8px">🪨</div><h3>Grondkunde</h3><p class="muted">Module 4: Grond, minerale en rotse.</p><span class="pill active">' + agriModuleQuestionCount("m4") + ' vrae</span></button>';
+  html += '<button class="subjectBtn" onclick="state.screen=\'agri_exam\';save();render()"><div style="font-size:32px;margin-bottom:8px">📝</div><h3>Quick Test</h3><p class="muted">Klein toets net om te bevestig die route werk.</p><span class="pill active">Test</span></button>';
+  html += '</div></div>';
+
+  html += '<div class="grid two">';
+  html += '<div class="grid"><div class="card"><h2>Modules</h2><div style="height:12px"></div>';
+  agriModules.forEach(function(m){
+    const activeClass = m.id === state.agriModule ? " active" : "";
+    html += '<button class="moduleBtn' + activeClass + '" onclick="state.agriModule=\'' + m.id + '\';state.agriShowAnswers=false;save();render()"><b>' + esc(m.title) + '</b><br><span class="muted">' + esc(m.badge) + '</span></button>';
+  });
+  html += '</div></div>';
+
+  html += '<div class="grid">';
+  html += '<div class="card"><div class="row space"><div><h2>' + esc(active.title) + '</h2><p class="muted">' + esc(active.badge) + '</p></div><span class="pill active">' + qs.length + ' vrae</span></div>';
+  html += '<h3 style="margin-top:14px">Eenhede</h3><div class="grid" style="margin-top:10px">';
+  active.units.forEach(function(u){ html += '<div class="note">' + esc(u) + '</div>'; });
+  html += '</div><h3 style="margin-top:14px">Study Notes</h3><div class="grid subjects" style="margin-top:10px">';
+  active.notes.forEach(function(n){ html += '<div class="note">' + esc(n) + '</div>'; });
+  html += '</div></div>';
+
+  html += '<div class="card"><div class="row space"><div><h2>Starter Oefenvrae</h2><p class="muted">Net 1–2 vrae per module vir PATCH 1. Groot vraagbank kom in PATCH 2.</p></div><div class="row"><button class="btn" onclick="state.agriShowAnswers=true;save();render()">Merk Antwoorde</button><button class="btn secondary" onclick="agriReset()">Begin weer</button></div></div>';
+  html += '<div class="note" style="text-align:center;margin-top:12px"><b>Score:</b> ' + (state.agriShowAnswers ? (score + "/" + qs.length + " (" + pct + "%)") : "?") + '</div>';
+  html += '<div class="grid" style="margin-top:14px">';
+
+  qs.forEach(function(q,i){
+    const mod = state.agriModule || "m3";
+    const chosen = (state.agriAnswers || {})[mod + "-" + i];
+    const reveal = !!state.agriShowAnswers;
+    html += '<div class="questionBox"><b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
+    q.o.forEach(function(o,oi){
+      let cls = "optionBtn";
+      if(chosen===oi && !reveal) cls += " selected";
+      if(reveal && q.a===oi) cls += " correct";
+      if(reveal && chosen===oi && q.a!==oi) cls += " wrong";
+      html += '<button class="' + cls + '" onclick="agriChoose(' + i + ',' + oi + ')">' + String.fromCharCode(65+oi) + '. ' + esc(o) + '</button>';
+    });
+    html += '</div>';
+    if(reveal) html += '<div class="note" style="margin-top:12px"><b>Verduideliking:</b> ' + esc(q.w) + '</div>';
+    html += '</div>';
+  });
+
+  html += '</div></div></div></div></div>';
+  return html;
+}
+
+function agriExamHTML(){
+  state.selectedSubject = "agri";
+  const qs = agriQuestions.slice();
+  let score = 0;
+  qs.forEach(function(q,i){
+    if((state.agriExamAnswers || {})[i] === q.a) score++;
+  });
+  const pct = qs.length ? Math.round(score / qs.length * 100) : 0;
+
+  let html = topbar();
+  html += '<div class="wrap grid">';
+  html += '<div class="card"><div class="row space"><div><h2>🌱 Landbou Quick Test</h2><p class="muted">PATCH 1 toets: bevestig dat Landbou exam route werk. Full Exam kom in PATCH 5.</p></div><div class="row"><button class="btn secondary" onclick="state.screen=\'agri\';save();render()">Back to Landbou</button><button class="btn" onclick="state.agriExamFinished=true;save();render()">Finish Test</button></div></div></div>';
+
+  if(state.agriExamFinished){
+    html += '<div class="card"><h2>Resultaat: ' + score + '/' + qs.length + ' (' + pct + '%)</h2><p class="muted">Hierdie is net die klein framework toets. Later sal Full Exam timer, review, weak areas en history kry.</p></div>';
+  }
+
+  html += '<div class="card"><h2>Starter Test Questions</h2><div class="grid" style="margin-top:14px">';
+  qs.forEach(function(q,i){
+    const chosen = (state.agriExamAnswers || {})[i];
+    const reveal = !!state.agriExamFinished;
+    html += '<div class="questionBox"><b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
+    q.o.forEach(function(o,oi){
+      let cls = "optionBtn";
+      if(chosen===oi && !reveal) cls += " selected";
+      if(reveal && q.a===oi) cls += " correct";
+      if(reveal && chosen===oi && q.a!==oi) cls += " wrong";
+      html += '<button class="' + cls + '" onclick="if(!state.agriExamAnswers) state.agriExamAnswers={}; state.agriExamAnswers[' + i + ']=' + oi + '; save(); render();">' + String.fromCharCode(65+oi) + '. ' + esc(o) + '</button>';
+    });
+    html += '</div>';
+    if(reveal) html += '<div class="note" style="margin-top:12px"><b>Verduideliking:</b> ' + esc(q.w) + '</div>';
+    html += '</div>';
+  });
+  html += '</div></div></div>';
+  return html;
+}
+// === END AGRI PATCH 1 ===
+
 function render(){
   const app=document.getElementById("app");
   if(!state.student) app.innerHTML=loginHTML();
@@ -5828,12 +5995,17 @@ function render(){
   else if(state.screen==="cat_excel") app.innerHTML=catExcelSimulatorHTML();
   else if(state.screen==="cat_word") app.innerHTML=catWordSimulatorHTML();
   else if(state.screen==="cat") app.innerHTML=catExamHTML();
+  else if(state.screen==="agri") app.innerHTML=agriStudyHTML();
+  else if(state.screen==="agri_exam") app.innerHTML=agriExamHTML();
   else app.innerHTML=studyHTML();
 }
 load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFinished) startTimer();
 </script>
 </body>
 </html>
+
+
+
 
 
 
