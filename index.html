@@ -4044,32 +4044,67 @@ function catTaskStatusClass(status){
   return "";
 }
 
+function catTaskModuleId(task){
+  if(task.module.indexOf("3.5") === 0) return "m35";
+  if(task.module.indexOf("3.6") === 0) return "m36";
+  if(task.module.indexOf("4.1") === 0) return "m41";
+  if(task.module.indexOf("4.2") === 0) return "m42";
+  if(task.module.indexOf("2.1") === 0) return "m21";
+  if(task.module.indexOf("6.1") === 0) return "m61";
+  if(task.module.indexOf("1.6") === 0) return "m16";
+  if(task.module.indexOf("1.7") === 0) return "m17";
+  return "all";
+}
+
+function catTasksForCurrentModule(){
+  const mod = state.catModule || "all";
+  if(mod === "all") return catQ2Tasks.map(function(t,idx){ return {task:t, idx:idx}; });
+  return catQ2Tasks
+    .map(function(t,idx){ return {task:t, idx:idx}; })
+    .filter(function(x){ return catTaskModuleId(x.task) === mod; });
+}
+
 function catTasksHTML(){
-  let html = '<div class="card"><div class="row space"><div><h2>🧰 Practical Tasks</h2><p class="muted">Enrico ticks each step, then parent checks the Word/Excel file and approves it.</p></div><span class="pill active">Term 2</span></div>';
+  const visibleTasks = catTasksForCurrentModule();
+
+  let html = '<div class="card"><div class="row space"><div><h2>🧰 Practical Tasks</h2><p class="muted">Net die tasks vir die module wat gekies is wys hier. Kies Mixed Term 2 Exam om alles te sien.</p></div><span class="pill active">Term 2</span></div>';
+
+  if(!visibleTasks.length){
+    html += '<div class="note" style="margin-top:14px">Daar is nog nie practical tasks vir hierdie module nie. Hierdie module is hoofsaaklik teorie en practice questions.</div></div>';
+    return html;
+  }
+
   html += '<div class="grid" style="margin-top:14px">';
 
-  catQ2Tasks.forEach(function(t,idx){
+  visibleTasks.forEach(function(x){
+    const t = x.task;
+    const idx = x.idx;
     const progress = catTaskState(idx);
     const doneCount = Object.values(progress.steps || {}).filter(Boolean).length;
     const percent = Math.round(doneCount / t.steps.length * 100);
+    const openAttr = idx === visibleTasks[0].idx ? " open" : "";
 
-    html += '<div class="questionBox">';
+    html += '<details class="questionBox"' + openAttr + '>';
+    html += '<summary style="cursor:pointer;list-style:none">';
     html += '<div class="row space">';
     html += '<div><b>' + esc(t.title) + '</b><br><span class="muted">' + esc(t.type + " • " + t.module) + '</span></div>';
     html += '<div class="row"><span class="pill">' + esc(t.type) + '</span><span class="pill ' + catTaskStatusClass(progress.status) + '">' + esc(progress.status) + '</span></div>';
     html += '</div>';
-
     html += '<div class="progress" style="margin-top:12px"><div style="width:' + percent + '%"></div></div>';
     html += '<div class="muted" style="margin-top:8px">Progress: ' + doneCount + '/' + t.steps.length + ' steps completed (' + percent + '%)</div>';
+    html += '</summary>';
 
-    html += '<ol style="margin-top:12px">';
+    html += '<div style="margin-top:14px;display:grid;gap:10px">';
     t.steps.forEach(function(step,stepIdx){
       const checked = progress.steps && progress.steps[stepIdx] ? "checked" : "";
-      html += '<li style="margin:8px 0"><label style="display:flex;gap:10px;align-items:flex-start"><input type="checkbox" ' + checked + ' onchange="catToggleTaskStep(' + idx + ',' + stepIdx + ')"><span>' + esc(step) + '</span></label></li>';
+      html += '<label class="note" style="display:grid;grid-template-columns:32px 1fr;gap:10px;align-items:start;margin:0">';
+      html += '<input type="checkbox" ' + checked + ' onchange="catToggleTaskStep(' + idx + ',' + stepIdx + ')" style="margin-top:4px">';
+      html += '<span><b>Step ' + (stepIdx+1) + ':</b> ' + esc(step) + '</span>';
+      html += '</label>';
     });
-    html += '</ol>';
+    html += '</div>';
 
-    html += '<div class="row" style="margin-top:12px">';
+    html += '<div class="row" style="margin-top:14px">';
     html += '<button class="btn secondary" onclick="catSetTaskStatus(' + idx + ',\'Completed\')">Mark Complete</button>';
     html += '<button class="btn" onclick="catSetTaskStatus(' + idx + ',\'Parent approved\')">Parent Approved</button>';
     html += '<button class="btn secondary" onclick="catSetTaskStatus(' + idx + ',\'Needs fix\')">Needs Fix</button>';
@@ -4079,7 +4114,7 @@ function catTasksHTML(){
       html += '<div class="note" style="margin-top:12px"><b>Last reviewed:</b> ' + esc(progress.reviewedAt) + '</div>';
     }
 
-    html += '</div>';
+    html += '</details>';
   });
 
   html += '</div></div>';
@@ -4166,6 +4201,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
