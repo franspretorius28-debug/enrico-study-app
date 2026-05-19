@@ -4352,6 +4352,73 @@ function catCoverageHTML(){
   return html;
 }
 
+
+// === RTT TERM 2 FINAL REVISION HUB V1 ===
+function startRttQuickTest(){
+  state.selectedSubject = "cat";
+  state.screen = "rtt_exam";
+  state.rttExamFinished = false;
+  state.rttExamAnswers = {};
+  state.rttExamSet = shuffleQuestions(catQ2Questions).slice(0, 20);
+  state.rttExamSecondsLeft = 20 * 60;
+  state.rttLastResult = null;
+  if(typeof startRttExamPracticalSelectionV1 === "function") startRttExamPracticalSelectionV1();
+  save();
+  if(typeof startRttExamTimer === "function") startRttExamTimer();
+  render();
+}
+
+function term2RevisionHubHTML(){
+  let html = '<div class="card"><div class="row space"><div><h2>Term 2 Final Revision</h2><p class="muted">Alles vir RTT/CAT Kwartaal 2 op een plek.</p></div><span class="pill active">' + catQ2Questions.length + ' vrae</span></div>';
+  html += '<div class="grid subjects" style="margin-top:14px">';
+
+  html += '<button class="subjectBtn" onclick="state.catModule=\'all\';state.catShowAnswers=false;save();render()">';
+  html += '<div style="font-size:32px;margin-bottom:8px">Study</div><h3>Study by Module</h3><p class="muted">Kies modules en oefen vrae per afdeling.</p><span class="pill active">Modules</span></button>';
+
+  html += '<button class="subjectBtn" onclick="document.getElementById(\'bookActivitiesBlock\').scrollIntoView({behavior:\'smooth\'})">';
+  html += '<div style="font-size:32px;margin-bottom:8px">Book</div><h3>Book Activities</h3><p class="muted">Aktiwiteit-style werk vir elke Kwartaal 2 module.</p><span class="pill active">Activities</span></button>';
+
+  html += '<button class="subjectBtn" onclick="startRttQuickTest()">';
+  html += '<div style="font-size:32px;margin-bottom:8px">Test</div><h3>Quick Test</h3><p class="muted">20 random vrae met 20 minute timer.</p><span class="pill active">20 Questions</span></button>';
+
+  html += '<button class="subjectBtn" onclick="startRttExam()">';
+  html += '<div style="font-size:32px;margin-bottom:8px">Exam</div><h3>Full Exam</h3><p class="muted">60 random vrae plus Word en Excel practical.</p><span class="pill active">60 Questions</span></button>';
+
+  html += '<button class="subjectBtn" onclick="state.screen=\'cat_word\';save();render()">';
+  html += '<div style="font-size:32px;margin-bottom:8px">Word</div><h3>Word Practical</h3><p class="muted">Oefen Word practical sonder teorie exam.</p><span class="pill active">Word</span></button>';
+
+  html += '<button class="subjectBtn" onclick="state.screen=\'cat_excel\';save();render()">';
+  html += '<div style="font-size:32px;margin-bottom:8px">Excel</div><h3>Excel Practical</h3><p class="muted">Oefen Excel practical sonder teorie exam.</p><span class="pill active">Excel</span></button>';
+
+  html += '</div></div>';
+  return html;
+}
+
+function term2BookActivitiesHTML(){
+  let html = '<div id="bookActivitiesBlock" class="card"><div class="row space"><div><h2>Book Activities</h2><p class="muted">Kwartaal 2 aktiwiteit-style revision per module.</p></div><span class="pill active">Term 2</span></div>';
+  html += '<div class="grid subjects" style="margin-top:14px">';
+
+  const activities = [
+    {m:"m35", title:"Activity 3.5: Verdere Word formatering", text:"Page setup, margins, orientation, columns, breaks, header/footer en page numbers."},
+    {m:"m16", title:"Activity 1.6: Software concepts", text:"System software, application software, utilities, malware, updates en licenses."},
+    {m:"m36", title:"Activity 3.6: Tables", text:"Insert rows/columns, merge/split cells, borders, shading, sorting en AutoFit."},
+    {m:"m17", title:"Activity 1.7: Hardware concepts", text:"Input/output/storage, SSD/HDD, RAM, UPS, peripherals en ergonomics."},
+    {m:"m41", title:"Activity 4.1: Spreadsheet basics", text:"Rows, columns, cells, cell references, workbook, worksheet, formula bar en AutoFill."},
+    {m:"m21", title:"Activity 2.1: Networks", text:"LAN/WAN, router, switch, server, client, Wi-Fi, wired/wireless en resource sharing."},
+    {m:"m42", title:"Activity 4.2: Excel calculations", text:"Formulas, operators, ranges, SUM, AVERAGE, MAX, MIN en cell references."},
+    {m:"m61", title:"Activity 6.1: Problem solving", text:"Input-processing-output, instruksies lees, relevante data kies, toets en evalueer."}
+  ];
+
+  activities.forEach(function(a){
+    const count = catModuleQuestionCount(a.m);
+    html += '<button class="subjectBtn" onclick="state.catModule=\'' + a.m + '\';state.catShowAnswers=false;save();render()">';
+    html += '<h3>' + esc(a.title) + '</h3><p class="muted">' + esc(a.text) + '</p><span class="pill active">' + count + ' vrae</span></button>';
+  });
+
+  html += '</div></div>';
+  return html;
+}
+
 function catExamHTML(){
   state.catModule = state.catModule || "all";
   const qs = catFilteredQuestions();
@@ -4360,6 +4427,9 @@ function catExamHTML(){
   let html = topbar();
   html += '<div class="wrap grid">';
   html += '<div class="card"><div class="row space"><div><h2>💻 RTT / CAT Kwartaal 2</h2><p class="muted">Eksamenvoorbereiding vir Graad 10. Kies ’n module of oefen alles gemeng.</p></div><button class="btn secondary" onclick="selectSubject(\'k53\')">Back to K53</button></div></div>';
+
+  html += term2RevisionHubHTML();
+  html += term2BookActivitiesHTML();
 
   html += '<div class="card"><h2>Modules</h2><div class="row" style="margin-top:12px">';
   catQ2Modules.forEach(function(m){
@@ -5764,6 +5834,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
