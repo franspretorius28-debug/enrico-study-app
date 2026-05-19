@@ -5844,13 +5844,150 @@ const agriModules = [
   ]}
 ];
 
-const agriQuestions = [
-  {m:"m3", type:"mcq", q:"Watter een is ’n voorbeeld van ’n landbouhulpbron?", o:["Grond", "Televisie", "Speletjie", "Skoene"], a:0, w:"Grond is ’n belangrike natuurlike hulpbron in landbou."},
-  {m:"m3", type:"mcq", q:"Hoekom is waterbestuur belangrik in landbou?", o:["Dit help om water volhoubaar te gebruik", "Dit maak plante sonder grond groei", "Dit keer alle siektes permanent", "Dit vervang sonlig"], a:0, w:"Goeie waterbestuur help boere om water te spaar en gewasse beter te ondersteun."},
-  {m:"m4", type:"mcq", q:"Watter komponent van grond kom van dooie plant- en diermateriaal?", o:["Humus", "Plastiek", "Metaal", "Glas"], a:0, w:"Humus vorm uit organiese materiaal en help met grondvrugbaarheid."},
-  {m:"m4", type:"mcq", q:"Watter onderwerp pas die beste by grondkunde?", o:["Grondkomponente, minerale en rotse", "Padtekens", "Word tables", "Motorremme"], a:0, w:"Module 4 handel oor grondkomponente, minerale en rotse."}
+// === AGRI PATCH 2: LARGE TERM 2 QUESTION BANK + COVERAGE ===
+const agriQuestionTopics = [
+  {m:"m3", unit:"M3E1", unitTitle:"Eenheid 1: Landbouhulpbronne", terms:[
+    {term:"landbouhulpbron", def:"iets soos grond, water, plante, diere, arbeid of kapitaal wat in landbou gebruik word", wrong:["padteken","woordverwerker","speletjie"]},
+    {term:"natuurlike hulpbron", def:"hulpbron uit die natuur soos grond, water, lug en biodiversiteit", wrong:["drukker","rekeningkundige dokument","selfoonapp"]},
+    {term:"volhoubaarheid", def:"gebruik van hulpbronne sodat dit ook vir toekomstige geslagte beskikbaar bly", wrong:["gebruik alles so vinnig moontlik","plant nooit weer nie","ignoreer grond en water"]},
+    {term:"grond as hulpbron", def:"die medium waarin plante groei en waar voedingstowwe, water en lug gehou word", wrong:["net ’n gebou","’n tipe rekenaar","’n voertuigonderdeel"]},
+    {term:"biodiversiteit", def:"die verskeidenheid plante, diere en mikro-organismes in ’n gebied", wrong:["een soort gewas alleen","slegs kunsmis","net plaasheinings"]}
+  ]},
+  {m:"m3", unit:"M3E2", unitTitle:"Eenheid 2: Grondbewaring en -bestuur", terms:[
+    {term:"grondbewaring", def:"praktyke wat grond teen erosie en agteruitgang beskerm", wrong:["grond wegspoel","rommel in landerye gooi","water mors"]},
+    {term:"erosie", def:"die verwydering van bogrond deur water, wind of swak bestuur", wrong:["vorming van humus","plantgroei alleen","water suiwering"]},
+    {term:"kontourbewerking", def:"ploeg of plant langs hoogtelyne om afloopwater en erosie te verminder", wrong:["teen die helling af ploeg","geen grondbedekking gebruik nie","oewerbesoedeling"]},
+    {term:"wisselbou", def:"verskillende gewasse word in seisoene afgewissel om grondgesondheid te verbeter", wrong:["dieselfde gewas elke jaar","slegs grond kaal los","waterbesoedeling verhoog"]},
+    {term:"deklaag", def:"organiese materiaal of bedekking op grond om vog te hou en erosie te verminder", wrong:["plastiek in rivier gooi","grond verbrand","alle plante verwyder"]}
+  ]},
+  {m:"m3", unit:"M3E3", unitTitle:"Eenheid 3: Waterbestuur", terms:[
+    {term:"waterbestuur", def:"beplanning en beheer van watergebruik sodat water nie gemors word nie", wrong:["kraan ooplos","besoedeling ignoreer","grond wegspoel"]},
+    {term:"besproeiing", def:"kunsmatige toediening van water aan gewasse", wrong:["wind erosie","rotsvorming","slegs oes verkoop"]},
+    {term:"drupbesproeiing", def:"water word stadig naby plantwortels toegedien om vermorsing te beperk", wrong:["water oor paaie spuit","grond kaal los","afvalwater direk in riviere gooi"]},
+    {term:"wateropvang", def:"opvang en stoor van reënwater vir latere gebruik", wrong:["water mors","gif in damme gooi","alle plante verwyder"]},
+    {term:"waterkwaliteit", def:"hoe geskik water is vir plante, diere en landbougebruik", wrong:["kleur van ’n trekker","vorm van ’n rots","naam van ’n winkel"]}
+  ]},
+  {m:"m3", unit:"M3E4", unitTitle:"Eenheid 4: Landboubesoedeling", terms:[
+    {term:"landboubesoedeling", def:"skadelike stowwe uit landbou wat grond, water of lug benadeel", wrong:["grondbewaring","water spaar","wisselbou"]},
+    {term:"kunsmis-afloop", def:"oortollige voedingstowwe spoel na waterbronne en kan besoedeling veroorsaak", wrong:["rotsvorming","windbestuiwing","kontourplanting"]},
+    {term:"plaagdoder", def:"chemiese middel wat plae beheer maar verkeerd gebruik kan besoedel", wrong:["humus","sandkorrel","reënmeter"]},
+    {term:"oorbeweiding", def:"te veel diere wei op ’n gebied en beskadig plantegroei en grond", wrong:["wateropvang","deklaag","grondklassifikasie"]},
+    {term:"afvalbestuur", def:"veilige hantering en wegdoening van afval om besoedeling te verminder", wrong:["afval rondgooi","riviere besoedel","olie in grond stort"]}
+  ]},
+  {m:"m3", unit:"M3R", unitTitle:"Module 3 Opsomming en Hersiening", terms:[
+    {term:"volhoubare boerdery", def:"boerdery wat produksie balanseer met beskerming van grond, water en biodiversiteit", wrong:["korttermyn wins teen enige koste","grond vernietig","water mors"]},
+    {term:"hulpbronbestuur", def:"goeie besluitneming oor die gebruik en beskerming van landbouhulpbronne", wrong:["geen beplanning","besoedeling verhoog","alle hulpbronne uitput"]},
+    {term:"bewaring", def:"beskerming en verantwoordelike gebruik van natuurlike hulpbronne", wrong:["vernietiging","vermorsing","gifstorting"]}
+  ]},
+  {m:"m4", unit:"M4E1", unitTitle:"Eenheid 1: Basiese komponente van grond", terms:[
+    {term:"minerale deeltjies", def:"sand, slik en klei wat die anorganiese deel van grond vorm", wrong:["plastiek","glasbottels","papier"]},
+    {term:"sand", def:"groter gronddeeltjies met goeie dreinering maar laer waterhouvermoë", wrong:["dooie organiese materiaal","lugbesoedeling","waterkwaliteit"]},
+    {term:"slik", def:"mediumgrootte gronddeeltjies tussen sand en klei", wrong:["groot rotsblokke","plaagdoders","plantluise"]},
+    {term:"klei", def:"baie klein gronddeeltjies wat water en voedingstowwe goed kan hou", wrong:["droë wind","diesel","glas"]},
+    {term:"humus", def:"afgebreekte organiese materiaal wat grondvrugbaarheid verbeter", wrong:["suiwer sand","metaal","plastiek"]},
+    {term:"grondlug", def:"lugruimtes in grond wat wortels en grondorganismes nodig het", wrong:["rook van vuur","wolke","uitlaatgasse"]},
+    {term:"grondwater", def:"water in grondporieë wat deur plante opgeneem kan word", wrong:["brandstof","olie","droë plastiek"]}
+  ]},
+  {m:"m4", unit:"M4E2", unitTitle:"Eenheid 2: Primêre en sekondêre minerale", terms:[
+    {term:"primêre minerale", def:"minerale wat uit oorspronklike moedergesteente kom en minder verweer is", wrong:["afvalpapier","slegs humus","waterbesoedeling"]},
+    {term:"sekondêre minerale", def:"minerale wat vorm wanneer primêre minerale deur verwering verander", wrong:["vars plastiek","nuwe metaalpype","padtekens"]},
+    {term:"verwering", def:"afbreek of verandering van rotse en minerale deur fisiese, chemiese of biologiese prosesse", wrong:["druk van dokumente","net water spaar","oes verkoop"]},
+    {term:"klei-minerale", def:"fyn sekondêre minerale wat water en voedingstowwe kan hou", wrong:["motoronderdele","glasvensters","brandstof"]},
+    {term:"moedergesteente", def:"oorspronklike rots waaruit grond en minerale ontwikkel", wrong:["rekenaarprogram","plaagdoder","plantetiket"]}
+  ]},
+  {m:"m4", unit:"M4E3", unitTitle:"Eenheid 3: Die vorming van rotse", terms:[
+    {term:"stollingsrots", def:"rots wat vorm wanneer magma of lava afkoel en stol", wrong:["rots uit saamgeperste sand alleen","rots wat altyd uit blare bestaan","slegs humus"]},
+    {term:"sedimentêre rots", def:"rots wat uit lae sediment vorm wat saamgepers en verhard", wrong:["lava wat net stol","metaal wat smelt","slegs waterdamp"]},
+    {term:"metamorfe rots", def:"rots wat deur hitte en druk uit ’n bestaande rots verander", wrong:["vars kompos","reënwater","sagteware"]},
+    {term:"rotsiklus", def:"die proses waardeur rotse oor tyd tussen verskillende rotsvorme verander", wrong:["winkelvoorraad","padtoets","rekeningstaat"]},
+    {term:"sediment", def:"klein deeltjies van rots of organiese materiaal wat neergelê word", wrong:["gifstof alleen","elektriese kabel","selfoondata"]}
+  ]}
 ];
 
+function agriMakeQuestion(id, m, unit, type, q, correct, wrongList, explain){
+  const opts = [correct].concat(wrongList || []);
+  return {id:id, m:m, unit:unit, type:type, q:q, o:opts, a:0, w:explain};
+}
+
+function agriBuildQuestions(){
+  const out = [];
+  let n = 1;
+
+  agriQuestionTopics.forEach(function(topic){
+    topic.terms.forEach(function(t){
+      const wrong = t.wrong || ["verkeerde antwoord","nie van toepassing","onvolledig"];
+      out.push(agriMakeQuestion("agri_" + n++, topic.m, topic.unit, "mcq",
+        "Wat beteken " + t.term + "?",
+        t.def, wrong,
+        t.term + " beteken: " + t.def + "."
+      ));
+
+      out.push(agriMakeQuestion("agri_" + n++, topic.m, topic.unit, "term",
+        "Kies die regte term vir: " + t.def + ".",
+        t.term, wrong,
+        "Die regte term is " + t.term + "."
+      ));
+
+      out.push(agriMakeQuestion("agri_" + n++, topic.m, topic.unit, "waar/onwaar",
+        "Waar of onwaar: " + t.term + " hou verband met " + topic.unitTitle + ".",
+        "Waar", ["Onwaar", "Net soms", "Nie genoeg inligting nie"],
+        "Dit is waar. Die term val onder " + topic.unitTitle + "."
+      ));
+    });
+  });
+
+  const extras = [
+    {m:"m3", unit:"M3E1", q:"Watter hulpbronne is die belangrikste vir plantproduksie?", c:"Grond, water, sonlig, lug en voedingstowwe", w:["Slegs geld","Slegs trekkers","Slegs verpakking"], e:"Plantproduksie benodig natuurlike hulpbronne soos grond, water, lig en lug."},
+    {m:"m3", unit:"M3E1", q:"Hoekom moet landbouhulpbronne verantwoordelik gebruik word?", c:"Sodat produksie kan voortgaan sonder om hulpbronne uit te put", w:["Sodat grond vinniger wegspoel","Sodat water gemors word","Sodat biodiversiteit verminder"], e:"Volhoubare gebruik beskerm toekomstige produksie."},
+    {m:"m3", unit:"M3E2", q:"Watter praktyk help die meeste teen watererosie op ’n helling?", c:"Kontourbewerking", w:["Teen die helling af ploeg","Alle plante verwyder","Oorbeweiding"], e:"Kontourbewerking vertraag afloopwater."},
+    {m:"m3", unit:"M3E2", q:"Wat is die gevaar van kaal grond?", c:"Dit word maklik deur wind en water geërodeer", w:["Dit kry altyd meer humus","Dit verbeter altyd waterkwaliteit","Dit keer afloopwater heeltemal"], e:"Plantebedekking beskerm bogrond."},
+    {m:"m3", unit:"M3E3", q:"Watter besproeiingsmetode mors gewoonlik minder water?", c:"Drupbesproeiing", w:["Oop kanaal met lekkasies","Onbeplande vloedbesproeiing","Kraan wat heeltyd oop bly"], e:"Drupbesproeiing gee water naby wortels."},
+    {m:"m3", unit:"M3E3", q:"Wat kan boere doen tydens droogte?", c:"Water skeduleer, deklaag gebruik en waterverliese beperk", w:["Meer water mors","Alle damme besoedel","Besproei sonder plan"], e:"Droogte vereis beplanning en waterbesparing."},
+    {m:"m3", unit:"M3E4", q:"Wat is ’n moontlike gevolg van te veel kunsmis?", c:"Voedingstowwe kan in waterbronne beland en besoedeling veroorsaak", w:["Rotsiklus stop","Alle plae verdwyn permanent","Grond word altyd perfek"], e:"Kunsmis-afloop kan water besoedel."},
+    {m:"m3", unit:"M3E4", q:"Hoe kan plaagdoders veiliger gebruik word?", c:"Gebruik net volgens instruksies en voorkom afloop na water", w:["Spuit naby riviere sonder beheer","Gebruik altyd meer as nodig","Gooi oorskot in die drein"], e:"Veilige gebruik beperk besoedeling."},
+    {m:"m4", unit:"M4E1", q:"Watter gronddeel hou gewoonlik die meeste water?", c:"Klei", w:["Growwe sand","Grondlug","Klippe"], e:"Klei het baie klein deeltjies en hou water goed."},
+    {m:"m4", unit:"M4E1", q:"Waarom is humus belangrik?", c:"Dit verbeter grondvrugbaarheid en grondstruktuur", w:["Dit is ’n plaagdoder","Dit vorm altyd plastiek","Dit verminder alle wortels"], e:"Humus verbeter grond vir plante."},
+    {m:"m4", unit:"M4E2", q:"Hoe ontstaan sekondêre minerale?", c:"Deur verwering en verandering van primêre minerale", w:["Deur dokumente te print","Deur water heeltemal te verwyder","Deur grond te verf"], e:"Sekondêre minerale vorm uit veranderde primêre minerale."},
+    {m:"m4", unit:"M4E2", q:"Waarom is klei-minerale belangrik in grond?", c:"Hulle kan water en voedingstowwe hou", w:["Hulle maak grond altyd giftig","Hulle is net plastiek","Hulle keer alle plantegroei"], e:"Klei-minerale dra by tot water- en voedingstofhouvermoë."},
+    {m:"m4", unit:"M4E3", q:"Watter rots vorm uit afgekoelde lava of magma?", c:"Stollingsrots", w:["Sedimentêre rots","Humuslaag","Kunsmis"], e:"Stollingsrotse vorm wanneer magma of lava stol."},
+    {m:"m4", unit:"M4E3", q:"Watter rots vorm deur hitte en druk?", c:"Metamorfe rots", w:["Slegs sand","Slegs water","Vars kompos"], e:"Metamorfe rotse is veranderde bestaande rotse."},
+    {m:"m4", unit:"M4E3", q:"Watter rots vorm in lae uit sediment?", c:"Sedimentêre rots", w:["Stollingsrots","Metamorfe rots net deur hitte","Plastieklaag"], e:"Sedimentêre rotse vorm uit neergesette en saamgeperste sediment."}
+  ];
+
+  extras.forEach(function(x){
+    out.push(agriMakeQuestion("agri_" + n++, x.m, x.unit, "kort begrip", x.q, x.c, x.w, x.e));
+    out.push(agriMakeQuestion("agri_" + n++, x.m, x.unit, "waar/onwaar", "Waar of onwaar: " + x.c + ".", "Waar", ["Onwaar","Net soms","Nie van toepassing nie"], x.e));
+  });
+
+  return out;
+}
+
+const agriQuestions = agriBuildQuestions();
+
+function agriCoverageData(){
+  const data = {};
+  agriQuestionTopics.forEach(function(t){
+    data[t.unit] = {m:t.m, unit:t.unit, title:t.unitTitle, total:0};
+  });
+  agriQuestions.forEach(function(q){
+    if(!data[q.unit]) data[q.unit] = {m:q.m, unit:q.unit, title:q.unit, total:0};
+    data[q.unit].total++;
+  });
+  return data;
+}
+
+function agriCoverageHTML(){
+  const data = agriCoverageData();
+  let html = '<div class="card"><div class="row space"><div><h2>Coverage Counter</h2><p class="muted">Kwartaal 2 vraagbank per eenheid.</p></div><span class="pill active">' + agriQuestions.length + ' vrae totaal</span></div>';
+  html += '<div class="grid subjects" style="margin-top:14px">';
+  Object.keys(data).forEach(function(k){
+    const x = data[k];
+    html += '<div class="smallStat"><b>' + x.total + '</b><span>' + esc(x.title) + '</span><br><span class="muted">' + esc(x.m === "m3" ? "Module 3" : "Module 4") + '</span></div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+// === END AGRI PATCH 2 ===
 function agriModuleQuestionCount(moduleId){
   if(moduleId === "all") return agriQuestions.length;
   return agriQuestions.filter(function(q){ return q.m === moduleId; }).length;
@@ -5906,6 +6043,8 @@ function agriStudyHTML(){
   html += '<button class="subjectBtn" onclick="state.agriModule=\'m4\';state.agriShowAnswers=false;save();render()"><div style="font-size:32px;margin-bottom:8px">🪨</div><h3>Grondkunde</h3><p class="muted">Module 4: Grond, minerale en rotse.</p><span class="pill active">' + agriModuleQuestionCount("m4") + ' vrae</span></button>';
   html += '<button class="subjectBtn" onclick="state.screen=\'agri_exam\';save();render()"><div style="font-size:32px;margin-bottom:8px">📝</div><h3>Quick Test</h3><p class="muted">Klein toets net om te bevestig die route werk.</p><span class="pill active">Test</span></button>';
   html += '</div></div>';
+
+  html += agriCoverageHTML();
 
   html += '<div class="grid two">';
   html += '<div class="grid"><div class="card"><h2>Modules</h2><div style="height:12px"></div>';
@@ -6003,6 +6142,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
