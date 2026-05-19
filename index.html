@@ -4050,6 +4050,60 @@ const catQ2ExtraQuestionsV1 = [
 
 catQ2Questions.push(...catQ2ExtraQuestionsV1);
 
+
+// === CAT Q2 EXTRA QUESTIONS V2 EXAM STYLE ===
+const catQ2ExtraQuestionsV2 = [
+  {m:"m35", q:"Enrico moet net een deel van sy Word dokument landscape maak. Wat moet hy eers gebruik?", o:["Section break","Spelling check","AutoSum","Router"], a:0, w:"As net n deel ander page setup moet he, gebruik jy n section break."},
+  {m:"m35", q:"Hy wil n koerantstyl artikel met twee kolomme maak. Watter Word funksie gebruik hy?", o:["Columns","Mail merge","SUM","Device Manager"], a:0, w:"Columns verdeel teks in vertikale kolomme."},
+  {m:"m35", q:"Die teks in sy kolomme lyk lelik met groot spasies. Watter funksie kan help?", o:["Hyphenation","Antivirus","MAX","LAN"], a:0, w:"Hyphenation help woorde netjieser oor lyne verdeel."},
+  {m:"m35", q:"Hy wil sy naam bo-aan elke bladsy wys. Waar sit hy dit?", o:["Header","Footer only","Formula bar","Taskbar"], a:0, w:"n Header verskyn bo-aan bladsye."},
+  {m:"m35", q:"Hy wil die bladsy nommer onderaan elke bladsy wys. Wat gebruik hy?", o:["Page number in footer","CPU settings","Cell reference","Network switch"], a:0, w:"Page numbers word gewoonlik in die header of footer geplaas."},
+
+  {m:"m16", q:"n Program vries en Windows help om dit toe te maak. Watter tipe sagteware beheer dit?", o:["Operating system","Spreadsheet","Word table","Router software only"], a:0, w:"Die bedryfstelsel bestuur programme en hulpbronne."},
+  {m:"m16", q:"Enrico gebruik Word om n verslag te tik. Watter tipe sagteware is Word?", o:["Application software","System software","Hardware","Firmware only"], a:0, w:"Word is toepassingsagteware vir dokumente."},
+  {m:"m16", q:"n Program wat temporary files skoonmaak is watter tipe sagteware?", o:["Utility program","Game controller","Output device","Network client"], a:0, w:"Utilities help met onderhoud en bestuur van n rekenaar."},
+  {m:"m16", q:"Hoekom moet Enrico nie sommer enige gratis program aflaai nie?", o:["Dit kan malware bevat of onveilig wees","Dit maak altyd RAM groter","Dit verander altyd na Excel","Dit druk outomaties"], a:0, w:"Onbekende downloads kan onveilig wees."},
+  {m:"m16", q:"Die skool vra dat sagteware wettig gebruik moet word. Waarmee hou dit verband?", o:["Software license","Screen resolution","Keyboard layout","Network cable"], a:0, w:"Lisensies bepaal hoe sagteware wettig gebruik mag word."},
+
+  {m:"m36", q:"Enrico wil n opskrif oor die hele tabel laat strek. Wat moet hy doen?", o:["Merge cells","Split cells","AutoFill","Install printer"], a:0, w:"Merge cells kombineer selle in een groter sel."},
+  {m:"m36", q:"Hy het een groot sel maar moet dit in twee kolomme deel. Wat gebruik hy?", o:["Split cells","Page number","Formula bar","Wireless network"], a:0, w:"Split cells verdeel n sel in kleiner selle."},
+  {m:"m36", q:"Hy moet n nuwe item tussen twee bestaande items in n tabel insit. Wat gebruik hy?", o:["Insert row","Insert footer","SUM","Task Manager"], a:0, w:"Insert row voeg n nuwe ry in."},
+  {m:"m36", q:"Die tabel se kolomme is te smal vir die teks. Watter opsie kan help?", o:["AutoFit","Antivirus scan","MAX function","Landscape network"], a:0, w:"AutoFit pas die tabel of kolomme by inhoud aan."},
+  {m:"m36", q:"Hy wil die tabel se heading row uitstaan. Wat is die beste keuse?", o:["Bold text and shading","Delete the row","Make Wi-Fi faster","Use CPU"], a:0, w:"Bold en shading laat headings uitstaan."},
+
+  {m:"m17", q:"Enrico se rekenaar raak stadig wanneer baie programme oop is. Watter komponent kan te min wees?", o:["RAM","Printer ink","Monitor size","Wi-Fi name"], a:0, w:"RAM word gebruik vir programme wat tans oop is."},
+  {m:"m17", q:"Hy wil n vinniger rekenaar vir opening van programme he. Watter storage help gewoonlik?", o:["SSD","Old CD-ROM only","Speaker","Keyboard"], a:0, w:"n SSD is vinniger as n tradisionele HDD."},
+  {m:"m17", q:"n Scanner word gebruik om papierdata in die rekenaar te kry. Watter tipe toestel is dit?", o:["Input device","Output device","Processing device","Storage only"], a:0, w:"n Scanner voer data in."},
+  {m:"m17", q:"n Printer gee resultate op papier. Watter tipe toestel is dit?", o:["Output device","Input device","RAM","CPU"], a:0, w:"Printers gee output."},
+  {m:"m17", q:"Die krag gaan gereeld af. Watter toestel kan help dat die rekenaar veilig afgeskakel word?", o:["UPS","Mouse","Monitor stand","Spreadsheet"], a:0, w:"n UPS gee tydelike krag en beskerming."},
+
+  {m:"m41", q:"Enrico sien #### in n Excel cell. Wat is die waarskynlikste rede?", o:["Die kolom is te smal om die waarde te wys","Die monitor is stukkend","Die router is af","Die formule is altyd reg"], a:0, w:"#### beteken dikwels die kolom is te smal."},
+  {m:"m41", q:"Hy wil dieselfde formule van D2 tot D6 kopieer. Watter funksie help?", o:["AutoFill","Header","Merge cells","Firewall"], a:0, w:"AutoFill kopieer formulas of patrone af."},
+  {m:"m41", q:"Hy wil weet watter sel aktief is. Waar kan hy kyk?", o:["Name box / selected cell border","Printer tray","Router label","Word footer"], a:0, w:"Die aktiewe sel word gemerk en kan in die name box wys."},
+  {m:"m41", q:"Hy wil Sheet1 se naam verander na Marks. Waar werk hy?", o:["Worksheet tab","Formula answer cell","Page footer","CPU socket"], a:0, w:"Sheet tabs onderaan kan hernoem word."},
+  {m:"m41", q:"Hy tik 00123 maar Excel wys dalk 123. Wat moet hy verstaan?", o:["Excel kan data as number format behandel","Excel het die keyboard gebreek","Word columns is aan","Die network is stadig"], a:0, w:"Data formats bepaal hoe data gestoor en vertoon word."},
+
+  {m:"m21", q:"Die skool se rekenaars deel een printer. Watter konsep is dit?", o:["Network resource sharing","Word hyphenation","Excel AutoFill","CPU cache"], a:0, w:"n Netwerk kan printers en ander hulpbronne deel."},
+  {m:"m21", q:"Die Wi-Fi werk maar internet nie. Watter toestel of verbinding kan die probleem wees?", o:["Router or internet connection","Word header","Excel row","Printer paper"], a:0, w:"Die router of internetverbinding kan die probleem wees."},
+  {m:"m21", q:"n Netwerk binne die skool se gebou is waarskynlik watter tipe?", o:["LAN","WAN only","HDD","GUI"], a:0, w:"n LAN is n plaaslike netwerk."},
+  {m:"m21", q:"Die internet verbind baie netwerke oor groot afstande. Dit is n voorbeeld van?", o:["WAN","Single cell","Local keyboard","Word table"], a:0, w:"WAN dek groot afstande."},
+  {m:"m21", q:"Wat is een nadeel van wireless networks?", o:["Dit kan seinprobleme of sekuriteitsrisiko he","Dit kan nooit internet gebruik nie","Dit werk net met Word","Dit kan nie routers gebruik nie"], a:0, w:"Wireless is gerieflik maar kan sein- en sekuriteitskwessies he."},
+
+  {m:"m42", q:"Enrico wil B2 en C2 bymekaar tel. Watter formule is reg?", o:["=B2+C2","=B2*C2","SUM B2 C2","B2 plus C2 without ="], a:0, w:"Optel gebruik + en formules begin met =."},
+  {m:"m42", q:"Hy wil Quantity maal Price bereken. Watter formule is reg?", o:["=B2*C2","=B2+C2","=B2-C2","=B2/C2 for multiply"], a:0, w:"Multiplication gebruik *."},
+  {m:"m42", q:"Hy wil die laagste waarde in E2:E6 kry. Watter funksie gebruik hy?", o:["MIN","MAX","SUM","AVERAGE"], a:0, w:"MIN gee die laagste waarde."},
+  {m:"m42", q:"Hy verander C2 se waarde. Wat gebeur met n formule wat C2 gebruik?", o:["Die antwoord kan outomaties herbereken","Die formule verdwyn altyd","Excel sluit dadelik","Die worksheet word delete"], a:0, w:"Formules met cell references werk dinamies."},
+  {m:"m42", q:"Watter een is n korrekte Excel range?", o:["E2:E6","E2-E6","E2,E6 only always","E2/E6"], a:0, w:"n Range gebruik n dubbelpunt tussen begin- en eindsel."},
+
+  {m:"m61", q:"Enrico moet n probleem oplos maar begin dadelik tik sonder om te lees. Wat is verkeerd?", o:["Hy het nie eers die probleem en instruksies verstaan nie","Hy het te veel RAM","Hy het Excel oopgemaak","Hy het sy muis gebruik"], a:0, w:"Probleemoplossing begin met verstaan en beplanning."},
+  {m:"m61", q:"Hy het baie data maar net sommige is nodig. Wat moet hy doen?", o:["Kies relevante data","Gebruik alles sonder om te dink","Delete alle data","Maak alles bold"], a:0, w:"Relevante data help om n akkurate oplossing te bou."},
+  {m:"m61", q:"Hy moet besluit of Word of Excel beter is. Waarop baseer hy dit?", o:["Die tipe probleem en gewenste output","Die kleur van die icon","Die keyboard merk","Die router naam"], a:0, w:"Kies die program wat by die taak pas."},
+  {m:"m61", q:"Hy het n oplossing klaar. Wat moet hy doen voor hy dit inhandig?", o:["Kontroleer en toets of dit die probleem oplos","Maak die file toe sonder save","Verander alles na rooi","Delete die headings"], a:0, w:"Evaluering en toetsing is deel van probleemoplossing."},
+  {m:"m61", q:"n Groot taak voel te moeilik. Wat is n goeie strategie?", o:["Breek dit in kleiner stappe","Ignoreer die maklikste deel","Raai die antwoord","Begin by printing"], a:0, w:"Kleiner stappe maak die taak hanteerbaar."}
+];
+
+catQ2Questions.push(...catQ2ExtraQuestionsV2);
+
 const catQ2Tasks = [
   {type:"Word", module:"3.5 Verdere formatering", title:"Word Task 1: Page setup", steps:[
     "Open Microsoft Word.",
@@ -5287,6 +5341,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
