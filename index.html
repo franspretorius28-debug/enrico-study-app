@@ -4476,7 +4476,7 @@ function catExamHTML(){
     const mod = state.catModule || "all";
     const chosen = (state.catAnswers||{})[mod + "-" + i];
     const reveal = !!state.catShowAnswers;
-    html += '<div class="questionBox"><b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
+    html += '<div class="questionBox">' + agriVisualHTML(q) + '<b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
     q.o.forEach(function(o,oi){
       let cls = "optionBtn";
       if(chosen===oi && !reveal) cls += " selected";
@@ -4599,7 +4599,7 @@ function rttExamHTML(){
   qs.forEach(function(q,i){
     const chosen = (state.rttExamAnswers || {})[i];
     const reveal = !!state.rttExamFinished;
-    html += '<div class="questionBox"><b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
+    html += '<div class="questionBox">' + agriVisualHTML(q) + '<b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
     q.o.forEach(function(o,oi){
       let cls = "optionBtn";
       if(chosen===oi && !reveal) cls += " selected";
@@ -4788,7 +4788,7 @@ function rttExamHTML(){
   qs.forEach(function(q,i){
     const chosen = (state.rttExamAnswers || {})[i];
     const reveal = !!state.rttExamFinished;
-    html += '<div class="questionBox"><b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
+    html += '<div class="questionBox">' + agriVisualHTML(q) + '<b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
     q.o.forEach(function(o,oi){
       let cls = "optionBtn";
       if(chosen===oi && !reveal) cls += " selected";
@@ -5984,6 +5984,116 @@ function agriBuildQuestions(){
 
 const agriQuestions = agriBuildQuestions();
 
+
+// === AGRI PATCH 3: IMAGE QUESTIONS WITH INLINE SVG PLACEHOLDERS ===
+const agriVisuals = {
+  igneous:`<svg viewBox="0 0 320 190" role="img" aria-label="Stollingsrots diagram">
+    <rect x="0" y="0" width="320" height="190" rx="18" fill="#f8fafc"/>
+    <path d="M68 132 C50 102 72 65 112 55 C153 43 203 54 234 82 C266 111 251 151 205 160 C151 172 91 163 68 132Z" fill="#64748b" stroke="#334155" stroke-width="4"/>
+    <circle cx="114" cy="86" r="9" fill="#e2e8f0"/><circle cx="158" cy="75" r="7" fill="#cbd5e1"/><circle cx="199" cy="102" r="8" fill="#e2e8f0"/>
+    <path d="M90 135 L132 105 L180 142 L230 100" fill="none" stroke="#0f172a" stroke-width="3"/>
+    <text x="160" y="28" text-anchor="middle" font-size="18" font-weight="800" fill="#0f172a">Kristalle in rots</text>
+    <text x="160" y="181" text-anchor="middle" font-size="14" fill="#475569">Magma/lava koel af en stol</text>
+  </svg>`,
+  sedimentary:`<svg viewBox="0 0 320 190" role="img" aria-label="SedimentÃªre rots diagram">
+    <rect x="0" y="0" width="320" height="190" rx="18" fill="#f8fafc"/>
+    <path d="M48 58 H272 L250 150 H70 Z" fill="#d6b06d" stroke="#8b5e2a" stroke-width="4"/>
+    <path d="M58 82 H267 M55 105 H260 M52 128 H255" stroke="#7c4a12" stroke-width="5"/>
+    <path d="M128 118 C145 105 164 105 180 118 C163 132 145 132 128 118Z" fill="#fef3c7" stroke="#92400e" stroke-width="3"/>
+    <text x="160" y="32" text-anchor="middle" font-size="18" font-weight="800" fill="#0f172a">Lae sediment</text>
+    <text x="160" y="176" text-anchor="middle" font-size="14" fill="#475569">Lae word saamgepers en verhard</text>
+  </svg>`,
+  metamorphic:`<svg viewBox="0 0 320 190" role="img" aria-label="Metamorfe rots diagram">
+    <rect x="0" y="0" width="320" height="190" rx="18" fill="#f8fafc"/>
+    <path d="M60 125 C85 70 127 56 170 72 C214 89 252 77 270 121 C242 158 188 164 139 149 C99 137 77 153 60 125Z" fill="#94a3b8" stroke="#334155" stroke-width="4"/>
+    <path d="M78 119 C112 96 142 96 177 111 C205 123 228 118 256 99" fill="none" stroke="#f1f5f9" stroke-width="8"/>
+    <path d="M82 142 C120 122 149 124 181 137 C213 150 239 140 262 130" fill="none" stroke="#475569" stroke-width="6"/>
+    <text x="160" y="32" text-anchor="middle" font-size="18" font-weight="800" fill="#0f172a">Bande / foliasie</text>
+    <text x="160" y="176" text-anchor="middle" font-size="14" fill="#475569">Bestaande rots verander deur hitte en druk</text>
+  </svg>`,
+  soilComponents:`<svg viewBox="0 0 320 190" role="img" aria-label="Grondkomponente diagram">
+    <rect x="0" y="0" width="320" height="190" rx="18" fill="#f8fafc"/>
+    <circle cx="90" cy="85" r="18" fill="#fbbf24"/><text x="90" y="124" text-anchor="middle" font-size="13">sand</text>
+    <circle cx="145" cy="85" r="13" fill="#a3a3a3"/><text x="145" y="124" text-anchor="middle" font-size="13">slik</text>
+    <circle cx="195" cy="85" r="9" fill="#92400e"/><text x="195" y="124" text-anchor="middle" font-size="13">klei</text>
+    <path d="M226 93 C240 58 270 58 284 93 C274 118 237 118 226 93Z" fill="#2563eb"/><text x="255" y="135" text-anchor="middle" font-size="13">water</text>
+    <path d="M53 145 C70 131 88 133 101 146 C85 161 68 160 53 145Z" fill="#166534"/><text x="78" y="174" text-anchor="middle" font-size="13">humus</text>
+    <circle cx="160" cy="150" r="15" fill="#dbeafe" stroke="#60a5fa" stroke-width="2"/><text x="160" y="174" text-anchor="middle" font-size="13">lug</text>
+    <text x="160" y="28" text-anchor="middle" font-size="18" font-weight="800" fill="#0f172a">Basiese grondkomponente</text>
+  </svg>`,
+  erosion:`<svg viewBox="0 0 320 190" role="img" aria-label="Gronderosie diagram">
+    <rect x="0" y="0" width="320" height="190" rx="18" fill="#f8fafc"/>
+    <path d="M30 70 C90 50 150 63 208 48 C245 40 280 55 304 73 L304 164 L30 164Z" fill="#a16207"/>
+    <path d="M44 78 C86 90 116 111 145 136 C164 153 192 158 231 161" fill="none" stroke="#38bdf8" stroke-width="8"/>
+    <path d="M73 69 L85 46 M119 62 L134 40 M219 52 L236 31" stroke="#166534" stroke-width="5"/>
+    <path d="M90 102 C112 111 134 122 154 142" stroke="#713f12" stroke-width="10"/>
+    <text x="160" y="28" text-anchor="middle" font-size="18" font-weight="800" fill="#0f172a">Watererosie</text>
+    <text x="160" y="181" text-anchor="middle" font-size="14" fill="#475569">Bogrond spoel weg teen â€™n helling</text>
+  </svg>`,
+  contour:`<svg viewBox="0 0 320 190" role="img" aria-label="Kontourbewerking diagram">
+    <rect x="0" y="0" width="320" height="190" rx="18" fill="#f8fafc"/>
+    <path d="M35 150 C80 40 240 40 285 150 Z" fill="#bbf7d0" stroke="#16a34a" stroke-width="3"/>
+    <path d="M75 138 C115 112 205 112 245 138 M90 112 C125 92 195 92 230 112 M113 86 C140 73 180 73 207 86" fill="none" stroke="#166534" stroke-width="5"/>
+    <path d="M50 60 L272 150" stroke="#ef4444" stroke-width="5" stroke-dasharray="8 7"/>
+    <text x="160" y="28" text-anchor="middle" font-size="18" font-weight="800" fill="#0f172a">Kontourlyne</text>
+    <text x="160" y="181" text-anchor="middle" font-size="14" fill="#475569">Werk langs hoogtelyne om afloop te vertraag</text>
+  </svg>`,
+  drip:`<svg viewBox="0 0 320 190" role="img" aria-label="Drupbesproeiing diagram">
+    <rect x="0" y="0" width="320" height="190" rx="18" fill="#f8fafc"/>
+    <path d="M40 70 H280" stroke="#0f172a" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="86" cy="88" r="7" fill="#2563eb"/><circle cx="160" cy="88" r="7" fill="#2563eb"/><circle cx="234" cy="88" r="7" fill="#2563eb"/>
+    <path d="M76 150 C88 120 104 121 116 150 M150 150 C162 120 178 121 190 150 M224 150 C236 120 252 121 264 150" fill="none" stroke="#16a34a" stroke-width="5"/>
+    <path d="M86 95 V124 M160 95 V124 M234 95 V124" stroke="#38bdf8" stroke-width="4" stroke-dasharray="5 5"/>
+    <text x="160" y="28" text-anchor="middle" font-size="18" font-weight="800" fill="#0f172a">Drupbesproeiing</text>
+    <text x="160" y="181" text-anchor="middle" font-size="14" fill="#475569">Water naby plantwortels</text>
+  </svg>`,
+  pollution:`<svg viewBox="0 0 320 190" role="img" aria-label="Landboubesoedeling diagram">
+    <rect x="0" y="0" width="320" height="190" rx="18" fill="#f8fafc"/>
+    <path d="M30 132 C80 118 118 122 160 132 C206 144 248 141 290 125 L290 166 L30 166Z" fill="#60a5fa"/>
+    <path d="M54 74 H144 L162 130 H36 Z" fill="#facc15" stroke="#92400e" stroke-width="3"/>
+    <path d="M78 96 C109 105 130 118 154 132" stroke="#ef4444" stroke-width="6" stroke-dasharray="8 6"/>
+    <circle cx="218" cy="135" r="7" fill="#ef4444"/><circle cx="244" cy="145" r="5" fill="#ef4444"/><circle cx="270" cy="134" r="6" fill="#ef4444"/>
+    <text x="160" y="28" text-anchor="middle" font-size="18" font-weight="800" fill="#0f172a">Afloop na waterbron</text>
+    <text x="160" y="181" text-anchor="middle" font-size="14" fill="#475569">Kunsmis/plaagdoder kan water besoedel</text>
+  </svg>`,
+  soilProfile:`<svg viewBox="0 0 320 190" role="img" aria-label="Grondprofiel diagram">
+    <rect x="0" y="0" width="320" height="190" rx="18" fill="#f8fafc"/>
+    <rect x="75" y="42" width="170" height="28" fill="#365314"/><text x="255" y="62" font-size="14">O: organies</text>
+    <rect x="75" y="70" width="170" height="35" fill="#854d0e"/><text x="255" y="93" font-size="14">A: bogrond</text>
+    <rect x="75" y="105" width="170" height="38" fill="#a16207"/><text x="255" y="129" font-size="14">B: ondergrond</text>
+    <rect x="75" y="143" width="170" height="25" fill="#78716c"/><text x="255" y="162" font-size="14">C: moedermateriaal</text>
+    <text x="160" y="28" text-anchor="middle" font-size="18" font-weight="800" fill="#0f172a">Grondprofiel</text>
+  </svg>`
+};
+
+function agriVisualHTML(q){
+  if(!q || !q.visual || !agriVisuals[q.visual]) return "";
+  return '<div class="qImage">' + agriVisuals[q.visual] + '</div>';
+}
+
+const agriImageQuestions = [
+  {id:"agri_img_1",m:"m4",unit:"M4E3",type:"prentvraag",visual:"igneous",q:"Identifiseer die rots in die prent wat uit afgekoelde magma of lava vorm.",o:["Stollingsrots","SedimentÃªre rots","Metamorfe rots","Humus"],a:0,w:"Stollingsrotse vorm wanneer magma of lava afkoel en stol."},
+  {id:"agri_img_2",m:"m4",unit:"M4E3",type:"prentvraag",visual:"sedimentary",q:"Watter rots word deur lae sediment voorgestel?",o:["SedimentÃªre rots","Stollingsrots","Metamorfe rots","PrimÃªre mineraal"],a:0,w:"SedimentÃªre rotse vorm uit lae sediment wat saamgepers en verhard."},
+  {id:"agri_img_3",m:"m4",unit:"M4E3",type:"prentvraag",visual:"metamorphic",q:"Die bande in die rots wys hoofsaaklik op watter soort rots?",o:["Metamorfe rots","SedimentÃªre rots","Stollingsrots","Suiwer sand"],a:0,w:"Metamorfe rotse verander deur hitte en druk en kan bande/foliasie wys."},
+  {id:"agri_img_4",m:"m4",unit:"M4E1",type:"prentvraag",visual:"soilComponents",q:"Watter lys pas die beste by die basiese komponente van grond?",o:["Sand, slik, klei, humus, water en lug","Net plastiek en metaal","Slegs water","Slegs rotse"],a:0,w:"Grond bestaan uit minerale deeltjies, organiese materiaal, water en lug."},
+  {id:"agri_img_5",m:"m4",unit:"M4E1",type:"prentvraag",visual:"soilComponents",q:"Watter komponent in die prent is afgebreekte organiese materiaal?",o:["Humus","Sand","Lug","Klip"],a:0,w:"Humus vorm uit afgebreekte plant- en diermateriaal."},
+  {id:"agri_img_6",m:"m4",unit:"M4E1",type:"prentvraag",visual:"soilComponents",q:"Watter gronddeeltjie is gewoonlik die kleinste?",o:["Klei","Sand","Klippe","Gruis"],a:0,w:"Klei het baie fyn deeltjies en hou water/voedingstowwe goed."},
+  {id:"agri_img_7",m:"m3",unit:"M3E2",type:"prentvraag",visual:"erosion",q:"Watter proses word in die prent gewys wanneer bogrond wegspoel?",o:["Watererosie","Drupbesproeiing","Fotosintese","Rotsvorming"],a:0,w:"Watererosie verwyder bogrond wanneer afloopwater grond wegspoel."},
+  {id:"agri_img_8",m:"m3",unit:"M3E2",type:"prentvraag",visual:"contour",q:"Watter grondbewaringspraktyk word deur die geboÃ« lyne teen die helling gewys?",o:["Kontourbewerking","Oorbeweiding","Besoedeling","Monokultuur"],a:0,w:"Kontourbewerking volg hoogtelyne en help om waterafloop te vertraag."},
+  {id:"agri_img_9",m:"m3",unit:"M3E3",type:"prentvraag",visual:"drip",q:"Watter waterbestuurstelsel word in die prent gewys?",o:["Drupbesproeiing","Vloedbesproeiing sonder beheer","Waterbesoedeling","Winderosie"],a:0,w:"Drupbesproeiing gee klein hoeveelhede water naby wortels en verminder vermorsing."},
+  {id:"agri_img_10",m:"m3",unit:"M3E4",type:"prentvraag",visual:"pollution",q:"Wat wys die rooi afloop in die prent?",o:["Landboubesoedeling wat water kan bereik","Goeie grondbewaring","Skoon reÃ«nwater","Rotsiklus"],a:0,w:"Kunsmis of plaagdoder-afloop kan waterbronne besoedel."},
+  {id:"agri_img_11",m:"m4",unit:"M4E1",type:"prentvraag",visual:"soilProfile",q:"Watter laag in â€™n grondprofiel is gewoonlik bogrond?",o:["A-horison","C-horison","Rotskern","Wolklaag"],a:0,w:"Die A-horison is bogrond en bevat dikwels meer organiese materiaal as dieper lae."},
+  {id:"agri_img_12",m:"m4",unit:"M4E2",type:"prentvraag",visual:"soilProfile",q:"Watter deel hou verband met moedergesteente of moedermateriaal?",o:["C-horison / moedermateriaal","O-horison","Plantblare alleen","Waterdamp"],a:0,w:"Moedermateriaal is die materiaal waaruit grond oor tyd ontwikkel."},
+  {id:"agri_img_13",m:"m3",unit:"M3E3",type:"prentvraag",visual:"drip",q:"Hoekom is hierdie waterstelsel volhoubaar?",o:["Dit beperk watervermorsing deur water naby wortels te gee","Dit mors meer water as alle metodes","Dit besoedel altyd riviere","Dit verwyder alle plante"],a:0,w:"Drupbesproeiing kan water spaar en effektief by wortels lewer."},
+  {id:"agri_img_14",m:"m3",unit:"M3E2",type:"prentvraag",visual:"erosion",q:"Watter praktyk sal die probleem in die erosie-prent help verminder?",o:["Hou grond bedek met plante of deklaag","Verwyder alle plante","Laat diere oorbewei","Ploeg altyd teen hellings af"],a:0,w:"Plantbedekking en deklaag beskerm bogrond teen erosie."},
+  {id:"agri_img_15",m:"m3",unit:"M3E4",type:"prentvraag",visual:"pollution",q:"Watter aksie sal die besoedeling in die prent help voorkom?",o:["Gebruik kunsmis en plaagdoders volgens instruksies en hou dit weg van water","Gooi oorskot in riviere","Gebruik altyd meer chemikalieÃ«","Spuit direk oor waterbronne"],a:0,w:"Veilige chemiese gebruik en bufferstroke help waterbronne beskerm."},
+  {id:"agri_img_16",m:"m4",unit:"M4E3",type:"prentvraag",visual:"sedimentary",q:"Wat in die prent help jou om sedimentÃªre rots te herken?",o:["Duidelike lae","Geen lae en net kristalle","Slegs plantwortels","Slegs waterdruppels"],a:0,w:"SedimentÃªre rots het dikwels sigbare lae."},
+  {id:"agri_img_17",m:"m4",unit:"M4E3",type:"prentvraag",visual:"metamorphic",q:"Watter proses verander bestaande rots na metamorfe rots?",o:["Hitte en druk","Slegs verpakking","Waterbesparing alleen","Fotosintese"],a:0,w:"Metamorfose in rotse gebeur deur hitte en druk."},
+  {id:"agri_img_18",m:"m4",unit:"M4E3",type:"prentvraag",visual:"igneous",q:"Wat is die belangrikste leidraad in die stollingsrots-prent?",o:["Kristalle wat gevorm het tydens afkoeling","Lae sediment","Bogrond met humus","Besoedelde rivier"],a:0,w:"Kristalle kan vorm wanneer gesmelte materiaal afkoel."}
+];
+
+agriQuestions.push.apply(agriQuestions, agriImageQuestions);
+// === END AGRI PATCH 3 ===
 function agriCoverageData(){
   const data = {};
   agriQuestionTopics.forEach(function(t){
@@ -6057,7 +6167,7 @@ function agriStudyHTML(){
 
   html += '<div class="card"><div class="row space"><div><h2>🌱 Landbou Wetenskappe</h2><p class="muted">Graad 10 • Kwartaal 2 • PATCH 1 framework toets</p></div><div class="row"><button class="btn secondary" onclick="setState({screen:\'dashboard\'})">Subjects</button><button class="btn" onclick="state.screen=\'agri_exam\';save();render()">Start Landbou Test</button></div></div></div>';
 
-  html += '<div class="card"><div class="row space"><div><h2>Study Hub</h2><p class="muted">Hier gaan ons later Study by Module, Book Activities, Quick Test, Full Exam, Image Questions, Practical Tasks, Weak Areas en Result History uitbrei.</p></div><span class="pill active">' + agriQuestions.length + ' starter vrae</span></div>';
+  html += '<div class="card"><div class="row space"><div><h2>Study Hub</h2><p class="muted">Hier gaan ons later Study by Module, Book Activities, Quick Test, Full Exam, Image Questions, Practical Tasks, Weak Areas en Result History uitbrei.</p></div><span class="pill active">' + agriQuestions.length + ' vrae</span></div>';
   html += '<div class="grid subjects" style="margin-top:14px">';
   html += '<button class="subjectBtn" onclick="state.agriModule=\'m3\';state.agriShowAnswers=false;save();render()"><div style="font-size:32px;margin-bottom:8px">🌾</div><h3>Study by Module</h3><p class="muted">Module 3: Volhoubare natuurlike hulpbronbenutting.</p><span class="pill active">' + agriModuleQuestionCount("m3") + ' vrae</span></button>';
   html += '<button class="subjectBtn" onclick="state.agriModule=\'m4\';state.agriShowAnswers=false;save();render()"><div style="font-size:32px;margin-bottom:8px">🪨</div><h3>Grondkunde</h3><p class="muted">Module 4: Grond, minerale en rotse.</p><span class="pill active">' + agriModuleQuestionCount("m4") + ' vrae</span></button>';
@@ -6090,7 +6200,7 @@ function agriStudyHTML(){
     const mod = state.agriModule || "m3";
     const chosen = (state.agriAnswers || {})[mod + "-" + i];
     const reveal = !!state.agriShowAnswers;
-    html += '<div class="questionBox"><b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
+    html += '<div class="questionBox">' + agriVisualHTML(q) + '<b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
     q.o.forEach(function(o,oi){
       let cls = "optionBtn";
       if(chosen===oi && !reveal) cls += " selected";
@@ -6233,6 +6343,7 @@ function agriExamHTML(){
     if(reveal) boxClass += correct ? " resultGood" : " resultBad";
 
     html += '<div class="' + boxClass + '"><div class="row space"><span class="pill active">' + esc(q.unit || q.m) + '</span><span class="pill">' + esc(q.type || "mcq") + '</span></div>';
+    html += agriVisualHTML(q);
     html += '<b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
 
     q.o.forEach(function(o,oi){
@@ -6273,6 +6384,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
