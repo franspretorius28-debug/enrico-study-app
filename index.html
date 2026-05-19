@@ -55,6 +55,11 @@
     .resultGood{background:var(--good)} .resultBad{background:var(--bad)}
     .hidden{display:none!important}
     .note{background:#f8fafc;border:1px solid var(--line);border-radius:22px;padding:14px}
+    /* === WORD TABLE INPUT CELLS V2 === */
+    .editableWordTable th,.editableWordTable td{padding:0!important;height:36px;min-width:130px}
+    .wordTableInput{width:100%;height:36px;border:0;background:transparent;padding:6px 8px;font:inherit;color:#111827}
+    .wordTableInput:focus{outline:2px solid #185abd;outline-offset:-2px;background:#eff6ff}
+    .wordTableInput::placeholder{color:#94a3b8}
     /* === WORD REAL TABS V1 === */
     .wordTabStrip{background:#f8fafc;border-bottom:1px solid #cbd5e1;padding:8px 12px;display:flex;gap:8px;flex-wrap:wrap}
     .wordTab{border:0;background:transparent;padding:8px 12px;border-radius:10px;font-weight:900;cursor:pointer}
@@ -4941,19 +4946,19 @@ function wordTableHasContent(){
 
 function wordEditableTableHTML(){
   wordEnsureTableCells();
-  let html = '<table class="wordFakeTable">';
+  let html = '<table class="wordFakeTable editableWordTable">';
   for(let r=0; r<4; r++){
     html += '<tr>';
     for(let c=0; c<3; c++){
       const tag = r === 0 ? "th" : "td";
-      html += '<' + tag + ' contenteditable="true" oninput="wordTableSet(' + r + ',' + c + ',this.innerText)">' + esc(wordTableCell(r,c)) + '</' + tag + '>';
+      const ph = r === 0 ? (c === 0 ? "Item" : c === 1 ? "Type" : "Example") : "";
+      html += '<' + tag + '><input class="wordTableInput" placeholder="' + ph + '" value="' + esc(wordTableCell(r,c)) + '" oninput="wordTableSet(' + r + ',' + c + ',this.value)"></' + tag + '>';
     }
     html += '</tr>';
   }
   html += '</table>';
   return html;
 }
-
 // Override marking so table practicals must have table content
 function wordSimResult(){
   const w = ensureWordSim();
@@ -5012,6 +5017,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
