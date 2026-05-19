@@ -4542,6 +4542,7 @@ function startRttExam(){
   state.rttExamSet = shuffleQuestions(catQ2Questions).slice(0, 60);
   state.rttExamSecondsLeft = 60 * 60;
   state.rttLastResult = null;
+  startRttExamPracticalSelectionV1();
   save();
   startRttExamTimer();
   render();
@@ -4673,6 +4674,8 @@ function rttExamHTML(){
   html += '<div class="wrap grid">';
 
   html += '<div class="card"><div class="row space"><div><h2>RTT Kwartaal 2 Eksamen</h2><p class="muted">60 gemengde teorie vrae plus Word en Excel practical.</p></div><div class="row"><span class="pill active">Timer: ' + rttExamTimeText() + '</span><button class="btn secondary" onclick="resetRttExam()">Reset Exam</button><button class="btn" onclick="finishRttExam()">Finish RTT Exam</button></div></div></div>';
+
+  html += rttSelectedPracticalsHTML();
 
   if(state.rttExamFinished && state.rttLastResult){
     const r = state.rttLastResult;
@@ -4859,6 +4862,77 @@ function rttHistoryHTML(){
   return html;
 }
 
+
+// === RTT RANDOM PRACTICALS V1 ===
+const rttWordExamTasksV1 = [
+  {
+    id:"word_basic_format",
+    title:"Word Practical: Basic formatting",
+    instruction:"Skep n dokument met n duidelike opskrif, paragrawe, bold heading en center heading."
+  },
+  {
+    id:"word_page_setup",
+    title:"Word Practical: Page setup",
+    instruction:"Skep n document waar jy page setup gebruik soos landscape, columns, header en footer."
+  },
+  {
+    id:"word_tables",
+    title:"Word Practical: Tables",
+    instruction:"Skep n document met n table. Gebruik headings, data in selle, header en footer."
+  },
+  {
+    id:"word_hardware_software",
+    title:"Word Practical: Hardware en software",
+    instruction:"Skep n dokument wat hardware en software vergelyk. Gebruik opskrif, paragrawe, table, header en footer."
+  },
+  {
+    id:"word_mixed_exam",
+    title:"Word Practical: Gemengde Word eksamen",
+    instruction:"Skep n volledige RTT document met opskrif, header, footer, bold, center, columns of landscape en n table."
+  }
+];
+
+function randomItemV1(list){
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function startRttExamPracticalSelectionV1(){
+  const wordTask = randomItemV1(rttWordExamTasksV1);
+  const excelTask = randomItemV1(excelTaskListV1 || []);
+
+  state.rttWordTaskId = wordTask.id;
+  state.rttWordTaskTitle = wordTask.title;
+  state.rttWordTaskInstruction = wordTask.instruction;
+
+  const matchingWordTask = (typeof wordPracticalTasksV2 !== "undefined")
+    ? wordPracticalTasksV2.find(function(t){ return t.id === wordTask.id; })
+    : null;
+  if(matchingWordTask) state.wordTaskId = matchingWordTask.id;
+
+  if(excelTask){
+    state.excelTaskId = excelTask.id;
+    state.rttExcelTaskTitle = excelTask.title;
+    state.rttExcelTaskNote = excelTask.note || "";
+  }
+
+  state.wordSim = null;
+  state.excelSim = null;
+}
+
+function rttSelectedPracticalsHTML(){
+  const wordTitle = state.rttWordTaskTitle || "Word Practical";
+  const wordInstruction = state.rttWordTaskInstruction || "Voltooi die Word practical.";
+  const excelTitle = state.rttExcelTaskTitle || (currentExcelTaskV1 ? currentExcelTaskV1().title : "Excel Practical");
+  const excelNote = state.rttExcelTaskNote || "";
+
+  let html = '<div class="card"><div class="row space"><div><h2>Exam practicals selected</h2><p class="muted">Hierdie practicals is random gekies vir hierdie RTT exam.</p></div><span class="pill active">Word + Excel</span></div>';
+  html += '<div class="grid subjects" style="margin-top:14px">';
+  html += '<div class="note"><b>' + esc(wordTitle) + '</b><br>' + esc(wordInstruction) + '</div>';
+  html += '<div class="note"><b>' + esc(excelTitle) + '</b><br>' + esc(excelNote) + '</div>';
+  html += '</div></div>';
+  return html;
+}
+
 // === RTT WORD PRACTICAL SIMULATOR V1 ===
 function ensureWordSim(){
   if(!state.wordSim){
@@ -4968,7 +5042,7 @@ function catWordSimulatorHTML(){
   let html = topbar();
   html += '<div class="wrap grid">';
 
-  html += '<div class="card"><div class="row space"><div><h2>RTT Word Practical</h2><p class="muted">Werk in ’n Word-agtige skerm. Die ribbon-knoppies verander die dokument soos in Microsoft Word.</p></div><button class="btn secondary" onclick="selectSubject(\'cat\')">Back to CAT</button></div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>' + esc(state.rttWordTaskTitle || "RTT Word Practical") + '</h2><p class="muted">Werk in n Word-agtige skerm. Die ribbon-knoppies verander die dokument soos in Microsoft Word.</p></div><button class="btn secondary" onclick="selectSubject(\'cat\')">Back to CAT</button></div></div>';
 
   html += '<div class="officeApp">';
   html += '<div class="officeTitleBar"><span>Word - Enrico RTT Practical.docx</span><div class="officeWindowBtns"><span class="officeDot"></span><span class="officeDot"></span><span class="officeDot"></span></div></div>';
@@ -4981,7 +5055,7 @@ function catWordSimulatorHTML(){
   html += '</div>';
 
   html += '<div class="officeBody">';
-  html += '<div class="taskPane"><h3>Eksamen-instruksies</h3><div class="note" style="margin-top:12px"><b>Taak:</b> Skep ’n dokument oor Computer Hardware and Software.</div>';
+  html += '<div class="taskPane"><h3>Eksamen-instruksies</h3><div class="note" style="margin-top:12px"><b>Taak:</b> ' + esc(state.rttWordTaskInstruction || "Skep n dokument oor Computer Hardware and Software.") + '</div>';
   html += '<ol style="padding-left:18px;line-height:1.65">';
   html += '<li>Vul ’n header in.</li><li>Vul ’n opskrif in.</li><li>Maak die opskrif bold en centered.</li><li>Tik minstens twee kort paragrawe.</li><li>Gebruik landscape, columns of table.</li><li>Vul footer of page number in.</li><li>Klik Mark Practical.</li>';
   html += '</ol>';
@@ -5340,7 +5414,7 @@ function catWordSimulatorHTML(){
   let html = topbar();
   html += '<div class="wrap grid">';
 
-  html += '<div class="card"><div class="row space"><div><h2>RTT Word Practical</h2><p class="muted">Werk soos in Microsoft Word. Die document begin leeg; Enrico moet self die instruksies uitvoer.</p></div><button class="btn secondary" onclick="selectSubject(\'cat\')">Back to CAT</button></div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>' + esc(state.rttWordTaskTitle || "RTT Word Practical") + '</h2><p class="muted">Werk in n Word-agtige skerm. Die ribbon-knoppies verander die dokument soos in Microsoft Word.</p></div><button class="btn secondary" onclick="selectSubject(\'cat\')">Back to CAT</button></div></div>';
 
   html += '<div class="officeApp">';
   html += '<div class="officeTitleBar"><span>Word - Enrico RTT Practical.docx</span><div class="officeWindowBtns"><span class="officeDot"></span><span class="officeDot"></span><span class="officeDot"></span></div></div>';
@@ -5690,6 +5764,11 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
+
+
+
+
 
 
 
