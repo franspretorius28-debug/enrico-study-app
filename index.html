@@ -55,6 +55,51 @@
     .resultGood{background:var(--good)} .resultBad{background:var(--bad)}
     .hidden{display:none!important}
     .note{background:#f8fafc;border:1px solid var(--line);border-radius:22px;padding:14px}
+    /* === OFFICE STYLE SIMULATORS V1 === */
+    .officeApp{border:1px solid #cbd5e1;border-radius:18px;overflow:hidden;background:#f1f5f9;box-shadow:0 18px 45px rgba(15,23,42,.14)}
+    .officeTitleBar{background:#185abd;color:white;padding:10px 14px;font-weight:900;display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .officeTitleBar.excel{background:#107c41}
+    .officeWindowBtns{display:flex;gap:8px}
+    .officeDot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.75)}
+    .officeRibbon{background:#fff;border-bottom:1px solid #cbd5e1;padding:10px 12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .ribbonGroup{border-right:1px solid #e2e8f0;padding-right:10px;margin-right:2px;display:flex;gap:8px;flex-wrap:wrap}
+    .ribbonBtn{border:1px solid #dbe3ef;background:#f8fafc;border-radius:10px;padding:8px 10px;font-weight:800;cursor:pointer}
+    .ribbonBtn.active{background:#dbeafe;border-color:#185abd;color:#0f3f91}
+    .officeBody{display:grid;grid-template-columns:280px 1fr;gap:0;min-height:560px}
+    .taskPane{background:#fff;border-right:1px solid #cbd5e1;padding:14px;overflow:auto}
+    .wordCanvas{background:#e5e7eb;padding:28px;overflow:auto;display:flex;justify-content:center}
+    .wordPage{width:680px;min-height:860px;background:white;box-shadow:0 10px 28px rgba(15,23,42,.20);padding:48px 58px;color:#111827}
+    .wordPage.landscape{width:860px;min-height:620px}
+    .wordHeaderEdit,.wordFooterEdit{min-height:28px;color:#64748b;border-bottom:1px dashed #cbd5e1;padding:4px;outline:none}
+    .wordFooterEdit{border-top:1px dashed #cbd5e1;border-bottom:0;margin-top:24px}
+    .wordTitleEdit{font-size:26px;font-weight:500;outline:none;margin:24px 0 18px;min-height:38px}
+    .wordTitleEdit.bold{font-weight:900}
+    .wordTitleEdit.center{text-align:center}
+    .wordBodyEdit{font-size:16px;line-height:1.55;outline:none;min-height:220px;white-space:pre-wrap}
+    .wordBodyEdit.columns{columns:2;column-gap:34px}
+    .wordFakeTable{width:100%;margin-top:18px;border-collapse:collapse;font-size:14px}
+    .wordFakeTable th,.wordFakeTable td{border:1px solid #94a3b8;padding:8px;text-align:left}
+    .wordFakeTable th{background:#e2e8f0}
+    .excelShell{background:#e5e7eb;padding:16px;overflow:auto}
+    .formulaBar{display:grid;grid-template-columns:70px 1fr;gap:8px;background:#fff;border-bottom:1px solid #cbd5e1;padding:10px}
+    .nameBox{border:1px solid #cbd5e1;border-radius:8px;padding:8px;background:#f8fafc;font-weight:800;text-align:center}
+    .formulaInput{border:1px solid #cbd5e1;border-radius:8px;padding:8px;background:white}
+    .excelGridWrap{background:white;border:1px solid #cbd5e1;overflow:auto}
+    .excelGrid{border-collapse:collapse;width:100%;min-width:850px;font-size:14px}
+    .excelGrid th{background:#f1f5f9;border:1px solid #cbd5e1;padding:8px;text-align:center;font-weight:900}
+    .excelGrid td{border:1px solid #cbd5e1;padding:0;height:38px}
+    .rowHead{background:#f8fafc!important;width:48px;text-align:center;font-weight:900}
+    .cellInput{width:100%;height:38px;border:0;border-radius:0;padding:8px;background:white}
+    .cellInput:focus{outline:2px solid #107c41;outline-offset:-2px;border:0}
+    .calcCell{padding:8px;background:#ecfdf5;font-weight:800;text-align:right}
+    .excelSummary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+    @media(max-width:900px){
+      .officeBody{grid-template-columns:1fr}
+      .taskPane{border-right:0;border-bottom:1px solid #cbd5e1}
+      .wordCanvas{padding:14px;justify-content:flex-start}
+      .wordPage,.wordPage.landscape{width:760px;min-width:760px}
+      .excelSummary{grid-template-columns:1fr}
+    }
     @media(max-width:820px){
       .subjects,.two,.optionGrid{grid-template-columns:1fr}
       .wrap{padding:10px}
@@ -4431,62 +4476,211 @@ function catWordSimulatorHTML(){
   let html = topbar();
   html += '<div class="wrap grid">';
 
-  html += '<div class="card"><div class="row space"><div><h2>📝 RTT Word Practical Simulator</h2><p class="muted">Kwartaal 2 oefening: Verdere formatering en Tabelle. Hierdie is soos ’n klein online Word-oefening.</p></div><button class="btn secondary" onclick="selectSubject(\'cat\')">Back to CAT</button></div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>RTT Word Practical</h2><p class="muted">Werk in ’n Word-agtige skerm. Die ribbon-knoppies verander die dokument soos in Microsoft Word.</p></div><button class="btn secondary" onclick="selectSubject(\'cat\')">Back to CAT</button></div></div>';
 
-  html += '<div class="card"><h2>Instruksies</h2><div class="note" style="margin-top:12px">';
-  html += '<b>Taak:</b> Skep ’n kort dokument oor Computer Hardware and Software. Vul ’n opskrif, paragrawe, header/footer in, en gebruik minstens een Word-funksie soos landscape, columns of table.';
-  html += '</div></div>';
+  html += '<div class="officeApp">';
+  html += '<div class="officeTitleBar"><span>Word - Enrico RTT Practical.docx</span><div class="officeWindowBtns"><span class="officeDot"></span><span class="officeDot"></span><span class="officeDot"></span></div></div>';
 
-  html += '<div class="card"><div class="row space"><div><h2>Jou dokument</h2><p class="muted">Tik jou werk hieronder. Klik dan Mark Practical.</p></div><div class="row"><button class="btn secondary" onclick="wordSimReset()">Reset</button><button class="btn" onclick="wordSimMark()">Mark Practical</button></div></div>';
-
-  html += '<div class="grid two" style="margin-top:14px">';
-  html += '<div>';
-  html += '<label class="field">Header</label><input value="' + esc(w.header) + '" oninput="wordSimSet(\'header\',this.value)" placeholder="Byvoorbeeld: Enrico - RTT Term 2">';
-  html += '</div>';
-  html += '<div>';
-  html += '<label class="field">Footer</label><input value="' + esc(w.footer) + '" oninput="wordSimSet(\'footer\',this.value)" placeholder="Byvoorbeeld: Page 1">';
-  html += '</div>';
+  html += '<div class="officeRibbon">';
+  html += '<div class="ribbonGroup"><button class="ribbonBtn ' + (w.boldHeading ? "active" : "") + '" onclick="wordSimToggle(\'boldHeading\')">B Bold</button><button class="ribbonBtn ' + (w.centeredHeading ? "active" : "") + '" onclick="wordSimToggle(\'centeredHeading\')">Center</button></div>';
+  html += '<div class="ribbonGroup"><button class="ribbonBtn ' + (w.landscape ? "active" : "") + '" onclick="wordSimToggle(\'landscape\')">Landscape</button><button class="ribbonBtn ' + (w.columns ? "active" : "") + '" onclick="wordSimToggle(\'columns\')">Columns</button></div>';
+  html += '<div class="ribbonGroup"><button class="ribbonBtn ' + (w.pageNumbers ? "active" : "") + '" onclick="wordSimToggle(\'pageNumbers\')">Page Number</button><button class="ribbonBtn ' + (w.table ? "active" : "") + '" onclick="wordSimToggle(\'table\')">Insert Table</button></div>';
+  html += '<div class="row"><button class="btn secondary" onclick="wordSimReset()">Reset</button><button class="btn" onclick="wordSimMark()">Mark Practical</button></div>';
   html += '</div>';
 
-  html += '<label class="field">Opskrif</label>';
-  html += '<input value="' + esc(w.title) + '" oninput="wordSimSet(\'title\',this.value)" placeholder="Computer Hardware and Software">';
-
-  html += '<div class="row" style="margin-top:12px">';
-  html += '<button class="btn secondary" onclick="wordSimToggle(\'boldHeading\')">' + (w.boldHeading ? "✓ " : "") + 'Bold heading</button>';
-  html += '<button class="btn secondary" onclick="wordSimToggle(\'centeredHeading\')">' + (w.centeredHeading ? "✓ " : "") + 'Centre heading</button>';
-  html += '<button class="btn secondary" onclick="wordSimToggle(\'landscape\')">' + (w.landscape ? "✓ " : "") + 'Landscape</button>';
-  html += '<button class="btn secondary" onclick="wordSimToggle(\'pageNumbers\')">' + (w.pageNumbers ? "✓ " : "") + 'Page numbers</button>';
-  html += '<button class="btn secondary" onclick="wordSimToggle(\'columns\')">' + (w.columns ? "✓ " : "") + 'Columns</button>';
-  html += '<button class="btn secondary" onclick="wordSimToggle(\'table\')">' + (w.table ? "✓ " : "") + 'Table</button>';
-  html += '</div>';
-
-  html += '<label class="field">Paragrawe</label>';
-  html += '<textarea style="width:100%;min-height:170px;border:1px solid #e2e8f0;border-radius:18px;padding:14px;font:inherit" oninput="wordSimSet(\'body\',this.value)" placeholder="Tik twee kort paragrawe hier...">' + esc(w.body) + '</textarea>';
-
-  html += '<div class="note" style="margin-top:14px">';
-  html += '<b>Preview:</b><br>';
-  html += '<div style="margin-top:10px;border:1px solid #e2e8f0;border-radius:16px;padding:16px;background:white">';
-  html += '<div class="muted">' + esc(w.header || "Header kom hier") + '</div>';
-  html += '<h2 style="' + (w.centeredHeading ? "text-align:center;" : "") + (w.boldHeading ? "font-weight:900;" : "font-weight:500;") + '">' + esc(w.title || "Opskrif kom hier") + '</h2>';
-  html += '<div style="' + (w.columns ? "columns:2;column-gap:26px;" : "") + '">' + esc(w.body || "Paragrawe kom hier...").replace(/\n/g,"<br>") + '</div>';
-  if(w.table){
-    html += '<table style="width:100%;margin-top:14px;border-collapse:collapse"><tr><th style="border:1px solid #cbd5e1;padding:8px">Item</th><th style="border:1px solid #cbd5e1;padding:8px">Type</th></tr><tr><td style="border:1px solid #cbd5e1;padding:8px">Keyboard</td><td style="border:1px solid #cbd5e1;padding:8px">Input</td></tr><tr><td style="border:1px solid #cbd5e1;padding:8px">Monitor</td><td style="border:1px solid #cbd5e1;padding:8px">Output</td></tr></table>';
-  }
-  html += '<div class="muted" style="margin-top:14px">' + esc(w.footer || (w.pageNumbers ? "Page 1" : "Footer kom hier")) + '</div>';
-  html += '</div></div>';
-
+  html += '<div class="officeBody">';
+  html += '<div class="taskPane"><h3>Eksamen-instruksies</h3><div class="note" style="margin-top:12px"><b>Taak:</b> Skep ’n dokument oor Computer Hardware and Software.</div>';
+  html += '<ol style="padding-left:18px;line-height:1.65">';
+  html += '<li>Vul ’n header in.</li><li>Vul ’n opskrif in.</li><li>Maak die opskrif bold en centered.</li><li>Tik minstens twee kort paragrawe.</li><li>Gebruik landscape, columns of table.</li><li>Vul footer of page number in.</li><li>Klik Mark Practical.</li>';
+  html += '</ol>';
   if(w.marked){
-    html += '<div class="card" style="margin-top:14px"><h2>Resultaat: ' + r.score + '/' + r.total + ' (' + r.percent + '%)</h2>';
-    html += '<div class="grid" style="margin-top:12px">';
-    r.checks.forEach(function(c){
-      html += '<div class="note">' + (c.ok ? "✅ " : "❌ ") + esc(c.text) + '</div>';
-    });
-    html += '</div>';
-    html += '<div class="note" style="margin-top:12px"><b>' + (r.passed ? "Goed gedoen!" : "Oefen weer.") + '</b></div>';
-    html += '</div>';
+    html += '<div class="note"><b>Resultaat:</b> ' + r.score + '/' + r.total + ' (' + r.percent + '%)</div>';
+    r.checks.forEach(function(c){ html += '<div class="note" style="margin-top:8px">' + (c.ok ? "✅ " : "❌ ") + esc(c.text) + '</div>'; });
   }
-
   html += '</div>';
+
+  html += '<div class="wordCanvas">';
+  html += '<div class="wordPage ' + (w.landscape ? "landscape" : "") + '">';
+  html += '<div class="wordHeaderEdit" contenteditable="true" oninput="wordSimSet(\'header\',this.innerText)">' + esc(w.header || "Header: Enrico - RTT Term 2") + '</div>';
+  html += '<div class="wordTitleEdit ' + (w.boldHeading ? "bold " : "") + (w.centeredHeading ? "center" : "") + '" contenteditable="true" oninput="wordSimSet(\'title\',this.innerText)">' + esc(w.title || "Computer Hardware and Software") + '</div>';
+  html += '<div class="wordBodyEdit ' + (w.columns ? "columns" : "") + '" contenteditable="true" oninput="wordSimSet(\'body\',this.innerText)">' + esc(w.body || "Tik jou eerste paragraaf hier.\n\nTik jou tweede paragraaf hier.") + '</div>';
+  if(w.table){
+    html += '<table class="wordFakeTable"><tr><th>Item</th><th>Type</th><th>Example</th></tr><tr><td>Keyboard</td><td>Input</td><td>Typing</td></tr><tr><td>Monitor</td><td>Output</td><td>Display</td></tr></table>';
+  }
+  html += '<div class="wordFooterEdit" contenteditable="true" oninput="wordSimSet(\'footer\',this.innerText)">' + esc(w.footer || (w.pageNumbers ? "Page 1" : "Footer: Practical Document")) + '</div>';
+  html += '</div></div>';
+
+  html += '</div></div>';
+  html += '</div>';
+  return html;
+}
+
+
+// === RTT EXCEL PRACTICAL SIMULATOR V1 ===
+function ensureExcelSim(){
+  if(!state.excelSim){
+    state.excelSim = {
+      rows:[
+        {product:"Sweets", qty:"5", price:"4.50", formula:"=B2*C2"},
+        {product:"Chocolate", qty:"3", price:"7.50", formula:"=B3*C3"},
+        {product:"Chips", qty:"2", price:"12.00", formula:"=B4*C4"},
+        {product:"Juice", qty:"4", price:"6.00", formula:"=B5*C5"},
+        {product:"Biscuits", qty:"6", price:"5.00", formula:"=B6*C6"}
+      ],
+      sumFormula:"=SUM(E2:E6)",
+      avgFormula:"=AVERAGE(E2:E6)",
+      maxFormula:"=MAX(E2:E6)",
+      marked:false
+    };
+  }
+  return state.excelSim;
+}
+
+function excelSet(row, field, value){
+  const e = ensureExcelSim();
+  e.rows[row][field] = value;
+  e.marked = false;
+  save();
+}
+
+function excelSetSummary(field, value){
+  const e = ensureExcelSim();
+  e[field] = value;
+  e.marked = false;
+  save();
+}
+
+function excelExpectedFormula(row){
+  const n = row + 2;
+  return "=B" + n + "*C" + n;
+}
+
+function excelNum(v){
+  const n = parseFloat(String(v || "").replace(",", "."));
+  return isNaN(n) ? 0 : n;
+}
+
+function excelRowTotal(row){
+  const e = ensureExcelSim();
+  return excelNum(e.rows[row].qty) * excelNum(e.rows[row].price);
+}
+
+function excelGrandTotal(){
+  const e = ensureExcelSim();
+  let total = 0;
+  e.rows.forEach(function(r,i){ total += excelRowTotal(i); });
+  return total;
+}
+
+function excelAverage(){
+  const e = ensureExcelSim();
+  return e.rows.length ? excelGrandTotal() / e.rows.length : 0;
+}
+
+function excelMax(){
+  const e = ensureExcelSim();
+  let max = 0;
+  e.rows.forEach(function(r,i){ max = Math.max(max, excelRowTotal(i)); });
+  return max;
+}
+
+function excelMark(){
+  const e = ensureExcelSim();
+  e.marked = true;
+  save();
+  render();
+
+  const r = excelResult();
+  sendResultToParent({
+    student: state.student || "Enrico",
+    subject: "RTT / CAT",
+    mode: "Excel Practical Simulator",
+    task: "Kwartaal 2 Excel practical",
+    module: "4.1 Sigbladverwerking / 4.2 Berekeninge",
+    status: r.passed ? "Passed" : "Needs practice",
+    score: r.score,
+    total: r.total,
+    percent: r.percent,
+    passed: r.passed,
+    wrongCount: r.total - r.score,
+    weakAreas: r.missing.length ? r.missing.join(", ") : "None",
+    wrongQuestions: r.missing.length ? "Improve: " + r.missing.join(", ") : "None",
+    device: navigator.userAgent || ""
+  });
+}
+
+function excelResult(){
+  const e = ensureExcelSim();
+  const filledProducts = e.rows.filter(function(r){ return String(r.product || "").trim().length > 0; }).length;
+  const qtyPrices = e.rows.filter(function(r){ return excelNum(r.qty) > 0 && excelNum(r.price) > 0; }).length;
+  const formulas = e.rows.filter(function(r,i){ return String(r.formula || "").toUpperCase().replace(/\s/g,"") === excelExpectedFormula(i); }).length;
+
+  const checks = [
+    {ok: filledProducts >= 5, text:"Products is ingevul"},
+    {ok: qtyPrices >= 5, text:"Qty en Price is ingevul"},
+    {ok: formulas >= 5, text:"Total formulas gebruik =B2*C2 styl"},
+    {ok: String(e.sumFormula||"").toUpperCase().replace(/\s/g,"") === "=SUM(E2:E6)", text:"SUM formule is korrek"},
+    {ok: String(e.avgFormula||"").toUpperCase().replace(/\s/g,"") === "=AVERAGE(E2:E6)", text:"AVERAGE formule is korrek"},
+    {ok: String(e.maxFormula||"").toUpperCase().replace(/\s/g,"") === "=MAX(E2:E6)", text:"MAX formule is korrek"}
+  ];
+  const score = checks.filter(function(c){ return c.ok; }).length;
+  const total = checks.length;
+  const percent = Math.round(score / total * 100);
+  return {
+    checks: checks,
+    score: score,
+    total: total,
+    percent: percent,
+    passed: percent >= 70,
+    missing: checks.filter(function(c){ return !c.ok; }).map(function(c){ return c.text; })
+  };
+}
+
+function catExcelSimulatorHTML(){
+  const e = ensureExcelSim();
+  const r = excelResult();
+
+  let html = topbar();
+  html += '<div class="wrap grid">';
+  html += '<div class="card"><div class="row space"><div><h2>RTT Excel Practical</h2><p class="muted">Werk in ’n Excel-agtige spreadsheet. Gebruik formulas soos in Excel.</p></div><button class="btn secondary" onclick="selectSubject(\'cat\')">Back to CAT</button></div></div>';
+
+  html += '<div class="officeApp">';
+  html += '<div class="officeTitleBar excel"><span>Excel - RTT Term 2 Spreadsheet.xlsx</span><div class="officeWindowBtns"><span class="officeDot"></span><span class="officeDot"></span><span class="officeDot"></span></div></div>';
+  html += '<div class="officeRibbon"><div class="ribbonGroup"><button class="ribbonBtn active">Home</button><button class="ribbonBtn">Insert</button><button class="ribbonBtn">Formulas</button></div><div class="row"><button class="btn" onclick="excelMark()">Mark Excel Practical</button></div></div>';
+  html += '<div class="formulaBar"><div class="nameBox">fx</div><div class="formulaInput">Use formulas: =B2*C2, =SUM(E2:E6), =AVERAGE(E2:E6), =MAX(E2:E6)</div></div>';
+
+  html += '<div class="officeBody">';
+  html += '<div class="taskPane"><h3>Excel instruksies</h3><div class="note" style="margin-top:12px">Vul products, qty en price in. Gebruik formulas vir Total, SUM, AVERAGE en MAX.</div>';
+  html += '<ol style="padding-left:18px;line-height:1.65"><li>Vul 5 products in.</li><li>Vul Qty en Price in.</li><li>Gebruik Total formulas.</li><li>Gebruik SUM.</li><li>Gebruik AVERAGE.</li><li>Gebruik MAX.</li></ol>';
+  if(e.marked){
+    html += '<div class="note"><b>Resultaat:</b> ' + r.score + '/' + r.total + ' (' + r.percent + '%)</div>';
+    r.checks.forEach(function(c){ html += '<div class="note" style="margin-top:8px">' + (c.ok ? "✅ " : "❌ ") + esc(c.text) + '</div>'; });
+  }
+  html += '</div>';
+
+  html += '<div class="excelShell">';
+  html += '<div class="excelGridWrap"><table class="excelGrid">';
+  html += '<tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr>';
+  html += '<tr><th class="rowHead">1</th><th>Product</th><th>Qty</th><th>Price</th><th>Formula</th><th>Total</th></tr>';
+
+  e.rows.forEach(function(row,i){
+    const rn = i + 2;
+    html += '<tr>';
+    html += '<th class="rowHead">' + rn + '</th>';
+    html += '<td><input class="cellInput" value="' + esc(row.product) + '" oninput="excelSet(' + i + ',\'product\',this.value)"></td>';
+    html += '<td><input class="cellInput" value="' + esc(row.qty) + '" oninput="excelSet(' + i + ',\'qty\',this.value)"></td>';
+    html += '<td><input class="cellInput" value="' + esc(row.price) + '" oninput="excelSet(' + i + ',\'price\',this.value)"></td>';
+    html += '<td><input class="cellInput" value="' + esc(row.formula) + '" oninput="excelSet(' + i + ',\'formula\',this.value)"></td>';
+    html += '<td class="calcCell">R ' + excelRowTotal(i).toFixed(2) + '</td>';
+    html += '</tr>';
+  });
+
+  html += '<tr><th class="rowHead">7</th><td colspan="3"><b>Grand Total</b></td><td><input class="cellInput" value="' + esc(e.sumFormula) + '" oninput="excelSetSummary(\'sumFormula\',this.value)"></td><td class="calcCell">R ' + excelGrandTotal().toFixed(2) + '</td></tr>';
+  html += '<tr><th class="rowHead">8</th><td colspan="3"><b>Average</b></td><td><input class="cellInput" value="' + esc(e.avgFormula) + '" oninput="excelSetSummary(\'avgFormula\',this.value)"></td><td class="calcCell">R ' + excelAverage().toFixed(2) + '</td></tr>';
+  html += '<tr><th class="rowHead">9</th><td colspan="3"><b>Highest</b></td><td><input class="cellInput" value="' + esc(e.maxFormula) + '" oninput="excelSetSummary(\'maxFormula\',this.value)"></td><td class="calcCell">R ' + excelMax().toFixed(2) + '</td></tr>';
+  html += '</table></div></div>';
+
+  html += '</div></div>';
   html += '</div>';
   return html;
 }
@@ -4497,6 +4691,7 @@ function render(){
   else if(state.screen==="dashboard") app.innerHTML=dashboardHTML();
   else if(state.screen==="exam") app.innerHTML=examHTML();
   else if(state.screen==="rtt_exam") app.innerHTML=rttExamHTML();
+  else if(state.screen==="cat_excel") app.innerHTML=catExcelSimulatorHTML();
   else if(state.screen==="cat_word") app.innerHTML=catWordSimulatorHTML();
   else if(state.screen==="cat") app.innerHTML=catExamHTML();
   else app.innerHTML=studyHTML();
@@ -4505,6 +4700,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
