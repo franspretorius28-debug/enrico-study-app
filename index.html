@@ -3790,7 +3790,7 @@ function studyHTML(){
       </div>
       <div class="card"><h2>🏆 Progress</h2><p class="row space"><span>Answers completed</span><b>${ans}/${fq.length}</b></p>
         <div class="progress"><div style="width:${fq.length?ans/fq.length*100:0}%"></div></div>
-        <div class="note" style="text-align:center;margin-top:14px"><div style="font-size:30px;font-weight:900">${state.showAnswers||state.parentMode?`${score}/${fq.length}`:"?"}</div><div>${state.showAnswers||state.parentMode?`${pct}%`:"Write first, then mark."}</div></div>
+        <div class="note" style="text-align:center;margin-top:14px"><div style="font-size:30px;font-weight:900">${state.showAnswers||state.parentMode?(score + "/" + fq.length):"?"}</div><div>${state.showAnswers||state.parentMode?(pct + "%"):"Write first, then mark."}</div></div>
       </div>
     </div>
     <div class="grid">
@@ -3857,4 +3857,5 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
