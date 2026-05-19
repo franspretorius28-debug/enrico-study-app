@@ -3779,7 +3779,7 @@ function k53DashboardHTML(){
         <button class="btn secondary" onclick="clearScores()">Clear Scores</button>
       </div>
       <div class="grid" style="margin-top:12px">
-        ${scores.length ? scores.map(s=>`<div class="note row space"><span>${s.date}</span><b>${s.score}/${s.total} (${s.percent}%) ${s.passed ? "PASS" : "TRY AGAIN"}</b><span class="muted">Wrong: ${s.wrong}</span></div>`).join("") : `<div class="note">No exam scores saved yet. Start an exam to save results.</div>`}
+        ${scores.length ? scores.map(s=>`<div class="note row space"><span>${s.date}</span><b>${s.score}/${s.total} (${s.percent}%) ${s.passed ? "PASS" : "TRY AGAIN"}</b><span class="muted">Wrong: ${s.wrong}${s.weakAreas ? " | Weak: " + esc(s.weakAreas) : ""}</span></div>`).join("") : `<div class="note">No exam scores saved yet. Start an exam to save results.</div>`}
       </div>
     </div>
   </div>`;
@@ -4628,6 +4628,7 @@ function finishRttExam(){
     passed: pct >= 70
   };
 
+  saveRttExamHistory(state.rttLastResult);
   save();
   render();
 
@@ -4685,6 +4686,7 @@ function rttExamHTML(){
   }
 
   html += rttExamReviewHTML();
+  html += rttHistoryHTML();
 
   html += '<div class="card"><div class="row space"><div><h2>Deel A: Teorie Vrae</h2><p class="muted">Beantwoord die 60 vrae. Hierdie punte tel saam met Word en Excel practical.</p></div><span class="pill active">' + theoryScore + '/' + qs.length + '</span></div>';
   html += '<div class="grid" style="margin-top:14px">';
@@ -4798,6 +4800,62 @@ function rttExamReviewHTML(){
   }
 
   html += '</div>';
+  return html;
+}
+
+
+// === K53 + RTT RESULT HISTORY V1 ===
+function rttWeakAreasText(){
+  if(typeof rttExamReviewData !== "function") return "Check Exam Review";
+  const data = rttExamReviewData();
+  if(!data.weak || !data.weak.length) return "None";
+  return data.weak.slice(0, 5).map(function(w){
+    return w.title + " (" + w.wrong + "/" + w.total + " verkeerd)";
+  }).join(", ");
+}
+
+function saveRttExamHistory(result){
+  const entry = {
+    date: new Date().toLocaleString(),
+    totalScore: result.totalScore,
+    totalMarks: result.totalMarks,
+    percent: result.percent,
+    passed: result.passed,
+    theoryScore: result.theoryScore,
+    theoryTotal: result.theoryTotal,
+    wordScore: result.wordScore,
+    wordTotal: result.wordTotal,
+    excelScore: result.excelScore,
+    excelTotal: result.excelTotal,
+    weakAreas: rttWeakAreasText()
+  };
+  state.rttScoreHistory = [entry].concat(state.rttScoreHistory || []).slice(0, 30);
+}
+
+function clearRttScores(){
+  state.rttScoreHistory = [];
+  save();
+  render();
+}
+
+function rttHistoryHTML(){
+  const scores = state.rttScoreHistory || [];
+  let html = '<div class="card"><div class="row space"><div><h2>RTT Result History</h2><p class="muted">Vorige RTT eksamen resultate op hierdie device.</p></div><button class="btn secondary" onclick="clearRttScores()">Clear RTT Scores</button></div>';
+
+  if(!scores.length){
+    html += '<div class="note" style="margin-top:12px">Nog geen RTT result history nie. Finish n RTT exam om dit hier te stoor.</div></div>';
+    return html;
+  }
+
+  html += '<div class="grid" style="margin-top:12px">';
+  scores.forEach(function(s){
+    html += '<div class="note">';
+    html += '<div class="row space"><span>' + esc(s.date) + '</span><b>' + s.totalScore + '/' + s.totalMarks + ' (' + s.percent + '%) ' + (s.passed ? "PASS" : "TRY AGAIN") + '</b></div>';
+    html += '<div class="muted" style="margin-top:6px">Theory: ' + s.theoryScore + '/' + s.theoryTotal + ' | Word: ' + s.wordScore + '/' + s.wordTotal + ' | Excel: ' + s.excelScore + '/' + s.excelTotal + '</div>';
+    html += '<div class="muted" style="margin-top:6px"><b>Weak areas:</b> ' + esc(s.weakAreas || "None") + '</div>';
+    html += '</div>';
+  });
+  html += '</div></div>';
   return html;
 }
 
@@ -5632,6 +5690,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
