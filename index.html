@@ -4162,11 +4162,14 @@ function catExamHTML(){
   });
   html += '</div></div>';
 
-    html += '<div class="card"><div class="row space"><div><h2>📝 Practical Simulator</h2><p class="muted">Doen ’n Word practical direk in die app en kry dadelik ’n punt.</p></div><button class="btn" onclick="state.screen=\'cat_word\';save();render()">Open Word Simulator</button></div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>🧪 Praktiese Werkarea</h2><p class="muted">Hier doen Enrico praktiese RTT-oefeninge soos ’n online eksamen. Geen los checklist op die module blad nie.</p></div><span class="pill active">Exam style</span></div>';
+  html += '<div class="grid subjects" style="margin-top:14px">';
+  html += '<button class="subjectBtn" onclick="startRttExam()"><div style="font-size:34px;margin-bottom:10px">💻</div><h3>Start RTT Exam</h3><p class="muted">Teorie vrae plus practical marks saam.</p><span class="pill active">Exam</span></button>';
+  html += '<button class="subjectBtn" onclick="state.screen=\'cat_word\';save();render()"><div style="font-size:34px;margin-bottom:10px">📝</div><h3>Word Practical</h3><p class="muted">Oefen opskrif, paragrawe, header/footer, columns en table.</p><span class="pill active">Word</span></button>';
+  html += '<button class="subjectBtn" onclick="alert(\'Excel Practical is volgende. Ons bou hom nou na Word.\')"><div style="font-size:34px;margin-bottom:10px">📊</div><h3>Excel Practical</h3><p class="muted">Spreadsheet simulator kom volgende: formulas, SUM, AVERAGE, MAX.</p><span class="pill">Next</span></button>';
+  html += '</div></div>';
 
-  html += catTasksHTML();
-
-  html += '<div class="card"><div class="row space"><div><h2>Practice Questions</h2><p class="muted">Score wys eers nadat jy Mark Answers druk.</p></div><div class="row"><button class="btn" onclick="state.catShowAnswers=true;save();render()">Mark Answers</button><button class="btn secondary" onclick="catReset()">Reset</button></div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>Oefenvrae</h2><p class="muted">Teorie vrae vir Kwartaal 2. Die practical word apart in die Werkarea gedoen.</p></div><div class="row"><button class="btn" onclick="state.catShowAnswers=true;save();render()">Merk Antwoorde</button><button class="btn secondary" onclick="catReset()">Begin weer</button></div></div>';
   html += '<div class="note" style="text-align:center;margin-top:12px"><b>Questions:</b> ' + qs.length + ' | <b>Score:</b> ' + (state.catShowAnswers ? (score + "/" + qs.length + " (" + pct + "%)") : "?") + '</div>';
   html += '<div class="grid" style="margin-top:14px">';
 
@@ -4279,7 +4282,7 @@ function rttExamHTML(){
   let html = topbar();
   html += '<div class="wrap grid">';
 
-  html += '<div class="card"><div class="row space"><div><h2>RTT Kwartaal 2 Eksamen</h2><p class="muted">Online RTT exam practice: theory questions plus Word practical.</p></div><div class="row"><button class="btn secondary" onclick="resetRttExam()">Reset Exam</button><button class="btn" onclick="finishRttExam()">Finish RTT Exam</button></div></div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>RTT Kwartaal 2 Eksamen</h2><p class="muted">Online RTT eksamen-oefening: teorie vrae plus Word practical.</p></div><div class="row"><button class="btn secondary" onclick="resetRttExam()">Reset Exam</button><button class="btn" onclick="finishRttExam()">Finish RTT Exam</button></div></div></div>';
 
   if(state.rttExamFinished && state.rttLastResult){
     const r = state.rttLastResult;
@@ -4291,7 +4294,7 @@ function rttExamHTML(){
     html += '</div></div>';
   }
 
-  html += '<div class="card"><div class="row space"><div><h2>Part A: Theory Questions</h2><p class="muted">Answer the questions. These marks count with the practical.</p></div><span class="pill active">' + theoryScore + '/' + qs.length + '</span></div>';
+  html += '<div class="card"><div class="row space"><div><h2>Deel A: Teorie Vrae</h2><p class="muted">Beantwoord die vrae. Hierdie punte tel saam met die practical.</p></div><span class="pill active">' + theoryScore + '/' + qs.length + '</span></div>';
   html += '<div class="grid" style="margin-top:14px">';
 
   qs.forEach(function(q,i){
@@ -4312,8 +4315,8 @@ function rttExamHTML(){
 
   html += '</div></div>';
 
-  html += '<div class="card"><div class="row space"><div><h2>Part B: Word Practical</h2><p class="muted">Open the Word simulator, complete the document, then finish the exam.</p></div><button class="btn" onclick="state.screen=\'cat_word\';save();render()">Open Word Practical</button></div>';
-  html += '<div class="note" style="margin-top:12px"><b>Word practical current mark:</b> ' + wordResult.score + '/' + wordResult.total + ' (' + wordResult.percent + '%)</div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>Deel B: Word Practical</h2><p class="muted">Maak die Word Practical oop, voltooi die dokument, en finish dan die eksamen.</p></div><button class="btn" onclick="state.screen=\'cat_word\';save();render()">Open Word Practical</button></div>';
+  html += '<div class="note" style="margin-top:12px"><b>Word practical huidige punt:</b> ' + wordResult.score + '/' + wordResult.total + ' (' + wordResult.percent + '%)</div></div>';
 
   html += '</div>';
   return html;
@@ -4502,6 +4505,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
