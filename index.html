@@ -5001,12 +5001,110 @@ function wordSimResult(){
 
 // === EXCEL PRACTICAL TASKS V1 ===
 const excelTaskListV1 = [
-  {id:"excel_products", title:"Practical 1: Products en totals", note:"4.1 / 4.2 Basiese formulas", steps:["Vul 5 products in kolom A in.","Vul Qty in kolom B in.","Vul Price in kolom C in.","Tik Total formulas in kolom D, bv. D2 =B2*C2.","Die antwoord wys in kolom E.","Gebruik SUM, AVERAGE en MAX onderaan."]},
-  {id:"excel_marks", title:"Practical 2: Punte spreadsheet", note:"4.2 Berekeninge", steps:["Gebruik kolom A vir vakke of name.","Gebruik kolom B vir Mark 1.","Gebruik kolom C vir Mark 2.","Gebruik kolom D vir die total formula.","Gebruik AVERAGE om gemiddelde punt te kry.","Gebruik MAX om hoogste punt te kry."]},
-  {id:"excel_budget", title:"Practical 3: Budget", note:"4.1 Sigbladgebruik", steps:["Gebruik kolom A vir uitgawe-name soos Food, Transport, Data.","Gebruik kolom B vir Quantity.","Gebruik kolom C vir Price.","Bereken elke total in kolom D.","Gebruik SUM vir die totale budget.","Maak seker al 5 rows ingevul is."]},
-  {id:"excel_shop_sales", title:"Practical 4: Winkel verkope", note:"4.2 Formules en funksies", steps:["Maak n verkoopsblad vir 5 winkel-items.","Gebruik Qty en Price vir elke item.","Bereken Total met =B2*C2 styl formulas.","Gebruik SUM om verkope saam te tel.","Gebruik AVERAGE vir gemiddelde verkoop.","Gebruik MAX vir hoogste verkoop."]},
-  {id:"excel_hardware_prices", title:"Practical 5: Hardware price list", note:"1.7 Hardeware + 4.2 Excel", steps:["Gebruik hardware items soos Keyboard, Mouse, Monitor, Printer en Router.","Vul Qty en Price in.","Bereken total vir elke item.","Gebruik SUM vir totale waarde.","Gebruik MAX vir duurste item total.","Merk Excel Practical wanneer klaar."]},
-  {id:"excel_exam_mixed", title:"Practical 6: Gemengde Excel eksamen", note:"Kwartaal 2 gemeng", steps:["Vul 5 rows data in.","Gebruik duidelike product/name labels.","Gebruik korrekte Qty en Price/Mark waardes.","Gebruik Total formulas in kolom D.","Gebruik SUM, AVERAGE en MAX.","Klik Mark Excel Practical om te sien of dit reg is."]}
+  {
+    id:"excel_products",
+    title:"Practical 1: Products en totals",
+    note:"4.1 Basiese spreadsheet + 4.2 multiplication",
+    steps:[
+      "Maak n produklys met 5 verskillende produkte.",
+      "Gebruik kolom A vir Product.",
+      "Gebruik kolom B vir Qty.",
+      "Gebruik kolom C vir Price.",
+      "Gebruik kolom D vir Total Formula, bv. =B2*C2.",
+      "Gebruik SUM onderaan om die totale waarde te bereken."
+    ]
+  },
+  {
+    id:"excel_marks",
+    title:"Practical 2: Punte spreadsheet",
+    note:"4.2 Berekeninge en AVERAGE",
+    steps:[
+      "Gebruik kolom A vir vakke of toetsname.",
+      "Gebruik kolom B vir Mark 1.",
+      "Gebruik kolom C vir Mark 2.",
+      "Gebruik kolom D om die twee punte saam te bereken.",
+      "Gebruik AVERAGE onderaan om die gemiddelde te bereken.",
+      "Gebruik MAX om die hoogste total te kry."
+    ]
+  },
+  {
+    id:"excel_budget",
+    title:"Practical 3: Budget planning",
+    note:"4.1 Sigbladgebruik in n praktiese situasie",
+    steps:[
+      "Gebruik kolom A vir uitgawe name soos Food, Transport, Data, Stationery en Savings.",
+      "Gebruik kolom B vir Quantity of months.",
+      "Gebruik kolom C vir Amount.",
+      "Gebruik kolom D om elke lyn se total te bereken.",
+      "Gebruik SUM om die totale budget te kry.",
+      "Maak seker die spreadsheet is netjies en maklik om te lees."
+    ]
+  },
+  {
+    id:"excel_shop_sales",
+    title:"Practical 4: Winkel verkope",
+    note:"4.2 Formules, SUM en verkoopsdata",
+    steps:[
+      "Maak n verkoopsblad vir 5 winkel-items.",
+      "Gebruik regte winkelprodukte in kolom A.",
+      "Gebruik kolom B vir hoeveel verkoop is.",
+      "Gebruik kolom C vir verkoopprys.",
+      "Bereken die verkope per item in kolom D.",
+      "Gebruik SUM om die dag se totale verkope uit te werk."
+    ]
+  },
+  {
+    id:"excel_hardware_prices",
+    title:"Practical 5: Hardware price list",
+    note:"1.7 Hardeware + 4.2 Excel",
+    steps:[
+      "Gebruik hardware items soos Keyboard, Mouse, Monitor, Printer en Router.",
+      "Gebruik kolom B vir Quantity.",
+      "Gebruik kolom C vir Unit Price.",
+      "Gebruik kolom D vir Total Formula.",
+      "Gebruik MAX om die hoogste total te vind.",
+      "Gebruik AVERAGE om die gemiddelde hardware waarde te kry."
+    ]
+  },
+  {
+    id:"excel_problem_solving",
+    title:"Practical 6: Probleemoplossing spreadsheet",
+    note:"6.1 Strategie vir probleemoplossing + Excel",
+    steps:[
+      "Lees die probleem: Jy moet besluit watter 5 items die meeste geld gebruik.",
+      "Tik die items in kolom A.",
+      "Gebruik kolom B en C vir die data wat jy nodig het.",
+      "Bereken totals in kolom D.",
+      "Gebruik SUM, AVERAGE en MAX om die data te ontleed.",
+      "Gebruik jou antwoorde om te besluit watter item die grootste koste het."
+    ]
+  },
+  {
+    id:"excel_network_costs",
+    title:"Practical 7: Network setup costs",
+    note:"2.1 Netwerke + 4.2 berekeninge",
+    steps:[
+      "Maak n lys van netwerk items soos Router, Cable, Switch, Wi-Fi Adapter en Printer.",
+      "Gebruik kolom B vir Quantity.",
+      "Gebruik kolom C vir Price.",
+      "Bereken total per item in kolom D.",
+      "Gebruik SUM vir die totale netwerk koste.",
+      "Gebruik MAX om die duurste lyn te identifiseer."
+    ]
+  },
+  {
+    id:"excel_exam_mixed",
+    title:"Practical 8: Gemengde Excel eksamen",
+    note:"Kwartaal 2 gemengde practical",
+    steps:[
+      "Skep n volledige spreadsheet met 5 rows data.",
+      "Gebruik duidelike headings.",
+      "Gebruik korrekte data in kolom A, B en C.",
+      "Gebruik formulas in kolom D.",
+      "Gebruik SUM, AVERAGE en MAX onderaan.",
+      "Klik Mark Excel Practical om te sien of dit reg is."
+    ]
+  }
 ];
 
 function currentExcelTaskV1(){
@@ -5063,6 +5161,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
