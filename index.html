@@ -3753,8 +3753,8 @@ function loginHTML(){
 function topbar(){
   const isCat = state.screen==="cat" || state.selectedSubject==="cat";
   const studyAction = isCat ? "selectSubject('cat')" : "setState({screen:'study'})";
-  const examText = isCat ? "RTT Practice" : "Start K53 Exam";
-  const examAction = isCat ? "selectSubject('cat')" : "startExam()";
+  const examText = isCat ? "Start RTT Exam" : "Start K53 Exam";
+  const examAction = isCat ? "startRttExam()" : "startExam()";
   return `<div class="topbar"><div class="wrap"><div class="card row space">
     <div class="row"><div style="font-size:30px">🎓</div><div><h1>Student Study App</h1><div class="muted">Logged in as ${esc(state.student)} ${isCat ? "• RTT / CAT Kwartaal 2" : "• K53"}</div></div></div>
     <div class="row">
@@ -4192,6 +4192,133 @@ function catExamHTML(){
 }
 
 
+
+// === RTT EXAM MODE SAFE V1 ===
+function startRttExam(){
+  state.selectedSubject = "cat";
+  state.screen = "rtt_exam";
+  state.rttExamFinished = false;
+  state.rttExamAnswers = {};
+  state.rttExamSet = shuffleQuestions(catQ2Questions).slice(0, 20);
+  save();
+  render();
+}
+
+function rttExamQuestions(){
+  return state.rttExamSet && state.rttExamSet.length ? state.rttExamSet : catQ2Questions.slice(0,20);
+}
+
+function rttExamChoose(i, oi){
+  if(!state.rttExamAnswers) state.rttExamAnswers = {};
+  state.rttExamAnswers[i] = oi;
+  save();
+  render();
+}
+
+function rttExamScore(){
+  const qs = rttExamQuestions();
+  let score = 0;
+  qs.forEach(function(q,i){
+    if((state.rttExamAnswers || {})[i] === q.a) score++;
+  });
+  return score;
+}
+
+function finishRttExam(){
+  state.rttExamFinished = true;
+  const qs = rttExamQuestions();
+  const theoryScore = rttExamScore();
+  const wordResult = wordSimResult();
+  const totalScore = theoryScore + wordResult.score;
+  const totalMarks = qs.length + wordResult.total;
+  const pct = Math.round(totalScore / totalMarks * 100);
+
+  state.rttLastResult = {
+    theoryScore: theoryScore,
+    theoryTotal: qs.length,
+    practicalScore: wordResult.score,
+    practicalTotal: wordResult.total,
+    totalScore: totalScore,
+    totalMarks: totalMarks,
+    percent: pct,
+    passed: pct >= 70
+  };
+
+  save();
+  render();
+
+  sendResultToParent({
+    student: state.student || "Enrico",
+    subject: "RTT / CAT",
+    mode: "Term 2 Exam",
+    score: totalScore,
+    total: totalMarks,
+    percent: pct,
+    passed: pct >= 70,
+    wrongCount: totalMarks - totalScore,
+    weakAreas: wordResult.missing.length ? wordResult.missing.join(", ") : "Check theory mistakes",
+    wrongQuestions: "RTT Term 2 exam completed. Theory: " + theoryScore + "/" + qs.length + ", Word practical: " + wordResult.score + "/" + wordResult.total,
+    device: navigator.userAgent || ""
+  });
+}
+
+function resetRttExam(){
+  state.rttExamFinished = false;
+  state.rttExamAnswers = {};
+  state.rttExamSet = [];
+  state.rttLastResult = null;
+  save();
+  render();
+}
+
+function rttExamHTML(){
+  const qs = rttExamQuestions();
+  const theoryScore = rttExamScore();
+  const wordResult = wordSimResult();
+
+  let html = topbar();
+  html += '<div class="wrap grid">';
+
+  html += '<div class="card"><div class="row space"><div><h2>RTT Kwartaal 2 Eksamen</h2><p class="muted">Online RTT exam practice: theory questions plus Word practical.</p></div><div class="row"><button class="btn secondary" onclick="resetRttExam()">Reset Exam</button><button class="btn" onclick="finishRttExam()">Finish RTT Exam</button></div></div></div>';
+
+  if(state.rttExamFinished && state.rttLastResult){
+    const r = state.rttLastResult;
+    html += '<div class="card"><h2>Resultaat: ' + r.totalScore + '/' + r.totalMarks + ' (' + r.percent + '%)</h2>';
+    html += '<div class="grid subjects" style="margin-top:14px">';
+    html += '<div class="smallStat"><b>' + r.theoryScore + '/' + r.theoryTotal + '</b><span class="muted">Theory</span></div>';
+    html += '<div class="smallStat"><b>' + r.practicalScore + '/' + r.practicalTotal + '</b><span class="muted">Word Practical</span></div>';
+    html += '<div class="smallStat"><b>' + (r.passed ? "PASS" : "TRY AGAIN") + '</b><span class="muted">Status</span></div>';
+    html += '</div></div>';
+  }
+
+  html += '<div class="card"><div class="row space"><div><h2>Part A: Theory Questions</h2><p class="muted">Answer the questions. These marks count with the practical.</p></div><span class="pill active">' + theoryScore + '/' + qs.length + '</span></div>';
+  html += '<div class="grid" style="margin-top:14px">';
+
+  qs.forEach(function(q,i){
+    const chosen = (state.rttExamAnswers || {})[i];
+    const reveal = !!state.rttExamFinished;
+    html += '<div class="questionBox"><b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
+    q.o.forEach(function(o,oi){
+      let cls = "optionBtn";
+      if(chosen===oi && !reveal) cls += " selected";
+      if(reveal && q.a===oi) cls += " correct";
+      if(reveal && chosen===oi && q.a!==oi) cls += " wrong";
+      html += '<button class="' + cls + '" onclick="rttExamChoose(' + i + ',' + oi + ')">' + String.fromCharCode(65+oi) + '. ' + esc(o) + '</button>';
+    });
+    html += '</div>';
+    if(reveal) html += '<div class="note" style="margin-top:12px"><b>Verduideliking:</b> ' + esc(q.w) + '</div>';
+    html += '</div>';
+  });
+
+  html += '</div></div>';
+
+  html += '<div class="card"><div class="row space"><div><h2>Part B: Word Practical</h2><p class="muted">Open the Word simulator, complete the document, then finish the exam.</p></div><button class="btn" onclick="state.screen=\'cat_word\';save();render()">Open Word Practical</button></div>';
+  html += '<div class="note" style="margin-top:12px"><b>Word practical current mark:</b> ' + wordResult.score + '/' + wordResult.total + ' (' + wordResult.percent + '%)</div></div>';
+
+  html += '</div>';
+  return html;
+}
+
 // === RTT WORD PRACTICAL SIMULATOR V1 ===
 function ensureWordSim(){
   if(!state.wordSim){
@@ -4366,6 +4493,7 @@ function render(){
   if(!state.student) app.innerHTML=loginHTML();
   else if(state.screen==="dashboard") app.innerHTML=dashboardHTML();
   else if(state.screen==="exam") app.innerHTML=examHTML();
+  else if(state.screen==="rtt_exam") app.innerHTML=rttExamHTML();
   else if(state.screen==="cat_word") app.innerHTML=catWordSimulatorHTML();
   else if(state.screen==="cat") app.innerHTML=catExamHTML();
   else app.innerHTML=studyHTML();
@@ -4374,6 +4502,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
