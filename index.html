@@ -4661,13 +4661,7 @@ function catExcelSimulatorHTML(){
   html += '<div class="formulaBar"><div class="nameBox">fx</div><div class="formulaInput">Type formulas in column D. Example: D2 =B2*C2. Then use =SUM(E2:E6), =AVERAGE(E2:E6), =MAX(E2:E6)</div></div>';
 
   html += '<div class="officeBody">';
-  html += '<div class="taskPane"><h3>Excel instruksies</h3><div class="note" style="margin-top:12px">Vul products, qty en price in. Tik Total formulas in kolom D. Die antwoord wys in kolom E.</div>';
-  html += '<ol style="padding-left:18px;line-height:1.65"><li>Vul 5 products in.</li><li>Vul Qty en Price in.</li><li>Tik die Total formulas in kolom D, bv. D2 =B2*C2.</li><li>Die antwoord wys in kolom E.</li><li>Gebruik SUM.</li><li>Gebruik AVERAGE.</li><li>Gebruik MAX.</li></ol>';
-  if(e.marked){
-    html += '<div class="note"><b>Resultaat:</b> ' + r.score + '/' + r.total + ' (' + r.percent + '%)</div>';
-    r.checks.forEach(function(c){ html += '<div class="note" style="margin-top:8px">' + (c.ok ? "✅ " : "❌ ") + esc(c.text) + '</div>'; });
-  }
-  html += '</div>';
+  html += excelTaskPaneV1();
 
   html += '<div class="excelShell">';
   html += '<div class="excelGridWrap"><table class="excelGrid">';
@@ -5004,6 +4998,56 @@ function wordSimResult(){
   };
 }
 
+
+// === EXCEL PRACTICAL TASKS V1 ===
+const excelTaskListV1 = [
+  {id:"excel_products", title:"Practical 1: Products en totals", note:"4.1 / 4.2 Basiese formulas", steps:["Vul 5 products in kolom A in.","Vul Qty in kolom B in.","Vul Price in kolom C in.","Tik Total formulas in kolom D, bv. D2 =B2*C2.","Die antwoord wys in kolom E.","Gebruik SUM, AVERAGE en MAX onderaan."]},
+  {id:"excel_marks", title:"Practical 2: Punte spreadsheet", note:"4.2 Berekeninge", steps:["Gebruik kolom A vir vakke of name.","Gebruik kolom B vir Mark 1.","Gebruik kolom C vir Mark 2.","Gebruik kolom D vir die total formula.","Gebruik AVERAGE om gemiddelde punt te kry.","Gebruik MAX om hoogste punt te kry."]},
+  {id:"excel_budget", title:"Practical 3: Budget", note:"4.1 Sigbladgebruik", steps:["Gebruik kolom A vir uitgawe-name soos Food, Transport, Data.","Gebruik kolom B vir Quantity.","Gebruik kolom C vir Price.","Bereken elke total in kolom D.","Gebruik SUM vir die totale budget.","Maak seker al 5 rows ingevul is."]},
+  {id:"excel_shop_sales", title:"Practical 4: Winkel verkope", note:"4.2 Formules en funksies", steps:["Maak n verkoopsblad vir 5 winkel-items.","Gebruik Qty en Price vir elke item.","Bereken Total met =B2*C2 styl formulas.","Gebruik SUM om verkope saam te tel.","Gebruik AVERAGE vir gemiddelde verkoop.","Gebruik MAX vir hoogste verkoop."]},
+  {id:"excel_hardware_prices", title:"Practical 5: Hardware price list", note:"1.7 Hardeware + 4.2 Excel", steps:["Gebruik hardware items soos Keyboard, Mouse, Monitor, Printer en Router.","Vul Qty en Price in.","Bereken total vir elke item.","Gebruik SUM vir totale waarde.","Gebruik MAX vir duurste item total.","Merk Excel Practical wanneer klaar."]},
+  {id:"excel_exam_mixed", title:"Practical 6: Gemengde Excel eksamen", note:"Kwartaal 2 gemeng", steps:["Vul 5 rows data in.","Gebruik duidelike product/name labels.","Gebruik korrekte Qty en Price/Mark waardes.","Gebruik Total formulas in kolom D.","Gebruik SUM, AVERAGE en MAX.","Klik Mark Excel Practical om te sien of dit reg is."]}
+];
+
+function currentExcelTaskV1(){
+  if(!state.excelTaskId) state.excelTaskId = "excel_products";
+  return excelTaskListV1.find(function(t){ return t.id === state.excelTaskId; }) || excelTaskListV1[0];
+}
+
+function chooseExcelTaskV1(id){
+  state.excelTaskId = id;
+  state.excelSim = null;
+  save();
+  render();
+}
+
+function excelTaskPaneV1(){
+  const task = currentExcelTaskV1();
+  let html = '<div class="taskPane"><h3>Excel practicals</h3>';
+  html += '<div class="grid" style="margin-top:12px">';
+  excelTaskListV1.forEach(function(t){
+    const active = t.id === task.id ? " active" : "";
+    html += '<button class="tabBtn' + active + '" onclick="chooseExcelTaskV1(\'' + t.id + '\')">' + esc(t.title) + '</button>';
+  });
+  html += '</div>';
+  html += '<div class="note" style="margin-top:12px"><b>' + esc(task.title) + '</b><br><span class="muted">' + esc(task.note) + '</span></div>';
+  html += '<ol style="padding-left:18px;line-height:1.65">';
+  task.steps.forEach(function(step){ html += '<li>' + esc(step) + '</li>'; });
+  html += '</ol>';
+
+  const e = ensureExcelSim();
+  if(e.marked){
+    const r = excelResult();
+    html += '<div class="note"><b>Resultaat:</b> ' + r.score + '/' + r.total + ' (' + r.percent + '%)</div>';
+    r.checks.forEach(function(c){
+      html += '<div class="note" style="margin-top:8px">' + (c.ok ? "OK - " : "FIX - ") + esc(c.text) + '</div>';
+    });
+  }
+
+  html += '</div>';
+  return html;
+}
+
 function render(){
   const app=document.getElementById("app");
   if(!state.student) app.innerHTML=loginHTML();
@@ -5019,6 +5063,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
