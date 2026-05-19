@@ -4681,7 +4681,7 @@ function catExcelSimulatorHTML(){
     html += '<td><input class="cellInput" value="' + esc(row.product) + '" oninput="excelSet(' + i + ',\'product\',this.value)"></td>';
     html += '<td><input class="cellInput" value="' + esc(row.qty) + '" oninput="excelSet(' + i + ',\'qty\',this.value)"></td>';
     html += '<td><input class="cellInput" value="' + esc(row.price) + '" oninput="excelSet(' + i + ',\'price\',this.value)"></td>';
-    html += '<td><input class="cellInput" placeholder="=B' + rn + '*C' + rn + '" value="' + esc(row.formula) + '" oninput="excelSet(' + i + ',\'formula\',this.value)" onchange="render()"></td>';
+    html += '<td><input class="cellInput" placeholder="=B2*C2" value="' + esc(row.formula) + '" oninput="excelSet(' + i + ',\'formula\',this.value)" onchange="render()"></td>';
     const cleanFormula = String(row.formula || "").toUpperCase().replace(/\s/g,"");
     const correctFormula = cleanFormula === excelExpectedFormula(i);
     html += '<td class="calcCell">' + (correctFormula ? ('R ' + excelRowTotal(i).toFixed(2)) : '') + '</td>';
