@@ -3826,7 +3826,7 @@ function topbar(){
     subjectText = "• Landbou Wetenskappe";
     studyAction = "selectSubject('agri')";
     examText = "Start Landbou Test";
-    examAction = "state.screen='agri_exam';save();render()";
+    examAction = "startAgriExam()";
   }
 
   return `<div class="topbar"><div class="wrap"><div class="card row space">
@@ -6107,42 +6107,153 @@ function agriStudyHTML(){
   return html;
 }
 
-function agriExamHTML(){
+var agriExamTimerHandle = null;
+
+function startAgriExam(){
   state.selectedSubject = "agri";
-  const qs = agriQuestions.slice();
+  state.screen = "agri_exam";
+  state.agriExamFinished = false;
+  state.agriExamAnswers = {};
+  state.agriExamSet = shuffleQuestions(agriQuestions).slice(0, Math.min(60, agriQuestions.length));
+  state.agriExamSecondsLeft = 60 * 60;
+  save();
+  startAgriExamTimer();
+  render();
+}
+
+function agriExamQuestions(){
+  if(state.agriExamSet && state.agriExamSet.length) return state.agriExamSet;
+  state.agriExamSet = shuffleQuestions(agriQuestions).slice(0, Math.min(60, agriQuestions.length));
+  return state.agriExamSet;
+}
+
+function agriExamTimeText(){
+  const s = typeof state.agriExamSecondsLeft === "number" ? state.agriExamSecondsLeft : 60 * 60;
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return String(m).padStart(2,"0") + ":" + String(sec).padStart(2,"0");
+}
+
+function startAgriExamTimer(){
+  if(agriExamTimerHandle) return;
+  agriExamTimerHandle = setInterval(function(){
+    if(state.screen !== "agri_exam" || state.agriExamFinished){
+      clearInterval(agriExamTimerHandle);
+      agriExamTimerHandle = null;
+      return;
+    }
+    if(typeof state.agriExamSecondsLeft !== "number") state.agriExamSecondsLeft = 60 * 60;
+    state.agriExamSecondsLeft = Math.max(0, state.agriExamSecondsLeft - 1);
+    if(state.agriExamSecondsLeft <= 0){
+      state.agriExamFinished = true;
+      clearInterval(agriExamTimerHandle);
+      agriExamTimerHandle = null;
+    }
+    save();
+    render();
+  }, 1000);
+}
+
+function agriExamChoose(i, oi){
+  if(!state.agriExamAnswers) state.agriExamAnswers = {};
+  state.agriExamAnswers[i] = oi;
+  save();
+  render();
+}
+
+function agriExamScore(){
+  const qs = agriExamQuestions();
   let score = 0;
   qs.forEach(function(q,i){
     if((state.agriExamAnswers || {})[i] === q.a) score++;
   });
+  return score;
+}
+
+function finishAgriExam(){
+  state.agriExamFinished = true;
+  if(agriExamTimerHandle){
+    clearInterval(agriExamTimerHandle);
+    agriExamTimerHandle = null;
+  }
+  save();
+  render();
+}
+
+function resetAgriExam(){
+  if(agriExamTimerHandle){
+    clearInterval(agriExamTimerHandle);
+    agriExamTimerHandle = null;
+  }
+  state.agriExamFinished = false;
+  state.agriExamAnswers = {};
+  state.agriExamSet = shuffleQuestions(agriQuestions).slice(0, Math.min(60, agriQuestions.length));
+  state.agriExamSecondsLeft = 60 * 60;
+  save();
+  startAgriExamTimer();
+  render();
+}
+
+function agriExamHTML(){
+  state.selectedSubject = "agri";
+  if(!state.agriExamSet || !state.agriExamSet.length){
+    state.agriExamSet = shuffleQuestions(agriQuestions).slice(0, Math.min(60, agriQuestions.length));
+  }
+  if(typeof state.agriExamSecondsLeft !== "number") state.agriExamSecondsLeft = 60 * 60;
+  if(!state.agriExamFinished) startAgriExamTimer();
+
+  const qs = agriExamQuestions();
+  const score = agriExamScore();
+  const answered = Object.keys(state.agriExamAnswers || {}).length;
   const pct = qs.length ? Math.round(score / qs.length * 100) : 0;
 
   let html = topbar();
   html += '<div class="wrap grid">';
-  html += '<div class="card"><div class="row space"><div><h2>🌱 Landbou Quick Test</h2><p class="muted">PATCH 1 toets: bevestig dat Landbou exam route werk. Full Exam kom in PATCH 5.</p></div><div class="row"><button class="btn secondary" onclick="state.screen=\'agri\';save();render()">Back to Landbou</button><button class="btn" onclick="state.agriExamFinished=true;save();render()">Finish Test</button></div></div></div>';
+
+  html += '<div class="card"><div class="row space"><div><h2>Landbou Wetenskappe Eksamen</h2><p class="muted">Random Kwartaal 2 vrae met countdown timer.</p></div><div class="row"><span class="pill active">Timer: ' + agriExamTimeText() + '</span><button class="btn secondary" onclick="resetAgriExam()">Reset</button><button class="btn" onclick="finishAgriExam()">Finish Exam</button></div></div></div>';
 
   if(state.agriExamFinished){
-    html += '<div class="card"><h2>Resultaat: ' + score + '/' + qs.length + ' (' + pct + '%)</h2><p class="muted">Hierdie is net die klein framework toets. Later sal Full Exam timer, review, weak areas en history kry.</p></div>';
+    html += '<div class="card"><h2>Resultaat: ' + score + '/' + qs.length + ' (' + pct + '%)</h2>';
+    html += '<div class="grid subjects" style="margin-top:14px">';
+    html += '<div class="smallStat"><b>' + score + '</b><span>Korrek</span></div>';
+    html += '<div class="smallStat"><b>' + (qs.length - score) + '</b><span>Verkeerd</span></div>';
+    html += '<div class="smallStat"><b>' + (pct >= 70 ? "PASS" : "TRY AGAIN") + '</b><span>Status</span></div>';
+    html += '</div></div>';
+  } else {
+    html += '<div class="examHeader"><b>Answered: ' + answered + '/' + qs.length + '</b><b>Questions: ' + qs.length + '</b><div class="timer">' + agriExamTimeText() + '</div></div>';
   }
 
-  html += '<div class="card"><h2>Starter Test Questions</h2><div class="grid" style="margin-top:14px">';
+  html += '<div class="card"><h2>' + (state.agriExamFinished ? "Exam Review" : "Exam Questions") + '</h2><div class="grid" style="margin-top:14px">';
+
   qs.forEach(function(q,i){
     const chosen = (state.agriExamAnswers || {})[i];
     const reveal = !!state.agriExamFinished;
-    html += '<div class="questionBox"><b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
+    const correct = chosen === q.a;
+    let boxClass = "questionBox";
+    if(reveal) boxClass += correct ? " resultGood" : " resultBad";
+
+    html += '<div class="' + boxClass + '"><div class="row space"><span class="pill active">' + esc(q.unit || q.m) + '</span><span class="pill">' + esc(q.type || "mcq") + '</span></div>';
+    html += '<b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
+
     q.o.forEach(function(o,oi){
       let cls = "optionBtn";
       if(chosen===oi && !reveal) cls += " selected";
       if(reveal && q.a===oi) cls += " correct";
       if(reveal && chosen===oi && q.a!==oi) cls += " wrong";
-      html += '<button class="' + cls + '" onclick="if(!state.agriExamAnswers) state.agriExamAnswers={}; state.agriExamAnswers[' + i + ']=' + oi + '; save(); render();">' + String.fromCharCode(65+oi) + '. ' + esc(o) + '</button>';
+      html += '<button class="' + cls + '" onclick="agriExamChoose(' + i + ',' + oi + ')">' + String.fromCharCode(65+oi) + '. ' + esc(o) + '</button>';
     });
+
     html += '</div>';
-    if(reveal) html += '<div class="note" style="margin-top:12px"><b>Verduideliking:</b> ' + esc(q.w) + '</div>';
+    if(reveal){
+      html += '<div class="note" style="margin-top:12px"><b>Verduideliking:</b> ' + esc(q.w) + '</div>';
+    }
     html += '</div>';
   });
+
   html += '</div></div></div>';
   return html;
 }
+// === AGRI PATCH 2B-B SAFE: random agriculture exam with timer ===
 // === END AGRI PATCH 1 ===
 
 function render(){
@@ -6162,6 +6273,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
