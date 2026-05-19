@@ -3751,12 +3751,16 @@ function loginHTML(){
   </div></div>`;
 }
 function topbar(){
+  const isCat = state.screen==="cat" || state.selectedSubject==="cat";
+  const studyAction = isCat ? "selectSubject('cat')" : "setState({screen:'study'})";
+  const examText = isCat ? "RTT Practice" : "Start K53 Exam";
+  const examAction = isCat ? "selectSubject('cat')" : "startExam()";
   return `<div class="topbar"><div class="wrap"><div class="card row space">
-    <div class="row"><div style="font-size:30px">🎓</div><div><h1>Student Study App</h1><div class="muted">Logged in as ${esc(state.student)}</div></div></div>
+    <div class="row"><div style="font-size:30px">🎓</div><div><h1>Student Study App</h1><div class="muted">Logged in as ${esc(state.student)} ${isCat ? "• RTT / CAT Kwartaal 2" : "• K53"}</div></div></div>
     <div class="row">
       <button class="btn secondary" onclick="setState({screen:'dashboard'})">Subjects</button>
-      <button class="btn secondary" onclick="setState({screen:'study'})">Study</button>
-      <button class="btn" onclick="startExam()">Start K53 Exam</button>
+      <button class="btn secondary" onclick="${studyAction}">Study</button>
+      <button class="btn" onclick="${examAction}">${examText}</button>
       <button class="btn secondary" onclick="logout()">Logout</button>
     </div>
   </div></div></div>`;
@@ -3912,6 +3916,92 @@ const catQ2Questions = [
   {m:"m61", q:"Watter een is ’n goeie probleemoplossing gewoonte?", o:["Lees die instruksies deeglik en beplan voor jy begin","Raai die antwoord","Ignoreer data","Begin sonder om te stoor"], a:0, w:"Beplanning voorkom foute en mors van tyd."}
 ];
 
+const catQ2Tasks = [
+  {type:"Word", module:"3.5 Verdere formatering", title:"Word Task 1: Page setup", steps:[
+    "Open Microsoft Word.",
+    "Create a new document called Term2_Page_Setup.",
+    "Type a heading: My Term 2 CAT Revision.",
+    "Change the page orientation to Landscape.",
+    "Add page numbers at the bottom of the page.",
+    "Add a header with Enrico's name and today's date.",
+    "Save the document."
+  ]},
+  {type:"Word", module:"3.5 Verdere formatering", title:"Word Task 2: Columns and formatting", steps:[
+    "Open a new Word document.",
+    "Type a heading: Computer Hardware and Software.",
+    "Type two short paragraphs about hardware and software.",
+    "Format the text into two columns.",
+    "Make the heading bold, centred and bigger.",
+    "Add a footer with the page number.",
+    "Save the document."
+  ]},
+  {type:"Word", module:"3.6 Tabelle", title:"Word Task 3: Create and format a table", steps:[
+    "Open Word and create a new document.",
+    "Insert a table with 4 columns and 6 rows.",
+    "Use these headings: Item, Input/Output, Example, Notes.",
+    "Fill in examples like Keyboard, Mouse, Monitor, Printer and Speaker.",
+    "Merge the top row and type: Computer Devices.",
+    "Shade the heading row and make the text bold.",
+    "Save the document."
+  ]},
+  {type:"Excel", module:"4.1 Inleiding tot sigbladverwerking", title:"Excel Task 1: Workbook basics", steps:[
+    "Open Excel.",
+    "Create a new workbook called Term2_Excel_Basics.",
+    "Rename Sheet1 to Marks.",
+    "In row 1 type: Subject, Test 1, Test 2, Total.",
+    "Enter at least 5 subjects with marks.",
+    "Adjust the column widths so all text is visible.",
+    "Save the workbook."
+  ]},
+  {type:"Excel", module:"4.2 Berekeninge", title:"Excel Task 2: Formulas", steps:[
+    "Open the Term2_Excel_Basics workbook.",
+    "In the Total column, add Test 1 and Test 2 using a formula.",
+    "Use AutoFill to copy the formula down.",
+    "Add a row at the bottom called Average.",
+    "Use AVERAGE to calculate the average for Test 1 and Test 2.",
+    "Use MAX to find the highest total.",
+    "Save the workbook."
+  ]},
+  {type:"Excel", module:"4.2 Berekeninge", title:"Excel Task 3: Simple shop spreadsheet", steps:[
+    "Open a new Excel workbook.",
+    "Create headings: Product, Qty, Price, Total.",
+    "Add 6 sweet products as examples.",
+    "Use a formula to calculate Qty × Price.",
+    "Use SUM to calculate the grand total.",
+    "Format the money columns as currency.",
+    "Save the workbook."
+  ]},
+  {type:"Theory", module:"2.1 Inleiding tot netwerke", title:"Theory Task: Network examples", steps:[
+    "Write 5 examples of devices that can connect to a network.",
+    "Explain LAN in your own words.",
+    "Explain WAN in your own words.",
+    "Write 3 benefits of a network.",
+    "Write the difference between wired and wireless networks."
+  ]},
+  {type:"Theory", module:"6.1 Strategie vir probleemoplossing", title:"Problem-solving task", steps:[
+    "Read a problem carefully.",
+    "Write what information is given.",
+    "Write what information is needed.",
+    "Decide which program is best to use: Word or Excel.",
+    "Create a simple solution and check if it answers the problem."
+  ]}
+];
+
+function catTasksHTML(){
+  let html = '<div class="card"><div class="row space"><div><h2>🧰 Practical Tasks</h2><p class="muted">Word, Excel and theory tasks for Term 2 exam preparation.</p></div><span class="pill active">Term 2</span></div>';
+  html += '<div class="grid" style="margin-top:14px">';
+  catQ2Tasks.forEach(function(t,idx){
+    html += '<div class="questionBox">';
+    html += '<div class="row space"><div><b>' + esc(t.title) + '</b><br><span class="muted">' + esc(t.type + " • " + t.module) + '</span></div><span class="pill">' + esc(t.type) + '</span></div>';
+    html += '<ol style="margin-top:12px">';
+    t.steps.forEach(function(step){ html += '<li>' + esc(step) + '</li>'; });
+    html += '</ol>';
+    html += '</div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
 function catFilteredQuestions(){
   const mod = state.catModule || "all";
   if(mod==="all") return catQ2Questions.slice();
@@ -3953,6 +4043,8 @@ function catExamHTML(){
   });
   html += '</div></div>';
 
+  html += catTasksHTML();
+
   html += '<div class="card"><div class="row space"><div><h2>Practice Questions</h2><p class="muted">Score wys eers nadat jy Mark Answers druk.</p></div><div class="row"><button class="btn" onclick="state.catShowAnswers=true;save();render()">Mark Answers</button><button class="btn secondary" onclick="catReset()">Reset</button></div></div>';
   html += '<div class="note" style="text-align:center;margin-top:12px"><b>Questions:</b> ' + qs.length + ' | <b>Score:</b> ' + (state.catShowAnswers ? (score + "/" + qs.length + " (" + pct + "%)") : "?") + '</div>';
   html += '<div class="grid" style="margin-top:14px">';
@@ -3990,6 +4082,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
