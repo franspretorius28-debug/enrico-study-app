@@ -6176,6 +6176,8 @@ function agriStudyHTML(){
 
   html += agriCoverageHTML();
   html += agriPracticalTasksHTML();
+  html += agriWeakAreasHTML();
+  html += agriResultHistoryHTML();
 
   html += '<div class="grid two">';
   html += '<div class="grid"><div class="card"><h2>Modules</h2><div style="height:12px"></div>';
@@ -6287,6 +6289,7 @@ function finishAgriExam(){
     clearInterval(agriExamTimerHandle);
     agriExamTimerHandle = null;
   }
+  agriSaveExamHistory();
   save();
   render();
 }
@@ -6330,6 +6333,8 @@ function agriExamHTML(){
     html += '<div class="smallStat"><b>' + (qs.length - score) + '</b><span>Verkeerd</span></div>';
     html += '<div class="smallStat"><b>' + (pct >= 70 ? "PASS" : "TRY AGAIN") + '</b><span>Status</span></div>';
     html += '</div></div>';
+    html += agriWeakAreasHTML();
+    html += agriResultHistoryHTML();
   } else {
     html += '<div class="examHeader"><b>Answered: ' + answered + '/' + qs.length + '</b><b>Questions: ' + qs.length + '</b><div class="timer">' + agriExamTimeText() + '</div></div>';
   }
@@ -6366,6 +6371,153 @@ function agriExamHTML(){
   return html;
 }
 
+
+// === AGRI PATCH 5: WEAK AREAS + RESULT HISTORY ===
+function agriUnitTitle(unit){
+  if(typeof agriQuestionTopics !== "undefined"){
+    const topic = agriQuestionTopics.find(function(t){ return t.unit === unit; });
+    if(topic) return topic.unitTitle;
+  }
+  if(unit === "M3E1") return "Eenheid 1: Landbouhulpbronne";
+  if(unit === "M3E2") return "Eenheid 2: Grondbewaring en -bestuur";
+  if(unit === "M3E3") return "Eenheid 3: Waterbestuur";
+  if(unit === "M3E4") return "Eenheid 4: Landboubesoedeling";
+  if(unit === "M3R") return "Module 3 Opsomming en Hersiening";
+  if(unit === "M4E1") return "Eenheid 1: Basiese komponente van grond";
+  if(unit === "M4E2") return "Eenheid 2: Primere en sekondere minerale";
+  if(unit === "M4E3") return "Eenheid 3: Die vorming van rotse";
+  return unit || "Onbekend";
+}
+
+function agriExamReviewData(){
+  const qs = agriExamQuestions();
+  const wrong = [];
+  const stats = {};
+
+  qs.forEach(function(q,i){
+    const unit = q.unit || q.m || "unknown";
+    const chosen = (state.agriExamAnswers || {})[i];
+
+    if(!stats[unit]) stats[unit] = {unit:unit,total:0,wrong:0};
+    stats[unit].total++;
+
+    if(chosen !== q.a){
+      stats[unit].wrong++;
+      wrong.push({
+        number:i+1,
+        unit:unit,
+        unitTitle:agriUnitTitle(unit),
+        question:q.q,
+        chosen:typeof chosen === "number" ? q.o[chosen] : "Nie beantwoord nie",
+        correct:q.o[q.a],
+        explanation:q.w
+      });
+    }
+  });
+
+  const weak = Object.keys(stats).map(function(k){
+    const x = stats[k];
+    return {
+      unit:x.unit,
+      title:agriUnitTitle(x.unit),
+      wrong:x.wrong,
+      total:x.total,
+      percent:x.total ? Math.round(((x.total - x.wrong) / x.total) * 100) : 0
+    };
+  }).filter(function(x){
+    return x.wrong > 0;
+  }).sort(function(a,b){
+    return b.wrong - a.wrong;
+  });
+
+  return {wrong:wrong, weak:weak};
+}
+
+function agriSaveExamHistory(){
+  const qs = agriExamQuestions();
+  const score = agriExamScore();
+  const pct = qs.length ? Math.round(score / qs.length * 100) : 0;
+  const review = agriExamReviewData();
+
+  if(!state.agriHistory) state.agriHistory = [];
+  state.agriHistory.unshift({
+    date:new Date().toLocaleString(),
+    score:score,
+    total:qs.length,
+    percent:pct,
+    passed:pct >= 70,
+    weak:review.weak.slice(0,5),
+    wrongCount:qs.length - score
+  });
+  state.agriHistory = state.agriHistory.slice(0,10);
+
+  state.agriLastWeak = review.weak;
+  state.agriLastWrong = review.wrong.slice(0,20);
+}
+
+function agriWeakAreasHTML(){
+  const weak = state.agriLastWeak || [];
+  let html = '<div class="card"><div class="row space"><div><h2>Weak Areas</h2><p class="muted">Gebaseer op die laaste Landbou eksamen.</p></div><span class="pill active">' + weak.length + ' areas</span></div>';
+
+  if(!weak.length){
+    html += '<div class="note" style="margin-top:14px">Nog geen weak areas nie. Skryf eers n Landbou eksamen en click Finish Exam.</div></div>';
+    return html;
+  }
+
+  html += '<div class="grid subjects" style="margin-top:14px">';
+  weak.forEach(function(w){
+    html += '<button class="subjectBtn" onclick="state.agriModule=\'' + (w.unit && w.unit.indexOf("M4") === 0 ? "m4" : "m3") + '\';save();render()">';
+    html += '<h3>' + esc(w.title) + '</h3><p class="muted">Verkeerd: ' + w.wrong + '/' + w.total + ' | Punt: ' + w.percent + '%</p><span class="pill">Practice</span></button>';
+  });
+  html += '</div>';
+
+  if(state.agriLastWrong && state.agriLastWrong.length){
+    html += '<details style="margin-top:14px"><summary><b>Laaste verkeerde vrae</b></summary><div class="grid" style="margin-top:12px">';
+    state.agriLastWrong.forEach(function(w){
+      html += '<div class="questionBox resultBad"><b>' + w.number + '. ' + esc(w.question) + '</b>';
+      html += '<div><b>Jou antwoord:</b> ' + esc(w.chosen) + '</div>';
+      html += '<div><b>Regte antwoord:</b> ' + esc(w.correct) + '</div>';
+      html += '<div class="muted">' + esc(w.explanation) + '</div></div>';
+    });
+    html += '</div></details>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
+function agriResultHistoryHTML(){
+  const hist = state.agriHistory || [];
+  let html = '<div class="card"><div class="row space"><div><h2>Result History</h2><p class="muted">Laaste 10 Landbou eksamens.</p></div><span class="pill active">' + hist.length + ' results</span></div>';
+
+  if(!hist.length){
+    html += '<div class="note" style="margin-top:14px">Nog geen result history nie. Skryf eers n Landbou eksamen.</div></div>';
+    return html;
+  }
+
+  html += '<div class="grid" style="margin-top:14px">';
+  hist.forEach(function(r,idx){
+    html += '<div class="questionBox ' + (r.passed ? 'resultGood' : 'resultBad') + '">';
+    html += '<div class="row space"><b>#' + (idx+1) + ' - ' + esc(r.date) + '</b><span class="pill">' + (r.passed ? "PASS" : "TRY AGAIN") + '</span></div>';
+    html += '<h3>' + r.score + '/' + r.total + ' (' + r.percent + '%)</h3>';
+    html += '<p class="muted">Wrong: ' + r.wrongCount + '</p>';
+    if(r.weak && r.weak.length){
+      html += '<p class="muted"><b>Weak:</b> ' + esc(r.weak.map(function(w){ return w.title + " (" + w.wrong + ")"; }).join(", ")) + '</p>';
+    }
+    html += '</div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+function agriClearHistory(){
+  state.agriHistory = [];
+  state.agriLastWeak = [];
+  state.agriLastWrong = [];
+  save();
+  render();
+}
+// === END AGRI PATCH 5 ===
 // === AGRI PATCH 4: PRACTICAL TASKS ===
 const agriPracticalTasks = [
   {
@@ -6614,6 +6766,8 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
+
 
 
 
