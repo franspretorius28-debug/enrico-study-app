@@ -7015,6 +7015,131 @@ mathlitQuestions.push.apply(mathlitQuestions, mathlitImageQuestions);
 
 
 
+
+// === MATHLIT PATCH 5: EXPANDED TERM 2 QUESTION BANK ===
+function mathlitAddPatch5Questions(){
+  function add(module, unit, type, q, o, a, w, visual){
+    const row = {m:module, unit:unit, type:type, q:q, o:o, a:a, w:w};
+    if(visual) row.visual = visual;
+    mathlitQuestions.push(row);
+  }
+
+  // Hoofstuk 4: Finansies - finansiele dokumente
+  add("ml4","F1","doc","Op n rekening staan: Vorige balans R80, nuwe koste R260, betaling ontvang R100. Wat is die nuwe bedrag verskuldig?",["R240","R340","R160","R440"],0,"R80 + R260 - R100 = R240.");
+  add("ml4","F1","doc","n Kwitansie wys 3 items: R18, R25 en R42. Wat is die totaal?",["R85","R75","R95","R60"],0,"Tel die bedrae: 18 + 25 + 42 = 85.");
+  add("ml4","F1","doc","As n rekening R450 wys en R200 is reeds betaal, hoeveel bly oor?",["R250","R650","R200","R450"],0,"R450 - R200 = R250.");
+  add("ml4","F1","doc","Watter inligting help die meeste om te besluit of n rekening betyds betaal is?",["Betaaldatum","Lettertipe","Kleur van die logo","Aantal bladsye"],0,"Die betaaldatum wys teen wanneer dit betaal moet word.");
+  add("ml4","F1","doc","n Bankstaat wys inkomste R5 500 en uitgawes R4 780. Hoeveel geld bly oor?",["R720","R780","R10 280","R620"],0,"R5 500 - R4 780 = R720.");
+  add("ml4","F1","doc","As n huishouding R1 200 vir kos begroot maar R1 380 spandeer, met hoeveel is hulle oor begroting?",["R180","R80","R2 580","R1 200"],0,"R1 380 - R1 200 = R180.");
+  add("ml4","F1","doc","Watter dokument bewys dat jy by n winkel betaal het?",["Kwitansie","Roetekaart","Termometer","Skaaltekening"],0,"n Kwitansie is bewys van betaling.");
+  add("ml4","F1","doc","n Rekening wys water R96, vullis R85 en elektrisiteit R310. Wat is die totaal?",["R491","R406","R395","R581"],0,"R96 + R85 + R310 = R491.");
+  add("ml4","F1","doc","As daar n laatbetalingsfooi van R35 by n rekening van R420 gevoeg word, wat is die nuwe totaal?",["R455","R385","R420","R35"],0,"R420 + R35 = R455.");
+  add("ml4","F1","doc","Watter item op n rekening sal wys wie verantwoordelik is om dit te betaal?",["Kliantnaam of rekeninghouer","Skaal","Kompasroos","Waarskynlikheid"],0,"Die kliantnaam of rekeninghouer identifiseer wie die rekening besit.");
+  add("ml4","F1","doc","As n rekening foutief dubbel gehef is vir R75, wat moet jy doen?",["Vra vir n regstelling met bewys","Ignoreer dit altyd","Betaal dubbel sonder vrae","Verander die datum self"],0,"Finansiele dokumente moet nagegaan word en foute moet aangemeld word.");
+  add("ml4","F1","doc","n Staat wys deposito R900 en onttrekking R350. Wat is die netto verandering?",["R550 meer","R1 250 minder","R350 meer","R900 minder"],0,"R900 - R350 = R550 meer.");
+
+  // Hoofstuk 4: Finansies - tariewe
+  add("ml4","F2","calc","Elektrisiteit kos R2.20 per kWh. As 75 kWh gebruik is, wat is die koste?",["R165","R150","R77.20","R220"],0,"75 x R2.20 = R165.");
+  add("ml4","F2","calc","Water kos R12 per kiloliter. As 9 kL gebruik word, wat is die koste?",["R108","R21","R120","R96"],0,"9 x R12 = R108.");
+  add("ml4","F2","calc","n Tarief het n vaste fooi van R60 plus R3 per eenheid. Wat kos 40 eenhede?",["R180","R120","R100","R240"],0,"R60 + 40 x R3 = R180.");
+  add("ml4","F2","calc","Opsie A kos R50 + R2 per eenheid. Opsie B kos R20 + R3 per eenheid. Wat is goedkoper vir 20 eenhede?",["Opsie A","Opsie B","Albei R100","Geen een"],0,"A = R50 + R40 = R90; B = R20 + R60 = R80. Wag, B is goedkoper.", "bill");
+  add("ml4","F2","calc","Opsie A kos R50 + R2 per eenheid. Opsie B kos R20 + R3 per eenheid. Wat is korrek vir 20 eenhede?",["Opsie B is R80 en goedkoper","Opsie A is R80 en goedkoper","Albei is R80","Opsie B is R110"],0,"A = R90 en B = R80, dus B is goedkoper.");
+  add("ml4","F2","calc","n Selfoonplan kos R99 per maand plus R0.50 per MB buite bundel. As 60 MB ekstra gebruik word, wat is totaal?",["R129","R159","R99.50","R30"],0,"60 x R0.50 = R30; R99 + R30 = R129.");
+  add("ml4","F2","calc","As n rekening met 15 persent verhoog van R200, wat is die nuwe bedrag?",["R230","R215","R185","R300"],0,"15 persent van R200 is R30; nuwe bedrag R230.");
+  add("ml4","F2","calc","As R500 met 10 persent afslag verminder word, wat betaal jy?",["R450","R490","R550","R50"],0,"10 persent van R500 is R50; R500 - R50 = R450.");
+  add("ml4","F2","calc","Watergebruik was 18 kL. Die eerste 10 kL kos R8 per kL en die res R15 per kL. Wat is die totale koste?",["R200","R144","R270","R120"],0,"10 x R8 = R80 en 8 x R15 = R120; totaal R200.");
+  add("ml4","F2","calc","Elektrisiteit: eerste 50 kWh teen R1.80, volgende 30 kWh teen R2.50. Wat kos 80 kWh?",["R165","R144","R200","R75"],0,"50 x R1.80 = R90; 30 x R2.50 = R75; totaal R165.");
+  add("ml4","F2","calc","n Taxi vra R12 basiese fooi plus R4 per km. Wat kos n rit van 8 km?",["R44","R32","R96","R20"],0,"R12 + 8 x R4 = R44.");
+  add("ml4","F2","calc","As n maandelikse premie R320 is, hoeveel betaal jy vir 6 maande?",["R1 920","R326","R1 600","R960"],0,"R320 x 6 = R1 920.");
+
+  // Hoofstuk 5: Meting - length
+  add("ml5","M1","calc","n Pad is 3.75 km lank. Hoeveel meter is dit?",["3 750 m","375 m","37 500 m","0.375 m"],0,"3.75 x 1000 = 3 750 m.");
+  add("ml5","M1","calc","n Tafel is 1.8 m lank. Hoeveel cm is dit?",["180 cm","18 cm","1 800 cm","0.18 cm"],0,"1 m = 100 cm, dus 1.8 m = 180 cm.");
+  add("ml5","M1","calc","n Tou van 250 cm word in meter geskryf as?",["2.5 m","25 m","0.25 m","250 m"],0,"250 cm gedeel deur 100 = 2.5 m.");
+  add("ml5","M1","calc","As n roete 1.2 km plus 800 m is, wat is die totale afstand?",["2 km","1.28 km","800.12 m","12 km"],0,"1.2 km = 1200 m; 1200 m + 800 m = 2000 m = 2 km.");
+  add("ml5","M1","calc","n Kamer is 4 m lank en 3 m breed. Wat is die omtrek?",["14 m","12 m","7 m","24 m"],0,"Omtrek = 2 x (4 + 3) = 14 m.");
+  add("ml5","M1","calc","n Reghoekige vloer is 5 m by 4 m. Wat is die area?",["20 vierkante meter","18 vierkante meter","9 vierkante meter","40 vierkante meter"],0,"Area = lengte x breedte = 5 x 4 = 20.");
+  add("ml5","M1","calc","As 1 cm op n plan 2 m voorstel, hoe lank is 6 cm in werklikheid?",["12 m","8 m","3 m","6 m"],0,"6 x 2 m = 12 m.");
+  add("ml5","M1","calc","n Meetlint wys 0.45 m. Hoeveel mm is dit?",["450 mm","45 mm","4.5 mm","4500 mm"],0,"0.45 m = 45 cm = 450 mm.");
+
+  // Hoofstuk 5: Meting - mass
+  add("ml5","M2","calc","n Sak rys weeg 2.5 kg. Hoeveel gram is dit?",["2 500 g","250 g","25 000 g","0.25 g"],0,"2.5 kg x 1000 = 2500 g.");
+  add("ml5","M2","calc","Jy koop 750 g kaas en 1.25 kg vleis. Wat is die totale massa?",["2 kg","1.325 kg","750 kg","1 kg"],0,"1.25 kg + 0.75 kg = 2 kg.");
+  add("ml5","M2","calc","n Resep vra 300 g meel. Vir dubbel die resep benodig jy?",["600 g","150 g","302 g","3 kg"],0,"Dubbel van 300 g is 600 g.");
+  add("ml5","M2","calc","As 5 pakkies elk 450 g weeg, wat is die totale massa?",["2 250 g","900 g","455 g","5 450 g"],0,"5 x 450 g = 2 250 g.");
+  add("ml5","M2","calc","Watter is swaarder: 1.2 kg of 950 g?",["1.2 kg","950 g","Albei dieselfde","Nie vergelykbaar"],0,"1.2 kg = 1200 g, wat swaarder is as 950 g.");
+  add("ml5","M2","calc","n Skaal wys 0.08 kg. Hoeveel gram is dit?",["80 g","8 g","800 g","0.8 g"],0,"0.08 kg x 1000 = 80 g.");
+
+  // Hoofstuk 5: Meting - volume
+  add("ml5","M3","calc","n Bottel bevat 1.5 L sap. Hoeveel ml is dit?",["1 500 ml","150 ml","15 000 ml","0.15 ml"],0,"1.5 L x 1000 = 1500 ml.");
+  add("ml5","M3","calc","Jy meng 750 ml water met 1.25 L sap. Wat is die totale volume?",["2 L","1.325 L","750 L","1.25 ml"],0,"750 ml = 0.75 L; 0.75 L + 1.25 L = 2 L.");
+  add("ml5","M3","calc","n Houer is 2 L vol en jy gebruik 600 ml. Hoeveel bly oor?",["1.4 L","1.6 L","600 ml","2.6 L"],0,"2 L = 2000 ml; 2000 - 600 = 1400 ml = 1.4 L.");
+  add("ml5","M3","calc","As 4 glase elk 250 ml hou, hoeveel vloeistof is dit saam?",["1 L","500 ml","750 ml","4 L"],0,"4 x 250 ml = 1000 ml = 1 L.");
+  add("ml5","M3","calc","n Resep vra 0.75 L melk. Hoeveel ml is dit?",["750 ml","75 ml","7 500 ml","0.75 ml"],0,"0.75 L = 750 ml.");
+  add("ml5","M3","calc","Watter houer is groter: 900 ml of 1.1 L?",["1.1 L","900 ml","Albei dieselfde","Nie vergelykbaar"],0,"1.1 L = 1100 ml, wat groter is as 900 ml.");
+
+  // Hoofstuk 5: Temperatuur
+  add("ml5","M4","calc","Die temperatuur is 6 C in die oggend en 21 C in die middag. Met hoeveel het dit gestyg?",["15 C","27 C","6 C","21 C"],0,"21 - 6 = 15 C.");
+  add("ml5","M4","calc","Die temperatuur daal van 14 C na -2 C. Met hoeveel grade het dit gedaal?",["16 C","12 C","-16 C","14 C"],0,"14 na -2 is n daling van 16 grade.");
+  add("ml5","M4","calc","Watter temperatuur is die koudste?",["-8 C","0 C","5 C","12 C"],0,"-8 C is laer as die ander temperature.");
+  add("ml5","M4","calc","As n vrieskas -18 C is en n yskas 4 C is, wat is die verskil?",["22 C","14 C","-22 C","18 C"],0,"4 - (-18) = 22 C.");
+  add("ml5","M4","calc","n Weervoorspelling wys minimum 9 C en maksimum 28 C. Wat is die temperatuurreeks?",["19 C","37 C","28 C","9 C"],0,"28 - 9 = 19 C.");
+  add("ml5","M4","img","Kyk na die termometer. As die lesing ongeveer 20 C is, watter beskrywing pas die beste?",["Koel tot matig","Vriesend","Baie warm","Onder vriespunt"],0,"20 C is gewoonlik koel tot matig.","thermometer");
+
+  // Hoofstuk 6: Kaarte en planne
+  add("ml6","K1","map","n Kaart het n legende met n kruis vir hospitaal. Wat beteken n kruis op die kaart?",["Hospitaal","Skool","Winkel","Park"],0,"Die legende verduidelik simbole.");
+  add("ml6","K1","map","As n kaartrooster kolomme A-C en rye 1-3 het, waarvoor gebruik ons B2?",["Om n ligging aan te dui","Om n tarief te bereken","Om massa te meet","Om temperatuur te lees"],0,"B2 is n roosterverwysing.");
+  add("ml6","K1","map","Wat wys n noordpyl op n kaart?",["Rigting","Koste","Massa","Volume"],0,"n Noordpyl help jou om rigting te bepaal.");
+  add("ml6","K1","map","Hoekom is n titel op n kaart belangrik?",["Dit vertel wat die kaart wys","Dit bereken area","Dit meet liter","Dit wys kans"],0,"Die titel gee konteks.");
+  add("ml6","K1","img","Kyk na die kaart. Watter element help jou om noord te vind?",["Noordpyl","Kwitansie","Maatbeker","Dobbelsteen"],0,"Die kaart het n N-pyl.","map");
+  add("ml6","K1","img","Kyk na die kaart. Watter roosterverwysing gebruik kolomme en rye?",["B2","20 C","R350","1 uit 3"],0,"Roosterverwysings kombineer kolom en ry.","map");
+
+  add("ml6","K2","map","As die bank oos van die skool is, waar is die skool relatief tot die bank?",["Wes","Oos","Noord","Suid"],0,"Die teenoorgestelde van oos is wes.");
+  add("ml6","K2","map","As die winkel noordwes van die huis is, watter rigtings word gekombineer?",["Noord en wes","Suid en oos","Noord en oos","Suid en wes"],0,"Noordwes kombineer noord en wes.");
+  add("ml6","K2","map","As punt A links en bo punt B is, watter relatiewe posisie is A waarskynlik?",["Noordwes","Suidoos","Suidwes","Oos"],0,"Links en bo beteken gewoonlik noordwes.");
+  add("ml6","K2","map","n Biblioteek is tussen die skool en park. Watter konsep gebruik jy?",["Relatiewe posisie","Persentasie","Massa","Tarief"],0,"Dit beskryf ligging tussen plekke.");
+  add("ml6","K2","map","As jy van C3 na C1 beweeg op n kaartrooster, beweeg jy gewoonlik?",["Noord","Suid","Oos","Wes"],0,"Ry nommers word gewoonlik boontoe kleiner; C3 na C1 is noord op baie roosters.");
+  add("ml6","K2","map","Wat beteken n plek is aangrensend aan n ander plek?",["Dit is langsaan","Dit is duurder","Dit is kouer","Dit is onmoontlik"],0,"Aangrensend beteken langs of teenaan.");
+
+  add("ml6","K3","route","Skryf n roete: loop 2 blokke noord en 1 blok oos. Waarheen beweeg jy laaste?",["Oos","Wes","Suid","Noord"],0,"Die laaste stap is oos.");
+  add("ml6","K3","route","As jy noord kyk en links draai, watter rigting kyk jy?",["Wes","Oos","Suid","Noord"],0,"Links van noord is wes.");
+  add("ml6","K3","route","As jy suid kyk en regs draai, watter rigting kyk jy?",["Wes","Oos","Noord","Suid"],0,"Regs van suid is wes.");
+  add("ml6","K3","route","Wat is die beste aanwysing?",["Loop noord tot by die kerk, draai oos by die winkel","Gaan daar","Loop bietjie","Kyk rond"],0,"Goeie aanwysings gebruik rigting en herkenningspunte.");
+  add("ml6","K3","route","Waarom is volgorde belangrik in roete-aanwysings?",["Stappe moet in die regte volgorde gevolg word","Dit verander die temperatuur","Dit verhoog die massa","Dit maak die kaart groter"],0,"Roetes werk net as stappe in volgorde is.");
+  add("ml6","K3","route","As jy vanaf die winkel wes teruggaan na die huis, watter rigting was die winkel vanaf die huis?",["Oos","Wes","Noord","Suid"],0,"Terug wes beteken heen was oos.");
+
+  add("ml6","K4","scale","n Plan gebruik 1 cm = 3 m. Wat is 7 cm in werklikheid?",["21 m","10 m","7 m","3 m"],0,"7 x 3 m = 21 m.");
+  add("ml6","K4","scale","Op n kaart is 5 cm gelyk aan 20 km. Wat is 1 cm?",["4 km","5 km","20 km","25 km"],0,"20 km gedeel deur 5 = 4 km.");
+  add("ml6","K4","scale","As 3 cm op n kaart 12 km is, hoeveel km is 8 cm?",["32 km","24 km","36 km","20 km"],0,"1 cm = 4 km, dus 8 cm = 32 km.");
+  add("ml6","K4","scale","n Huisplan wys n muur van 4 cm. Skaal: 1 cm = 1.5 m. Werklike lengte?",["6 m","5.5 m","4 m","1.5 m"],0,"4 x 1.5 m = 6 m.");
+  add("ml6","K4","scale","Waarom moet kaartafstand en werklike afstand se eenhede gekontroleer word?",["Om korrekte omskakeling te doen","Om kans te vergroot","Om temperatuur te verander","Om die rekening te betaal"],0,"Eenhede is noodsaaklik vir skaal.");
+  add("ml6","K4","img","Kyk na die staafskaal. As twee segmente gebruik word, watter afstand is dit?",["2 km","1 km","4 km","8 km"],0,"Elke segment is 1 km; twee segmente is 2 km.","scale");
+
+  // Hoofstuk 7: Waarskynlikheid
+  add("ml7","W1","prob","Wat is die waarskynlikheid om n onewe getal met n dobbelsteen te rol?",["3 uit 6","2 uit 6","1 uit 6","6 uit 6"],0,"Onewe getalle is 1, 3 en 5.");
+  add("ml7","W1","prob","Wat is die kans om n getal groter as 4 op n dobbelsteen te kry?",["2 uit 6","4 uit 6","1 uit 6","6 uit 6"],0,"5 en 6 is groter as 4.");
+  add("ml7","W1","prob","As n sak 3 rooi en 7 blou balle het, wat is die kans vir rooi?",["3 uit 10","7 uit 10","3 uit 7","10 uit 3"],0,"Daar is 3 rooi uit 10 balle.");
+  add("ml7","W1","prob","Watter gebeurtenis is onmoontlik met n gewone dobbelsteen?",["Rol n 9","Rol n 1","Rol n 6","Rol n ewe getal"],0,"n Gewone dobbelsteen het net 1 tot 6.");
+  add("ml7","W1","prob","Watter gebeurtenis is seker as jy n gewone dobbelsteen rol?",["Jy kry n getal van 1 tot 6","Jy kry n 8","Jy kry altyd 6","Jy kry geen getal"],0,"n Gewone dobbelsteen wys altyd een van 1 tot 6.");
+  add("ml7","W1","prob","As n spinner 4 gelyke dele het, wat is die kans vir een spesifieke deel?",["1 uit 4","1 uit 2","4 uit 1","3 uit 4"],0,"Een van vier gelyke dele gee 1 uit 4.");
+
+  add("ml7","W2","prob","n Sak het 9 groen en 1 geel bal. Watter kleur is waarskynliker?",["Groen","Geel","Albei ewe waarskynlik","Geen kleur"],0,"Daar is meer groen balle.");
+  add("ml7","W2","prob","As dit 18 uit 20 dae gereen het in n periode, wat is redelike voorspelling vir soortgelyke weer?",["Reen is waarskynlik","Reen is onmoontlik","Dit sal nooit reen nie","Sneeu is seker"],0,"HoÃ« frekwensie maak reen meer waarskynlik.");
+  add("ml7","W2","prob","n Muntstuk is 10 keer gegooi en kop kom 6 keer voor. Wat was die eksperimentele kans vir kop?",["6 uit 10","4 uit 10","1 uit 2 altyd","10 uit 6"],0,"Eksperimentele kans gebruik resultate.");
+  add("ml7","W2","prob","As n spinner 20 keer draai en rooi 5 keer voorkom, wat is die eksperimentele kans vir rooi?",["5 uit 20","15 uit 20","1 uit 5","20 uit 5"],0,"Gebruik rooi uit totale draaie.");
+  add("ml7","W2","prob","Wat beteken eksperimentele waarskynlikheid?",["Kans gebaseer op werklike resultate","Kans gebaseer net op gevoel","Massa van voorwerp","Afstand op kaart"],0,"Dit kom uit die resultate van n eksperiment.");
+  add("ml7","W2","prob","Wat gebeur gewoonlik as n eksperiment baie keer herhaal word?",["Resultate word meer betroubaar","Alle kans verdwyn","Eenhede verander","Die kaart word groter"],0,"Meer herhalings gee meer betroubare frekwensies.");
+
+  add("ml7","W3","prob","Hoeveel uitkomste is daar as jy n muntstuk en n spinner met 3 dele gebruik?",["6","5","3","2"],0,"2 munt-uitkomste x 3 spinner-uitkomste = 6.");
+  add("ml7","W3","prob","Hoeveel uitkomste is daar vir twee muntstukke?",["4","2","6","8"],0,"HH, HT, TH, TT is vier uitkomste.");
+  add("ml7","W3","prob","Watter metode is goed vir twee-stap uitkomste?",["Boomdiagram","Termometer","Bankstaat","Meetbeker"],0,"Boomdiagramme wys kombinasies stelselmatig.");
+  add("ml7","W3","prob","As jy n hemp in 2 kleure en broek in 3 kleure kan kies, hoeveel kombinasies is daar?",["6","5","3","2"],0,"2 x 3 = 6 kombinasies.");
+  add("ml7","W3","prob","As n ete 3 hoofgeregte en 2 drankies het, hoeveel kombinasies is moontlik?",["6","5","3","2"],0,"3 x 2 = 6 kombinasies.");
+  add("ml7","W3","prob","Wat is die beste eerste stap om kans te bereken?",["Lys alle moontlike uitkomste","Raai sommer","Ignoreer totals","Meet temperatuur"],0,"Alle uitkomste is nodig vir kans.");
+}
+// Run Patch 5 expansion once
+mathlitAddPatch5Questions();
+// === END MATHLIT PATCH 5 ===
 function mathlitCountByUnit(unit){
   return mathlitQuestions.filter(function(q){ return q.unit === unit; }).length;
 }
@@ -7703,6 +7828,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
