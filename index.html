@@ -3849,7 +3849,7 @@ function topbar(){
   </div></div></div>`;
 }
 // === AGRI PATCH 2B-A: topbar recognises Landbou ===
-// === MATHLIT PATCH 1: topbar recognises Wiskundige Geletterdheid ===
+// === MATHLIT : topbar recognises Wiskundige Geletterdheid ===
 function dashboardHTML(){
   return `${topbar()}<div class="wrap grid">
     <div class="card">
@@ -5850,7 +5850,7 @@ function excelTaskPaneV1(){
   return html;
 }
 
-// === AGRI PATCH 1: LANDBOU WETENSKAPPE SHELL / FRAMEWORK ===
+// === AGRI : LANDBOU WETENSKAPPE SHELL / FRAMEWORK ===
 const agriModules = [
   {id:"m3", title:"Module 3: Volhoubare natuurlike hulpbronbenutting", badge:"Natuurlike hulpbronne", units:[
     "Eenheid 1: Landbouhulpbronne",
@@ -6205,7 +6205,7 @@ function agriStudyHTML(){
   active.notes.forEach(function(n){ html += '<div class="note">' + esc(n) + '</div>'; });
   html += '</div></div>';
 
-  html += '<div class="card"><div class="row space"><div><h2>Starter Oefenvrae</h2><p class="muted">Net 1–2 vrae per module vir PATCH 1. Groot vraagbank kom in PATCH 2.</p></div><div class="row"><button class="btn" onclick="state.agriShowAnswers=true;save();render()">Merk Antwoorde</button><button class="btn secondary" onclick="agriReset()">Begin weer</button></div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>Oefenvrae</h2><p class="muted">Net 1–2 vrae per module vir . Groot vraagbank kom in PATCH 2.</p></div><div class="row"><button class="btn" onclick="state.agriShowAnswers=true;save();render()">Merk Antwoorde</button><button class="btn secondary" onclick="agriReset()">Begin weer</button></div></div>';
   html += '<div class="note" style="text-align:center;margin-top:12px"><b>Score:</b> ' + (state.agriShowAnswers ? (score + "/" + qs.length + " (" + pct + "%)") : "?") + '</div>';
   html += '<div class="grid" style="margin-top:14px">';
 
@@ -6757,10 +6757,10 @@ function agriPracticalTasksHTML(){
 }
 // === END AGRI PATCH 4 ===
 // === AGRI PATCH 2B-B SAFE: random agriculture exam with timer ===
-// === END AGRI PATCH 1 ===
+// === END AGRI  ===
 
 
-// === MATHLIT PATCH 1: WISKUNDIGE GELETTERDHEID SHELL / FRAMEWORK ===
+// === MATHLIT : WISKUNDIGE GELETTERDHEID SHELL / FRAMEWORK ===
 const mathlitModules = [
   {id:"ml4", title:"Hoofstuk 4: Finansies", badge:"Finansiele dokumente en tariefstelsels", units:[
     "Afdeling 1: Leer van huishoudelike finansiele dokumente",
@@ -7679,6 +7679,19 @@ function mathlitPracticalTasksHTML(){
 }
 // === END MATHLIT PATCH 4 ===
 // === MATHLIT PATCH 3: timer, review, weak areas and history ===
+
+// === MATHLIT PATCH 6: FINAL POLISH + HALF-YEAR EXAM PREP ===
+function mathlitHalfYearPrepHTML(){
+  let html = '<div class="card"><div class="row space"><div><h2>Halfjaar-eksamen Voorbereiding</h2><p class="muted">Gebruik hierdie checklist voor die MathLit toets.</p></div><span class="pill active">Exam Prep</span></div>';
+  html += '<div class="grid subjects" style="margin-top:14px">';
+  html += '<div class="note"><b>Finansies</b><br><span class="muted">Lees rekeninge/state, bereken totale, afslag, verhogings en tariewe.</span></div>';
+  html += '<div class="note"><b>Meting</b><br><span class="muted">Oefen km-m-cm, kg-g, L-ml, temperatuurverskil, area en omtrek.</span></div>';
+  html += '<div class="note"><b>Kaarte en planne</b><br><span class="muted">Lees roosters, rigtings, roetes, skaale en werklike afstande.</span></div>';
+  html += '<div class="note"><b>Waarskynlikheid</b><br><span class="muted">Lys uitkomste, bereken kans, vergelyk voorspelling en eksperimente.</span></div>';
+  html += '</div></div>';
+  return html;
+}
+// === END MATHLIT PATCH 6 ===
 function mathlitStudyHTML(){
   state.selectedSubject = "mathlit";
   state.mathlitModule = state.mathlitModule || "ml4";
@@ -7691,17 +7704,18 @@ function mathlitStudyHTML(){
   let html = topbar();
   html += '<div class="wrap grid">';
 
-  html += '<div class="card"><div class="row space"><div><h2>Wiskundige Geletterdheid</h2><p class="muted">Graad 10 - Kwartaal 2 - Kwartaal 2 studie</p></div><div class="row"><button class="btn secondary" onclick="setState({screen:\'dashboard\'})">Subjects</button><button class="btn" onclick="startMathlitExam()">Start MathLit Test</button></div></div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>Wiskundige Geletterdheid</h2><p class="muted">Graad 10 - Kwartaal 2</p></div><div class="row"><button class="btn secondary" onclick="setState({screen:\'dashboard\'})">Subjects</button><button class="btn" onclick="startMathlitExam()">Start MathLit Test</button></div></div></div>';
 
   html += '<div class="card"><div class="row space"><div><h2>Study Hub</h2><p class="muted">Kwartaal 2 dek Finansies, Meting, Kaarte/Planne en Waarskynlikheid. Hierdie hub dek Finansies, Meting, Kaarte en Waarskynlikheid met n groot vraagbank en prentvrae.</p></div><span class="pill active">' + mathlitQuestions.length + ' vrae</span></div>';
   html += '<div class="grid subjects" style="margin-top:14px">';
   mathlitModules.forEach(function(m){
     html += '<button class="subjectBtn" onclick="state.mathlitModule=\'' + m.id + '\';state.mathlitShowAnswers=false;save();render()"><div style="font-size:28px;margin-bottom:8px">ML</div><h3>' + esc(m.title) + '</h3><p class="muted">' + esc(m.badge) + '</p><span class="pill active">' + mathlitModuleQuestionCount(m.id) + ' vrae</span></button>';
   });
-  html += '<button class="subjectBtn" onclick="startMathlitExam()"><div style="font-size:28px;margin-bottom:8px">TEST</div><h3>Quick Test</h3><p class="muted">25-vraag random toets uit die vraagbank.</p><span class="pill active">Test</span></button>';
+  html += '<button class="subjectBtn" onclick="startMathlitExam()"><div style="font-size:28px;margin-bottom:8px">TEST</div><h3>Full Exam</h3><p class="muted">50-vraag random eksamen uit die volledige vraagbank.</p><span class="pill active">Test</span></button>';
   html += '</div></div>';
 
   html += mathlitCoverageHTML();
+  html += mathlitHalfYearPrepHTML();
   html += mathlitPracticalTasksHTML();
   html += mathlitWeakAreasHTML();
   html += mathlitResultHistoryHTML();
@@ -7721,7 +7735,7 @@ function mathlitStudyHTML(){
   active.notes.forEach(function(n){ html += '<div class="note">' + esc(n) + '</div>'; });
   html += '</div></div>';
 
-  html += '<div class="card"><div class="row space"><div><h2>Starter Oefenvrae</h2><p class="muted">Volledige vraagbank vir Kwartaal 2, insluitend prentvrae.</p></div><div class="row"><button class="btn" onclick="state.mathlitShowAnswers=true;save();render()">Merk Antwoorde</button><button class="btn secondary" onclick="mathlitReset()">Begin weer</button></div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>Oefenvrae</h2><p class="muted">Volledige vraagbank vir Kwartaal 2, insluitend prentvrae.</p></div><div class="row"><button class="btn" onclick="state.mathlitShowAnswers=true;save();render()">Merk Antwoorde</button><button class="btn secondary" onclick="mathlitReset()">Begin weer</button></div></div>';
   html += '<div class="note" style="text-align:center;margin-top:12px"><b>Score:</b> ' + (state.mathlitShowAnswers ? (score + '/' + qs.length + ' (' + pct + '%)') : '?') + '</div>';
   html += '<div class="grid" style="margin-top:14px">';
 
@@ -7807,7 +7821,7 @@ function mathlitExamHTML(){
   html += '</div></div></div>';
   return html;
 }
-// === END MATHLIT PATCH 1 ===
+// === END MATHLIT  ===
 
 function render(){
   const app=document.getElementById("app");
@@ -7828,6 +7842,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
