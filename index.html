@@ -3901,14 +3901,93 @@ function allSubjectsProgressHTML(){
 
   let html = '<div class="card"><div class="row space"><div><h2>All Subjects Progress</h2><p class="muted">Vinnige oorsig van Enrico se laaste resultate, weak areas en geskiedenis.</p></div><span class="pill active">Dashboard</span></div></div>';
   html += '<div class="grid two">';
-  html += subjectProgressCard("K53", "Learner licence practice", k53History, state.weakAreas || state.k53WeakAreas || [], "setState({screen:\\'study\\'})", "startExam()");
-  html += subjectProgressCard("RTT / CAT", "Kwartaal 2", catHistory, state.rttLastWeak || state.catWeakAreas || [], "selectSubject(\\'cat\\')", "startRttExam()");
-  html += subjectProgressCard("Landbou Wetenskappe", "Graad 10 Kwartaal 2", agriHistory, state.agriLastWeak || [], "selectSubject(\\'agri\\')", "startAgriExam()");
-  html += subjectProgressCard("Wiskundige Geletterdheid", "Graad 10 Kwartaal 2", mathlitHistory, state.mathlitLastWeak || [], "selectSubject(\\'mathlit\\')", "startMathlitExam()");
+  html += subjectProgressCard("K53", "Learner licence practice", k53History, state.weakAreas || state.k53WeakAreas || [], "setState({screen:'study'})", "startExam()");
+  html += subjectProgressCard("RTT / CAT", "Kwartaal 2", catHistory, state.rttLastWeak || state.catWeakAreas || [], "selectSubject('cat')", "startRttExam()");
+  html += subjectProgressCard("Landbou Wetenskappe", "Graad 10 Kwartaal 2", agriHistory, state.agriLastWeak || [], "selectSubject('agri')", "startAgriExam()");
+  html += subjectProgressCard("Wiskundige Geletterdheid", "Graad 10 Kwartaal 2", mathlitHistory, state.mathlitLastWeak || [], "selectSubject('mathlit')", "startMathlitExam()");
   html += '</div>';
   return html;
 }
 // === END DASHBOARD PATCH 1 ===
+
+// === DASHBOARD PATCH 1C: BEST RESULTS + COMPACT CARDS ===
+function resultPercent(result){
+  if(!result) return null;
+  if(typeof result.percent === "number") return result.percent;
+  if(typeof result.pct === "number") return result.pct;
+  if(typeof result.score === "number" && typeof result.total === "number" && result.total > 0){
+    return Math.round((result.score / result.total) * 100);
+  }
+  return null;
+}
+
+function subjectBestResult(history){
+  if(!Array.isArray(history) || !history.length) return null;
+  return history.slice().sort(function(a,b){
+    const pa = resultPercent(a);
+    const pb = resultPercent(b);
+    return (pb === null ? -1 : pb) - (pa === null ? -1 : pa);
+  })[0] || null;
+}
+
+function keepBestResultsOnly(){
+  function trimBest(key){
+    if(!Array.isArray(state[key])) return;
+    state[key] = state[key].slice().sort(function(a,b){
+      const pa = resultPercent(a);
+      const pb = resultPercent(b);
+      return (pb === null ? -1 : pb) - (pa === null ? -1 : pa);
+    }).slice(0,10);
+  }
+
+  ["k53History","examHistory","history","rttHistory","catHistory","rttExamHistory","agriHistory","mathlitHistory"].forEach(trimBest);
+}
+
+function resultText(result){
+  const pct = resultPercent(result);
+  if(pct === null) return "Nog geen";
+  return pct + "%";
+}
+
+function subjectProgressCard(title, subtitle, history, weak, openAction, examAction){
+  const best = subjectBestResult(history);
+  const pct = resultPercent(best);
+  const pctText = resultText(best);
+  const weakCount = Array.isArray(weak) ? weak.length : 0;
+  const histCount = Array.isArray(history) ? history.length : 0;
+  const status = best ? (pct >= 70 ? "Best" : (pct >= 50 ? "OK" : "Practice")) : "Start";
+
+  let html = '<div class="card" style="padding:14px">';
+  html += '<div class="row space"><div><h3 style="margin:0;font-size:16px">' + esc(title) + '</h3><p class="muted" style="margin:4px 0 0">' + esc(subtitle) + '</p></div><span class="pill active">' + esc(status) + '</span></div>';
+  html += '<div class="row space" style="margin-top:10px;gap:8px;align-items:center">';
+  html += '<div><div class="muted" style="font-size:12px">Best result</div><div style="font-size:24px;font-weight:900">' + esc(pctText) + '</div></div>';
+  html += '<div class="muted" style="font-size:12px;text-align:right">Weak: <b>' + weakCount + '</b><br>Saved best: <b>' + histCount + '</b></div>';
+  html += '</div>';
+  html += '<div class="row" style="margin-top:12px;gap:8px"><button class="btn secondary" style="padding:9px 12px" onclick="' + openAction + '">Open</button><button class="btn" style="padding:9px 12px" onclick="' + examAction + '">Exam</button></div>';
+  html += '</div>';
+  return html;
+}
+
+function allSubjectsProgressHTML(){
+  keepBestResultsOnly();
+
+  const k53History = firstArray(state.k53History, state.examHistory, state.history);
+  const catHistory = firstArray(state.rttHistory, state.catHistory, state.rttExamHistory);
+  const agriHistory = firstArray(state.agriHistory);
+  const mathlitHistory = firstArray(state.mathlitHistory);
+
+  let html = '<div class="card" style="padding:14px"><div class="row space"><div><h2 style="margin:0">All Subjects Progress</h2><p class="muted" style="margin:4px 0 0">Wys beste resultate. Swakker/ouer resultate word uit die lys geskuif sodat die beste bly.</p></div><span class="pill active">Best only</span></div></div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">';
+  html += subjectProgressCard("K53", "Learner licence", k53History, state.weakAreas || state.k53WeakAreas || [], "setState({screen:'study'})", "startExam()");
+  html += subjectProgressCard("RTT / CAT", "Kwartaal 2", catHistory, state.rttLastWeak || state.catWeakAreas || [], "selectSubject('cat')", "startRttExam()");
+  html += subjectProgressCard("Landbou", "Graad 10 Kwartaal 2", agriHistory, state.agriLastWeak || [], "selectSubject('agri')", "startAgriExam()");
+  html += subjectProgressCard("MathLit", "Graad 10 Kwartaal 2", mathlitHistory, state.mathlitLastWeak || [], "selectSubject('mathlit')", "startMathlitExam()");
+  html += '</div>';
+  save();
+  return html;
+}
+// === END DASHBOARD PATCH 1C ===
+
 function dashboardHTML(){
   return `${topbar()}<div class="wrap grid">${allSubjectsProgressHTML()}
     <div class="card">
@@ -7901,6 +7980,8 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
+
 
 
 
