@@ -134,7 +134,7 @@ const subjects = [
   {id:"k53", title:"K53 Learner’s Licence", subtitle:"Road signs, rules, markings, and controls", status:"Active", icon:"🚗"},
   {id:"cat", title:"CAT / Computers", subtitle:"Graad 10 RTT - Kwartaal 2 eksamenvoorbereiding", status:"Active", icon:"💻"},
   {id:"agri", title:"Landbou Wetenskappe", subtitle:"Graad 10 Landbouwetenskappe - Kwartaal 2", status:"Active", icon:"🌱"},
-  {id:"mathlit", title:"Wiskundige Geletterdheid", subtitle:"Graad 10 - Kwartaal 2 eksamenvoorbereiding", status:"Active", icon:"123"}
+  {id:"mathlit", title:"Wiskundige Geletterdheid", subtitle:"Graad 10 - Kwartaal 2 eksamenvoorbereiding", status:"Active", icon:"ML"}
 ];
 
 const modules = [
@@ -3839,7 +3839,7 @@ function topbar(){
   }
 
   return `<div class="topbar"><div class="wrap"><div class="card row space">
-    <div class="row"><div style="font-size:30px">ðŸŽ“</div><div><h1>Student Study App</h1><div class="muted">Logged in as ${esc(state.student)} ${subjectText}</div></div></div>
+    <div class="row"><div style="font-size:22px;font-weight:900;background:#0f172a;color:#fff;border-radius:14px;padding:8px 10px">ED</div><div><h1>Student Study App</h1><div class="muted">Logged in as ${esc(state.student)} ${subjectText}</div></div></div>
     <div class="row">
       <button class="btn secondary" onclick="setState({screen:'dashboard'})">Subjects</button>
       <button class="btn secondary" onclick="${studyAction}">Study</button>
@@ -3991,7 +3991,8 @@ function allSubjectsProgressHTML(){
 function dashboardHTML(){
   return `${topbar()}<div class="wrap grid">${allSubjectsProgressHTML()}
     <div class="card">
-      <div class="row" style="margin-bottom:14px"><div style="font-size:28px">📱</div><div><h2>Choose a subject</h2><p class="muted">K53 is active now. The other subjects will be added here.</p><p class="muted"><b>Question bank:</b> 264 K53 questions, including picture-style questions.</p></div></div>
+      <div class="row" style="margin-bottom:14px"><div style="font-size:28px">📱</div><div><h2>Choose a subject</h2><p class="muted">Kies n vak om te leer, vrae te oefen of eksamen te skryf.</p><p class="muted"><b>Subjects:</b> K53, RTT/CAT, Landbou Wetenskappe en Wiskundige Geletterdheid.</p></div></div>
+      <div class="note" style="margin:12px 0"><b>Tip:</b> Gebruik All Subjects Progress bo om beste resultate en weak areas vinnig te sien.</div><!-- DASHBOARD PATCH 2 parent note -->
       <div class="grid subjects">
         ${subjects.map(s=>`<button class="subjectBtn ${s.id===state.selectedSubject?'active':''}" onclick="selectSubject('${s.id}')">
           <div style="font-size:34px;margin-bottom:10px">${s.icon}</div><h3>${esc(s.title)}</h3><p class="muted">${esc(s.subtitle)}</p><span class="pill ${s.status==='Active'?'active':''}">${esc(s.status)}</span>
@@ -8047,4 +8048,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 
 
 
+
+
+<!-- DASHBOARD PATCH 2: clean home text and safe header icon -->
 
