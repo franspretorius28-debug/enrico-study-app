@@ -7074,19 +7074,221 @@ function mathlitShuffle(arr){
   return copy;
 }
 
+var mathlitExamTimerHandle = null;
+
 function startMathlitExam(){
+  state.selectedSubject = "mathlit";
+  state.screen = "mathlit_exam";
   state.mathlitExamFinished = false;
   state.mathlitExamAnswers = {};
-  state.mathlitExamSet = mathlitShuffle(mathlitQuestions).slice(0, 25);
-  state.screen = "mathlit_exam";
+  state.mathlitExamSet = mathlitShuffle(mathlitQuestions).slice(0, Math.min(50, mathlitQuestions.length));
+  state.mathlitExamSecondsLeft = 60 * 60;
   save();
+  startMathlitExamTimer();
   render();
 }
 
 function mathlitExamQuestions(){
   if(state.mathlitExamSet && state.mathlitExamSet.length) return state.mathlitExamSet;
-  return mathlitQuestions.slice(0, 25);
+  state.mathlitExamSet = mathlitShuffle(mathlitQuestions).slice(0, Math.min(50, mathlitQuestions.length));
+  return state.mathlitExamSet;
 }
+
+function mathlitExamTimeText(){
+  const s = typeof state.mathlitExamSecondsLeft === "number" ? state.mathlitExamSecondsLeft : 60 * 60;
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return String(m).padStart(2,"0") + ":" + String(sec).padStart(2,"0");
+}
+
+function startMathlitExamTimer(){
+  if(mathlitExamTimerHandle) return;
+  mathlitExamTimerHandle = setInterval(function(){
+    if(state.screen !== "mathlit_exam" || state.mathlitExamFinished){
+      clearInterval(mathlitExamTimerHandle);
+      mathlitExamTimerHandle = null;
+      return;
+    }
+    if(typeof state.mathlitExamSecondsLeft !== "number") state.mathlitExamSecondsLeft = 60 * 60;
+    state.mathlitExamSecondsLeft = Math.max(0, state.mathlitExamSecondsLeft - 1);
+    if(state.mathlitExamSecondsLeft <= 0){
+      finishMathlitExam();
+      return;
+    }
+    save();
+    render();
+  }, 1000);
+}
+
+function mathlitExamChoose(i, oi){
+  if(!state.mathlitExamAnswers) state.mathlitExamAnswers = {};
+  state.mathlitExamAnswers[i] = oi;
+  save();
+  render();
+}
+
+function mathlitExamScore(){
+  const qs = mathlitExamQuestions();
+  let score = 0;
+  qs.forEach(function(q,i){
+    if((state.mathlitExamAnswers || {})[i] === q.a) score++;
+  });
+  return score;
+}
+
+function mathlitUnitTitle(unit){
+  const t = (typeof mathlitQuestionTopics !== "undefined") ? mathlitQuestionTopics.find(function(x){ return x.unit === unit; }) : null;
+  return t ? t.unitTitle : (unit || "Onbekend");
+}
+
+function mathlitExamReviewData(){
+  const qs = mathlitExamQuestions();
+  const wrong = [];
+  const stats = {};
+
+  qs.forEach(function(q,i){
+    const unit = q.unit || q.m || "unknown";
+    const chosen = (state.mathlitExamAnswers || {})[i];
+    if(!stats[unit]) stats[unit] = {unit:unit,total:0,wrong:0};
+    stats[unit].total++;
+
+    if(chosen !== q.a){
+      stats[unit].wrong++;
+      wrong.push({
+        number:i+1,
+        unit:unit,
+        unitTitle:mathlitUnitTitle(unit),
+        question:q.q,
+        chosen:typeof chosen === "number" ? q.o[chosen] : "Nie beantwoord nie",
+        correct:q.o[q.a],
+        explanation:q.w
+      });
+    }
+  });
+
+  const weak = Object.keys(stats).map(function(k){
+    const x = stats[k];
+    return {
+      unit:x.unit,
+      title:mathlitUnitTitle(x.unit),
+      wrong:x.wrong,
+      total:x.total,
+      percent:x.total ? Math.round(((x.total - x.wrong) / x.total) * 100) : 0
+    };
+  }).filter(function(x){ return x.wrong > 0; }).sort(function(a,b){ return b.wrong - a.wrong; });
+
+  return {wrong:wrong, weak:weak};
+}
+
+function mathlitSaveExamHistory(){
+  const qs = mathlitExamQuestions();
+  const score = mathlitExamScore();
+  const pct = qs.length ? Math.round(score / qs.length * 100) : 0;
+  const review = mathlitExamReviewData();
+
+  if(!state.mathlitHistory) state.mathlitHistory = [];
+  state.mathlitHistory.unshift({
+    date:new Date().toLocaleString(),
+    score:score,
+    total:qs.length,
+    percent:pct,
+    passed:pct >= 50,
+    weak:review.weak.slice(0,5),
+    wrongCount:qs.length - score
+  });
+  state.mathlitHistory = state.mathlitHistory.slice(0,10);
+
+  state.mathlitLastWeak = review.weak;
+  state.mathlitLastWrong = review.wrong.slice(0,20);
+}
+
+function finishMathlitExam(){
+  state.mathlitExamFinished = true;
+  if(mathlitExamTimerHandle){
+    clearInterval(mathlitExamTimerHandle);
+    mathlitExamTimerHandle = null;
+  }
+  mathlitSaveExamHistory();
+  save();
+  render();
+}
+
+function resetMathlitExam(){
+  if(mathlitExamTimerHandle){
+    clearInterval(mathlitExamTimerHandle);
+    mathlitExamTimerHandle = null;
+  }
+  state.mathlitExamFinished = false;
+  state.mathlitExamAnswers = {};
+  state.mathlitExamSet = mathlitShuffle(mathlitQuestions).slice(0, Math.min(50, mathlitQuestions.length));
+  state.mathlitExamSecondsLeft = 60 * 60;
+  save();
+  startMathlitExamTimer();
+  render();
+}
+
+function mathlitWeakAreasHTML(){
+  const weak = state.mathlitLastWeak || [];
+  let html = '<div class="card"><div class="row space"><div><h2>Weak Areas</h2><p class="muted">Gebaseer op die laaste Wiskundige Geletterdheid toets.</p></div><span class="pill active">' + weak.length + ' areas</span></div>';
+
+  if(!weak.length){
+    html += '<div class="note" style="margin-top:14px">Nog geen weak areas nie. Skryf eers n MathLit toets en click Finish Test.</div></div>';
+    return html;
+  }
+
+  html += '<div class="grid subjects" style="margin-top:14px">';
+  weak.forEach(function(w){
+    html += '<div class="note"><b>' + esc(w.title) + '</b><br><span class="muted">Verkeerd: ' + w.wrong + '/' + w.total + ' | Punt: ' + w.percent + '%</span></div>';
+  });
+  html += '</div>';
+
+  if(state.mathlitLastWrong && state.mathlitLastWrong.length){
+    html += '<details style="margin-top:14px"><summary><b>Laaste verkeerde vrae</b></summary><div class="grid" style="margin-top:12px">';
+    state.mathlitLastWrong.forEach(function(w){
+      html += '<div class="questionBox resultBad"><b>' + w.number + '. ' + esc(w.question) + '</b>';
+      html += '<div><b>Jou antwoord:</b> ' + esc(w.chosen) + '</div>';
+      html += '<div><b>Regte antwoord:</b> ' + esc(w.correct) + '</div>';
+      html += '<div class="muted">' + esc(w.explanation) + '</div></div>';
+    });
+    html += '</div></details>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
+function mathlitResultHistoryHTML(){
+  const hist = state.mathlitHistory || [];
+  let html = '<div class="card"><div class="row space"><div><h2>Result History</h2><p class="muted">Laaste 10 MathLit toetse.</p></div><span class="pill active">' + hist.length + ' results</span></div>';
+
+  if(!hist.length){
+    html += '<div class="note" style="margin-top:14px">Nog geen result history nie. Skryf eers n MathLit toets.</div></div>';
+    return html;
+  }
+
+  html += '<div class="grid" style="margin-top:14px">';
+  hist.forEach(function(r,idx){
+    html += '<div class="questionBox ' + (r.passed ? 'resultGood' : 'resultBad') + '">';
+    html += '<div class="row space"><b>#' + (idx+1) + ' - ' + esc(r.date) + '</b><span class="pill">' + (r.passed ? "PASS" : "TRY AGAIN") + '</span></div>';
+    html += '<h3>' + r.score + '/' + r.total + ' (' + r.percent + '%)</h3>';
+    html += '<p class="muted">Wrong: ' + r.wrongCount + '</p>';
+    if(r.weak && r.weak.length){
+      html += '<p class="muted"><b>Weak:</b> ' + esc(r.weak.map(function(w){ return w.title + " (" + w.wrong + ")"; }).join(", ")) + '</p>';
+    }
+    html += '</div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+function mathlitClearHistory(){
+  state.mathlitHistory = [];
+  state.mathlitLastWeak = [];
+  state.mathlitLastWrong = [];
+  save();
+  render();
+}
+// === MATHLIT PATCH 3: timer, review, weak areas and history ===
 function mathlitStudyHTML(){
   state.selectedSubject = "mathlit";
   state.mathlitModule = state.mathlitModule || "ml4";
@@ -7109,6 +7311,9 @@ function mathlitStudyHTML(){
   html += '<button class="subjectBtn" onclick="startMathlitExam()"><div style="font-size:28px;margin-bottom:8px">TEST</div><h3>Quick Test</h3><p class="muted">25-vraag random toets uit die vraagbank.</p><span class="pill active">Test</span></button>';
   html += '</div></div>';
 
+  html += mathlitCoverageHTML();
+  html += mathlitWeakAreasHTML();
+  html += mathlitResultHistoryHTML();
   html += '<div class="grid two">';
   html += '<div class="grid"><div class="card"><h2>Modules</h2><div style="height:12px"></div>';
   mathlitModules.forEach(function(m){
@@ -7152,37 +7357,62 @@ function mathlitStudyHTML(){
 
 function mathlitExamHTML(){
   state.selectedSubject = "mathlit";
+  if(!state.mathlitExamSet || !state.mathlitExamSet.length){
+    state.mathlitExamSet = mathlitShuffle(mathlitQuestions).slice(0, Math.min(50, mathlitQuestions.length));
+  }
+  if(typeof state.mathlitExamSecondsLeft !== "number") state.mathlitExamSecondsLeft = 60 * 60;
+  if(!state.mathlitExamFinished) startMathlitExamTimer();
+
   const qs = mathlitExamQuestions();
-  let score = 0;
-  qs.forEach(function(q,i){
-    if((state.mathlitExamAnswers || {})[i] === q.a) score++;
-  });
+  const score = mathlitExamScore();
+  const answered = Object.keys(state.mathlitExamAnswers || {}).length;
   const pct = qs.length ? Math.round(score / qs.length * 100) : 0;
 
   let html = topbar();
   html += '<div class="wrap grid">';
-  html += '<div class="card"><div class="row space"><div><h2>Wiskundige Geletterdheid Quick Test</h2><p class="muted">Random 25-vraag toets uit die Kwartaal 2 vraagbank. Timer kom later.</p></div><div class="row"><button class="btn secondary" onclick="state.screen=\'mathlit\';save();render()">Back to MathLit</button><button class="btn" onclick="state.mathlitExamFinished=true;save();render()">Finish Test</button></div></div></div>';
+
+  html += '<div class="card"><div class="row space"><div><h2>Wiskundige Geletterdheid Eksamen</h2><p class="muted">Random Kwartaal 2 vrae met countdown timer.</p></div><div class="row"><span class="pill active">Timer: ' + mathlitExamTimeText() + '</span><button class="btn secondary" onclick="resetMathlitExam()">Reset</button><button class="btn" onclick="finishMathlitExam()">Finish Test</button></div></div></div>';
 
   if(state.mathlitExamFinished){
-    html += '<div class="card"><h2>Resultaat: ' + score + '/' + qs.length + ' (' + pct + '%)</h2><p class="muted">Hierdie is n random toets uit die volledige vraagbank.</p></div>';
+    html += '<div class="card"><h2>Resultaat: ' + score + '/' + qs.length + ' (' + pct + '%)</h2>';
+    html += '<div class="grid subjects" style="margin-top:14px">';
+    html += '<div class="smallStat"><b>' + score + '</b><span>Korrek</span></div>';
+    html += '<div class="smallStat"><b>' + (qs.length - score) + '</b><span>Verkeerd</span></div>';
+    html += '<div class="smallStat"><b>' + (pct >= 50 ? "PASS" : "TRY AGAIN") + '</b><span>Status</span></div>';
+    html += '</div></div>';
+    html += mathlitWeakAreasHTML();
+    html += mathlitResultHistoryHTML();
+  } else {
+    html += '<div class="examHeader"><b>Answered: ' + answered + '/' + qs.length + '</b><b>Questions: ' + qs.length + '</b><div class="timer">' + mathlitExamTimeText() + '</div></div>';
   }
 
-  html += '<div class="card"><h2>Starter Test Questions</h2><div class="grid" style="margin-top:14px">';
+  html += '<div class="card"><h2>' + (state.mathlitExamFinished ? "Exam Review" : "Exam Questions") + '</h2><div class="grid" style="margin-top:14px">';
+
   qs.forEach(function(q,i){
     const chosen = (state.mathlitExamAnswers || {})[i];
     const reveal = !!state.mathlitExamFinished;
-    html += '<div class="questionBox">' + mathlitVisualHTML(q) + '<b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
+    const correct = chosen === q.a;
+    let boxClass = "questionBox";
+    if(reveal) boxClass += correct ? " resultGood" : " resultBad";
+
+    html += '<div class="' + boxClass + '">' + mathlitVisualHTML(q) + '<div class="row space"><span class="pill active">' + esc(q.unit || q.m) + '</span><span class="pill">' + esc(q.type || "mcq") + '</span></div>';
+    html += '<b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
+
     q.o.forEach(function(o,oi){
       let cls = "optionBtn";
       if(chosen===oi && !reveal) cls += " selected";
       if(reveal && q.a===oi) cls += " correct";
       if(reveal && chosen===oi && q.a!==oi) cls += " wrong";
-      html += '<button class="' + cls + '" onclick="if(!state.mathlitExamAnswers) state.mathlitExamAnswers={}; state.mathlitExamAnswers[' + i + ']=' + oi + '; save(); render();">' + String.fromCharCode(65+oi) + '. ' + esc(o) + '</button>';
+      html += '<button class="' + cls + '" onclick="mathlitExamChoose(' + i + ',' + oi + ')">' + String.fromCharCode(65+oi) + '. ' + esc(o) + '</button>';
     });
+
     html += '</div>';
-    if(reveal) html += '<div class="note" style="margin-top:12px"><b>Verduideliking:</b> ' + esc(q.w) + '</div>';
+    if(reveal){
+      html += '<div class="note" style="margin-top:12px"><b>Verduideliking:</b> ' + esc(q.w) + '</div>';
+    }
     html += '</div>';
   });
+
   html += '</div></div></div>';
   return html;
 }
@@ -7207,6 +7437,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
