@@ -7288,6 +7288,271 @@ function mathlitClearHistory(){
   save();
   render();
 }
+
+// === MATHLIT PATCH 4: PRACTICAL TASKS AND BOOK ACTIVITIES ===
+const mathlitPracticalTasks = [
+  {
+    id:"finance_docs",
+    title:"Book Activity 1: Finansiele dokumente lees",
+    chapter:"Hoofstuk 4 Finansies",
+    scenario:"Lees n huishoudelike rekening of staat en verduidelik die belangrikste inligting.",
+    steps:[
+      "Identifiseer die dokumenttipe.",
+      "Skryf die bedrag, datum en betaaldatum neer.",
+      "Noem waarvoor die bedrag betaal word.",
+      "Verduidelik wat kan gebeur as dit laat betaal word."
+    ],
+    prompts:[
+      "Watter tipe finansiele dokument is dit en watter inligting wys dit?",
+      "Watter bedrae en datums is belangrik?",
+      "Hoe sal jy verduidelik of die rekening reg lyk?"
+    ],
+    keywords:["rekening","bedrag","datum","totaal","betaal","staat","koste","bewys"]
+  },
+  {
+    id:"tariff_compare",
+    title:"Book Activity 2: Tariefstelsels vergelyk",
+    chapter:"Hoofstuk 4 Finansies",
+    scenario:"Vergelyk twee tariewe vir water, elektrisiteit of selfoondata en kies die goedkoper opsie vir n sekere gebruik.",
+    steps:[
+      "Skryf die vaste fooi en eenheidstarief neer.",
+      "Bereken die totale koste vir elke opsie.",
+      "Vergelyk die antwoorde.",
+      "Motiveer watter opsie beter is."
+    ],
+    prompts:[
+      "Watter twee tariefopsies vergelyk jy?",
+      "Wys jou berekening vir elke opsie.",
+      "Watter opsie kies jy en hoekom?"
+    ],
+    keywords:["tarief","vaste fooi","eenheid","gebruik","koste","totaal","goedkoper","vergelyk"]
+  },
+  {
+    id:"measurement_conversion",
+    title:"Book Activity 3: Meting en omskakelings",
+    chapter:"Hoofstuk 5 Meting",
+    scenario:"Werk met lengte, massa, volume en temperatuur in praktiese probleme.",
+    steps:[
+      "Identifiseer die gegewe eenheid.",
+      "Kies die regte omskakeling.",
+      "Wys die berekening.",
+      "Skryf die antwoord met die korrekte eenheid."
+    ],
+    prompts:[
+      "Skryf drie omskakelings neer, byvoorbeeld km na m, kg na g, L na ml.",
+      "Wys een volledige berekening.",
+      "Hoekom is die korrekte eenheid belangrik?"
+    ],
+    keywords:["km","m","cm","kg","g","L","ml","temperatuur","eenheid","omskakel"]
+  },
+  {
+    id:"recipe_volume",
+    title:"Book Activity 4: Volume en resep aanpassing",
+    chapter:"Hoofstuk 5 Meting",
+    scenario:"Pas n resep aan vir meer mense en werk met ml, L, g en kg.",
+    steps:[
+      "Lees die oorspronklike hoeveelhede.",
+      "Bepaal die vermenigvuldigingsfaktor.",
+      "Pas elke hoeveelheid aan.",
+      "Kontroleer die eenhede."
+    ],
+    prompts:[
+      "Wat is die oorspronklike aantal porsies en die nuwe aantal porsies?",
+      "Wys hoe jy minstens twee hoeveelhede aanpas.",
+      "Watter eenhede gebruik jy in jou antwoord?"
+    ],
+    keywords:["resep","volume","massa","porsies","ml","L","g","kg","vermenigvuldig"]
+  },
+  {
+    id:"map_route",
+    title:"Book Activity 5: Kaartroete en aanwysings",
+    chapter:"Hoofstuk 6 Kaarte en planne",
+    scenario:"Gebruik n kaart of plan om n roete te beskryf vanaf een punt na n ander punt.",
+    steps:[
+      "Noem die beginpunt en eindpunt.",
+      "Gebruik rigtings soos noord, suid, oos en wes.",
+      "Gebruik herkenningspunte.",
+      "Skryf die roete in logiese volgorde."
+    ],
+    prompts:[
+      "Wat is die beginpunt en eindpunt?",
+      "Skryf duidelike stap-vir-stap aanwysings.",
+      "Watter herkenningspunte help die persoon om nie te verdwaal nie?"
+    ],
+    keywords:["kaart","plan","roete","rigting","noord","suid","oos","wes","herkenningspunt"]
+  },
+  {
+    id:"scale_distance",
+    title:"Book Activity 6: Skaal en afstand",
+    chapter:"Hoofstuk 6 Kaarte en planne",
+    scenario:"Gebruik n syferskaal of staafskaal om n werklike afstand te bepaal.",
+    steps:[
+      "Meet of lees die kaartafstand.",
+      "Lees die skaal.",
+      "Vermenigvuldig volgens die skaal.",
+      "Skryf die werklike afstand met eenhede."
+    ],
+    prompts:[
+      "Watter skaal word gebruik?",
+      "Wys hoe jy kaartafstand na werklike afstand omskakel.",
+      "Wat is die finale afstand en eenheid?"
+    ],
+    keywords:["skaal","afstand","kaartafstand","werklik","cm","m","km","staafskaal"]
+  },
+  {
+    id:"probability_outcomes",
+    title:"Book Activity 7: Waarskynlikheid en uitkomste",
+    chapter:"Hoofstuk 7 Waarskynlikheid",
+    scenario:"Bepaal moontlike uitkomste vir n muntstuk, dobbelsteen, spinner of sak met kleure.",
+    steps:[
+      "Lys alle moontlike uitkomste.",
+      "Tel hoeveel uitkomste daar is.",
+      "Kies die gunstige uitkomste.",
+      "Skryf die waarskynlikheid as n breuk of woorde."
+    ],
+    prompts:[
+      "Watter gebeurtenis ondersoek jy?",
+      "Wat is al die moontlike uitkomste?",
+      "Wat is die waarskynlikheid van een gekose uitkoms?"
+    ],
+    keywords:["waarskynlikheid","uitkomste","kans","breuk","muntstuk","dobbelsteen","spinner","gunstig"]
+  },
+  {
+    id:"probability_experiment",
+    title:"Book Activity 8: Eenvoudige waarskynlikheids-eksperiment",
+    chapter:"Hoofstuk 7 Waarskynlikheid",
+    scenario:"Doen n kort eksperiment, soos om n muntstuk 20 keer te gooi of n spinner 20 keer te draai, en vergelyk resultate.",
+    steps:[
+      "Kies die eksperiment.",
+      "Voorspel wat jy dink gaan gebeur.",
+      "Teken die resultate aan.",
+      "Vergelyk voorspelling met werklike resultate."
+    ],
+    prompts:[
+      "Wat is jou voorspelling voor die eksperiment?",
+      "Wat was jou resultate?",
+      "Was jou voorspelling naby aan die resultate? Verduidelik."
+    ],
+    keywords:["eksperiment","voorspel","resultate","vergelyk","tabel","uitkoms","kans","waarskynlik"]
+  }
+];
+
+function mathlitPracticalState(){
+  if(!state.mathlitPracticals) state.mathlitPracticals = {};
+  return state.mathlitPracticals;
+}
+
+function mathlitCurrentPractical(){
+  if(!state.mathlitPracticalId) state.mathlitPracticalId = mathlitPracticalTasks[0].id;
+  return mathlitPracticalTasks.find(function(t){ return t.id === state.mathlitPracticalId; }) || mathlitPracticalTasks[0];
+}
+
+function mathlitChoosePractical(id){
+  state.mathlitPracticalId = id;
+  save();
+  render();
+}
+
+function mathlitPracticalAnswer(taskId, idx){
+  const p = mathlitPracticalState();
+  if(!p[taskId]) p[taskId] = {answers:{}, marked:false};
+  return p[taskId].answers[idx] || "";
+}
+
+function mathlitSetPracticalAnswer(taskId, idx, value){
+  const p = mathlitPracticalState();
+  if(!p[taskId]) p[taskId] = {answers:{}, marked:false};
+  p[taskId].answers[idx] = value;
+  p[taskId].marked = false;
+  save();
+}
+
+function mathlitPracticalResult(task){
+  const p = mathlitPracticalState();
+  const saved = p[task.id] || {answers:{}};
+  const joined = task.prompts.map(function(x,i){ return saved.answers[i] || ""; }).join(" ").toLowerCase();
+  const wordCount = joined.split(/\s+/).filter(function(x){ return x.trim().length > 0; }).length;
+  const keywordHits = task.keywords.filter(function(k){ return joined.indexOf(k.toLowerCase()) >= 0; }).length;
+
+  const checks = [
+    {ok: wordCount >= 35, text:"Antwoorde is volledig genoeg"},
+    {ok: keywordHits >= 3, text:"Gebruik minstens 3 belangrike vakterme"},
+    {ok: task.prompts.every(function(x,i){ return String(saved.answers[i] || "").trim().length >= 15; }), text:"Elke vraag is beantwoord"},
+    {ok: joined.indexOf("bereken") >= 0 || joined.indexOf("omdat") >= 0 || joined.indexOf("want") >= 0 || joined.indexOf("verduidelik") >= 0 || joined.indexOf("wys") >= 0, text:"Antwoord wys berekening of verduideliking"}
+  ];
+
+  const score = checks.filter(function(c){ return c.ok; }).length;
+  return {
+    checks:checks,
+    score:score,
+    total:checks.length,
+    percent:Math.round(score / checks.length * 100),
+    passed:score >= 3,
+    wordCount:wordCount,
+    keywordHits:keywordHits
+  };
+}
+
+function mathlitMarkPractical(){
+  const task = mathlitCurrentPractical();
+  const p = mathlitPracticalState();
+  if(!p[task.id]) p[task.id] = {answers:{}, marked:false};
+  p[task.id].marked = true;
+  save();
+  render();
+}
+
+function mathlitResetPractical(){
+  const task = mathlitCurrentPractical();
+  const p = mathlitPracticalState();
+  p[task.id] = {answers:{}, marked:false};
+  save();
+  render();
+}
+
+function mathlitPracticalTasksHTML(){
+  const task = mathlitCurrentPractical();
+  const p = mathlitPracticalState();
+  const saved = p[task.id] || {answers:{}, marked:false};
+  const result = mathlitPracticalResult(task);
+
+  let html = '<div id="mathlitPracticalTasks" class="card"><div class="row space"><div><h2>Book Activities and Practical Tasks</h2><p class="muted">Werkboek-styl aktiwiteite vir Finansies, Meting, Kaarte en Waarskynlikheid.</p></div><span class="pill active">' + mathlitPracticalTasks.length + ' tasks</span></div>';
+
+  html += '<div class="grid subjects" style="margin-top:14px">';
+  mathlitPracticalTasks.forEach(function(t){
+    const active = t.id === task.id ? " active" : "";
+    html += '<button class="subjectBtn' + active + '" onclick="mathlitChoosePractical(\'' + t.id + '\')"><div style="font-size:28px;margin-bottom:8px">TASK</div><h3>' + esc(t.title) + '</h3><p class="muted">' + esc(t.chapter) + '</p></button>';
+  });
+  html += '</div>';
+
+  html += '<div class="note" style="margin-top:14px"><b>' + esc(task.title) + '</b><br><span class="muted">' + esc(task.chapter) + '</span><p style="margin-bottom:0">' + esc(task.scenario) + '</p></div>';
+
+  html += '<div class="grid two" style="margin-top:14px">';
+  html += '<div class="note"><h3>Instruksies</h3><ol style="padding-left:18px;line-height:1.65">';
+  task.steps.forEach(function(step){ html += '<li>' + esc(step) + '</li>'; });
+  html += '</ol><p class="muted"><b>Vakterme om te probeer gebruik:</b> ' + esc(task.keywords.join(", ")) + '</p></div>';
+
+  html += '<div class="grid">';
+  task.prompts.forEach(function(prompt, i){
+    html += '<label class="field">' + (i+1) + '. ' + esc(prompt) + '</label>';
+    html += '<textarea style="width:100%;min-height:90px;border:1px solid var(--line);border-radius:18px;padding:12px;font:inherit" oninput="mathlitSetPracticalAnswer(\'' + task.id + '\',' + i + ',this.value)">' + esc(mathlitPracticalAnswer(task.id, i)) + '</textarea>';
+  });
+  html += '<div class="row"><button class="btn" onclick="mathlitMarkPractical()">Mark Activity</button><button class="btn secondary" onclick="mathlitResetPractical()">Reset Activity</button></div>';
+  html += '</div></div>';
+
+  if(saved.marked){
+    html += '<div class="card ' + (result.passed ? 'resultGood' : 'resultBad') + '" style="margin-top:14px"><h2>Activity Result: ' + result.score + '/' + result.total + ' (' + result.percent + '%)</h2>';
+    html += '<p class="muted">Woorde: ' + result.wordCount + ' | Vakterme raakgesien: ' + result.keywordHits + '</p>';
+    result.checks.forEach(function(c){
+      html += '<div class="note" style="margin-top:8px">' + (c.ok ? 'OK - ' : 'FIX - ') + esc(c.text) + '</div>';
+    });
+    html += '</div>';
+  }
+
+  html += '</div>';
+  return html;
+}
+// === END MATHLIT PATCH 4 ===
 // === MATHLIT PATCH 3: timer, review, weak areas and history ===
 function mathlitStudyHTML(){
   state.selectedSubject = "mathlit";
@@ -7312,6 +7577,7 @@ function mathlitStudyHTML(){
   html += '</div></div>';
 
   html += mathlitCoverageHTML();
+  html += mathlitPracticalTasksHTML();
   html += mathlitWeakAreasHTML();
   html += mathlitResultHistoryHTML();
   html += '<div class="grid two">';
@@ -7437,6 +7703,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
 
 
 
