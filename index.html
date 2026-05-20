@@ -3835,7 +3835,7 @@ function topbar(){
     subjectText = "- Wiskundige Geletterdheid";
     studyAction = "selectSubject('mathlit')";
     examText = "Start MathLit Test";
-    examAction = "state.screen='mathlit_exam';save();render()";
+    examAction = "startMathlitExam()";
   }
 
   return `<div class="topbar"><div class="wrap"><div class="card row space">
@@ -6175,7 +6175,7 @@ function agriStudyHTML(){
   let html = topbar();
   html += '<div class="wrap grid">';
 
-  html += '<div class="card"><div class="row space"><div><h2>🌱 Landbou Wetenskappe</h2><p class="muted">Graad 10 • Kwartaal 2 • PATCH 1 framework toets</p></div><div class="row"><button class="btn secondary" onclick="setState({screen:\'dashboard\'})">Subjects</button><button class="btn" onclick="state.screen=\'agri_exam\';save();render()">Start Landbou Test</button></div></div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>🌱 Landbou Wetenskappe</h2><p class="muted">Graad 10 • Kwartaal 2 • Kwartaal 2 studie</p></div><div class="row"><button class="btn secondary" onclick="setState({screen:\'dashboard\'})">Subjects</button><button class="btn" onclick="state.screen=\'agri_exam\';save();render()">Start Landbou Test</button></div></div></div>';
 
   html += '<div class="card"><div class="row space"><div><h2>Study Hub</h2><p class="muted">Hier gaan ons later Study by Module, Book Activities, Quick Test, Full Exam, Image Questions, Practical Tasks, Weak Areas en Result History uitbrei.</p></div><span class="pill active">' + agriQuestions.length + ' vrae</span></div>';
   html += '<div class="grid subjects" style="margin-top:14px">';
@@ -6801,16 +6801,233 @@ const mathlitModules = [
   ]}
 ];
 
-const mathlitQuestions = [
-  {m:"ml4", type:"mcq", q:"Watter dokument wys gewoonlik hoeveel 'n huishouding vir water of elektrisiteit moet betaal?", o:["Munisipale rekening","Skoolrapport","Padkaart","Weervoorspelling"], a:0, w:"Finansiele dokumente sluit rekeninge en state in wat koste wys."},
-  {m:"ml4", type:"mcq", q:"As 'n tarief R2 per kWh is en 50 kWh gebruik is, wat is die koste?", o:["R100","R52","R25","R2"], a:0, w:"Koste = tarief x gebruik = R2 x 50 = R100."},
-  {m:"ml5", type:"mcq", q:"Hoeveel meter is 2,5 km?", o:["2 500 m","250 m","25 m","25 000 m"], a:0, w:"1 km = 1 000 m, dus 2,5 km = 2 500 m."},
-  {m:"ml5", type:"mcq", q:"Watter eenheid pas die beste by die massa van 'n sak mieliemeel?", o:["kg","ml","km","grade Celsius"], a:0, w:"Massa word dikwels in gram of kilogram gemeet."},
-  {m:"ml6", type:"mcq", q:"Wat beteken 'n skaal van 1:100 op 'n plan?", o:["1 eenheid op die plan stel 100 eenhede in werklikheid voor","100 planne is nodig","1 meter is altyd 100 km","Die plan het 100 bladsye"], a:0, w:"Skaal vergelyk plan-afstand met werklike afstand."},
-  {m:"ml6", type:"mcq", q:"Watter vaardigheid gebruik jy wanneer jy 'n roete op 'n kaart volg?", o:["Aanwysings en relatiewe posisie","Rente bereken","Temperatuur meet","Kans uitwerk"], a:0, w:"Kaarte en planne vra dat jy posisie, rigting en aanwysings verstaan."},
-  {m:"ml7", type:"mcq", q:"As 'n muntstuk gegooi word, wat is die moontlike uitkomste?", o:["Kop of stert","Maandag of Dinsdag","Warm of koud","Rand of sent"], a:0, w:"'n Muntstuk het twee basiese uitkomste: kop of stert."},
-  {m:"ml7", type:"mcq", q:"Watter woord beskryf 'n gebeurtenis wat beslis sal gebeur?", o:["Seker","Onmoontlik","Onwaarskynlik","Gelyk"], a:0, w:"'Seker' beteken die gebeurtenis sal gebeur."}
+// === MATHLIT PATCH 2: LARGE TERM 2 QUESTION BANK + IMAGE QUESTIONS + COVERAGE ===
+const mathlitQuestionTopics = [
+  {module:"ml4", unit:"F1", unitTitle:"Finansies: Huishoudelike finansiele dokumente"},
+  {module:"ml4", unit:"F2", unitTitle:"Finansies: Algemene huishoudelike tariewe"},
+  {module:"ml5", unit:"M1", unitTitle:"Meting: Lengte en afstand"},
+  {module:"ml5", unit:"M2", unitTitle:"Meting: Massa"},
+  {module:"ml5", unit:"M3", unitTitle:"Meting: Volume"},
+  {module:"ml5", unit:"M4", unitTitle:"Meting: Temperatuur"},
+  {module:"ml6", unit:"K1", unitTitle:"Kaarte en planne: Uitlegkaarte"},
+  {module:"ml6", unit:"K2", unitTitle:"Kaarte en planne: Relatiewe posisie"},
+  {module:"ml6", unit:"K3", unitTitle:"Kaarte en planne: Aanwysings en roetes"},
+  {module:"ml6", unit:"K4", unitTitle:"Kaarte en planne: Skaal"},
+  {module:"ml7", unit:"W1", unitTitle:"Waarskynlikheid: Uitdrukking van waarskynlikheid"},
+  {module:"ml7", unit:"W2", unitTitle:"Waarskynlikheid: Voorspelling"},
+  {module:"ml7", unit:"W3", unitTitle:"Waarskynlikheid: Moontlike uitkomste"}
 ];
+
+const mathlitVisuals = {
+  bill:'<svg viewBox="0 0 240 120" width="100%" height="120"><rect x="20" y="10" width="150" height="95" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/><text x="35" y="30" font-size="12" fill="#111827">MUNISIPALE REKENING</text><line x1="35" y1="38" x2="155" y2="38" stroke="#cbd5e1"/><text x="35" y="55" font-size="11" fill="#111827">Water: R120</text><text x="35" y="70" font-size="11" fill="#111827">Elektrisiteit: R230</text><text x="35" y="85" font-size="11" fill="#111827">Totaal: R350</text><circle cx="200" cy="40" r="18" fill="#dbeafe" stroke="#60a5fa"/><text x="188" y="45" font-size="10" fill="#1d4ed8">BILL</text></svg>',
+  meter:'<svg viewBox="0 0 240 120" width="100%" height="120"><rect x="18" y="15" width="180" height="75" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/><text x="30" y="35" font-size="12" fill="#111827">ELEKTRISITEITSMETER</text><rect x="35" y="48" width="105" height="22" rx="4" fill="#111827"/><text x="47" y="64" font-size="14" fill="#22c55e">000245</text><text x="152" y="63" font-size="11" fill="#111827">kWh</text></svg>',
+  thermometer:'<svg viewBox="0 0 240 120" width="100%" height="120"><rect x="90" y="15" width="20" height="65" rx="10" fill="#e5e7eb" stroke="#6b7280" stroke-width="2"/><circle cx="100" cy="90" r="18" fill="#ef4444"/><rect x="95" y="45" width="10" height="35" fill="#ef4444"/><line x1="115" y1="20" x2="135" y2="20" stroke="#6b7280"/><line x1="115" y1="35" x2="135" y2="35" stroke="#6b7280"/><line x1="115" y1="50" x2="135" y2="50" stroke="#6b7280"/><line x1="115" y1="65" x2="135" y2="65" stroke="#6b7280"/><text x="145" y="24" font-size="10" fill="#111827">40 C</text><text x="145" y="39" font-size="10" fill="#111827">30 C</text><text x="145" y="54" font-size="10" fill="#111827">20 C</text><text x="145" y="69" font-size="10" fill="#111827">10 C</text></svg>',
+  jug:'<svg viewBox="0 0 240 120" width="100%" height="120"><path d="M65 15 L135 15 L145 100 L55 100 Z" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/><line x1="70" y1="80" x2="138" y2="80" stroke="#0284c7" stroke-width="3"/><text x="150" y="33" font-size="10" fill="#111827">1000 ml</text><text x="150" y="50" font-size="10" fill="#111827">750 ml</text><text x="150" y="67" font-size="10" fill="#111827">500 ml</text><text x="150" y="84" font-size="10" fill="#111827">250 ml</text><line x1="140" y1="28" x2="160" y2="28" stroke="#6b7280"/><line x1="140" y1="45" x2="160" y2="45" stroke="#6b7280"/><line x1="140" y1="62" x2="160" y2="62" stroke="#6b7280"/><line x1="140" y1="79" x2="160" y2="79" stroke="#6b7280"/></svg>',
+  map:'<svg viewBox="0 0 240 120" width="100%" height="120"><rect x="20" y="15" width="170" height="90" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/><line x1="76" y1="15" x2="76" y2="105" stroke="#cbd5e1"/><line x1="132" y1="15" x2="132" y2="105" stroke="#cbd5e1"/><line x1="20" y1="45" x2="190" y2="45" stroke="#cbd5e1"/><line x1="20" y1="75" x2="190" y2="75" stroke="#cbd5e1"/><text x="38" y="35" font-size="12" fill="#111827">A</text><text x="94" y="35" font-size="12" fill="#111827">B</text><text x="150" y="35" font-size="12" fill="#111827">C</text><text x="8" y="32" font-size="12" fill="#111827">1</text><text x="8" y="62" font-size="12" fill="#111827">2</text><text x="8" y="92" font-size="12" fill="#111827">3</text><circle cx="104" cy="60" r="7" fill="#22c55e"/><text x="97" y="90" font-size="10" fill="#111827">Skool</text><path d="M205 26 L215 26 L210 16 Z" fill="#111827"/><text x="202" y="42" font-size="10" fill="#111827">N</text></svg>',
+  scale:'<svg viewBox="0 0 240 120" width="100%" height="120"><rect x="25" y="55" width="160" height="20" fill="#e5e7eb" stroke="#6b7280"/><rect x="25" y="55" width="40" height="20" fill="#94a3b8"/><rect x="65" y="55" width="40" height="20" fill="#cbd5e1"/><rect x="105" y="55" width="40" height="20" fill="#94a3b8"/><rect x="145" y="55" width="40" height="20" fill="#cbd5e1"/><text x="23" y="48" font-size="10" fill="#111827">0</text><text x="61" y="48" font-size="10" fill="#111827">1 km</text><text x="101" y="48" font-size="10" fill="#111827">2 km</text><text x="141" y="48" font-size="10" fill="#111827">3 km</text><text x="181" y="48" font-size="10" fill="#111827">4 km</text></svg>',
+  spinner:'<svg viewBox="0 0 240 120" width="100%" height="120"><circle cx="90" cy="60" r="42" fill="#f8fafc" stroke="#6b7280" stroke-width="2"/><path d="M90 60 L90 18 A42 42 0 0 1 126 81 Z" fill="#fca5a5"/><path d="M90 60 L126 81 A42 42 0 0 1 54 81 Z" fill="#93c5fd"/><path d="M90 60 L54 81 A42 42 0 0 1 90 18 Z" fill="#86efac"/><line x1="90" y1="60" x2="90" y2="18" stroke="#111827"/><line x1="90" y1="60" x2="126" y2="81" stroke="#111827"/><line x1="90" y1="60" x2="54" y2="81" stroke="#111827"/><text x="87" y="34" font-size="12" fill="#111827">1</text><text x="110" y="75" font-size="12" fill="#111827">2</text><text x="63" y="75" font-size="12" fill="#111827">3</text></svg>',
+  dice:'<svg viewBox="0 0 240 120" width="100%" height="120"><rect x="55" y="20" width="70" height="70" rx="10" fill="#ffffff" stroke="#6b7280" stroke-width="2"/><circle cx="75" cy="40" r="4" fill="#111827"/><circle cx="105" cy="40" r="4" fill="#111827"/><circle cx="90" cy="55" r="4" fill="#111827"/><circle cx="75" cy="70" r="4" fill="#111827"/><circle cx="105" cy="70" r="4" fill="#111827"/><text x="145" y="60" font-size="12" fill="#111827">Rol = 5</text></svg>'
+};
+
+function mathlitVisualHTML(q){
+  if(!q || !q.visual || !mathlitVisuals[q.visual]) return "";
+  return '<div class="qImage">' + mathlitVisuals[q.visual] + '</div>';
+}
+
+function mathlitBuildQuestions(){
+  const qs = [];
+  function add(module, unit, type, q, o, a, w, visual){
+    const row = {m:module, unit:unit, type:type, q:q, o:o, a:a, w:w};
+    if(visual) row.visual = visual;
+    qs.push(row);
+  }
+
+  // FINANCE F1
+  add("ml4","F1","mcq","Watter dokument wys gewoonlik hoeveel geld vir water of elektrisiteit betaal moet word?",["Munisipale rekening","Padkaart","Termometer","Skoolrapport"],0,"Huishoudelike finansiele dokumente sluit rekeninge en state in.");
+  add("ml4","F1","mcq","Watter deel van 'n rekening wys die finale bedrag wat betaal moet word?",["Totaal verskuldig","Naam van die klant","Datum van geboorte","Roetenommer"],0,"Die totaal verskuldig wys die bedrag wat betaal moet word.");
+  add("ml4","F1","mcq","Waarom is dit belangrik om 'n betaaldatum op 'n rekening raak te sien?",["Om boetes of laat betalings te vermy","Om die huis te verf","Om kans uit te werk","Om temperatuur te meet"],0,"Die betaaldatum help jou om betyds te betaal.");
+  add("ml4","F1","mcq","Watter dokument sal waarskynlik gebruik word om 'n winkelkoop te bewys?",["Kwitansie","Kompas","Kaart","Skaaltekening"],0,"'n Kwitansie wys wat gekoop en betaal is.");
+  add("ml4","F1","mcq","Watter inligting verskyn gewoonlik op 'n rekeningstaat?",["Bedrae, datums en beskrywings","Net kleure","Net weerinligting","Net rigtings"],0,"Rekeningstate bevat finansiele besonderhede.");
+  add("ml4","F1","mcq","As 'n rekening vorige agterstallige geld wys, wat beteken dit?",["Geld van 'n vorige tydperk is nog uitstaande","Die rekening is klaar betaal","Die weer gaan verander","Die skaal is verkeerd"],0,"Agterstallig beteken daar is nog skuld oor.");
+  add("ml4","F1","mcq","Wat help 'n begroting 'n huishouding om te doen?",["Beplan inkomste en uitgawes","Lees 'n kaart","Rol 'n dobbelsteen","Meet temperatuur"],0,"Begrotings help met beplanning van geld.");
+  add("ml4","F1","mcq","Watter item sal waarskynlik onder 'uitgawes' val?",["Huur","Salaris ontvang","Spaarbedrag ontvang","Terugbetaling ontvang"],0,"Huur is 'n tipiese uitgawe.");
+  add("ml4","F1","mcq","As 'n rekening 'rekeningnommer' wys, waarvoor is dit nuttig?",["Om die korrekte rekening te identifiseer","Om temperatuur te meet","Om afstand te skaal","Om waarskynlikheid te bepaal"],0,"Die rekeningnommer identifiseer die kliant se rekening.");
+  add("ml4","F1","mcq","Watter dokument sal jy gebruik om te kyk hoeveel data of minute gebruik is?",["Selfoonrekening","Temperatuurkaart","Meetlint","Spinner"],0,"Selfoonrekeninge wys gebruik van data of oproepe.");
+  add("ml4","F1","mcq","Wat beteken 'krediet' op 'n rekening gewoonlik?",["Geld wat afgetrek of bygevoeg is tot jou voordeel","Jy skuld meer","Die kaart is noord","Die temperatuur is laag"],0,"Krediet verminder dikwels die bedrag wat betaal moet word.");
+  add("ml4","F1","mcq","Watter vraag help jou 'n finansiele dokument verstaan?",["Wat is die bedrag, datum en doel van die betaling?","Hoeveel sye het die driehoek?","Watter rots is dit?","Hoeveel grade is noord?"],0,"Om finansiele dokumente te lees moet jy kerninligting herken.");
+  add("ml4","F1","mcq","As 'n rekening eenhede van watergebruik wys, waarna kyk jy?",["Die aantal eenhede en die tarief per eenheid","Die kleur van die papier","Die rigting na die winkel","Die kans op reen"],0,"Gebruik en tarief bepaal die koste.");
+  add("ml4","F1","mcq","Hoekom moet mens bewys van betaling hou?",["Om te wys dat die bedrag betaal is","Om die kaart mooier te maak","Om temperatuur om te skakel","Om te wys watter rots jy het"],0,"Bewys van betaling is belangrik vir rekords.");
+
+  // FINANCE F2 calculations and tariffs
+  [
+    [2,50,100],[3,40,120],[4,25,100],[5,20,100],[1.5,60,90],[2.5,44,110],[3.5,30,105],[6,15,90]
+  ].forEach(function(x, idx){
+    const rate = x[0], units = x[1], cost = x[2];
+    add("ml4","F2","mcq","As 'n tarief R" + rate + " per eenheid is en " + units + " eenhede gebruik word, wat is die koste?",["R" + cost,"R" + (cost+10),"R" + (cost-10),"R" + rate],0,"Koste = tarief x gebruik.");
+  });
+  add("ml4","F2","mcq","As die basiese fooi R80 is en gebruikskoste R120, wat is die totaal?",["R200","R160","R120","R80"],0,"Basiese fooi plus gebruik gee die totaal.");
+  add("ml4","F2","mcq","As water R150 kos en elektrisiteit R240, hoeveel kos dit saam?",["R390","R240","R150","R410"],0,"Tel die twee bedrae bymekaar.");
+  add("ml4","F2","mcq","As 'n rekening 10 persent afslag op R200 gee, hoeveel betaal jy?",["R180","R190","R210","R20"],0,"10 persent van R200 is R20; trek dit af.");
+  add("ml4","F2","mcq","As 'n familie R300 vir elektrisiteit begroot maar R350 spandeer, met hoeveel het hulle oorskry?",["R50","R25","R300","R650"],0,"Verskil = R350 - R300.");
+  add("ml4","F2","mcq","Watter tariefstelsel beteken hoe meer jy gebruik, hoe meer betaal jy gewoonlik altesaam?",["Gebruik-gebaseerde tarief","Vaste fooi sonder gebruik","Gratis diens","Ewekansige tarief"],0,"By gebruik-gebaseerde tariewe hang koste van gebruik af.");
+  add("ml4","F2","mcq","As 'n selfoondata-bundel R99 kos en nog 'n eenmalige fooi van R10 vra, wat is die totaal?",["R109","R99","R89","R100"],0,"Tel die fooi by die pakketprys.");
+  add("ml4","F2","mcq","Wat help jou om twee tariefopsies te vergelyk?",["Kyk na fooi, gebruik en totaal","Kyk na papierkleur","Kyk na kompasrigting","Kyk na weer"],0,"Vergelyking van tariefopsies vra dat jy die totale koste vergelyk.");
+
+  // METING M1 length and distance
+  [
+    ["2 km","2000 m"],["2.5 km","2500 m"],["0.75 km","750 m"],["3000 m","3 km"],["150 cm","1.5 m"],["4200 m","4.2 km"],["12 m","1200 cm"],["350 cm","3.5 m"],["7.5 km","7500 m"],["900 m","0.9 km"]
+  ].forEach(function(x){
+    add("ml5","M1","mcq","Skakel " + x[0] + " om.",[x[1],"10 keer meer","100 keer minder","Onveranderd"],0,"Gebruik die regte omskakelings tussen km, m en cm.");
+  });
+  add("ml5","M1","mcq","Watter eenheid is die beste om die afstand tussen twee dorpe te meet?",["km","cm","ml","g"],0,"Groot afstande word in kilometer gemeet.");
+  add("ml5","M1","mcq","Watter instrument word die meeste gebruik om die lengte van 'n tafel te meet?",["Meetlint of liniaal","Termometer","Kaartskaal","Dobbelsteen"],0,"Lengte word met 'n meetinstrument gemeet.");
+
+  // M2 mass
+  [
+    ["1.5 kg","1500 g"],["2 kg","2000 g"],["750 g","0.75 kg"],["5000 g","5 kg"],["250 g","0.25 kg"],["3.2 kg","3200 g"],["1200 g","1.2 kg"],["900 g","0.9 kg"]
+  ].forEach(function(x){
+    add("ml5","M2","mcq","Skakel " + x[0] + " om.",[x[1],"Die helfte daarvan","Dubbel daarvan","Onmoontlik"],0,"Gebruik 1000 g = 1 kg.");
+  });
+  add("ml5","M2","mcq","Watter eenheid pas die beste by die massa van 'n sakkie suiker?",["kg","L","km","grade C"],0,"Massa van voedsel word dikwels in kilogram aangedui.");
+  add("ml5","M2","mcq","As twee sakke elk 2 kg weeg, wat is die totale massa?",["4 kg","2 kg","3 kg","22 kg"],0,"Tel die massas bymekaar.");
+
+  // M3 volume
+  [
+    ["1 L","1000 ml"],["2.5 L","2500 ml"],["750 ml","0.75 L"],["500 ml","0.5 L"],["3 L","3000 ml"],["1250 ml","1.25 L"],["250 ml","0.25 L"],["4.5 L","4500 ml"]
+  ].forEach(function(x){
+    add("ml5","M3","mcq","Skakel " + x[0] + " om.",[x[1],"10 ml","100 ml","Onveranderd"],0,"Gebruik 1000 ml = 1 L.");
+  });
+  add("ml5","M3","mcq","Watter eenheid pas die beste by die inhoud van 'n koeldrankbottel?",["L of ml","kg","km","grade C"],0,"Volume van vloeistowwe word in liter of milliliter gemeet.");
+  add("ml5","M3","mcq","As 'n houer 2 L water bevat en jy voeg 500 ml by, wat is die nuwe volume?",["2.5 L","2.05 L","500 L","7 L"],0,"500 ml is 0.5 L; tel by 2 L.");
+
+  // M4 temperature
+  add("ml5","M4","mcq","Watter eenheid gebruik ons gewoonlik vir temperatuur?",["grade Celsius","liter","kilogram","meter"],0,"Temperatuur word in grade Celsius gemeet.");
+  add("ml5","M4","mcq","Watter temperatuur is warmer?",["30 C","10 C","0 C","-5 C"],0,"Hoer positiewe temperature is warmer.");
+  add("ml5","M4","mcq","Wat beteken 'n temperatuur onder 0 C?",["Dit is onder vriespunt","Dit is baie warm","Dit is presies kookpunt","Daar is geen temperatuur nie"],0,"Onder 0 C beteken kouer as vriespunt.");
+  add("ml5","M4","mcq","As die temperatuur van 18 C na 25 C styg, met hoeveel grade het dit gestyg?",["7 C","5 C","43 C","-7 C"],0,"Bereken die verskil tussen die twee temperature.");
+  add("ml5","M4","mcq","As die temperatuur van 12 C na 4 C daal, met hoeveel grade het dit gedaal?",["8 C","16 C","4 C","12 C"],0,"Bereken die afname.");
+  add("ml5","M4","mcq","Watter temperatuur is die koudste?",["-2 C","4 C","10 C","22 C"],0,"Negatiewe temperature is kouer as positiewe.");
+  add("ml5","M4","mcq","Watter temperatuur is geskik vir 'n warm somersdag?",["32 C","2 C","-3 C","8 C"],0,"Somersdae is gewoonlik warm.");
+  add("ml5","M4","mcq","As 'n yskas by 5 C werk en dit daal na 2 C, wat gebeur?",["Dit word kouer","Dit word warmer","Dit bly dieselfde","Dit kook"],0,"'n Laer temperatuur beteken kouer.");
+
+  // MAPS K1
+  add("ml6","K1","mcq","Watter hulpmiddel wys gewoonlik waar plekke op 'n gebied geleÃ« is?",["Kaart of plan","Thermometer","Kwitansie","Spinner"],0,"Kaarte en planne wys ligging.");
+  add("ml6","K1","mcq","Wat help 'n sleutel of legende op 'n kaart jou verstaan?",["Simbols en wat hulle beteken","Hoe om te betaal","Hoe warm dit is","Hoe om gewig te meet"],0,"Die legende verduidelik simbole.");
+  add("ml6","K1","mcq","Watter rigting is teenoor suid?",["Noord","Oos","Wes","Links"],0,"Noord is teenoor suid.");
+  add("ml6","K1","mcq","Watter rigting is regs van noord op 'n gewone kaart?",["Oos","Wes","Suid","Bo"],0,"Op 'n standaard kaart is oos regs.");
+  add("ml6","K1","mcq","Wat word gebruik om werklike afstande van kaartafstande af te lei?",["Skaal","Temperatuur","Massa","Waarskynlikheid"],0,"Skaal verbind kaart met werklikheid.");
+  add("ml6","K1","mcq","Wat beteken 'n uitlegkaart meestal?",["Dit wys die posisie van plekke in 'n area","Dit wys net pryse","Dit wys temperatuur","Dit wys kans"],0,"Uitlegkaarte wys rangskikking van plekke.");
+  add("ml6","K1","mcq","Waarom gebruik mense roosters soos A2 of C3 op kaarte?",["Om plekke maklik te vind","Om te meet in gram","Om pryse te tel","Om waarskynlikheid te skat"],0,"Roosterverwysings help om ligging aan te dui.");
+  add("ml6","K1","mcq","Wat help 'n kompasroos op 'n kaart jou doen?",["Vind rigtings","Betaal rekeninge","Meet volume","Lees 'n rekening"],0,"Die kompasroos dui rigting aan.");
+
+  // K2 relative position
+  add("ml6","K2","mcq","As die biblioteek noord van die skool is, waar is die skool relatief tot die biblioteek?",["Suid","Noord","Oos","Wes"],0,"As een punt noord is, is die ander suid daarvan.");
+  add("ml6","K2","mcq","As winkel A links van winkel B op 'n kaart is, waar is winkel B relatief tot winkel A?",["Regs","Links","Noord","Suid"],0,"Relatiewe posisie gebruik woorde soos links en regs.");
+  add("ml6","K2","mcq","As 'n kliniek tussen 'n skool en 'n kerk is, wat beskryf dit?",["Relatiewe posisie","Temperatuur","Tarief","Waarskynlikheid"],0,"Dit beskryf ligging in verhouding tot ander plekke.");
+  add("ml6","K2","mcq","As 'n park suidoos van 'n huis is, watter twee hoofrigtings word gekombineer?",["Suid en oos","Noord en wes","Noord en oos","Suid en wes"],0,"Suidoos kombineer suid en oos.");
+  add("ml6","K2","mcq","Watter woord beskryf 'n plek wat nader aan jou is as 'n ander plek?",["Naby","Ver","Warm","Swaar"],0,"Relatiewe posisie kan naby of ver beskryf.");
+  add("ml6","K2","mcq","As 'n winkel direk wes van die taxi rank is, in watter rigting moet jy loop vanaf die rank na die winkel?",["Wes","Oos","Noord","Suid"],0,"Direk wes beteken jy beweeg wes.");
+
+  // K3 directions
+  add("ml6","K3","mcq","Watter rigting volg jy as jy eers noord en dan oos beweeg?",["Noord en dan regs","Suid en dan links","Wes en dan links","Net noord"],0,"Op 'n standaard kaart is oos regs van noord.");
+  add("ml6","K3","mcq","As jy twee blokke suid loop en dan een blok oos, watter vaardigheid gebruik jy?",["Roete-aanwysings","Temperatuurlesing","Meting van massa","Kansberekening"],0,"Volg van aanwysings is roetevaardigheid.");
+  add("ml6","K3","mcq","Wat is die beste manier om 'n roete duidelik te beskryf?",["Gebruik rigtings en herkenningspunte","Gebruik net kleure","Gebruik kanswoorde","Gebruik gewigseenhede"],0,"Duidelike roetes gebruik rigtings en plekke.");
+  add("ml6","K3","mcq","As jy van die huis na die winkel oos beweeg, hoe beweeg jy terug huis toe?",["Wes","Oos","Noord","Suid"],0,"Die teenoorgestelde van oos is wes.");
+  add("ml6","K3","mcq","As jy by 'n kruising links draai terwyl jy noord ry, beweeg jy nou in watter rigting?",["Wes","Oos","Suid","Noord"],0,"Links van noord is wes.");
+  add("ml6","K3","mcq","As jy by 'n kruising regs draai terwyl jy noord ry, beweeg jy nou in watter rigting?",["Oos","Wes","Suid","Noord"],0,"Regs van noord is oos.");
+  add("ml6","K3","mcq","Wat is 'n herkenningspunt?",["'n Duidelike plek wat help met aanwysings","'n Temperatuur","'n Massa-eenheid","'n Kanswoord"],0,"Herkenningspunte help mense om roetes te volg.");
+  add("ml6","K3","mcq","Watter rigting is tussen suid en wes?",["Suidwes","Noordoos","Suidoos","Noordwes"],0,"Suidwes kombineer suid en wes.");
+
+  // K4 scale
+  add("ml6","K4","mcq","Wat beteken 'n skaal van 1:100?",["1 eenheid op die plan stel 100 in werklikheid voor","100 planne is nodig","1 km is 100 m","Dit is 'n temperatuur"],0,"Skaal vergelyk plan en werklikheid.");
+  add("ml6","K4","mcq","As 2 cm op 'n kaart 1 km in werklikheid voorstel, hoeveel km is 6 cm?",["3 km","12 km","4 km","1 km"],0,"As 2 cm = 1 km, dan 6 cm = 3 km.");
+  add("ml6","K4","mcq","As 1 cm op 'n plan 5 m in werklikheid is, hoeveel meter is 4 cm?",["20 m","9 m","5 m","40 m"],0,"Vermenigvuldig die skaalwaarde.");
+  add("ml6","K4","mcq","Wat is die nut van 'n staafskaal?",["Dit help om kaartafstande visueel te vergelyk","Dit wys net die naam van die kaart","Dit bereken kans","Dit meet massa"],0,"Staafskale wys afstand op 'n visuele manier.");
+  add("ml6","K4","mcq","As twee plekke 8 cm uitmekaar op 'n plan is en 1 cm = 2 m, hoe ver is dit werklik?",["16 m","10 m","6 m","4 m"],0,"8 x 2 m = 16 m.");
+  add("ml6","K4","mcq","As 'n kaart wys 4 km oor 'n staafskaal met 4 ewe groot dele, hoeveel km is elke deel?",["1 km","2 km","4 km","8 km"],0,"Verdeel die totaal deur die aantal dele.");
+  add("ml6","K4","mcq","Wanneer jy skaal gebruik, wat moet jy altyd kontroleer?",["Eenhede","Klere","Weer","Waarskynlikheid"],0,"Eenhede moet ooreenstem.");
+  add("ml6","K4","mcq","As 'n huis op 'n plan 3 cm lank is en die skaal is 1 cm : 2 m, wat is die werklike lengte?",["6 m","5 m","3 m","2 m"],0,"3 x 2 m = 6 m.");
+
+  // W1
+  add("ml7","W1","mcq","Watter woord beskryf 'n gebeurtenis wat beslis sal gebeur?",["Seker","Onmoontlik","Onwaarskynlik","Ewe waarskynlik"],0,"Seker beteken dit sal gebeur.");
+  add("ml7","W1","mcq","Watter woord beskryf 'n gebeurtenis wat glad nie kan gebeur nie?",["Onmoontlik","Seker","Waarskynlik","Miskien"],0,"Onmoontlik beteken dit kan nie gebeur nie.");
+  add("ml7","W1","mcq","As die kans dieselfde is vir twee uitkomste, hoe beskryf ons dit?",["Ewe waarskynlik","Onmoontlik","Seker","Meer seker"],0,"Dieselfde kans beteken ewe waarskynlik.");
+  add("ml7","W1","mcq","Watter uitdrukking is 'n waarskynlikheidsfraksie?",["1 uit 2","5 meter","20 grade","R50"],0,"Waarskynlikheid kan as 'n breuk uitgedruk word.");
+  add("ml7","W1","mcq","Wat is die waarskynlikheid om 'n kop te kry wanneer 'n muntstuk gegooi word?",["1 uit 2","2 uit 1","1 uit 6","0 uit 10"],0,"Twee ewe waarskynlike uitkomste gee 1 uit 2.");
+  add("ml7","W1","mcq","Wat is die waarskynlikheid om 'n 7 met 'n gewone dobbelsteen te rol?",["Onmoontlik","Seker","1 uit 6","1 uit 2"],0,"'n Gewone dobbelsteen het net 1 tot 6.");
+
+  // W2
+  add("ml7","W2","mcq","As dit donker wolke is, watter gebeurtenis is meer waarskynlik?",["Reen","Sneeu in die woestyn","Dat 'n dobbelsteen 8 wys","Dat 2 groter as 5 is"],0,"Waarskynlikheid in konteks vra redelike voorspelling.");
+  add("ml7","W2","mcq","As 'n sakkie 8 rooi en 2 blou balle het, watter kleur is meer waarskynlik om getrek te word?",["Rooi","Blou","Albei dieselfde","Geen kleur"],0,"Meer items van 'n soort gee 'n groter kans.");
+  add("ml7","W2","mcq","As 'n spinner drie dele het waarvan twee groen is, watter kleur is waarskynliker?",["Groen","Die ander kleur","Albei dieselfde","Geen uitkoms"],0,"Twee uit drie dele gee 'n groter kans.");
+  add("ml7","W2","mcq","Wat beteken 'voorspel' in waarskynlikheid?",["Maak 'n redelike skatting van wat kan gebeur","Meet die lengte","Lees 'n rekening","Teken 'n kaart"],0,"Voorspelling gebruik bekende inligting oor kans.");
+
+  // W3
+  add("ml7","W3","mcq","Watter is die moontlike uitkomste wanneer 'n muntstuk gegooi word?",["Kop of stert","1 tot 6","Rooi of blou of groen","Links of regs of bo"],0,"Die uitkomste vir 'n muntstuk is kop of stert.");
+  add("ml7","W3","mcq","Hoeveel moontlike uitkomste het 'n gewone dobbelsteen?",["6","2","10","12"],0,"Die dobbelsteen het ses moontlike resultate.");
+  add("ml7","W3","mcq","Watter metode help om moontlike uitkomste te organiseer?",["Tabel of boomdiagram","Termometer","Meetbeker","Rekeningstaat"],0,"Uitkomste kan sistematies georganiseer word.");
+  add("ml7","W3","mcq","As jy 'n muntstuk en 'n dobbelsteen saam gebruik, hoe beskryf jy die uitkomste die beste?",["As kombinasies van albei gebeurtenisse","As net een antwoord","As temperatuurwaardes","As pryse"],0,"Kombinasies wys uitkomste van twee aksies.");
+  add("ml7","W3","mcq","As 'n spinner drie dele het, hoeveel enkel-uitkomste het dit?",["3","2","6","1"],0,"Elke deel is 'n moontlike uitkoms.");
+  add("ml7","W3","mcq","Wat is 'n uitkoms?",["Die resultaat van 'n gebeurtenis","Die koste op 'n rekening","Die grootte van 'n kaart","Die temperatuur van die dag"],0,"In waarskynlikheid is dit wat gebeur.");
+  add("ml7","W3","mcq","As 'n sak net groen balle het, wat is die moontlike uitkoms wanneer jy een trek?",["Groen","Rooi","Blou","Enige kleur"],0,"As net een kleur daar is, is dit die enigste uitkoms.");
+  add("ml7","W3","mcq","Wat is die kans om 'n ewe getal op 'n dobbelsteen te rol?",["3 uit 6","1 uit 6","6 uit 6","0 uit 6"],0,"Die ewe getalle is 2, 4 en 6.");
+  add("ml7","W3","mcq","Wat is die kans om 'n getal kleiner as 3 op 'n dobbelsteen te rol?",["2 uit 6","3 uit 6","1 uit 6","6 uit 6"],0,"Die getalle 1 en 2 is kleiner as 3.");
+  add("ml7","W3","mcq","Waarom is 'n lys van alle moontlike uitkomste nuttig?",["Dit help jou om waarskynlikheid reg uit te werk","Dit maak die kaart warmer","Dit verander die rekening","Dit meet massa"],0,"Alle uitkomste gee 'n volledige prentjie.");
+
+  // IMAGE QUESTIONS
+  add("ml4","F1","img","Kyk na die prent. Watter bedrag is die totaal op die rekening?",["R350","R230","R120","R470"],0,"Die prent wys Water R120 en Elektrisiteit R230; totaal R350.","bill");
+  add("ml4","F2","img","Kyk na die prent. Watter soort lesing wys die meter?",["Elektrisiteitsgebruik in kWh","Temperatuur","Massa","Waarskynlikheid"],0,"Die meter wys 'n kWh lesing.","meter");
+  add("ml5","M4","img","Kyk na die termometer. Watter temperatuur is die naaste aan die lesing?",["20 C","35 C","5 C","40 C"],0,"Die rooi kolom is ongeveer by 20 C.","thermometer");
+  add("ml5","M3","img","Kyk na die maatbeker. Hoeveel vloeistof is ongeveer daarin?",["750 ml","250 ml","1000 ml","100 ml"],0,"Die waterlyn is naby 750 ml.","jug");
+  add("ml6","K1","img","Op die kaartprent, in watter blok is die skool?",["B2","A1","C3","A3"],0,"Die skool is in kolom B en ry 2.","map");
+  add("ml6","K3","img","Gebruik die kaartprent. In watter rigting is die skool vanaf A1?",["Suidoos","Noordwes","Noord","Wes"],0,"Die skool is laer en meer regs as A1.","map");
+  add("ml6","K4","img","Gebruik die staafskaal. Hoe lank is die volle skaal?",["4 km","2 km","1 km","8 km"],0,"Die staafskaal is gemerk van 0 tot 4 km.","scale");
+  add("ml6","K4","img","Gebruik die staafskaal. Hoe ver stel een segment voor?",["1 km","4 km","2 km","0.5 km"],0,"Die 4 km skaal het 4 dele; elke deel is 1 km.","scale");
+  add("ml7","W1","img","Kyk na die spinner. Wat is die waarskynlikheid om op 2 te land?",["1 uit 3","1 uit 2","2 uit 3","3 uit 3"],0,"Die spinner het drie ewe groot dele, dus 1 uit 3.","spinner");
+  add("ml7","W2","img","Kyk na die spinner. Watter uitkoms is die mees waarskynlik?",["Almal ewe waarskynlik","1","2","3"],0,"Die dele is ewe groot, dus is geen getal meer waarskynlik nie.","spinner");
+  add("ml7","W3","img","Kyk na die dobbelsteenprente. Watter getal is gerol?",["5","4","6","3"],0,"Die prent wys vyf kolle.","dice");
+  add("ml7","W3","img","As 'n gewone dobbelsteen soos die een in die prent gerol word, hoeveel moontlike uitkomste is daar?",["6","5","2","10"],0,"'n Gewone dobbelsteen het ses moontlike uitkomste.","dice");
+
+  return qs;
+}
+
+const mathlitQuestions = mathlitBuildQuestions();
+
+// === MATHLIT PATCH 2A: IMAGE QUESTIONS FIX ===
+const mathlitImageQuestions = [
+  {id:"ml_img_1", m:"ml4", unit:"F1", type:"img", visual:"bill", q:"Kyk na die rekening. Wat is die totaal wat betaal moet word?", o:["R350","R230","R120","R470"], a:0, w:"Die rekening wys Water R120 en Elektrisiteit R230. Totaal = R350."},
+  {id:"ml_img_2", m:"ml4", unit:"F2", type:"img", visual:"meter", q:"Kyk na die meter. Watter soort lesing word hier gewys?", o:["Elektrisiteitsgebruik in kWh","Temperatuur in grade","Volume in liter","Massa in kilogram"], a:0, w:"Die prent wys 'n elektrisiteitsmeter met 'n kWh lesing."},
+  {id:"ml_img_3", m:"ml5", unit:"M4", type:"img", visual:"thermometer", q:"Kyk na die termometer. Watter temperatuur is die naaste aan die lesing?", o:["20 C","35 C","5 C","40 C"], a:0, w:"Die rooi vlak is ongeveer by 20 C."},
+  {id:"ml_img_4", m:"ml5", unit:"M3", type:"img", visual:"jug", q:"Kyk na die maatbeker. Hoeveel vloeistof is ongeveer in die houer?", o:["750 ml","250 ml","1000 ml","100 ml"], a:0, w:"Die vloeistofvlak is naby 750 ml."},
+  {id:"ml_img_5", m:"ml6", unit:"K1", type:"img", visual:"map", q:"Kyk na die kaart. In watter roosterblok is die skool?", o:["B2","A1","C3","A3"], a:0, w:"Die skool is in kolom B en ry 2."},
+  {id:"ml_img_6", m:"ml6", unit:"K2", type:"img", visual:"map", q:"Gebruik die kaart. Waar is die skool relatief tot A1?", o:["Suidoos","Noordwes","Noord","Wes"], a:0, w:"Die skool is laer en regs van A1, dus suidoos."},
+  {id:"ml_img_7", m:"ml6", unit:"K4", type:"img", visual:"scale", q:"Kyk na die staafskaal. Hoe lank is die hele skaal?", o:["4 km","2 km","1 km","8 km"], a:0, w:"Die skaal is gemerk van 0 tot 4 km."},
+  {id:"ml_img_8", m:"ml6", unit:"K4", type:"img", visual:"scale", q:"Kyk na die staafskaal. As daar 4 gelyke dele is, hoeveel verteenwoordig een deel?", o:["1 km","4 km","2 km","0.5 km"], a:0, w:"4 km gedeel deur 4 dele = 1 km per deel."},
+  {id:"ml_img_9", m:"ml7", unit:"W1", type:"img", visual:"spinner", q:"Kyk na die spinner. Wat is die waarskynlikheid om op 2 te land?", o:["1 uit 3","1 uit 2","2 uit 3","3 uit 3"], a:0, w:"Die spinner het drie ewe groot dele, dus is die kans 1 uit 3."},
+  {id:"ml_img_10", m:"ml7", unit:"W2", type:"img", visual:"spinner", q:"Kyk na die spinner. Watter uitkoms is die mees waarskynlik?", o:["Almal ewe waarskynlik","1","2","3"], a:0, w:"Die dele is ewe groot, so geen uitkoms is meer waarskynlik nie."},
+  {id:"ml_img_11", m:"ml7", unit:"W3", type:"img", visual:"dice", q:"Kyk na die dobbelsteen. Watter getal word gewys?", o:["5","4","6","3"], a:0, w:"Die prent wys vyf kolle."},
+  {id:"ml_img_12", m:"ml7", unit:"W3", type:"img", visual:"dice", q:"As 'n gewone dobbelsteen gerol word, hoeveel moontlike uitkomste is daar?", o:["6","5","2","10"], a:0, w:"'n Gewone dobbelsteen het ses moontlike uitkomste."}
+];
+
+mathlitQuestions.push.apply(mathlitQuestions, mathlitImageQuestions);
+// === END MATHLIT PATCH 2A ===
+
+
+
+
+function mathlitCountByUnit(unit){
+  return mathlitQuestions.filter(function(q){ return q.unit === unit; }).length;
+}
+
+function mathlitCoverageHTML(){
+  let html = '<div class="card"><div class="row space"><div><h2>Coverage</h2><p class="muted">Vraagdekking per hoofstuk en afdeling vir Kwartaal 2.</p></div><span class="pill active">' + mathlitQuestions.length + ' vrae totaal</span></div>';
+  html += '<div class="grid subjects" style="margin-top:14px">';
+  mathlitQuestionTopics.forEach(function(t){
+    html += '<div class="note"><b>' + esc(t.unitTitle) + '</b><br><span class="muted">' + esc(t.module.toUpperCase()) + ' - ' + mathlitCountByUnit(t.unit) + ' vrae</span></div>';
+  });
+  html += '</div></div>';
+  return html;
+}
 
 function mathlitModuleQuestionCount(moduleId){
   return mathlitQuestions.filter(function(q){ return q.m === moduleId; }).length;
@@ -6846,6 +7063,30 @@ function mathlitScore(){
   return score;
 }
 
+function mathlitShuffle(arr){
+  const copy = arr.slice();
+  for(let i = copy.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = copy[i];
+    copy[i] = copy[j];
+    copy[j] = tmp;
+  }
+  return copy;
+}
+
+function startMathlitExam(){
+  state.mathlitExamFinished = false;
+  state.mathlitExamAnswers = {};
+  state.mathlitExamSet = mathlitShuffle(mathlitQuestions).slice(0, 25);
+  state.screen = "mathlit_exam";
+  save();
+  render();
+}
+
+function mathlitExamQuestions(){
+  if(state.mathlitExamSet && state.mathlitExamSet.length) return state.mathlitExamSet;
+  return mathlitQuestions.slice(0, 25);
+}
 function mathlitStudyHTML(){
   state.selectedSubject = "mathlit";
   state.mathlitModule = state.mathlitModule || "ml4";
@@ -6858,14 +7099,14 @@ function mathlitStudyHTML(){
   let html = topbar();
   html += '<div class="wrap grid">';
 
-  html += '<div class="card"><div class="row space"><div><h2>Wiskundige Geletterdheid</h2><p class="muted">Graad 10 - Kwartaal 2 - PATCH 1 framework toets</p></div><div class="row"><button class="btn secondary" onclick="setState({screen:\'dashboard\'})">Subjects</button><button class="btn" onclick="state.screen=\'mathlit_exam\';save();render()">Start MathLit Test</button></div></div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>Wiskundige Geletterdheid</h2><p class="muted">Graad 10 - Kwartaal 2 - Kwartaal 2 studie</p></div><div class="row"><button class="btn secondary" onclick="setState({screen:\'dashboard\'})">Subjects</button><button class="btn" onclick="startMathlitExam()">Start MathLit Test</button></div></div></div>';
 
-  html += '<div class="card"><div class="row space"><div><h2>Study Hub</h2><p class="muted">Kwartaal 2 dek Finansies, Meting, Kaarte/Planne en Waarskynlikheid. Groot vraagbank, prentvrae, praktiese take, weak areas en history kom in volgende patches.</p></div><span class="pill active">' + mathlitQuestions.length + ' starter vrae</span></div>';
+  html += '<div class="card"><div class="row space"><div><h2>Study Hub</h2><p class="muted">Kwartaal 2 dek Finansies, Meting, Kaarte/Planne en Waarskynlikheid. Hierdie hub dek Finansies, Meting, Kaarte en Waarskynlikheid met n groot vraagbank en prentvrae.</p></div><span class="pill active">' + mathlitQuestions.length + ' vrae</span></div>';
   html += '<div class="grid subjects" style="margin-top:14px">';
   mathlitModules.forEach(function(m){
     html += '<button class="subjectBtn" onclick="state.mathlitModule=\'' + m.id + '\';state.mathlitShowAnswers=false;save();render()"><div style="font-size:28px;margin-bottom:8px">ML</div><h3>' + esc(m.title) + '</h3><p class="muted">' + esc(m.badge) + '</p><span class="pill active">' + mathlitModuleQuestionCount(m.id) + ' vrae</span></button>';
   });
-  html += '<button class="subjectBtn" onclick="state.screen=\'mathlit_exam\';save();render()"><div style="font-size:28px;margin-bottom:8px">TEST</div><h3>Quick Test</h3><p class="muted">Klein toets om die route te toets.</p><span class="pill active">Test</span></button>';
+  html += '<button class="subjectBtn" onclick="startMathlitExam()"><div style="font-size:28px;margin-bottom:8px">TEST</div><h3>Quick Test</h3><p class="muted">25-vraag random toets uit die vraagbank.</p><span class="pill active">Test</span></button>';
   html += '</div></div>';
 
   html += '<div class="grid two">';
@@ -6884,15 +7125,15 @@ function mathlitStudyHTML(){
   active.notes.forEach(function(n){ html += '<div class="note">' + esc(n) + '</div>'; });
   html += '</div></div>';
 
-  html += '<div class="card"><div class="row space"><div><h2>Starter Oefenvrae</h2><p class="muted">Net 2 vrae per module vir PATCH 1. Groot vraagbank kom in PATCH 2.</p></div><div class="row"><button class="btn" onclick="state.mathlitShowAnswers=true;save();render()">Merk Antwoorde</button><button class="btn secondary" onclick="mathlitReset()">Begin weer</button></div></div>';
-  html += '<div class="note" style="text-align:center;margin-top:12px"><b>Score:</b> ' + (state.mathlitShowAnswers ? (score + "/" + qs.length + " (" + pct + "%)") : "?") + '</div>';
+  html += '<div class="card"><div class="row space"><div><h2>Starter Oefenvrae</h2><p class="muted">Volledige vraagbank vir Kwartaal 2, insluitend prentvrae.</p></div><div class="row"><button class="btn" onclick="state.mathlitShowAnswers=true;save();render()">Merk Antwoorde</button><button class="btn secondary" onclick="mathlitReset()">Begin weer</button></div></div>';
+  html += '<div class="note" style="text-align:center;margin-top:12px"><b>Score:</b> ' + (state.mathlitShowAnswers ? (score + '/' + qs.length + ' (' + pct + '%)') : '?') + '</div>';
   html += '<div class="grid" style="margin-top:14px">';
 
   qs.forEach(function(q,i){
     const mod = state.mathlitModule || "ml4";
     const chosen = (state.mathlitAnswers || {})[mod + "-" + i];
     const reveal = !!state.mathlitShowAnswers;
-    html += '<div class="questionBox"><b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
+    html += '<div class="questionBox">' + mathlitVisualHTML(q) + '<b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
     q.o.forEach(function(o,oi){
       let cls = "optionBtn";
       if(chosen===oi && !reveal) cls += " selected";
@@ -6911,7 +7152,7 @@ function mathlitStudyHTML(){
 
 function mathlitExamHTML(){
   state.selectedSubject = "mathlit";
-  const qs = mathlitQuestions.slice();
+  const qs = mathlitExamQuestions();
   let score = 0;
   qs.forEach(function(q,i){
     if((state.mathlitExamAnswers || {})[i] === q.a) score++;
@@ -6920,17 +7161,17 @@ function mathlitExamHTML(){
 
   let html = topbar();
   html += '<div class="wrap grid">';
-  html += '<div class="card"><div class="row space"><div><h2>Wiskundige Geletterdheid Quick Test</h2><p class="muted">PATCH 1 toets: bevestig dat MathLit routes werk. Full exam kom later.</p></div><div class="row"><button class="btn secondary" onclick="state.screen=\'mathlit\';save();render()">Back to MathLit</button><button class="btn" onclick="state.mathlitExamFinished=true;save();render()">Finish Test</button></div></div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>Wiskundige Geletterdheid Quick Test</h2><p class="muted">Random 25-vraag toets uit die Kwartaal 2 vraagbank. Timer kom later.</p></div><div class="row"><button class="btn secondary" onclick="state.screen=\'mathlit\';save();render()">Back to MathLit</button><button class="btn" onclick="state.mathlitExamFinished=true;save();render()">Finish Test</button></div></div></div>';
 
   if(state.mathlitExamFinished){
-    html += '<div class="card"><h2>Resultaat: ' + score + '/' + qs.length + ' (' + pct + '%)</h2><p class="muted">Hierdie is net die klein framework toets.</p></div>';
+    html += '<div class="card"><h2>Resultaat: ' + score + '/' + qs.length + ' (' + pct + '%)</h2><p class="muted">Hierdie is n random toets uit die volledige vraagbank.</p></div>';
   }
 
   html += '<div class="card"><h2>Starter Test Questions</h2><div class="grid" style="margin-top:14px">';
   qs.forEach(function(q,i){
     const chosen = (state.mathlitExamAnswers || {})[i];
     const reveal = !!state.mathlitExamFinished;
-    html += '<div class="questionBox"><b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
+    html += '<div class="questionBox">' + mathlitVisualHTML(q) + '<b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
     q.o.forEach(function(o,oi){
       let cls = "optionBtn";
       if(chosen===oi && !reveal) cls += " selected";
@@ -6966,6 +7207,12 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 </script>
 </body>
 </html>
+
+
+
+
+
+
 
 
 
