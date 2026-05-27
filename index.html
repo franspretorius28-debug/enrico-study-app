@@ -4713,7 +4713,7 @@ function catExamHTML(){
     const mod = state.catModule || "all";
     const chosen = (state.catAnswers||{})[mod + "-" + i];
     const reveal = !!state.catShowAnswers;
-    html += teaeWrittenAnswerHTML("catAnswers", mod + "-" + i, q, reveal, q.w, agriVisualHTML(q).replace(/<[^>]*>?/gm, "") ? agriVisualHTML(q) : "");
+    html += teaeWrittenQuestionAnyHTML(q, i, "catAnswers", mod + "-" + i, reveal, agriVisualHTML(q));
   });
 
   html += '</div></div></div>';
@@ -4826,7 +4826,7 @@ function rttExamHTML(){
   qs.forEach(function(q,i){
     const chosen = (state.rttExamAnswers || {})[i];
     const reveal = !!state.rttExamFinished;
-    html += teaeWrittenAnswerHTML("catAnswers", mod + "-" + i, q, reveal, q.w, agriVisualHTML(q).replace(/<[^>]*>?/gm, "") ? agriVisualHTML(q) : "");
+    html += teaeWrittenQuestionAnyHTML(q, i, "rttExamAnswers", String(i), reveal, agriVisualHTML(q));
   });
 
   html += '</div></div>';
@@ -5005,7 +5005,7 @@ function rttExamHTML(){
   qs.forEach(function(q,i){
     const chosen = (state.rttExamAnswers || {})[i];
     const reveal = !!state.rttExamFinished;
-    html += teaeWrittenAnswerHTML("catAnswers", mod + "-" + i, q, reveal, q.w, agriVisualHTML(q).replace(/<[^>]*>?/gm, "") ? agriVisualHTML(q) : "");
+    html += teaeWrittenQuestionAnyHTML(q, i, "rttExamAnswers", String(i), reveal, agriVisualHTML(q));
   });
 
   html += '</div></div>';
@@ -6405,7 +6405,7 @@ function agriStudyHTML(){
   html += '</div></div>';
 
   html += teaeSessionInfoHTML("agri", state.agriModule || "m3", qs.length, allQs.length);
-  html += '<div class="card"><div class="row space"><div><h2>Oefenvrae</h2><p class="muted">Net 15 vrae per sessie vir Landbou.'</p></div><div class="row"><button class="btn" onclick="state.agriShowAnswers=true;save();render()">Merk Antwoorde</button><button class="btn secondary" onclick="agriReset()">Begin weer</button></div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>Oefenvrae</h2><p class="muted">Net 15 vrae per sessie vir Landbou.</p></div><div class="row"><button class="btn" onclick="state.agriShowAnswers=true;save();render()">Merk Antwoorde</button><button class="btn secondary" onclick="agriReset()">Begin weer</button></div></div>';
   html += '<div class="note" style="text-align:center;margin-top:12px"><b>Score:</b> ' + (state.agriShowAnswers ? (score + "/" + qs.length + " (" + pct + "%)") : "?") + '</div>';
   html += '<div class="grid" style="margin-top:14px">';
 
@@ -6413,7 +6413,7 @@ function agriStudyHTML(){
     const mod = state.agriModule || "m3";
     const chosen = (state.agriAnswers || {})[mod + "-" + i];
     const reveal = !!state.agriShowAnswers;
-    html += teaeWrittenAnswerHTML("catAnswers", mod + "-" + i, q, reveal, q.w, agriVisualHTML(q).replace(/<[^>]*>?/gm, "") ? agriVisualHTML(q) : "");
+    html += teaeWrittenQuestionAnyHTML(q, i, "agriAnswers", mod + "-" + i, reveal, agriVisualHTML(q));
   });
 
   html += '</div></div></div></div></div>';
@@ -8301,6 +8301,11 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 
 
 <!-- DASHBOARD PATCH 2: clean home text and safe header icon -->
+
+
+
+
+
 
 
 
