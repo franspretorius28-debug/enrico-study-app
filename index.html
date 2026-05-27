@@ -50,6 +50,13 @@
     .optionGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
     .optionBtn.correct{background:var(--good);border-color:var(--goodLine);color:#14532d}
     .optionBtn.wrong{background:var(--bad);border-color:var(--badLine);color:#7f1d1d}
+    /* === TEAE_WRITTEN_ANSWERS_V1 === */
+    .writtenAnswerBox{margin-top:12px;display:grid;gap:8px}
+    .writtenInput{width:100%;border:2px solid #cbd5e1;border-radius:18px;padding:14px 16px;font-weight:800;background:#fff}
+    .writtenInput:focus{border-color:#0f172a;outline:none;background:#f8fafc}
+    .answerResult{border-radius:18px;padding:12px;font-weight:800}
+    .answerResult.good{background:var(--good);color:#14532d;border:1px solid var(--goodLine)}
+    .answerResult.bad{background:var(--bad);color:#7f1d1d;border:1px solid var(--badLine)}
     .examHeader{background:#0f172a;color:white;border-radius:24px;padding:14px;display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}
     .timer{background:white;color:#0f172a;border-radius:18px;padding:9px 14px;font-weight:900}
     .resultGood{background:var(--good)} .resultBad{background:var(--bad)}
@@ -3629,6 +3636,67 @@ function choosePractice(i,o){ state.answers[`${state.quizMode}-${i}`]=o; save();
 function resetPractice(){ filteredQuestions().forEach((_,i)=>delete state.answers[`${state.quizMode}-${i}`]); setState({showAnswers:false}); }
 function chooseExam(o){ state.examAnswers[state.examIndex]=o; save(); render(); }
 
+// === TEAE_WRITTEN_ANSWERS_V1 ===
+function teaeAnswerText(q){
+  if(!q) return "";
+  if(q.o && typeof q.a === "number") return q.o[q.a] || "";
+  if(q.options && typeof q.answer === "number") return q.options[q.answer] || "";
+  return q.answerText || q.correct || "";
+}
+function teaeNormAnswer(v){
+  return String(v || "")
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[’']/g,"")
+    .replace(/[^a-z0-9]+/g," ")
+    .trim();
+}
+function teaeAnswerTokens(v){
+  const stop = {
+    "die":1,"en":1,"of":1,"om":1,"te":1,"is":1,"n":1,"a":1,"the":1,"to":1,"and":1,"or":1,
+    "van":1,"wat":1,"word":1,"gebruik":1,"used":1,"for":1,"with":1,"in":1,"on":1,"by":1
+  };
+  return teaeNormAnswer(v).split(" ").filter(function(x){ return x.length > 2 && !stop[x]; });
+}
+function teaeWrittenCorrect(q, val){
+  const user = teaeNormAnswer(val);
+  const ans = teaeNormAnswer(teaeAnswerText(q));
+  if(!user) return false;
+  if(user === ans) return true;
+  if(ans && user.indexOf(ans) >= 0) return true;
+
+  const tokens = teaeAnswerTokens(teaeAnswerText(q));
+  if(tokens.length === 0) return false;
+
+  let hits = 0;
+  tokens.forEach(function(t){
+    if(user.indexOf(t) >= 0) hits++;
+  });
+
+  if(tokens.length <= 2) return hits === tokens.length;
+  return hits >= Math.max(2, Math.ceil(tokens.length * 0.55));
+}
+function teaeSetWritten(bucket, key, val){
+  if(!state[bucket]) state[bucket] = {};
+  state[bucket][key] = val;
+  save();
+}
+function teaeWrittenAnswerHTML(bucket, key, q, reveal, explanation, visualHtml){
+  const val = ((state[bucket] || {})[key] || "");
+  const correctText = teaeAnswerText(q);
+  const ok = teaeWrittenCorrect(q, val);
+  let html = '<div class="questionBox">' + (visualHtml || "") + '<b>' + esc(q.q) + '</b>';
+  html += '<div class="writtenAnswerBox">';
+  html += '<input class="writtenInput" value="' + esc(val) + '" placeholder="Tik jou antwoord hier, nie A/B/C/D nie..." oninput="teaeSetWritten(\'' + bucket + '\',\'' + key + '\',this.value)">';
+  if(reveal){
+    html += '<div class="answerResult ' + (ok ? 'good' : 'bad') + '">' + (ok ? '✅ Reg' : '❌ Nog nie reg nie') + '</div>';
+    html += '<div class="note"><b>Regte antwoord:</b> ' + esc(correctText) + '</div>';
+    if(explanation) html += '<div class="note"><b>Verduideliking:</b> ' + esc(explanation) + '</div>';
+  }
+  html += '</div></div>';
+  return html;
+}
+
 
 
 function moduleLabel(module){
@@ -4500,7 +4568,7 @@ function catScore(){
   const mod = state.catModule || "all";
   let score = 0;
   qs.forEach(function(q,i){
-    if((state.catAnswers||{})[mod + "-" + i] === q.a) score++;
+    if(teaeWrittenCorrect(q, (state.catAnswers || {})[mod + "-" + i])) score++;
   });
   return score;
 }
@@ -4625,17 +4693,7 @@ function catExamHTML(){
     const mod = state.catModule || "all";
     const chosen = (state.catAnswers||{})[mod + "-" + i];
     const reveal = !!state.catShowAnswers;
-    html += '<div class="questionBox">' + agriVisualHTML(q) + '<b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
-    q.o.forEach(function(o,oi){
-      let cls = "optionBtn";
-      if(chosen===oi && !reveal) cls += " selected";
-      if(reveal && q.a===oi) cls += " correct";
-      if(reveal && chosen===oi && q.a!==oi) cls += " wrong";
-      html += '<button class="' + cls + '" onclick="catChoose(' + i + ',' + oi + ')">' + String.fromCharCode(65+oi) + '. ' + esc(o) + '</button>';
-    });
-    html += '</div>';
-    if(reveal) html += '<div class="note" style="margin-top:12px"><b>Verduideliking:</b> ' + esc(q.w) + '</div>';
-    html += '</div>';
+    html += teaeWrittenAnswerHTML("catAnswers", mod + "-" + i, q, reveal, q.w, agriVisualHTML(q).replace(/<[^>]*>?/gm, "") ? agriVisualHTML(q) : "");
   });
 
   html += '</div></div></div>';
@@ -4670,7 +4728,7 @@ function rttExamScore(){
   const qs = rttExamQuestions();
   let score = 0;
   qs.forEach(function(q,i){
-    if((state.rttExamAnswers || {})[i] === q.a) score++;
+    if(teaeWrittenCorrect(q, (state.rttExamAnswers || {})[i])) score++;
   });
   return score;
 }
@@ -4748,17 +4806,7 @@ function rttExamHTML(){
   qs.forEach(function(q,i){
     const chosen = (state.rttExamAnswers || {})[i];
     const reveal = !!state.rttExamFinished;
-    html += '<div class="questionBox">' + agriVisualHTML(q) + '<b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
-    q.o.forEach(function(o,oi){
-      let cls = "optionBtn";
-      if(chosen===oi && !reveal) cls += " selected";
-      if(reveal && q.a===oi) cls += " correct";
-      if(reveal && chosen===oi && q.a!==oi) cls += " wrong";
-      html += '<button class="' + cls + '" onclick="rttExamChoose(' + i + ',' + oi + ')">' + String.fromCharCode(65+oi) + '. ' + esc(o) + '</button>';
-    });
-    html += '</div>';
-    if(reveal) html += '<div class="note" style="margin-top:12px"><b>Verduideliking:</b> ' + esc(q.w) + '</div>';
-    html += '</div>';
+    html += teaeWrittenAnswerHTML("catAnswers", mod + "-" + i, q, reveal, q.w, agriVisualHTML(q).replace(/<[^>]*>?/gm, "") ? agriVisualHTML(q) : "");
   });
 
   html += '</div></div>';
@@ -4833,7 +4881,7 @@ function rttExamScore(){
   const qs = rttExamQuestions();
   let score = 0;
   qs.forEach(function(q,i){
-    if((state.rttExamAnswers || {})[i] === q.a) score++;
+    if(teaeWrittenCorrect(q, (state.rttExamAnswers || {})[i])) score++;
   });
   return score;
 }
@@ -4937,17 +4985,7 @@ function rttExamHTML(){
   qs.forEach(function(q,i){
     const chosen = (state.rttExamAnswers || {})[i];
     const reveal = !!state.rttExamFinished;
-    html += '<div class="questionBox">' + agriVisualHTML(q) + '<b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
-    q.o.forEach(function(o,oi){
-      let cls = "optionBtn";
-      if(chosen===oi && !reveal) cls += " selected";
-      if(reveal && q.a===oi) cls += " correct";
-      if(reveal && chosen===oi && q.a!==oi) cls += " wrong";
-      html += '<button class="' + cls + '" onclick="rttExamChoose(' + i + ',' + oi + ')">' + String.fromCharCode(65+oi) + '. ' + esc(o) + '</button>';
-    });
-    html += '</div>';
-    if(reveal) html += '<div class="note" style="margin-top:12px"><b>Verduideliking:</b> ' + esc(q.w) + '</div>';
-    html += '</div>';
+    html += teaeWrittenAnswerHTML("catAnswers", mod + "-" + i, q, reveal, q.w, agriVisualHTML(q).replace(/<[^>]*>?/gm, "") ? agriVisualHTML(q) : "");
   });
 
   html += '</div></div>';
@@ -4985,7 +5023,7 @@ function rttExamReviewData(){
         number:i+1,
         module:q.m,
         question:q.q,
-        chosen: typeof chosen === "number" ? q.o[chosen] : "Nie beantwoord nie",
+        chosen: chosen ? chosen : "Nie beantwoord nie",
         correct:q.o[q.a],
         explanation:q.w
       });
@@ -6352,17 +6390,7 @@ function agriStudyHTML(){
     const mod = state.agriModule || "m3";
     const chosen = (state.agriAnswers || {})[mod + "-" + i];
     const reveal = !!state.agriShowAnswers;
-    html += '<div class="questionBox">' + agriVisualHTML(q) + '<b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
-    q.o.forEach(function(o,oi){
-      let cls = "optionBtn";
-      if(chosen===oi && !reveal) cls += " selected";
-      if(reveal && q.a===oi) cls += " correct";
-      if(reveal && chosen===oi && q.a!==oi) cls += " wrong";
-      html += '<button class="' + cls + '" onclick="agriChoose(' + i + ',' + oi + ')">' + String.fromCharCode(65+oi) + '. ' + esc(o) + '</button>';
-    });
-    html += '</div>';
-    if(reveal) html += '<div class="note" style="margin-top:12px"><b>Verduideliking:</b> ' + esc(q.w) + '</div>';
-    html += '</div>';
+    html += teaeWrittenAnswerHTML("catAnswers", mod + "-" + i, q, reveal, q.w, agriVisualHTML(q).replace(/<[^>]*>?/gm, "") ? agriVisualHTML(q) : "");
   });
 
   html += '</div></div></div></div></div>';
@@ -7979,6 +8007,64 @@ function render(){
 }
 load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFinished) startTimer();
 </script>
+<script>
+// === CLEAR ENRICO PROGRESS ONCE ===
+(function(){
+  function runClear(){
+    try {
+      state.agriHistory = [];
+      state.agriLastWeak = [];
+      state.agriLastWrong = [];
+      state.agriExamAnswers = {};
+      state.agriExamSet = [];
+      state.agriExamFinished = false;
+      state.agriExamSecondsLeft = null;
+      state.agriAnswers = {};
+      state.agriShowAnswers = false;
+      state.agriPracticals = {};
+
+      state.mathlitHistory = [];
+      state.mathlitLastWeak = [];
+      state.mathlitLastWrong = [];
+      state.mathlitExamAnswers = {};
+      state.mathlitExamSet = [];
+      state.mathlitExamFinished = false;
+      state.mathlitExamSecondsLeft = null;
+      state.mathlitAnswers = {};
+      state.mathlitShowAnswers = false;
+      state.mathlitPracticals = {};
+
+      state.rttHistory = [];
+      state.catHistory = [];
+      state.rttExamHistory = [];
+      state.rttLastWeak = [];
+      state.catWeakAreas = [];
+      state.rttExamAnswers = {};
+      state.rttExamFinished = false;
+
+      state.k53History = [];
+      state.examHistory = [];
+      state.history = [];
+      state.weakAreas = [];
+      state.k53WeakAreas = [];
+      state.answers = {};
+      state.examAnswers = {};
+      state.examFinished = false;
+
+      save();
+      render();
+      alert("Enrico se progress, weak areas en history is skoongemaak. Hy kan nou vars begin.");
+      console.log("DONE: Enrico progress cleared.");
+    } catch(e) {
+      console.error("CLEAR FAILED", e);
+      alert("Clear failed. Check console.");
+    }
+  }
+
+  setTimeout(runClear, 500);
+})();
+</script>
+<!-- END CLEAR ENRICO PROGRESS ONCE -->
 </body>
 </html>
 
@@ -8051,4 +8137,6 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 
 
 <!-- DASHBOARD PATCH 2: clean home text and safe header icon -->
+
+
 
