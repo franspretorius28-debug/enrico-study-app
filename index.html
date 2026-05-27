@@ -8229,64 +8229,6 @@ function render(){
 }
 load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFinished) startTimer();
 </script>
-<script>
-// === CLEAR ENRICO PROGRESS ONCE ===
-(function(){
-  function runClear(){
-    try {
-      state.agriHistory = [];
-      state.agriLastWeak = [];
-      state.agriLastWrong = [];
-      state.agriExamAnswers = {};
-      state.agriExamSet = [];
-      state.agriExamFinished = false;
-      state.agriExamSecondsLeft = null;
-      state.agriAnswers = {};
-      state.agriShowAnswers = false;
-      state.agriPracticals = {};
-
-      state.mathlitHistory = [];
-      state.mathlitLastWeak = [];
-      state.mathlitLastWrong = [];
-      state.mathlitExamAnswers = {};
-      state.mathlitExamSet = [];
-      state.mathlitExamFinished = false;
-      state.mathlitExamSecondsLeft = null;
-      state.mathlitAnswers = {};
-      state.mathlitShowAnswers = false;
-      state.mathlitPracticals = {};
-
-      state.rttHistory = [];
-      state.catHistory = [];
-      state.rttExamHistory = [];
-      state.rttLastWeak = [];
-      state.catWeakAreas = [];
-      state.rttExamAnswers = {};
-      state.rttExamFinished = false;
-
-      state.k53History = [];
-      state.examHistory = [];
-      state.history = [];
-      state.weakAreas = [];
-      state.k53WeakAreas = [];
-      state.answers = {};
-      state.examAnswers = {};
-      state.examFinished = false;
-
-      save();
-      render();
-      alert("Enrico se progress, weak areas en history is skoongemaak. Hy kan nou vars begin.");
-      console.log("DONE: Enrico progress cleared.");
-    } catch(e) {
-      console.error("CLEAR FAILED", e);
-      alert("Clear failed. Check console.");
-    }
-  }
-
-  setTimeout(runClear, 500);
-})();
-</script>
-<!-- END CLEAR ENRICO PROGRESS ONCE -->
 </body>
 </html>
 
@@ -8359,6 +8301,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 
 
 <!-- DASHBOARD PATCH 2: clean home text and safe header icon -->
+
 
 
 
