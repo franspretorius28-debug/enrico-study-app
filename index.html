@@ -50,6 +50,19 @@
     .optionGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
     .optionBtn.correct{background:var(--good);border-color:var(--goodLine);color:#14532d}
     .optionBtn.wrong{background:var(--bad);border-color:var(--badLine);color:#7f1d1d}
+    /* === TEAE_MATHLIT_WRITTEN_FORMULAS_V1 === */
+    .formulaBank{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+    .formulaCard{border:1px solid var(--line);border-radius:22px;background:#f8fafc;padding:14px}
+    .formulaCard b{display:block;margin-bottom:6px}
+    .formulaLine{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:white;border:1px solid #e2e8f0;border-radius:14px;padding:8px;margin-top:6px;font-weight:900}
+    .mathlitWorkBox{margin-top:12px;border:1px solid #dbeafe;background:#eff6ff;border-radius:20px;padding:12px}
+    .mathlitWorkBox b{color:#1e3a8a}
+    .mathlitInput{width:100%;border:2px solid #cbd5e1;border-radius:18px;padding:14px 16px;font-weight:900;background:white;margin-top:10px}
+    .mathlitInput:focus{border-color:#0f172a;outline:none;background:#f8fafc}
+    .mathlitResult{border-radius:18px;padding:12px;font-weight:900;margin-top:10px}
+    .mathlitResult.good{background:var(--good);color:#14532d;border:1px solid var(--goodLine)}
+    .mathlitResult.bad{background:var(--bad);color:#7f1d1d;border:1px solid var(--badLine)}
+    @media(max-width:820px){.formulaBank{grid-template-columns:1fr}}
     /* === TEAE_WRITTEN_ANSWERS_V1 === */
     .writtenAnswerBox{margin-top:12px;display:grid;gap:8px}
     .writtenInput{width:100%;border:2px solid #cbd5e1;border-radius:18px;padding:14px 16px;font-weight:800;background:#fff}
@@ -5017,14 +5030,14 @@ function rttExamReviewData(){
     if(!moduleStats[q.m]) moduleStats[q.m] = {total:0, wrong:0};
     moduleStats[q.m].total++;
 
-    if(chosen !== q.a){
+    if(!mathlitWrittenCorrect(q, chosen)){
       moduleStats[q.m].wrong++;
       wrong.push({
         number:i+1,
         module:q.m,
         question:q.q,
         chosen: chosen ? chosen : "Nie beantwoord nie",
-        correct:q.o[q.a],
+        correct:mathlitCorrectText(q),
         explanation:q.w
       });
     }
@@ -6578,15 +6591,15 @@ function agriExamReviewData(){
     if(!stats[unit]) stats[unit] = {unit:unit,total:0,wrong:0};
     stats[unit].total++;
 
-    if(chosen !== q.a){
+    if(!mathlitWrittenCorrect(q, chosen)){
       stats[unit].wrong++;
       wrong.push({
         number:i+1,
         unit:unit,
         unitTitle:agriUnitTitle(unit),
         question:q.q,
-        chosen:typeof chosen === "number" ? q.o[chosen] : "Nie beantwoord nie",
-        correct:q.o[q.a],
+        chosen:chosen ? chosen : "Nie beantwoord nie",
+        correct:mathlitCorrectText(q),
         explanation:q.w
       });
     }
@@ -7350,7 +7363,7 @@ function mathlitScore(){
   const mod = state.mathlitModule || "ml4";
   let score = 0;
   qs.forEach(function(q,i){
-    if((state.mathlitAnswers || {})[mod + "-" + i] === q.a) score++;
+    if(mathlitWrittenCorrect(q, (state.mathlitAnswers || {})[mod + "-" + i])) score++;
   });
   return score;
 }
@@ -7423,7 +7436,7 @@ function mathlitExamScore(){
   const qs = mathlitExamQuestions();
   let score = 0;
   qs.forEach(function(q,i){
-    if((state.mathlitExamAnswers || {})[i] === q.a) score++;
+    if(mathlitWrittenCorrect(q, (state.mathlitExamAnswers || {})[i])) score++;
   });
   return score;
 }
@@ -7444,15 +7457,15 @@ function mathlitExamReviewData(){
     if(!stats[unit]) stats[unit] = {unit:unit,total:0,wrong:0};
     stats[unit].total++;
 
-    if(chosen !== q.a){
+    if(!mathlitWrittenCorrect(q, chosen)){
       stats[unit].wrong++;
       wrong.push({
         number:i+1,
         unit:unit,
         unitTitle:mathlitUnitTitle(unit),
         question:q.q,
-        chosen:typeof chosen === "number" ? q.o[chosen] : "Nie beantwoord nie",
-        correct:q.o[q.a],
+        chosen:chosen ? chosen : "Nie beantwoord nie",
+        correct:mathlitCorrectText(q),
         explanation:q.w
       });
     }
@@ -7859,6 +7872,140 @@ function mathlitHalfYearPrepHTML(){
   return html;
 }
 // === END MATHLIT PATCH 6 ===
+
+// === TEAE_MATHLIT_WRITTEN_FORMULAS_V1 ===
+function mathlitCorrectText(q){
+  if(!q) return "";
+  if(q.o && typeof q.a === "number") return q.o[q.a] || "";
+  return q.answerText || q.correct || "";
+}
+
+function mathlitNumberParts(v){
+  const s = String(v || "")
+    .replace(/,/g,".")
+    .replace(/\s+/g," ")
+    .replace(/r/ig,"")
+    .trim();
+  const m = s.match(/-?\d+(\.\d+)?/g);
+  return m ? m.map(function(x){ return Number(x); }).filter(function(n){ return !isNaN(n); }) : [];
+}
+
+function mathlitWrittenCorrect(q, val){
+  const ansText = mathlitCorrectText(q);
+  const user = String(val || "").trim();
+  if(!user) return false;
+
+  if(typeof teaeWrittenCorrect === "function" && teaeWrittenCorrect(q, user)) return true;
+
+  const ansNums = mathlitNumberParts(ansText);
+  const userNums = mathlitNumberParts(user);
+
+  if(ansNums.length && userNums.length){
+    for(let i=0;i<ansNums.length;i++){
+      for(let j=0;j<userNums.length;j++){
+        if(Math.abs(ansNums[i] - userNums[j]) < 0.01) return true;
+      }
+    }
+  }
+
+  const cleanUser = teaeNormAnswer ? teaeNormAnswer(user) : user.toLowerCase();
+  const cleanAns = teaeNormAnswer ? teaeNormAnswer(ansText) : ansText.toLowerCase();
+  if(cleanUser === cleanAns) return true;
+  if(cleanAns && cleanUser.indexOf(cleanAns) >= 0) return true;
+
+  return false;
+}
+
+function mathlitSetWrittenAnswer(bucket, key, val){
+  if(!state[bucket]) state[bucket] = {};
+  if(String(val || "").trim() === "") delete state[bucket][key];
+  else state[bucket][key] = val;
+  save();
+}
+
+function mathlitFormulaHint(q){
+  const m = q.m || "";
+  const unit = q.unit || "";
+  const text = (q.q || "").toLowerCase();
+
+  if(m === "ml4"){
+    if(text.indexOf("persent") >= 0 || text.indexOf("afslag") >= 0 || text.indexOf("verhoog") >= 0){
+      return "Persentasie: bedrag × persentasie ÷ 100. Nuwe bedrag = ou bedrag + verhoging of ou bedrag - afslag.";
+    }
+    if(text.indexOf("tarief") >= 0 || text.indexOf("per") >= 0 || text.indexOf("eenheid") >= 0 || text.indexOf("kwh") >= 0 || text.indexOf("kl") >= 0){
+      return "Tarief: totale koste = vaste fooi + (aantal eenhede × prys per eenheid).";
+    }
+    return "Finansies: lees die bedrae, kies die regte bewerking, en wys jou totaal met Rand.";
+  }
+
+  if(m === "ml5"){
+    if(text.indexOf("area") >= 0) return "Area van reghoek = lengte × breedte.";
+    if(text.indexOf("omtrek") >= 0) return "Omtrek van reghoek = 2 × (lengte + breedte).";
+    if(text.indexOf("km") >= 0 || text.indexOf("meter") >= 0 || text.indexOf("cm") >= 0 || text.indexOf("mm") >= 0){
+      return "Lengte: 1 km = 1000 m, 1 m = 100 cm, 1 cm = 10 mm.";
+    }
+    if(text.indexOf("kg") >= 0 || text.indexOf("gram") >= 0 || text.indexOf(" g") >= 0){
+      return "Massa: 1 kg = 1000 g. Om kg na g te gaan, maal met 1000.";
+    }
+    if(text.indexOf("l") >= 0 || text.indexOf("ml") >= 0 || text.indexOf("liter") >= 0){
+      return "Volume: 1 L = 1000 ml. Om L na ml te gaan, maal met 1000.";
+    }
+    if(text.indexOf("temperatuur") >= 0 || text.indexOf("verskil") >= 0 || text.indexOf("gedaal") >= 0 || text.indexOf("gestyg") >= 0){
+      return "Temperatuurverskil: groter temperatuur - kleiner temperatuur.";
+    }
+    return "Meting: skakel eers eenhede reg om, dan bereken.";
+  }
+
+  if(m === "ml6"){
+    if(text.indexOf("skaal") >= 0 || text.indexOf("plan") >= 0 || text.indexOf("kaart") >= 0 || text.indexOf("werklik") >= 0){
+      return "Skaal: werklike afstand = kaartafstand × skaal. Maak seker die eenhede is reg.";
+    }
+    if(text.indexOf("rigting") >= 0 || text.indexOf("noord") >= 0 || text.indexOf("oos") >= 0 || text.indexOf("wes") >= 0 || text.indexOf("suid") >= 0){
+      return "Rigtings: Noord is bo, Suid is onder, Oos is regs, Wes is links.";
+    }
+    return "Kaarte en planne: gebruik titel, legende, rooster, rigting en skaal.";
+  }
+
+  if(m === "ml7"){
+    return "Waarskynlikheid: P(gebeurtenis) = gunstige uitkomste ÷ totale uitkomste.";
+  }
+
+  return "Lees die vraag stadig, skryf die formule neer, vervang die getalle en bereken.";
+}
+
+function mathlitFormulaBankHTML(){
+  let html = '<div class="card"><div class="row space"><div><h2>Formules wat Enrico moet ken</h2><p class="muted">Leer hierdie eers, dan doen die vrae deur self die antwoord te tik.</p></div><span class="pill active">Formula help</span></div>';
+  html += '<div class="formulaBank">';
+  html += '<div class="formulaCard"><b>Finansies</b><div class="formulaLine">Totaal = vaste fooi + (eenhede × tarief)</div><div class="formulaLine">% verandering = verskil ÷ oorspronklike × 100</div></div>';
+  html += '<div class="formulaCard"><b>Afslag / Verhoging</b><div class="formulaLine">Afslag = bedrag × % ÷ 100</div><div class="formulaLine">Nuwe bedrag = ou bedrag ± verandering</div></div>';
+  html += '<div class="formulaCard"><b>Meting</b><div class="formulaLine">1 km = 1000 m | 1 m = 100 cm | 1 L = 1000 ml | 1 kg = 1000 g</div><div class="formulaLine">Area = lengte × breedte</div><div class="formulaLine">Omtrek = 2 × (lengte + breedte)</div></div>';
+  html += '<div class="formulaCard"><b>Kaarte & Waarskynlikheid</b><div class="formulaLine">Werklike afstand = kaartafstand × skaal</div><div class="formulaLine">P = gunstige uitkomste ÷ totale uitkomste</div></div>';
+  html += '</div></div>';
+  return html;
+}
+
+function mathlitWrittenQuestionHTML(q, i, bucket, key, reveal){
+  const val = ((state[bucket] || {})[key] || "");
+  const correctText = mathlitCorrectText(q);
+  const ok = mathlitWrittenCorrect(q, val);
+
+  let html = '<div class="questionBox">' + mathlitVisualHTML(q);
+  html += '<div class="row space"><span class="pill active">' + esc(q.unit || q.m || "MathLit") + '</span><span class="pill">self antwoord</span></div>';
+  html += '<b>' + (i+1) + '. ' + esc(q.q) + '</b>';
+  html += '<div class="mathlitWorkBox"><b>Formule / metode:</b><br>' + esc(mathlitFormulaHint(q)) + '</div>';
+  html += '<input class="mathlitInput" value="' + esc(val) + '" placeholder="Tik jou antwoord hier. Wys bv. R165, 165, 2 km, 750 ml..." oninput="mathlitSetWrittenAnswer(\'' + bucket + '\',\'' + key + '\',this.value)">';
+
+  if(reveal){
+    html += '<div class="mathlitResult ' + (ok ? 'good' : 'bad') + '">' + (ok ? 'Reg' : 'Nog nie reg nie') + '</div>';
+    html += '<div class="note" style="margin-top:10px"><b>Regte antwoord:</b> ' + esc(correctText) + '</div>';
+    html += '<div class="note" style="margin-top:10px"><b>Rede:</b> ' + esc(q.w || "") + '</div>';
+  }
+
+  html += '</div>';
+  return html;
+}
+// === END TEAE_MATHLIT_WRITTEN_FORMULAS_V1 ===
+
 function mathlitStudyHTML(){
   state.selectedSubject = "mathlit";
   state.mathlitModule = state.mathlitModule || "ml4";
@@ -7883,6 +8030,7 @@ function mathlitStudyHTML(){
 
   html += mathlitCoverageHTML();
   html += mathlitHalfYearPrepHTML();
+  html += mathlitFormulaBankHTML();
   html += mathlitPracticalTasksHTML();
   html += mathlitWeakAreasHTML();
   html += mathlitResultHistoryHTML();
@@ -7908,19 +8056,8 @@ function mathlitStudyHTML(){
 
   qs.forEach(function(q,i){
     const mod = state.mathlitModule || "ml4";
-    const chosen = (state.mathlitAnswers || {})[mod + "-" + i];
     const reveal = !!state.mathlitShowAnswers;
-    html += '<div class="questionBox">' + mathlitVisualHTML(q) + '<b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
-    q.o.forEach(function(o,oi){
-      let cls = "optionBtn";
-      if(chosen===oi && !reveal) cls += " selected";
-      if(reveal && q.a===oi) cls += " correct";
-      if(reveal && chosen===oi && q.a!==oi) cls += " wrong";
-      html += '<button class="' + cls + '" onclick="mathlitChoose(' + i + ',' + oi + ')">' + String.fromCharCode(65+oi) + '. ' + esc(o) + '</button>';
-    });
-    html += '</div>';
-    if(reveal) html += '<div class="note" style="margin-top:12px"><b>Verduideliking:</b> ' + esc(q.w) + '</div>';
-    html += '</div>';
+    html += mathlitWrittenQuestionHTML(q, i, "mathlitAnswers", mod + "-" + i, reveal);
   });
 
   html += '</div></div></div></div></div>';
@@ -7961,28 +8098,8 @@ function mathlitExamHTML(){
   html += '<div class="card"><h2>' + (state.mathlitExamFinished ? "Exam Review" : "Exam Questions") + '</h2><div class="grid" style="margin-top:14px">';
 
   qs.forEach(function(q,i){
-    const chosen = (state.mathlitExamAnswers || {})[i];
     const reveal = !!state.mathlitExamFinished;
-    const correct = chosen === q.a;
-    let boxClass = "questionBox";
-    if(reveal) boxClass += correct ? " resultGood" : " resultBad";
-
-    html += '<div class="' + boxClass + '">' + mathlitVisualHTML(q) + '<div class="row space"><span class="pill active">' + esc(q.unit || q.m) + '</span><span class="pill">' + esc(q.type || "mcq") + '</span></div>';
-    html += '<b>' + (i+1) + '. ' + esc(q.q) + '</b><div class="optionGrid" style="margin-top:12px">';
-
-    q.o.forEach(function(o,oi){
-      let cls = "optionBtn";
-      if(chosen===oi && !reveal) cls += " selected";
-      if(reveal && q.a===oi) cls += " correct";
-      if(reveal && chosen===oi && q.a!==oi) cls += " wrong";
-      html += '<button class="' + cls + '" onclick="mathlitExamChoose(' + i + ',' + oi + ')">' + String.fromCharCode(65+oi) + '. ' + esc(o) + '</button>';
-    });
-
-    html += '</div>';
-    if(reveal){
-      html += '<div class="note" style="margin-top:12px"><b>Verduideliking:</b> ' + esc(q.w) + '</div>';
-    }
-    html += '</div>';
+    html += mathlitWrittenQuestionHTML(q, i, "mathlitExamAnswers", String(i), reveal);
   });
 
   html += '</div></div></div>';
@@ -8137,6 +8254,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 
 
 <!-- DASHBOARD PATCH 2: clean home text and safe header icon -->
+
 
 
 
