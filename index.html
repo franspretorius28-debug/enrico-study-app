@@ -5030,14 +5030,14 @@ function rttExamReviewData(){
     if(!moduleStats[q.m]) moduleStats[q.m] = {total:0, wrong:0};
     moduleStats[q.m].total++;
 
-    if(!mathlitWrittenCorrect(q, chosen)){
+    if(chosen !== q.a){
       moduleStats[q.m].wrong++;
       wrong.push({
         number:i+1,
         module:q.m,
         question:q.q,
-        chosen: chosen ? chosen : "Nie beantwoord nie",
-        correct:mathlitCorrectText(q),
+        chosen: typeof chosen === "number" ? q.o[chosen] : "Nie beantwoord nie",
+        correct:q.o[q.a],
         explanation:q.w
       });
     }
@@ -6591,15 +6591,15 @@ function agriExamReviewData(){
     if(!stats[unit]) stats[unit] = {unit:unit,total:0,wrong:0};
     stats[unit].total++;
 
-    if(!mathlitWrittenCorrect(q, chosen)){
+    if(chosen !== q.a){
       stats[unit].wrong++;
       wrong.push({
         number:i+1,
         unit:unit,
         unitTitle:agriUnitTitle(unit),
         question:q.q,
-        chosen:chosen ? chosen : "Nie beantwoord nie",
-        correct:mathlitCorrectText(q),
+        chosen:typeof chosen === "number" ? q.o[chosen] : "Nie beantwoord nie",
+        correct:q.o[q.a],
         explanation:q.w
       });
     }
@@ -8254,6 +8254,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 
 
 <!-- DASHBOARD PATCH 2: clean home text and safe header icon -->
+
 
 
 
