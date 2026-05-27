@@ -75,6 +75,10 @@
     .resultGood{background:var(--good)} .resultBad{background:var(--bad)}
     .hidden{display:none!important}
     .note{background:#f8fafc;border:1px solid var(--line);border-radius:22px;padding:14px}
+    /* === TEAE_15_QUESTIONS_SESSION_V1 === */
+    .sessionBox{background:linear-gradient(135deg,#eff6ff,#f8fafc);border:1px solid #bfdbfe;border-radius:24px;padding:14px;margin-top:14px}
+    .sessionBox h3{margin:0 0 6px}
+    .sessionCount{font-size:34px;font-weight:1000;line-height:1}
     /* === WORD TABLE INPUT CELLS V2 === */
     .editableWordTable th,.editableWordTable td{padding:0!important;height:36px;min-width:130px}
     .wordTableInput{width:100%;height:36px;border:0;background:transparent;padding:6px 8px;font:inherit;color:#111827}
@@ -4576,8 +4580,8 @@ function catReset(){
   state.catShowAnswers = false;
   save(); render();
 }
-function catScore(){
-  const qs = catFilteredQuestions();
+function catScore(qsOverride){
+  const qs = qsOverride || catFilteredQuestions();
   const mod = state.catModule || "all";
   let score = 0;
   qs.forEach(function(q,i){
@@ -4672,8 +4676,10 @@ function term2BookActivitiesHTML(){
 
 function catExamHTML(){
   state.catModule = state.catModule || "all";
-  const qs = catFilteredQuestions();
-  const score = catScore();
+  const allQs = catFilteredQuestions();
+  const modForSession = state.catModule || "all";
+  const qs = teaePickSessionQuestions("cat", modForSession, allQs);
+  const score = catScore(qs);
   const pct = qs.length ? Math.round(score / qs.length * 100) : 0;
   let html = topbar();
   html += '<div class="wrap grid">';
@@ -4698,6 +4704,7 @@ function catExamHTML(){
 
   html += catCoverageHTML();
 
+  html += teaeSessionInfoHTML("cat", state.catModule || "all", qs.length, allQs.length);
   html += '<div class="card"><div class="row space"><div><h2>Oefenvrae</h2><p class="muted">Teorie vrae vir Kwartaal 2. Die practical word apart in die Werkarea gedoen.</p></div><div class="row"><button class="btn" onclick="state.catShowAnswers=true;save();render()">Merk Antwoorde</button><button class="btn secondary" onclick="catReset()">Begin weer</button></div></div>';
   html += '<div class="note" style="text-align:center;margin-top:12px"><b>Questions:</b> ' + qs.length + ' | <b>Score:</b> ' + (state.catShowAnswers ? (score + "/" + qs.length + " (" + pct + "%)") : "?") + '</div>';
   html += '<div class="grid" style="margin-top:14px">';
@@ -4840,7 +4847,7 @@ function startRttExam(){
   state.screen = "rtt_exam";
   state.rttExamFinished = false;
   state.rttExamAnswers = {};
-  state.rttExamSet = shuffleQuestions(catQ2Questions).slice(0, 60);
+  state.rttExamSet = shuffleQuestions(catQ2Questions).slice(0, 15);
   state.rttExamSecondsLeft = 60 * 60;
   state.rttLastResult = null;
   startRttExamPracticalSelectionV1();
@@ -4850,7 +4857,7 @@ function startRttExam(){
 }
 
 function rttExamQuestions(){
-  return state.rttExamSet && state.rttExamSet.length ? state.rttExamSet : catQ2Questions.slice(0, 60);
+  return state.rttExamSet && state.rttExamSet.length ? state.rttExamSet : catQ2Questions.slice(0, 15);
 }
 
 function startRttExamTimer(){
@@ -4956,7 +4963,7 @@ function resetRttExam(){
   }
   state.rttExamFinished = false;
   state.rttExamAnswers = {};
-  state.rttExamSet = shuffleQuestions(catQ2Questions).slice(0, 60);
+  state.rttExamSet = shuffleQuestions(catQ2Questions).slice(0, 15);
   state.rttExamSecondsLeft = 60 * 60;
   state.rttLastResult = null;
   save();
@@ -4974,7 +4981,7 @@ function rttExamHTML(){
   let html = topbar();
   html += '<div class="wrap grid">';
 
-  html += '<div class="card"><div class="row space"><div><h2>RTT Kwartaal 2 Eksamen</h2><p class="muted">60 gemengde teorie vrae plus Word en Excel practical.</p></div><div class="row"><span class="pill active">Timer: ' + rttExamTimeText() + '</span><button class="btn secondary" onclick="resetRttExam()">Reset Exam</button><button class="btn" onclick="finishRttExam()">Finish RTT Exam</button></div></div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>RTT Kwartaal 2 Eksamen</h2><p class="muted">15 gemengde teorie vrae plus Word en Excel practical.</p></div><div class="row"><span class="pill active">Timer: ' + rttExamTimeText() + '</span><button class="btn secondary" onclick="resetRttExam()">Reset Exam</button><button class="btn" onclick="finishRttExam()">Finish RTT Exam</button></div></div></div>';
 
   html += rttSelectedPracticalsHTML();
 
@@ -4992,7 +4999,7 @@ function rttExamHTML(){
   html += rttExamReviewHTML();
   html += rttHistoryHTML();
 
-  html += '<div class="card"><div class="row space"><div><h2>Deel A: Teorie Vrae</h2><p class="muted">Beantwoord die 60 vrae. Hierdie punte tel saam met Word en Excel practical.</p></div><span class="pill active">' + theoryScore + '/' + qs.length + '</span></div>';
+  html += '<div class="card"><div class="row space"><div><h2>Deel A: Teorie Vrae</h2><p class="muted">Beantwoord die 15 vrae. Hierdie punte tel saam met Word en Excel practical.</p></div><span class="pill active">' + theoryScore + '/' + qs.length + '</span></div>';
   html += '<div class="grid" style="margin-top:14px">';
 
   qs.forEach(function(q,i){
@@ -6343,8 +6350,8 @@ function agriReset(){
   render();
 }
 
-function agriScore(){
-  const qs = agriFilteredQuestions();
+function agriScore(qsOverride){
+  const qs = qsOverride || agriFilteredQuestions();
   const mod = state.agriModule || "m3";
   let score = 0;
   qs.forEach(function(q,i){
@@ -6358,8 +6365,10 @@ function agriStudyHTML(){
   state.agriModule = state.agriModule || "m3";
 
   const active = agriModules.find(function(m){ return m.id === state.agriModule; }) || agriModules[0];
-  const qs = agriFilteredQuestions();
-  const score = agriScore();
+  const allQs = agriFilteredQuestions();
+  const modForSession = state.agriModule || "m3";
+  const qs = teaePickSessionQuestions("agri", modForSession, allQs);
+  const score = agriScore(qs);
   const pct = qs.length ? Math.round(score / qs.length * 100) : 0;
 
   let html = topbar();
@@ -6395,7 +6404,8 @@ function agriStudyHTML(){
   active.notes.forEach(function(n){ html += '<div class="note">' + esc(n) + '</div>'; });
   html += '</div></div>';
 
-  html += '<div class="card"><div class="row space"><div><h2>Oefenvrae</h2><p class="muted">Net 1–2 vrae per module vir . Groot vraagbank kom in PATCH 2.</p></div><div class="row"><button class="btn" onclick="state.agriShowAnswers=true;save();render()">Merk Antwoorde</button><button class="btn secondary" onclick="agriReset()">Begin weer</button></div></div>';
+  html += teaeSessionInfoHTML("agri", state.agriModule || "m3", qs.length, allQs.length);
+  html += '<div class="card"><div class="row space"><div><h2>Oefenvrae</h2><p class="muted">Net 15 vrae per sessie vir Landbou.'</p></div><div class="row"><button class="btn" onclick="state.agriShowAnswers=true;save();render()">Merk Antwoorde</button><button class="btn secondary" onclick="agriReset()">Begin weer</button></div></div>';
   html += '<div class="note" style="text-align:center;margin-top:12px"><b>Score:</b> ' + (state.agriShowAnswers ? (score + "/" + qs.length + " (" + pct + "%)") : "?") + '</div>';
   html += '<div class="grid" style="margin-top:14px">';
 
@@ -7339,8 +7349,8 @@ function mathlitReset(){
   render();
 }
 
-function mathlitScore(){
-  const qs = mathlitFilteredQuestions();
+function mathlitScore(qsOverride){
+  const qs = qsOverride || mathlitFilteredQuestions();
   const mod = state.mathlitModule || "ml4";
   let score = 0;
   qs.forEach(function(q,i){
@@ -7367,7 +7377,7 @@ function startMathlitExam(){
   state.screen = "mathlit_exam";
   state.mathlitExamFinished = false;
   state.mathlitExamAnswers = {};
-  state.mathlitExamSet = mathlitShuffle(mathlitQuestions).slice(0, Math.min(50, mathlitQuestions.length));
+  state.mathlitExamSet = mathlitShuffle(mathlitQuestions).slice(0, Math.min(15, mathlitQuestions.length));
   state.mathlitExamSecondsLeft = 60 * 60;
   save();
   startMathlitExamTimer();
@@ -7376,7 +7386,7 @@ function startMathlitExam(){
 
 function mathlitExamQuestions(){
   if(state.mathlitExamSet && state.mathlitExamSet.length) return state.mathlitExamSet;
-  state.mathlitExamSet = mathlitShuffle(mathlitQuestions).slice(0, Math.min(50, mathlitQuestions.length));
+  state.mathlitExamSet = mathlitShuffle(mathlitQuestions).slice(0, Math.min(15, mathlitQuestions.length));
   return state.mathlitExamSet;
 }
 
@@ -7506,7 +7516,7 @@ function resetMathlitExam(){
   }
   state.mathlitExamFinished = false;
   state.mathlitExamAnswers = {};
-  state.mathlitExamSet = mathlitShuffle(mathlitQuestions).slice(0, Math.min(50, mathlitQuestions.length));
+  state.mathlitExamSet = mathlitShuffle(mathlitQuestions).slice(0, Math.min(15, mathlitQuestions.length));
   state.mathlitExamSecondsLeft = 60 * 60;
   save();
   startMathlitExamTimer();
@@ -7992,8 +8002,10 @@ function mathlitStudyHTML(){
   state.mathlitModule = state.mathlitModule || "ml4";
 
   const active = mathlitModules.find(function(m){ return m.id === state.mathlitModule; }) || mathlitModules[0];
-  const qs = mathlitFilteredQuestions();
-  const score = mathlitScore();
+  const allQs = mathlitFilteredQuestions();
+  const modForSession = state.mathlitModule || "ml4";
+  const qs = teaePickSessionQuestions("mathlit", modForSession, allQs);
+  const score = mathlitScore(qs);
   const pct = qs.length ? Math.round(score / qs.length * 100) : 0;
 
   let html = topbar();
@@ -8006,7 +8018,7 @@ function mathlitStudyHTML(){
   mathlitModules.forEach(function(m){
     html += '<button class="subjectBtn" onclick="state.mathlitModule=\'' + m.id + '\';state.mathlitShowAnswers=false;save();render()"><div style="font-size:28px;margin-bottom:8px">ML</div><h3>' + esc(m.title) + '</h3><p class="muted">' + esc(m.badge) + '</p><span class="pill active">' + mathlitModuleQuestionCount(m.id) + ' vrae</span></button>';
   });
-  html += '<button class="subjectBtn" onclick="startMathlitExam()"><div style="font-size:28px;margin-bottom:8px">TEST</div><h3>Full Exam</h3><p class="muted">50-vraag random eksamen uit die volledige vraagbank.</p><span class="pill active">Test</span></button>';
+  html += '<button class="subjectBtn" onclick="startMathlitExam()"><div style="font-size:28px;margin-bottom:8px">TEST</div><h3>Full Exam</h3><p class="muted">15-vraag kort toets uit die volledige vraagbank.</p><span class="pill active">Test</span></button>';
   html += '</div></div>';
 
   html += mathlitCoverageHTML();
@@ -8030,7 +8042,7 @@ function mathlitStudyHTML(){
   html += '</div><h3 style="margin-top:14px">Study Notes</h3><div class="grid subjects" style="margin-top:10px">';
   active.notes.forEach(function(n){ html += '<div class="note">' + esc(n) + '</div>'; });
   html += '</div></div>';
-
+  html += teaeSessionInfoHTML("mathlit", state.mathlitModule || "ml4", qs.length, allQs.length);
   html += '<div class="card"><div class="row space"><div><h2>Oefenvrae</h2><p class="muted">Volledige vraagbank vir Kwartaal 2, insluitend prentvrae.</p></div><div class="row"><button class="btn" onclick="state.mathlitShowAnswers=true;save();render()">Merk Antwoorde</button><button class="btn secondary" onclick="mathlitReset()">Begin weer</button></div></div>';
   html += '<div class="note" style="text-align:center;margin-top:12px"><b>Score:</b> ' + (state.mathlitShowAnswers ? (score + '/' + qs.length + ' (' + pct + '%)') : '?') + '</div>';
   html += '<div class="grid" style="margin-top:14px">';
@@ -8048,7 +8060,7 @@ function mathlitStudyHTML(){
 function mathlitExamHTML(){
   state.selectedSubject = "mathlit";
   if(!state.mathlitExamSet || !state.mathlitExamSet.length){
-    state.mathlitExamSet = mathlitShuffle(mathlitQuestions).slice(0, Math.min(50, mathlitQuestions.length));
+    state.mathlitExamSet = mathlitShuffle(mathlitQuestions).slice(0, Math.min(15, mathlitQuestions.length));
   }
   if(typeof state.mathlitExamSecondsLeft !== "number") state.mathlitExamSecondsLeft = 60 * 60;
   if(!state.mathlitExamFinished) startMathlitExamTimer();
@@ -8151,6 +8163,54 @@ function teaeWrittenQuestionAnyHTML(q, i, bucket, key, reveal, visualHtml){
   return html;
 }
 // === END TEAE_ALL_SUBJECTS_WRITTEN_V1 ===
+
+
+// === TEAE_15_QUESTIONS_SESSION_V1 ===
+const TEAE_DAILY_QUESTION_LIMIT = 15;
+
+function teaeSessionKey(subject, moduleId){
+  const d = new Date();
+  const day = d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  return subject + "::" + (moduleId || "all") + "::" + day;
+}
+
+function teaePickSessionQuestions(subject, moduleId, questions){
+  if(!state.teaeDailySessions) state.teaeDailySessions = {};
+  const key = teaeSessionKey(subject, moduleId);
+  const total = questions.length;
+
+  if(!state.teaeDailySessions[key] || state.teaeDailySessions[key].total !== total){
+    let indexes = [];
+    for(let i=0;i<total;i++) indexes.push(i);
+
+    for(let i=indexes.length-1;i>0;i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = indexes[i];
+      indexes[i] = indexes[j];
+      indexes[j] = t;
+    }
+
+    state.teaeDailySessions[key] = {
+      total: total,
+      indexes: indexes.slice(0, Math.min(TEAE_DAILY_QUESTION_LIMIT, total))
+    };
+    save();
+  }
+
+  return state.teaeDailySessions[key].indexes.map(function(idx){ return questions[idx]; }).filter(Boolean);
+}
+
+function teaeNewQuestionSession(subject, moduleId){
+  if(!state.teaeDailySessions) state.teaeDailySessions = {};
+  delete state.teaeDailySessions[teaeSessionKey(subject, moduleId)];
+  save();
+  render();
+}
+
+function teaeSessionInfoHTML(subject, moduleId, shown, total){
+  return '<div class="sessionBox"><div class="row space"><div><h3>Vandag se kort sessie</h3><p class="muted">Net 15 vrae op n slag sodat dit nie te veel voel nie. Doen hierdie rondte rustig, merk dan jou antwoorde.</p></div><div style="text-align:center"><div class="sessionCount">' + shown + '</div><span class="muted">van ' + total + '</span></div></div><div class="row" style="margin-top:10px"><button class="btn secondary" onclick="teaeNewQuestionSession(\'' + subject + '\',\'' + moduleId + '\')">Nuwe 15 vrae</button></div></div>';
+}
+// === END TEAE_15_QUESTIONS_SESSION_V1 ===
 
 function render(){
   const app=document.getElementById("app");
@@ -8299,6 +8359,8 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 
 
 <!-- DASHBOARD PATCH 2: clean home text and safe header icon -->
+
+
 
 
 
