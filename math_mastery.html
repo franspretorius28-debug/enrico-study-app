@@ -46,5 +46,376 @@ function render(){let q=questions[current];if(!q){document.getElementById('quest
 function retryQuestion(){document.getElementById('answer').value='';document.getElementById('feedback').style.display='none';document.getElementById('answer').focus()}function nextQuestion(){current=(current+1)%questions.length;render()}function prevQuestion(){current=(current-1+questions.length)%questions.length;render()}function showSteps(){let q=questions[current],fb=document.getElementById('feedback');fb.className='feedback bad';fb.style.display='block';fb.innerHTML='<b>Stappe:</b><div class="steps">'+q.steps.map((s,i)=>(i+1)+'. '+s).join('<br>')+'</div>'}
 function checkAnswer(){let q=questions[current],raw=norm(document.getElementById('answer').value),fb=document.getElementById('feedback');if(raw===''||Number.isNaN(Number(raw))){fb.className='feedback bad';fb.style.display='block';fb.innerHTML='Tik net die numeriese antwoord in. Gebruik punt of komma vir desimale.';return}let key=q.topic+'|'+q.q;if(closeEnough(raw,q.answer)){fb.className='feedback good';fb.style.display='block';fb.innerHTML=`✅ Reg! Antwoord: <b>${q.answer}</b> ${q.unit}`;if(!correctDone[key]){stars++;correctDone[key]=true;save()}document.getElementById('stars').textContent='⭐ '+stars;document.getElementById('score').textContent=`Mooi! Jy het ${stars} sterre.`}else{fb.className='feedback bad';fb.style.display='block';fb.innerHTML=mode==='exam'?'❌ Verkeerd. Probeer weer of kliek Wys stappe.':`❌ Nog nie reg nie.<br><b>Hint:</b> ${q.hint}<div class='steps'><b>Stappe:</b><br>${q.steps.map((s,i)=>(i+1)+'. '+s).join('<br>')}</div>`}}
 function resetProgress(){if(confirm('Reset alle sterre?')){stars=0;correctDone={};save();render()}}document.addEventListener('keydown',e=>{if(e.key==='Enter')checkAnswer()});loadControls();render();
-</script></body></html>
+</script><!-- ENRICO_VISUAL_DOCS_START -->
+<style id="enrico-visual-docs-css">
+  #visualDocArea{
+    margin:18px 0;
+    display:none;
+  }
+  .uct-doc{
+    background:#fff;
+    border:1px solid #d8e1ec;
+    border-radius:16px;
+    padding:18px;
+    box-shadow:0 8px 22px rgba(0,0,0,.07);
+    font-family:Arial,sans-serif;
+    overflow:auto;
+  }
+  .uct-doc-title{
+    text-align:center;
+    font-size:24px;
+    font-weight:900;
+    letter-spacing:1px;
+    color:#123c69;
+    margin-bottom:10px;
+  }
+  .uct-doc-sub{
+    text-align:center;
+    color:#506070;
+    margin-bottom:14px;
+  }
+  .uct-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+    font-size:15px;
+  }
+  .uct-table th,.uct-table td{
+    border:1px solid #b9c7d4;
+    padding:8px;
+    text-align:left;
+  }
+  .uct-table th{
+    background:#eef4fa;
+    font-weight:900;
+  }
+  .uct-money{
+    text-align:right!important;
+    white-space:nowrap;
+  }
+  .uct-note{
+    background:#fff7d6;
+    border:1px solid #f1d08b;
+    border-radius:12px;
+    padding:10px;
+    margin-top:12px;
+    font-weight:700;
+  }
+  .uct-invoice-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin-bottom:12px;
+  }
+  .uct-box{
+    border:1px solid #d8e1ec;
+    border-radius:12px;
+    padding:12px;
+    background:#f8fbff;
+  }
+  .uct-plan{
+    width:100%;
+    max-width:760px;
+    height:340px;
+    background:#f8fbff;
+    border:1px solid #d8e1ec;
+    border-radius:14px;
+    display:block;
+    margin:auto;
+  }
+  .uct-shape{
+    width:100%;
+    max-width:620px;
+    height:300px;
+    background:#f8fbff;
+    border:1px solid #d8e1ec;
+    border-radius:14px;
+    display:block;
+    margin:auto;
+  }
+  @media(max-width:700px){
+    .uct-invoice-grid{grid-template-columns:1fr}
+    .uct-table{font-size:13px}
+    .uct-doc-title{font-size:20px}
+  }
+</style>
+
+<script id="enrico-visual-docs-js">
+(function(){
+  function safeText(id){
+    const el = document.getElementById(id);
+    return el ? (el.innerText || el.textContent || "") : "";
+  }
+
+  function money(v){
+    return "R" + Number(v).toFixed(2).replace(".", ",");
+  }
+
+  function makeBankStatement(){
+    return `
+      <div class="uct-doc">
+        <div class="uct-doc-title">BANKSTAAT</div>
+        <div class="uct-doc-sub">Savings account statement — March</div>
+        <table class="uct-table">
+          <tr>
+            <th>Date</th>
+            <th>Transaction</th>
+            <th class="uct-money">Payment</th>
+            <th class="uct-money">Deposit</th>
+            <th class="uct-money">Balance</th>
+          </tr>
+          <tr>
+            <td>01/03</td>
+            <td>Opening balance</td>
+            <td></td>
+            <td></td>
+            <td class="uct-money">R1 200,00</td>
+          </tr>
+          <tr>
+            <td>03/03</td>
+            <td>Deposit</td>
+            <td></td>
+            <td class="uct-money">R500,00</td>
+            <td class="uct-money">(A)</td>
+          </tr>
+          <tr>
+            <td>05/03</td>
+            <td>ATM cash</td>
+            <td class="uct-money">R100,00</td>
+            <td></td>
+            <td class="uct-money">(B)</td>
+          </tr>
+          <tr>
+            <td>28/03</td>
+            <td>Bank charges</td>
+            <td class="uct-money">R12,00</td>
+            <td></td>
+            <td class="uct-money">?</td>
+          </tr>
+        </table>
+        <div class="uct-note">Gebruik die bankstaat om die closing balance te bereken.</div>
+      </div>
+    `;
+  }
+
+  function makeInvoice(){
+    return `
+      <div class="uct-doc">
+        <div class="uct-doc-title">TAX INVOICE</div>
+        <div class="uct-invoice-grid">
+          <div class="uct-box">
+            <b>DEALS 4 WHEELS</b><br>
+            Corner Stone Mall<br>
+            Mandela Main Road<br>
+            Mandela Square 6699
+          </div>
+          <div class="uct-box">
+            <b>Invoice #:</b> 0002245<br>
+            <b>Date:</b> 1 June 2020<br>
+            <b>VAT:</b> 15%<br>
+            <b>Customer:</b> Mr J Doe
+          </div>
+        </div>
+        <table class="uct-table">
+          <tr>
+            <th>Item</th>
+            <th>Description</th>
+            <th class="uct-money">Qty</th>
+            <th class="uct-money">Unit cost</th>
+            <th class="uct-money">Price</th>
+          </tr>
+          <tr><td>Head</td><td>Engine head</td><td class="uct-money">1</td><td class="uct-money">R28 315,79</td><td class="uct-money">R28 315,79</td></tr>
+          <tr><td>Gasket</td><td>Head gasket</td><td class="uct-money">1</td><td class="uct-money">R1 754,39</td><td class="uct-money">R1 754,39</td></tr>
+          <tr><td>Labour</td><td>Labour</td><td class="uct-money">7,5</td><td class="uct-money">R600,00</td><td class="uct-money">R4 500,00</td></tr>
+          <tr><td colspan="4" class="uct-money"><b>Subtotal</b></td><td class="uct-money">?</td></tr>
+          <tr><td colspan="4" class="uct-money"><b>VAT 15%</b></td><td class="uct-money">?</td></tr>
+          <tr><td colspan="4" class="uct-money"><b>Balance due</b></td><td class="uct-money">?</td></tr>
+        </table>
+      </div>
+    `;
+  }
+
+  function makeTariffTable(){
+    return `
+      <div class="uct-doc">
+        <div class="uct-doc-title">TARIFF TABLE</div>
+        <div class="uct-doc-sub">Electricity / water style tariff system</div>
+        <table class="uct-table">
+          <tr><th>Usage block</th><th>Units</th><th class="uct-money">Rate</th></tr>
+          <tr><td>Block 1</td><td>0–50 units</td><td class="uct-money">R1,85 per unit</td></tr>
+          <tr><td>Block 2</td><td>51–100 units</td><td class="uct-money">R2,25 per unit</td></tr>
+          <tr><td>Block 3</td><td>101+ units</td><td class="uct-money">R2,90 per unit</td></tr>
+          <tr><td>Service fee</td><td>Monthly</td><td class="uct-money">R65,00</td></tr>
+        </table>
+        <div class="uct-note">Lees die tarief per blok en bereken die totale koste.</div>
+      </div>
+    `;
+  }
+
+  function makePayslip(){
+    return `
+      <div class="uct-doc">
+        <div class="uct-doc-title">PAYSLIP</div>
+        <div class="uct-doc-sub">Design & All — Salary advice</div>
+        <div class="uct-invoice-grid">
+          <div class="uct-box">
+            <b>Employee:</b> Lucinda Adams<br>
+            <b>Basic salary:</b> R15 780,00<br>
+            <b>Overtime:</b> 38 hours @ R85/h
+          </div>
+          <div class="uct-box">
+            <b>Deductions</b><br>
+            PAYE/TAX: R2 865,83<br>
+            Medical Aid: R1 420,00<br>
+            UIF: 1% of basic salary
+          </div>
+        </div>
+        <table class="uct-table">
+          <tr><th>Description</th><th class="uct-money">Amount</th></tr>
+          <tr><td>Basic salary</td><td class="uct-money">R15 780,00</td></tr>
+          <tr><td>Overtime</td><td class="uct-money">(a)</td></tr>
+          <tr><td>UIF</td><td class="uct-money">(b)</td></tr>
+          <tr><td>Total deductions</td><td class="uct-money">(e)</td></tr>
+          <tr><td>Net pay</td><td class="uct-money">(f)</td></tr>
+        </table>
+      </div>
+    `;
+  }
+
+  function makeMeasurement(){
+    return `
+      <div class="uct-doc">
+        <div class="uct-doc-title">MEASUREMENT CONVERSION</div>
+        <table class="uct-table">
+          <tr><th>Length</th><th>Mass</th><th>Capacity</th><th>Area / Volume</th></tr>
+          <tr><td>1 m = 100 cm</td><td>1 kg = 1 000 g</td><td>1 ℓ = 1 000 ml</td><td>1 m² = 10 000 cm²</td></tr>
+          <tr><td>1 km = 1 000 m</td><td>1 t = 1 000 kg</td><td>1 m³ = 1 000 ℓ</td><td>1 m³ = 1 000 000 cm³</td></tr>
+        </table>
+        <div class="uct-note">Gebruik die tabel soos in ’n toets: kies die regte conversion factor.</div>
+      </div>
+    `;
+  }
+
+  function makeCylinder(){
+    return `
+      <div class="uct-doc">
+        <div class="uct-doc-title">3D SHAPE</div>
+        <svg class="uct-shape" viewBox="0 0 620 300">
+          <ellipse cx="310" cy="70" rx="160" ry="38" fill="#ffffff" stroke="#123c69" stroke-width="4"/>
+          <line x1="150" y1="70" x2="150" y2="230" stroke="#123c69" stroke-width="4"/>
+          <line x1="470" y1="70" x2="470" y2="230" stroke="#123c69" stroke-width="4"/>
+          <ellipse cx="310" cy="230" rx="160" ry="38" fill="#ffffff" stroke="#123c69" stroke-width="4"/>
+          <line x1="310" y1="230" x2="470" y2="230" stroke="#d45b7a" stroke-width="3"/>
+          <text x="375" y="220" font-size="28" fill="#d45b7a">6 cm</text>
+          <text x="490" y="155" font-size="28" fill="#d45b7a">12 cm</text>
+        </svg>
+        <div class="uct-note">Lees radius/hoogte vanaf die diagram en gebruik die volume- of surface-area formule.</div>
+      </div>
+    `;
+  }
+
+  function makeFloorPlan(){
+    return `
+      <div class="uct-doc">
+        <div class="uct-doc-title">FLOOR PLAN</div>
+        <svg class="uct-plan" viewBox="0 0 760 340">
+          <rect x="70" y="55" width="620" height="230" fill="#fffdf2" stroke="#918b45" stroke-width="8"/>
+          <line x1="380" y1="55" x2="380" y2="285" stroke="#918b45" stroke-width="8"/>
+          <line x1="70" y1="165" x2="690" y2="165" stroke="#918b45" stroke-width="8"/>
+          <line x1="230" y1="165" x2="230" y2="285" stroke="#918b45" stroke-width="8"/>
+          <line x1="480" y1="165" x2="480" y2="285" stroke="#918b45" stroke-width="8"/>
+          <rect x="190" y="52" width="90" height="12" fill="#5bbbd6"/>
+          <rect x="520" y="52" width="90" height="12" fill="#5bbbd6"/>
+          <rect x="300" y="278" width="70" height="12" fill="#5bbbd6"/>
+          <text x="165" y="115" font-size="22" fill="#333">Bedroom 1</text>
+          <text x="500" y="115" font-size="22" fill="#333">Bedroom 2</text>
+          <text x="120" y="235" font-size="22" fill="#333">Kitchen</text>
+          <text x="300" y="235" font-size="22" fill="#333">Bathroom</text>
+          <text x="555" y="235" font-size="22" fill="#333">Lounge</text>
+          <line x1="70" y1="30" x2="690" y2="30" stroke="#333" stroke-width="2"/>
+          <text x="345" y="25" font-size="24" fill="#333">7,3 m</text>
+          <text x="700" y="175" font-size="20" fill="#333">N ↑</text>
+        </svg>
+        <div class="uct-note">Gebruik die plan saam met die skaal om werklike of plan-afmetings te bereken.</div>
+      </div>
+    `;
+  }
+
+  function chooseVisual(topic, question){
+    const t = String(topic || "").toLowerCase();
+    const q = String(question || "").toLowerCase();
+
+    if(t.includes("finansiële dokumente") || q.includes("bankstaat") || q.includes("opening balance") || q.includes("closing balance")){
+      return makeBankStatement();
+    }
+    if(t.includes("fakture") || q.includes("invoice") || q.includes("vat")){
+      return makeInvoice();
+    }
+    if(t.includes("krediet") || q.includes("deposit") || q.includes("instalment") || q.includes("cash price")){
+      return makeInvoice();
+    }
+    if(t.includes("tarief")){
+      return makeTariffTable();
+    }
+    if(q.includes("salary") || q.includes("payslip") || q.includes("uif") || q.includes("overtime")){
+      return makePayslip();
+    }
+    if(t.includes("lengte") || t.includes("massa") || t.includes("temperatuur") || q.includes("convert")){
+      return makeMeasurement();
+    }
+    if(t.includes("volume") || q.includes("cylinder") || q.includes("3d")){
+      return makeCylinder();
+    }
+    if(t.includes("kaart") || t.includes("plan") || t.includes("skaal") || q.includes("floor plan") || q.includes("scale")){
+      return makeFloorPlan();
+    }
+    return "";
+  }
+
+  function ensureVisualArea(){
+    if(document.getElementById("visualDocArea")) return;
+
+    const qEl = document.getElementById("question");
+    if(!qEl) return;
+
+    const area = document.createElement("div");
+    area.id = "visualDocArea";
+    qEl.parentNode.insertBefore(area, qEl);
+  }
+
+  function updateVisual(){
+    ensureVisualArea();
+
+    const area = document.getElementById("visualDocArea");
+    if(!area) return;
+
+    const topic = safeText("topic");
+    const question = safeText("question");
+    const html = chooseVisual(topic, question);
+
+    if(html){
+      area.style.display = "block";
+      area.innerHTML = html;
+    } else {
+      area.style.display = "none";
+      area.innerHTML = "";
+    }
+  }
+
+  const oldRender = window.render;
+  if(typeof oldRender === "function"){
+    window.render = function(){
+      oldRender.apply(this, arguments);
+      setTimeout(updateVisual, 50);
+    };
+  }
+
+  window.addEventListener("load", updateVisual);
+  document.addEventListener("DOMContentLoaded", updateVisual);
+  setInterval(updateVisual, 700);
+})();
+</script>
+<!-- ENRICO_VISUAL_DOCS_END -->
+</body></html>
+
 
