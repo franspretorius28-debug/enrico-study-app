@@ -151,6 +151,12 @@
 
 <script>
 const STUDENT_NAME = "Enrico";
+
+// === ENRICO_SAFE_MATH_REDIRECT_V1 ===
+function enricoOpenNewMath(){
+  window.location.href = "math_mastery.html?v=stable";
+}
+// === END ENRICO_SAFE_MATH_REDIRECT_V1 ===
 const STUDENT_PIN = "1234";
 const RESULTS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbylvLXva-qg01pxJQJeHcfY3VygyzXYEQRN5DRTPb6Cr2pPOEDzuj_CPNzElfBuSAiT3g/exec";
 
@@ -3919,8 +3925,8 @@ function topbar(){
   if(isMathlit){
     subjectText = "- Wiskundige Geletterdheid";
     studyAction = "selectSubject('mathlit')";
-    examText = "Start MathLit Test";
-    examAction = "startMathlitExam()";
+    examText = "Start Nuwe Wiskunde";
+    examAction = "enricoOpenNewMath()";
   }
 
   return `<div class="topbar"><div class="wrap"><div class="card row space">
@@ -4087,6 +4093,7 @@ function dashboardHTML(){
   </div>`;
 }
 function selectSubject(id){
+  if(id === "mathlit" || id === 'mathlit'){ enricoOpenNewMath(); return; }
   state.selectedSubject=id;
   if(id==="k53") state.screen = "study";
   else if(id==="cat") state.screen = "cat";
@@ -8011,7 +8018,7 @@ function mathlitStudyHTML(){
   let html = topbar();
   html += '<div class="wrap grid">';
 
-  html += '<div class="card"><div class="row space"><div><h2>Wiskundige Geletterdheid</h2><p class="muted">Graad 10 - Kwartaal 2</p></div><div class="row"><button class="btn secondary" onclick="setState({screen:\'dashboard\'})">Subjects</button><button class="btn" onclick="startMathlitExam()">Start MathLit Test</button></div></div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>Wiskundige Geletterdheid</h2><p class="muted">Graad 10 - Kwartaal 2</p></div><div class="row"><button class="btn secondary" onclick="setState({screen:\'dashboard\'})">Subjects</button><button class="btn" onclick="enricoOpenNewMath()">Start Nuwe Wiskunde</button></div></div></div>';
 
   html += '<div class="card"><div class="row space"><div><h2>Study Hub</h2><p class="muted">Kwartaal 2 dek Finansies, Meting, Kaarte/Planne en Waarskynlikheid. Hierdie hub dek Finansies, Meting, Kaarte en Waarskynlikheid met n groot vraagbank en prentvrae.</p></div><span class="pill active">' + mathlitQuestions.length + ' vrae</span></div>';
   html += '<div class="grid subjects" style="margin-top:14px">';
@@ -8301,6 +8308,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 
 
 <!-- DASHBOARD PATCH 2: clean home text and safe header icon -->
+
 
 
 
