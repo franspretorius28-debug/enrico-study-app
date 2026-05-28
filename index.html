@@ -8251,140 +8251,62 @@ function render(){
 }
 load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFinished) startTimer();
 </script>
-<!-- ENRICO_DELETE_OLD_MOBILE_MATH_START -->
-<style id="enrico-delete-old-mobile-math-css">
-  /* Ou MathLit vraagkaarte heeltemal weg op desktop en mobile */
-  .enrico-old-mathlit-kill,
-  [data-enrico-old-mathlit-kill="1"]{
-    display:none !important;
-    visibility:hidden !important;
-    height:0 !important;
-    max-height:0 !important;
-    overflow:hidden !important;
-    opacity:0 !important;
-    pointer-events:none !important;
-  }
-</style>
-
-<script id="enrico-delete-old-mobile-math-js">
+<!-- ENRICO_SAFE_NEW_MATH_LINK_START -->
+<script id="enrico-safe-new-math-link-js">
 (function(){
-  const NEW_MATH_URL = "math_mastery.html?v=13";
+  const NEW_MATH_URL = "math_mastery.html?v=14";
 
-  function lowerText(el){
+  function textOf(el){
     return String((el && (el.innerText || el.textContent)) || "").toLowerCase();
   }
 
-  function isMathTriggerText(t){
-    t = String(t || "").toLowerCase();
+  function isMathTrigger(el){
+    const t = textOf(el);
+    const href = el.getAttribute ? String(el.getAttribute("href") || "").toLowerCase() : "";
+
     return (
       t.includes("start nuwe wiskunde") ||
       t.includes("start mathlit test") ||
+      t.includes("wiskunde") ||
       t.includes("mathlit") ||
-      t.includes("math lit") ||
       t.includes("mathematical literacy") ||
       t.includes("wiskundige geletterdheid") ||
-      t.includes("wiskunde")
+      href.includes("math") ||
+      href.includes("mathlit")
     );
   }
 
-  function goNewMath(e){
+  function goMath(e){
     if(e){
       e.preventDefault();
       e.stopPropagation();
-      e.stopImmediatePropagation && e.stopImmediatePropagation();
     }
     window.location.href = NEW_MATH_URL;
     return false;
   }
 
-  function wireAllMathButtons(){
-    document.querySelectorAll("a, button, [role='button'], .tile, .card, .subject-card, .tab, li").forEach(function(el){
-      const t = lowerText(el);
-      const href = el.getAttribute ? String(el.getAttribute("href") || "").toLowerCase() : "";
+  function wire(){
+    document.querySelectorAll("a, button, [role='button']").forEach(function(el){
+      if(isMathTrigger(el) && el.dataset.enricoSafeMath !== "1"){
+        el.dataset.enricoSafeMath = "1";
+        el.style.cursor = "pointer";
 
-      if(isMathTriggerText(t) || isMathTriggerText(href)){
-        if(el.dataset.enricoNewMathOnly !== "1"){
-          el.dataset.enricoNewMathOnly = "1";
-          el.style.cursor = "pointer";
-
-          if(el.tagName === "A"){
-            el.setAttribute("href", NEW_MATH_URL);
-          }
-
-          el.addEventListener("click", goNewMath, true);
+        if(el.tagName === "A"){
+          el.setAttribute("href", NEW_MATH_URL);
         }
+
+        el.addEventListener("click", goMath, true);
       }
     });
   }
 
-  function killOldMathLitBlocks(){
-    document.querySelectorAll("section, article, main > div, .card, .quiz, .question, .study, .module, div").forEach(function(el){
-      const t = lowerText(el);
-
-      const looksOldMath =
-        t.includes("tik antwoord op phone") ||
-        t.includes("tik jou antwoord hier") ||
-        t.includes("self antwoord") ||
-        t.includes("formule / metode") ||
-        t.includes("klik hier en tik jou antwoord") ||
-        t.includes("logged in as enrico") && t.includes("wiskundige geletterdheid") ||
-        t.includes("start nuwe wiskunde") && t.includes("tik antwoord op phone");
-
-      if(looksOldMath){
-        const box = el.closest(".card") || el.closest("section") || el.closest("article") || el;
-        box.classList.add("enrico-old-mathlit-kill");
-        box.setAttribute("data-enrico-old-mathlit-kill","1");
-      }
-    });
-  }
-
-  function forceHomeWhenBackFromMath(){
-    const qs = window.location.search || "";
-    if(qs.includes("home=1")){
-      setTimeout(function(){
-        window.scrollTo(0,0);
-        killOldMathLitBlocks();
-      },100);
-    }
-  }
-
-  function clearOldCache(){
-    try {
-      if("serviceWorker" in navigator){
-        navigator.serviceWorker.getRegistrations().then(function(regs){
-          regs.forEach(function(reg){ reg.unregister(); });
-        }).catch(function(){});
-      }
-      if(window.caches && caches.keys){
-        caches.keys().then(function(keys){
-          keys.forEach(function(k){
-            if(String(k).toLowerCase().includes("enrico") || String(k).toLowerCase().includes("study")){
-              caches.delete(k);
-            }
-          });
-        }).catch(function(){});
-      }
-    } catch(e){}
-  }
-
-  function run(){
-    wireAllMathButtons();
-    killOldMathLitBlocks();
-    forceHomeWhenBackFromMath();
-  }
-
-  clearOldCache();
-  document.addEventListener("DOMContentLoaded", run);
-  window.addEventListener("load", run);
-  document.addEventListener("click", function(){ setTimeout(run,50); }, true);
-
-  setTimeout(run, 300);
-  setTimeout(run, 1000);
-  setTimeout(run, 2500);
-  setInterval(run, 3000);
+  document.addEventListener("DOMContentLoaded", wire);
+  window.addEventListener("load", wire);
+  setTimeout(wire, 500);
+  setTimeout(wire, 1500);
 })();
 </script>
-<!-- ENRICO_DELETE_OLD_MOBILE_MATH_END -->
+<!-- ENRICO_SAFE_NEW_MATH_LINK_END -->
 </body>
 </html>
 
@@ -8457,6 +8379,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 
 
 <!-- DASHBOARD PATCH 2: clean home text and safe header icon -->
+
 
 
 
