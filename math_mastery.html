@@ -522,20 +522,39 @@ function render(){
   document.getElementById("unit").textContent = q.unit || "";
   document.getElementById("answer").value = answers[qKey(q)] || "";
   document.getElementById("status").textContent = `Bemeester: ${masteredKeys.length}/${allQuestions.length} sterre | Hierdie toets: ${questions.length} vrae`;
-  document.getElementById("stars").textContent = "⭐ " + stars;
+  document.getElementById("stars").textContent = "⭐ " + masteredKeys.length + "/" + allQuestions.length;
   document.getElementById("bar").style.width = ((current)/questions.length*100) + "%";
   setTimeout(()=>document.getElementById("answer").focus(),50);
 }
 
+function markCurrentQuestionQuietly(){
+  const q = questions[current];
+  if(!q) return;
+
+  const key = qKey(q);
+  const val = document.getElementById("answer").value;
+
+  answers[key] = val;
+
+  if(isCorrect(val, q.answer)){
+    if(!masteredKeys.includes(key)){
+      masteredKeys.push(key);
+      save();
+    }
+  }
+
+  document.getElementById("stars").textContent = "⭐ " + masteredKeys.length + "/" + allQuestions.length;
+}
+
 function submitAnswer(){
   const q = questions[current];
-  answers[qKey(q)] = document.getElementById("answer").value;
+  markCurrentQuestionQuietly();
   if(current < questions.length-1){current++;render()} else finishTest()
 }
 
 function skipQuestion(){
   const q = questions[current];
-  answers[qKey(q)] = "";
+  if(q) answers[qKey(q)] = "";
   if(current < questions.length-1){current++;render()} else finishTest()
 }
 
@@ -565,7 +584,7 @@ function finishTest(){
   document.getElementById("question").textContent = `Jy het ${correct} uit ${questions.length} reg.`;
   document.getElementById("answer").value = "";
   document.getElementById("unit").textContent = "";
-  document.getElementById("stars").textContent = "⭐ " + stars;
+  document.getElementById("stars").textContent = "⭐ " + masteredKeys.length + "/" + allQuestions.length;
   document.getElementById("status").textContent = wrongQuestions.length ? "Volgende toets vra net die vrae wat verkeerd was." : "Mooi! Alles in hierdie toets is reg. As 406/406 bereik is, kan jy 'n vars ronde begin.";
 
   let html = wrongQuestions.length
@@ -606,80 +625,9 @@ buildAll();
 renderTiles();
 startFreshTest();
 </script>
-<!-- ENRICO_COUNTDOWN_STATUS_START -->
-<script id="enrico-countdown-status-js">
-(function(){
-  function safeGet(name, fallback){
-    try {
-      if(typeof window[name] !== "undefined") return window[name];
-    } catch(e){}
-    try {
-      return eval(name);
-    } catch(e){}
-    return fallback;
-  }
-
-  function updateCountdownStatus(){
-    const status = document.getElementById("status");
-    const starsEl = document.getElementById("stars");
-    const bar = document.getElementById("bar");
-
-    if(!status) return;
-
-    let allQ = safeGet("allQuestions", []);
-    let qs = safeGet("questions", []);
-    let cur = safeGet("current", 0);
-    let mastered = safeGet("masteredKeys", []);
-    let wrong = safeGet("wrongQuestions", []);
-
-    const totalAll = Array.isArray(allQ) ? allQ.length : 406;
-    const totalTest = Array.isArray(qs) ? qs.length : 0;
-    const doneNow = totalTest ? Math.min(cur + 1, totalTest) : 0;
-    const leftNow = totalTest ? Math.max(totalTest - doneNow, 0) : 0;
-    const masteredCount = Array.isArray(mastered) ? mastered.length : Number(localStorage.getItem("enricoMathStars") || "0");
-
-    if(starsEl){
-      starsEl.textContent = "⭐ " + masteredCount + "/" + totalAll;
-    }
-
-    if(totalTest){
-      status.textContent =
-        "Bemeester: " + masteredCount + "/" + totalAll +
-        " sterre | Vraag: " + doneNow + "/" + totalTest +
-        " | Oor in hierdie toets: " + leftNow;
-    } else {
-      status.textContent =
-        "Bemeester: " + masteredCount + "/" + totalAll +
-        " sterre";
-    }
-
-    if(bar && totalTest){
-      bar.style.width = Math.round((doneNow / totalTest) * 100) + "%";
-    }
-  }
-
-  // Wrap render so status altyd reg wys na elke vraag
-  const timer = setInterval(updateCountdownStatus, 400);
-
-  window.addEventListener("load", function(){
-    setTimeout(updateCountdownStatus, 200);
-    setTimeout(updateCountdownStatus, 800);
-  });
-
-  document.addEventListener("click", function(){
-    setTimeout(updateCountdownStatus, 100);
-    setTimeout(updateCountdownStatus, 500);
-  }, true);
-
-  document.addEventListener("keydown", function(){
-    setTimeout(updateCountdownStatus, 100);
-    setTimeout(updateCountdownStatus, 500);
-  }, true);
-})();
-</script>
-<!-- ENRICO_COUNTDOWN_STATUS_END -->
 </body>
 </html>
+
 
 
 
