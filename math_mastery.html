@@ -108,23 +108,43 @@ svg{max-width:100%;height:auto}
 </div>
 
 <script>
-// TEAE_MOBILE_RESET_PROGRESS_V1
+// TEAE_FORCE_FULL_MOBILE_RESET_V2
 try {
   const params = new URLSearchParams(window.location.search);
   if (params.get("reset") === "1") {
+    const keys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      keys.push(localStorage.key(i));
+    }
+
+    keys.forEach(k => {
+      if (
+        k &&
+        (
+          k.toLowerCase().includes("enricomath") ||
+          k.toLowerCase().includes("math") ||
+          k.toLowerCase().includes("teae") ||
+          k.toLowerCase().includes("wrong") ||
+          k.toLowerCase().includes("master")
+        )
+      ) {
+        localStorage.removeItem(k);
+      }
+    });
+
     localStorage.removeItem("enricoMathMasteredKeys");
     localStorage.removeItem("enricoMathWrongKeys");
     localStorage.removeItem("enricoMathStars");
     localStorage.removeItem("teaeLastWhatsappUpdateDone");
 
-    Object.keys(localStorage).forEach(k => {
-      if (k.startsWith("teae_wa_sent_")) localStorage.removeItem(k);
-    });
-
-    alert("Enrico se Wiskunde progress is skoongemaak. Hy begin nou vars.");
-    window.location.href = "math_mastery.html?v=fresh_" + Date.now();
+    alert("Reset klaar. Enrico begin nou vars met 0 bemeester.");
+    window.location.replace("math_mastery.html?v=reset_done_" + Date.now());
   }
-} catch(e) {}
+} catch(e) {
+  alert("Reset error: " + e.message);
+}
+
+
 
 const topics = [
   "Alles",
@@ -1553,6 +1573,7 @@ startFreshTest();
 </script>
 </body>
 </html>
+
 
 
 
