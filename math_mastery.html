@@ -1,614 +1,585 @@
 ﻿<!DOCTYPE html>
-<html lang="af"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Wiskunde Mastery Check - Graad 10 Kwartaal 2</title>
-<style>*{box-sizing:border-box}body{margin:0;background:#f3f6fb;font-family:Arial,Helvetica,sans-serif;color:#111827}.wrap{max-width:1100px;margin:0 auto;padding:18px}.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}.title{font-size:30px;font-weight:900;color:#123c69}.sub{color:#4b5b70;margin-top:5px;line-height:1.35}.pill{background:#fff7d6;border:1px solid #f1d08b;border-radius:999px;padding:9px 15px;font-size:20px;font-weight:900;white-space:nowrap}.card{background:#fff;border:1px solid #d8e1ec;border-radius:22px;padding:24px;box-shadow:0 8px 26px rgba(0,0,0,.08);margin-bottom:14px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.tile{border:1px solid #dbe5ef;background:#fff;border-radius:16px;padding:14px;cursor:pointer}.tile:hover{border-color:#0b78bd;box-shadow:0 6px 18px rgba(11,120,189,.12)}.tile b{display:block;margin-bottom:6px}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}button,.back{border:0;border-radius:999px;padding:11px 18px;font-size:16px;font-weight:800;cursor:pointer;background:#0b78bd;color:#fff;text-decoration:none;display:inline-block}.secondary{background:#eef4fa;color:#123c69;border:1px solid #d8e1ec}.danger{background:#d94a4a;color:#fff}select{padding:11px 14px;border-radius:12px;border:1px solid #bfd0df;font-size:15px;font-weight:800;background:#fff}.topic{font-size:16px;margin-bottom:10px;color:#506070}.formula{background:#f3f8ff;border-left:5px solid #0b78bd;padding:14px 16px;border-radius:12px;margin:12px 0 18px;font-size:19px;font-weight:900}.question{font-size:24px;line-height:1.45;margin:14px 0;font-weight:900}.answer-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0}input{width:270px;max-width:100%;font-size:24px;padding:12px 14px;border-radius:12px;border:2px solid #bfd0df}.unit{font-size:20px;font-weight:900}.feedback{margin-top:16px;padding:16px;border-radius:14px;font-size:18px;line-height:1.45;display:none}.good{background:#e9f8ef;border:1px solid #90d4a5}.bad{background:#fff0f0;border:1px solid #e7a0a0}.steps{margin-top:10px;font-size:17px}.score{margin-top:16px;font-size:18px;font-weight:800}.bar{height:11px;background:#e8eef5;border-radius:99px;overflow:hidden;margin-top:10px}.bar span{display:block;height:100%;background:#0b78bd;width:0}.small{font-size:13px;color:#607080}@media(max-width:800px){.wrap{padding:10px}.title{font-size:22px}.card{padding:16px}.question{font-size:20px}.formula{font-size:16px}input{font-size:20px;width:190px}.grid{grid-template-columns:1fr}.top{align-items:flex-start}}</style></head>
-<body><div class="wrap"><div class="top"><div><div class="title">📘 Enrico Wiskunde Geletterdheid</div><div class="sub">Graad 10 Kwartaal 2 • Finansiële dokumente en tariefstelsels • Meting • Kaarte, planne en skaal. 200+ oefenvrae met stappe.</div></div><div class="pill" id="stars">⭐ 0</div></div><div class="card"><div class="row">
-  <select id="topicFilter" onchange="changeTopic()"></select>
-  <button class="secondary" onclick="startFreshTest()">Begin nuwe toets</button>
-  <button class="secondary" onclick="startWrongOnlyTest()">Volgende toets: net verkeerdes</button>
-  <button class="secondary" onclick="shuffleQuestions()">Random vrae</button>
-  <a class="back danger" href="index.html">Terug na App</a>
-</div><div class="grid" id="tiles"></div></div><div class="card"><div class="topic" id="topic"></div><div class="formula" id="formula"></div><div class="question" id="question"></div><div class="answer-row"><span>Antwoord:</span><input id="answer" autocomplete="off"><span class="unit" id="unit"></span></div><div class="row">
-  <button onclick="submitAnswer()">Volgende</button>
-  <button class="secondary" onclick="skipQuestion()">Los oop</button>
-  <button class="secondary" onclick="finishTest()">Klaar met toets</button>
+<html lang="af">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graad 10 Wiskunde Kwartaal 2</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f6fa;font-family:Arial,sans-serif;color:#111827}
+.wrap{max-width:1120px;margin:0 auto;padding:18px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.title{font-size:30px;font-weight:900;color:#123c69}
+.sub{color:#536579;margin-top:4px}
+.pill{background:#fff7d6;border:1px solid #f1d08b;border-radius:999px;padding:8px 14px;font-weight:900}
+.card{background:#fff;border:1px solid #d9e2ec;border-radius:20px;padding:24px;box-shadow:0 8px 25px rgba(0,0,0,.08);margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.tile{background:#fff;border:1px solid #d9e2ec;border-radius:14px;padding:14px;cursor:pointer}
+.tile:hover{border-color:#0b78bd}
+.tile.active{border:2px solid #0b78bd;background:#eef7ff}
+.tile b{display:block;font-size:17px;margin-bottom:6px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button,.back{border:0;border-radius:999px;padding:11px 18px;font-size:16px;font-weight:900;cursor:pointer;background:#0b78bd;color:#fff;text-decoration:none;display:inline-block}
+.secondary{background:#eef4fa;color:#123c69;border:1px solid #d8e1ec}
+.danger{background:#d94a4a}
+.meta{color:#506070;margin-bottom:10px}
+.exam-note{background:#eef4fa;border-left:5px solid #0b78bd;border-radius:12px;padding:14px 16px;font-size:18px;font-weight:900;margin:12px 0 18px}
+.question{font-size:25px;line-height:1.45;margin:18px 0;font-weight:900}
+.answer-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0}
+input{width:260px;max-width:100%;font-size:24px;padding:12px 14px;border-radius:12px;border:2px solid #bfd0df}
+.unit{font-size:20px;font-weight:900}
+.feedback{margin-top:16px;padding:16px;border-radius:14px;font-size:17px;line-height:1.45}
+.good{background:#e9f8ef;border:1px solid #90d4a5}
+.bad{background:#fff0f0;border:1px solid #e7a0a0}
+.doc{background:#fff;border:1px solid #cfd9e3;border-radius:16px;padding:18px;margin:16px 0;overflow:auto}
+.doc-title{text-align:center;font-size:25px;font-weight:900;letter-spacing:2px;color:#123c69;margin-bottom:8px}
+.doc-sub{text-align:center;color:#536579;margin-bottom:14px}
+.doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.box{background:#f8fbff;border:1px solid #d9e2ec;border-radius:12px;padding:12px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{border:1px solid #b9c7d4;padding:8px;text-align:left}
+th{background:#eef4fa;font-weight:900}
+.money{text-align:right!important;white-space:nowrap}
+.note{background:#fff7d6;border:1px solid #f1d08b;border-radius:12px;padding:10px;margin-top:12px;font-weight:800}
+.progress{height:10px;background:#e7eef5;border-radius:999px;overflow:hidden;margin-top:14px}
+.bar{height:100%;background:#0b78bd;width:0%}
+.review h2{margin-top:0}
+svg{max-width:100%;height:auto}
+.hidden{display:none}
+@media(max-width:800px){
+  .wrap{padding:10px}
+  .grid{grid-template-columns:1fr}
+  .doc-grid{grid-template-columns:1fr}
+  .title{font-size:23px}
+  .question{font-size:20px}
+  .card{padding:16px}
+  input{font-size:20px;width:190px}
+  table{font-size:13px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <div class="title">📘 Graad 10 Wiskunde Kwartaal 2</div>
+      <div class="sub">Eksamen-styl: antwoorde wys eers aan die einde. Volgende toets vra net wat verkeerd was.</div>
+    </div>
+    <div class="pill" id="stars">⭐ 0</div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <button onclick="startFreshTest()">Begin nuwe toets</button>
+      <button class="secondary" onclick="startWrongOnlyTest()">Volgende toets: net verkeerdes</button>
+      <button class="secondary" onclick="shuffleCurrent()">Random</button>
+      <a class="back danger" href="index.html">Terug na App</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Kies afdeling</h2>
+    <div class="grid" id="topicTiles"></div>
+  </div>
+
+  <div class="card" id="testCard">
+    <div class="meta" id="meta"></div>
+    <div class="exam-note" id="examNote">Lees die dokument/prent en antwoord die vraag. Geen antwoorde wys tydens die toets nie.</div>
+    <div id="visual"></div>
+    <div class="question" id="question"></div>
+
+    <div class="answer-row">
+      <span>Antwoord:</span>
+      <input id="answer" autocomplete="off">
+      <span class="unit" id="unit"></span>
+    </div>
+
+    <div class="row">
+      <button onclick="submitAnswer()">Volgende</button>
+      <button class="secondary" onclick="skipQuestion()">Los oop</button>
+      <button class="secondary" onclick="finishTest()">Klaar met toets</button>
+    </div>
+
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="meta" style="margin-top:10px" id="status"></div>
+    <div id="review"></div>
+  </div>
 </div>
 
-<div class="feedback" id="feedback"></div>
-<div id="reviewArea"></div><div class="score" id="score"></div><div class="bar"><span id="progressBar"></span></div><div class="small" id="meta"></div></div></div>
 <script>
-const allQuestions=[];function money(n){return Math.round(n*100)/100}function add(topic,level,formula,q,unit,answer,hint,steps){allQuestions.push({topic,level,formula,q,unit,answer:money(answer),hint,steps});}
-function build(){
- for(let i=0;i<24;i++){let open=1200+i*85,dep=500+(i%6)*150,pay=100+(i%5)*60,fee=12+(i%4)*3,ans=open+dep-pay-fee;add('Finansiële dokumente','Maklik','Closing balance = opening balance + deposits - payments - bank charges',`Bankstaat: opening balance R${open.toFixed(2)}, deposit R${dep.toFixed(2)}, ATM cash R${pay.toFixed(2)}, bank charge R${fee.toFixed(2)}. Bereken closing balance.`,'R',ans,'Deposits tel by; betalings en bankkoste trek af.',[`R${open.toFixed(2)} + R${dep.toFixed(2)} = R${(open+dep).toFixed(2)}`,`R${(open+dep).toFixed(2)} - R${pay.toFixed(2)} - R${fee.toFixed(2)} = R${ans.toFixed(2)}`]);}
- for(let i=0;i<22;i++){let items=[150+i*9,80+i*4,210+i*7],sub=items.reduce((a,b)=>a+b,0),vat=sub*.15,total=sub+vat;add('Fakture en VAT','Medium','VAT = subtotal × 15%; Total = subtotal + VAT',`Faktuur: items kos R${items[0].toFixed(2)}, R${items[1].toFixed(2)} en R${items[2].toFixed(2)}. VAT is 15%. Bereken total including VAT.`,'R',total,'Tel items op, bereken 15% VAT, tel VAT by.',[`Subtotal = R${sub.toFixed(2)}`,`VAT = R${sub.toFixed(2)} × 15% = R${vat.toFixed(2)}`,`Total = R${total.toFixed(2)}`]);}
- for(let i=0;i<18;i++){let dep=500+(i%4)*250,monthly=185+(i%7)*37,months=12*((i%4)+2),total=dep+monthly*months;add('Krediet en paaiemente','Medium','Hire purchase total = deposit + monthly instalment × number of months',`Deposit R${dep.toFixed(2)}, monthly instalment R${monthly.toFixed(2)} vir ${months/12} jaar. Bereken total amount paid.`,'R',total,'Jare na maande, dan instalment maal maande plus deposit.',[`${months/12} jaar = ${months} maande`,`R${monthly.toFixed(2)} × ${months} = R${(monthly*months).toFixed(2)}`,`Total = R${total.toFixed(2)}`]);}
- for(let i=0;i<16;i++){let units=40+i*8,fixed=55+(i%5)*10,rate=1.35+(i%4)*0.25,total=fixed+units*rate;add('Tariefstelsels','Medium','Total cost = fixed charge + units used × rate per unit',`Elektrisiteitstarief: fixed charge R${fixed.toFixed(2)} en R${rate.toFixed(2)} per kWh. As ${units} kWh gebruik is, bereken totale koste.`,'R',total,'Gebruik vaste fooi plus verbruik.',[`Units cost = ${units} × R${rate.toFixed(2)} = R${(units*rate).toFixed(2)}`,`Total = R${total.toFixed(2)}`]);}
- for(let i=0;i<16;i++){let income=8500+i*700,exp=5200+i*430,profit=income-exp,pm=profit/income*100;add('Wins, verlies en persentasies','Medium','Profit margin = profit ÷ income × 100',`Income is R${income.toFixed(2)} and expenses are R${exp.toFixed(2)}. Bereken profit margin tot 2 desimale.`,'%',pm,'Eers wins, dan wins gedeel deur income maal 100.',[`Profit = R${profit.toFixed(2)}`,`Profit margin = ${profit.toFixed(2)} ÷ ${income.toFixed(2)} × 100 = ${pm.toFixed(2)}%`]);}
- for(let i=0;i<20;i++){let cm=15+i*13;add('Meting: lengte','Maklik','1 m = 100 cm',`Skakel ${cm} cm om na meter.`,'m',cm/100,'cm na m: deel deur 100.',[`${cm} ÷ 100 = ${(cm/100).toFixed(2)}`]);}
- for(let i=0;i<16;i++){let km=1.2+i*.35;add('Meting: lengte','Maklik','1 km = 1000 m',`Skakel ${km.toFixed(2)} km om na meter.`,'m',km*1000,'km na m: maal met 1000.',[`${km.toFixed(2)} × 1000 = ${(km*1000).toFixed(0)}`]);}
- for(let i=0;i<18;i++){let g=250+i*125;add('Meting: massa','Maklik','1 kg = 1000 g',`Skakel ${g} g om na kilogram.`,'kg',g/1000,'g na kg: deel deur 1000.',[`${g} ÷ 1000 = ${(g/1000).toFixed(3)}`]);}
- for(let i=0;i<18;i++){let l=0.35+i*.25;add('Meting: volume en kapasiteit','Maklik','1 litre = 1000 ml',`Skakel ${l.toFixed(2)} litres om na ml.`,'ml',l*1000,'L na ml: maal met 1000.',[`${l.toFixed(2)} × 1000 = ${(l*1000).toFixed(0)}`]);}
- for(let i=0;i<18;i++){let r=2+(i%7),h=5+i,vol=3.14*r*r*h;add('Meting: volume en kapasiteit','Moeilik','Volume of cylinder = πr²h',`Silinder: radius ${r} cm en hoogte ${h} cm. Gebruik π = 3.14. Bereken volume.`,'cm³',vol,'Kry area van sirkelbasis, maal hoogte.',[`πr² = 3.14 × ${r}² = ${(3.14*r*r).toFixed(2)}`,`Volume = ${vol.toFixed(2)}`]);}
- for(let i=0;i<20;i++){let L=4+i,W=2+(i%6),H=3+(i%5),vol=L*W*H;add('Meting: volume en kapasiteit','Medium','Volume rectangular prism = length × width × height',`Reghoekige prisma: lengte ${L} cm, breedte ${W} cm, hoogte ${H} cm. Bereken volume.`,'cm³',vol,'Maal die drie afmetings.',[`${L} × ${W} × ${H} = ${vol}`]);}
- for(let i=0;i<16;i++){let c=-12+i*3,f=c*9/5+32;add('Meting: temperatuur','Medium','°F = (°C × 9/5) + 32',`Skakel ${c}°C om na Fahrenheit.`,'°F',f,'Gebruik die formule vir Celsius na Fahrenheit.',[`(${c} × 9/5) + 32 = ${f.toFixed(2)}`]);}
- for(let i=0;i<16;i++){let a=8+i,b=5+(i%8),area=a*b;add('Meting: oppervlakte','Maklik','Area rectangle = length × width',`Reghoek: lengte ${a} m en breedte ${b} m. Bereken area.`,'m²',area,'Area = lengte maal breedte.',[`${a} × ${b} = ${area}`]);}
- for(let i=0;i<15;i++){let top=6+i,bottom=10+i,height=4+(i%6),area=.5*(top+bottom)*height;add('Meting: oppervlakte','Moeilik','Area trapezium = 1/2 × (a + b) × h',`Trapesium: parallelle kante ${top} cm en ${bottom} cm, hoogte ${height} cm. Bereken area.`,'cm²',area,'Tel parallelle kante by, maal hoogte, deel deur 2.',[`(${top}+${bottom}) = ${top+bottom}`,`1/2 × ${top+bottom} × ${height} = ${area}`]);}
- for(let i=0;i<24;i++){let realM=5+i*.75,scale=[50,75,100,150][i%4],ans=realM*1000/scale;add('Kaarte en skaal','Medium','Plan length = real length ÷ scale',`Werklike lengte is ${realM.toFixed(2)} m. Skaal is 1:${scale}. Bereken plan-lengte in mm.`,'mm',ans,'Skakel meter na mm, dan deel deur skaal.',[`${realM.toFixed(2)} m = ${(realM*1000).toFixed(0)} mm`,`Plan = ${(realM*1000).toFixed(0)} ÷ ${scale} = ${ans.toFixed(2)} mm`]);}
- for(let i=0;i<22;i++){let plan=4+i*.6,scale=[25000,50000,100000][i%3],ans=plan*scale/100000;add('Kaarte en skaal','Medium','Actual distance in km = map cm × scale ÷ 100 000',`Op 'n kaart meet die afstand ${plan.toFixed(1)} cm. Skaal is 1:${scale}. Bereken werklike afstand in km.`,'km',ans,'cm op kaart maal skaal gee cm werklik; deel deur 100 000 vir km.',[`${plan.toFixed(1)} × ${scale} = ${(plan*scale).toFixed(0)} cm`,`km = ${(plan*scale).toFixed(0)} ÷ 100000 = ${ans.toFixed(2)}`]);}
- for(let i=0;i<18;i++){let steps=8+i,each=0.75+(i%5)*.1,ans=steps*each;add('Kaarte en roetes','Maklik','Route distance = number of sections × distance per section',`'n Roete het ${steps} gelyke dele van ${each.toFixed(2)} km elk. Bereken totale afstand.`,'km',ans,'Maal aantal dele met afstand per deel.',[`${steps} × ${each.toFixed(2)} = ${ans.toFixed(2)} km`]);}
- for(let i=0;i<18;i++){let L=6+i,W=4+(i%7),scale=100,planL=L*1000/scale,planW=W*1000/scale;add('Planne en vloerplanne','Medium','Plan measurement = real measurement ÷ scale',`Vloerplan skaal 1:${scale}. Kamer is ${L} m by ${W} m. Wat is die plan-area in mm²?`,'mm²',planL*planW,'Skakel elke werklike maat na plan mm; area = plan lengte × plan breedte.',[`Plan lengte = ${planL}mm`,`Plan breedte = ${planW}mm`,`Area = ${(planL*planW).toFixed(2)} mm²`]);}
- for(let i=0;i<12;i++){let deg=[0,45,90,135,180,225,270,315][i%8],codes={0:1,45:2,90:3,135:4,180:5,225:6,270:7,315:8},names={0:'N',45:'NE',90:'E',135:'SE',180:'S',225:'SW',270:'W',315:'NW'};add('Relatiewe posisie','Maklik','Kompasrigtings: N=0, E=90, S=180, W=270',`Watter kompasrigting is ${deg} grade? Tik kode: N=1, NE=2, E=3, SE=4, S=5, SW=6, W=7, NW=8.`,'',codes[deg],'Gebruik die kompas volgorde.',[`Rigting ${deg}° is ${names[deg]}. Kode = ${codes[deg]}`]);}
+const topics = [
+  "Alles",
+  "Finansiële dokumente",
+  "Fakture en VAT",
+  "Krediet en paaiemente",
+  "Tariefstelsels",
+  "Wins, verlies en persentasies",
+  "Payslips",
+  "Meting: lengte",
+  "Meting: massa",
+  "Meting: volume en kapasiteit",
+  "Meting: temperatuur",
+  "Kaarte en skaal",
+  "Planne en vloerplanne",
+  "Relatiewe posisie"
+];
+
+let allQuestions = [];
+let questions = [];
+let current = 0;
+let selectedTopic = "Alles";
+let answers = {};
+let wrongQuestions = [];
+let stars = Number(localStorage.getItem("enricoMathStars") || "0");
+
+function money(n){return "R" + Number(n).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g," ")}
+function round2(n){return Math.round(Number(n)*100)/100}
+function norm(v){return String(v || "").trim().replace(",", ".").replace(/\s/g,"")}
+function isCorrect(v,a){let n=Number(norm(v));return !Number.isNaN(n) && Math.abs(n-Number(a))<0.01}
+function qKey(q){return q.id}
+function save(){localStorage.setItem("enricoMathStars", String(stars));localStorage.setItem("enricoMathWrongKeys", JSON.stringify(wrongQuestions.map(qKey)))}
+function getSavedWrong(){let keys=[];try{keys=JSON.parse(localStorage.getItem("enricoMathWrongKeys")||"[]")}catch(e){};return allQuestions.filter(q=>keys.includes(qKey(q)))}
+
+function add(q){allQuestions.push(q)}
+
+function buildBank(i){
+  const opening = 1200 + i*85;
+  const deposit = 500 + i*50;
+  const atm = 100 + i*20;
+  const charge = 12 + i*3;
+  const debitPurchase = 90 + i*15;
+  const A = opening + deposit;
+  const B = A - atm;
+  const C = B - charge;
+  const D = C - debitPurchase;
+  const data = {opening,deposit,atm,charge,debitPurchase,A,B,C,D};
+  const topic = "Finansiële dokumente";
+
+  add({id:`bank-${i}-A`,topic,level:"Maklik",unit:"R",answer:A,visual:{type:"bank",data},formula:"A = opening balance + deposit",q:"Gebruik die bankstaat. Bereken die waarde van A in die Balance-kolom.",steps:[`${money(opening)} + ${money(deposit)} = ${money(A)}`]});
+  add({id:`bank-${i}-B`,topic,level:"Maklik",unit:"R",answer:B,visual:{type:"bank",data},formula:"B = A - ATM cash",q:"Gebruik die bankstaat. Bereken die waarde van B nadat ATM cash afgetrek is.",steps:[`${money(A)} - ${money(atm)} = ${money(B)}`]});
+  add({id:`bank-${i}-C`,topic,level:"Medium",unit:"R",answer:C,visual:{type:"bank",data},formula:"C = B - bank charges",q:"Gebruik die bankstaat. Bereken die waarde van C nadat bank charges afgetrek is.",steps:[`${money(B)} - ${money(charge)} = ${money(C)}`]});
+  add({id:`bank-${i}-D`,topic,level:"Medium",unit:"R",answer:D,visual:{type:"bank",data},formula:"Closing balance = C - debit card purchase",q:"Gebruik die bankstaat. Bereken die closing balance nadat die debit card purchase afgetrek is.",steps:[`${money(C)} - ${money(debitPurchase)} = ${money(D)}`]});
+  add({id:`bank-${i}-payments`,topic,level:"Medium",unit:"R",answer:atm+charge+debitPurchase,visual:{type:"bank",data},formula:"Total payments = ATM cash + bank charges + card purchase",q:"Gebruik die bankstaat. Bereken die totale betalings/payments op die staat.",steps:[`${money(atm)} + ${money(charge)} + ${money(debitPurchase)} = ${money(atm+charge+debitPurchase)}`]});
 }
-build();let questions=[...allQuestions],current=0,mode='learn',stars=Number(localStorage.getItem('q2stars')||'0'),correctDone=JSON.parse(localStorage.getItem('q2done')||'{}');
-function norm(v){return String(v||'').trim().replace(',','.')}function closeEnough(v,a){let n=Number(norm(v));return !Number.isNaN(n)&&Math.abs(n-a)<0.02}function save(){localStorage.setItem('q2stars',stars);localStorage.setItem('q2done',JSON.stringify(correctDone))}
-function loadControls(){let topics=['Alle vrae',...new Set(allQuestions.map(x=>x.topic))];document.getElementById('topicFilter').innerHTML=topics.map(t=>`<option>${t}</option>`).join('');let counts={};allQuestions.forEach(q=>counts[q.topic]=(counts[q.topic]||0)+1);document.getElementById('tiles').innerHTML=Object.keys(counts).map(t=>`<div class="tile" onclick="pickTopic('${t.replace(/'/g,"\\'")}')"><b>${t}</b><span class="small">${counts[t]} vrae</span></div>`).join('')}
-function pickTopic(t){document.getElementById('topicFilter').value=t;changeTopic();window.scrollTo({top:230,behavior:'smooth'})}function changeTopic(){let t=document.getElementById('topicFilter').value,l=document.getElementById('levelFilter').value;questions=allQuestions.filter(q=>(t==='Alle vrae'||q.topic===t)&&(l==='Alle vlakke'||q.level===l));current=0;render()}function shuffleQuestions(){questions.sort(()=>Math.random()-.5);current=0;render()}function setMode(m){mode=m;render()}
-function render(){let q=questions[current];if(!q){document.getElementById('question').textContent='Geen vrae vir daardie filter.';return}document.getElementById('topic').innerHTML=`<b>Vraag ${current+1} van ${questions.length}</b> — ${q.topic} • ${q.level}`;document.getElementById('formula').textContent=mode==='learn'?q.formula:'Exam Mode: formule en stappe wys eers wanneer jy vra.';document.getElementById('question').textContent=q.q;document.getElementById('unit').textContent=q.unit;document.getElementById('answer').value='';document.getElementById('feedback').style.display='none';document.getElementById('stars').textContent='⭐ '+stars;document.getElementById('score').textContent=`Mode: ${mode==='learn'?'Learn':'Exam'} | Totaal in bank: ${allQuestions.length} vrae | Hierdie filter: ${questions.length}`;document.getElementById('progressBar').style.width=((current+1)/questions.length*100)+'%';document.getElementById('meta').textContent='Tip: gebruik net nommers. Vir Rand en persentasies, tik net die getal.';setTimeout(()=>document.getElementById('answer').focus(),50)}
-function retryQuestion(){document.getElementById('answer').value='';document.getElementById('feedback').style.display='none';document.getElementById('answer').focus()}function nextQuestion(){current=(current+1)%questions.length;render()}function prevQuestion(){current=(current-1+questions.length)%questions.length;render()}function showSteps(){let q=questions[current],fb=document.getElementById('feedback');fb.className='feedback bad';fb.style.display='block';fb.innerHTML='<b>Stappe:</b><div class="steps">'+q.steps.map((s,i)=>(i+1)+'. '+s).join('<br>')+'</div>'}
-function checkAnswer(){let q=questions[current],raw=norm(document.getElementById('answer').value),fb=document.getElementById('feedback');if(raw===''||Number.isNaN(Number(raw))){fb.className='feedback bad';fb.style.display='block';fb.innerHTML='Tik net die numeriese antwoord in. Gebruik punt of komma vir desimale.';return}let key=q.topic+'|'+q.q;if(closeEnough(raw,q.answer)){fb.className='feedback good';fb.style.display='block';fb.innerHTML=`✅ Reg! Antwoord: <b>${q.answer}</b> ${q.unit}`;if(!correctDone[key]){stars++;correctDone[key]=true;save()}document.getElementById('stars').textContent='⭐ '+stars;document.getElementById('score').textContent=`Mooi! Jy het ${stars} sterre.`}else{fb.className='feedback bad';fb.style.display='block';fb.innerHTML=mode==='exam'?'❌ Verkeerd. Probeer weer of kliek Wys stappe.':`❌ Nog nie reg nie.<br><b>Hint:</b> ${q.hint}<div class='steps'><b>Stappe:</b><br>${q.steps.map((s,i)=>(i+1)+'. '+s).join('<br>')}</div>`}}
-function resetProgress(){if(confirm('Reset alle sterre?')){stars=0;correctDone={};save();render()}}document.addEventListener('keydown',e=>{if(e.key==='Enter')checkAnswer()});loadControls();render();
-</script><!-- ENRICO_VISUAL_DOCS_START -->
-<style id="enrico-visual-docs-css">
-  #visualDocArea{
-    margin:18px 0;
-    display:none;
-  }
-  .uct-doc{
-    background:#fff;
-    border:1px solid #d8e1ec;
-    border-radius:16px;
-    padding:18px;
-    box-shadow:0 8px 22px rgba(0,0,0,.07);
-    font-family:Arial,sans-serif;
-    overflow:auto;
-  }
-  .uct-doc-title{
-    text-align:center;
-    font-size:24px;
-    font-weight:900;
-    letter-spacing:1px;
-    color:#123c69;
-    margin-bottom:10px;
-  }
-  .uct-doc-sub{
-    text-align:center;
-    color:#506070;
-    margin-bottom:14px;
-  }
-  .uct-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:10px;
-    font-size:15px;
-  }
-  .uct-table th,.uct-table td{
-    border:1px solid #b9c7d4;
-    padding:8px;
-    text-align:left;
-  }
-  .uct-table th{
-    background:#eef4fa;
-    font-weight:900;
-  }
-  .uct-money{
-    text-align:right!important;
-    white-space:nowrap;
-  }
-  .uct-note{
-    background:#fff7d6;
-    border:1px solid #f1d08b;
-    border-radius:12px;
-    padding:10px;
-    margin-top:12px;
-    font-weight:700;
-  }
-  .uct-invoice-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:14px;
-    margin-bottom:12px;
-  }
-  .uct-box{
-    border:1px solid #d8e1ec;
-    border-radius:12px;
-    padding:12px;
-    background:#f8fbff;
-  }
-  .uct-plan{
-    width:100%;
-    max-width:760px;
-    height:340px;
-    background:#f8fbff;
-    border:1px solid #d8e1ec;
-    border-radius:14px;
-    display:block;
-    margin:auto;
-  }
-  .uct-shape{
-    width:100%;
-    max-width:620px;
-    height:300px;
-    background:#f8fbff;
-    border:1px solid #d8e1ec;
-    border-radius:14px;
-    display:block;
-    margin:auto;
-  }
-  @media(max-width:700px){
-    .uct-invoice-grid{grid-template-columns:1fr}
-    .uct-table{font-size:13px}
-    .uct-doc-title{font-size:20px}
-  }
-</style>
 
-<script id="enrico-visual-docs-js">
-(function(){
-  function safeText(id){
-    const el = document.getElementById(id);
-    return el ? (el.innerText || el.textContent || "") : "";
+function buildInvoice(i){
+  const prices = [159+i*7, 84+i*5, 217+i*9];
+  const qty = [1+(i%3), 2+(i%2), 1+((i+1)%3)];
+  const subtotal = prices.reduce((s,p,idx)=>s+p*qty[idx],0);
+  const vat = round2(subtotal*0.15);
+  const total = round2(subtotal+vat);
+  const deposit = 100 + i*25;
+  const balance = round2(total-deposit);
+  const data = {prices,qty,subtotal,vat,total,deposit,balance};
+  const topic = "Fakture en VAT";
+
+  add({id:`inv-${i}-line1`,topic,level:"Maklik",unit:"R",answer:prices[0]*qty[0],visual:{type:"invoice",data},formula:"Line amount = quantity × unit price",q:"Gebruik die faktuur. Bereken die bedrag vir Item A.",steps:[`${qty[0]} × ${money(prices[0])} = ${money(prices[0]*qty[0])}`]});
+  add({id:`inv-${i}-subtotal`,topic,level:"Medium",unit:"R",answer:subtotal,visual:{type:"invoice",data},formula:"Subtotal = total of all line amounts",q:"Gebruik die faktuur. Bereken die subtotal voor VAT.",steps:[`Tel al die item-bedrae bymekaar = ${money(subtotal)}`]});
+  add({id:`inv-${i}-vat`,topic,level:"Medium",unit:"R",answer:vat,visual:{type:"invoice",data},formula:"VAT = subtotal × 15%",q:"Gebruik die faktuur. Bereken die VAT-bedrag teen 15%.",steps:[`${money(subtotal)} × 15% = ${money(vat)}`]});
+  add({id:`inv-${i}-total`,topic,level:"Medium",unit:"R",answer:total,visual:{type:"invoice",data},formula:"Total = subtotal + VAT",q:"Gebruik die faktuur. Bereken die totaal including VAT.",steps:[`${money(subtotal)} + ${money(vat)} = ${money(total)}`]});
+  add({id:`inv-${i}-balance`,topic,level:"Moeilik",unit:"R",answer:balance,visual:{type:"invoice",data},formula:"Balance due = total - deposit",q:"Gebruik die faktuur. Die klant betaal die deposit. Bereken die balance due.",steps:[`${money(total)} - ${money(deposit)} = ${money(balance)}`]});
+}
+
+function buildPayslip(i){
+  const basic = 12000 + i*450;
+  const hours = 8 + i*3;
+  const rate = 75 + i*5;
+  const overtime = hours*rate;
+  const uif = round2(basic*0.01);
+  const paye = 1300 + i*85;
+  const medical = 900 + i*40;
+  const totalIncome = basic + overtime;
+  const deductions = round2(uif+paye+medical);
+  const net = round2(totalIncome-deductions);
+  const data = {basic,hours,rate,overtime,uif,paye,medical,totalIncome,deductions,net};
+  const topic = "Payslips";
+
+  add({id:`pay-${i}-ot`,topic,level:"Maklik",unit:"R",answer:overtime,visual:{type:"payslip",data},formula:"Overtime = hours × rate",q:"Gebruik die payslip. Bereken die overtime bedrag.",steps:[`${hours} × ${money(rate)} = ${money(overtime)}`]});
+  add({id:`pay-${i}-uif`,topic,level:"Maklik",unit:"R",answer:uif,visual:{type:"payslip",data},formula:"UIF = 1% of basic salary",q:"Gebruik die payslip. Bereken die UIF-bedrag.",steps:[`${money(basic)} × 1% = ${money(uif)}`]});
+  add({id:`pay-${i}-income`,topic,level:"Medium",unit:"R",answer:totalIncome,visual:{type:"payslip",data},formula:"Total income = basic salary + overtime",q:"Gebruik die payslip. Bereken total income.",steps:[`${money(basic)} + ${money(overtime)} = ${money(totalIncome)}`]});
+  add({id:`pay-${i}-ded`,topic,level:"Medium",unit:"R",answer:deductions,visual:{type:"payslip",data},formula:"Total deductions = PAYE + medical aid + UIF",q:"Gebruik die payslip. Bereken total deductions.",steps:[`${money(paye)} + ${money(medical)} + ${money(uif)} = ${money(deductions)}`]});
+  add({id:`pay-${i}-net`,topic,level:"Moeilik",unit:"R",answer:net,visual:{type:"payslip",data},formula:"Net pay = total income - deductions",q:"Gebruik die payslip. Bereken die net pay.",steps:[`${money(totalIncome)} - ${money(deductions)} = ${money(net)}`]});
+}
+
+function buildTariff(i){
+  const units = 72 + i*8;
+  const service = 65;
+  const b1 = Math.min(units,50);
+  const b2 = Math.min(Math.max(units-50,0),50);
+  const b3 = Math.max(units-100,0);
+  const total = round2(service + b1*1.85 + b2*2.25 + b3*2.9);
+  const data = {units,service,b1,b2,b3,total};
+  const topic = "Tariefstelsels";
+
+  add({id:`tar-${i}-b1`,topic,level:"Maklik",unit:"units",answer:b1,visual:{type:"tariff",data},formula:"Block 1 is max 50 units",q:"Gebruik die tarieftabel. Hoeveel units val in Block 1?",steps:[`Block 1 kan maksimum 50 units wees. Antwoord = ${b1}`]});
+  add({id:`tar-${i}-b2`,topic,level:"Medium",unit:"units",answer:b2,visual:{type:"tariff",data},formula:"Block 2 = units above 50 up to 100",q:"Gebruik die tarieftabel. Hoeveel units val in Block 2?",steps:[`${units} - 50 = ${units-50}. Block 2 = ${b2}`]});
+  add({id:`tar-${i}-charge`,topic,level:"Moeilik",unit:"R",answer:total,visual:{type:"tariff",data},formula:"Total = service fee + each tariff block",q:"Gebruik die tarieftabel. Bereken die totale rekening.",steps:[`Service = ${money(service)}`,`Block 1: ${b1} × R1,85`, `Block 2: ${b2} × R2,25`, `Block 3: ${b3} × R2,90`, `Total = ${money(total)}`]});
+}
+
+function buildCredit(i){
+  const cash = 12000 + i*750;
+  const deposit = 1200 + i*100;
+  const installment = 320 + i*18;
+  const months = 24 + (i%4)*12;
+  const hpTotal = round2(deposit + installment*months);
+  const extra = round2(hpTotal-cash);
+  const balanceAfterDeposit = cash-deposit;
+  const data = {cash,deposit,installment,months,hpTotal,extra,balanceAfterDeposit};
+  const topic = "Krediet en paaiemente";
+
+  add({id:`cred-${i}-monthly`,topic,level:"Maklik",unit:"R",answer:installment,visual:{type:"credit",data},formula:"Monthly instalment is read from the advert",q:"Gebruik die advertensie. Hoeveel betaal hy per maand?",steps:[`Lees die monthly instalment: ${money(installment)}`]});
+  add({id:`cred-${i}-hp`,topic,level:"Medium",unit:"R",answer:hpTotal,visual:{type:"credit",data},formula:"Total paid = deposit + instalment × months",q:"Gebruik die advertensie. Bereken die totale bedrag wat betaal word op krediet.",steps:[`${money(installment)} × ${months} = ${money(installment*months)}`,`+ deposit ${money(deposit)} = ${money(hpTotal)}`]});
+  add({id:`cred-${i}-extra`,topic,level:"Moeilik",unit:"R",answer:extra,visual:{type:"credit",data},formula:"Extra cost = credit total - cash price",q:"Gebruik die advertensie. Hoeveel meer betaal hy op krediet as kontant?",steps:[`${money(hpTotal)} - ${money(cash)} = ${money(extra)}`]});
+  add({id:`cred-${i}-bal`,topic,level:"Maklik",unit:"R",answer:balanceAfterDeposit,visual:{type:"credit",data},formula:"Balance = cash price - deposit",q:"Bereken die balans nadat die deposit betaal is.",steps:[`${money(cash)} - ${money(deposit)} = ${money(balanceAfterDeposit)}`]});
+}
+
+function buildMeasure(){
+  for(let i=1;i<=15;i++){
+    const cm = i*25;
+    add({id:`len-cm-m-${i}`,topic:"Meting: lengte",level:"Maklik",unit:"m",answer:round2(cm/100),visual:{type:"convert",data:{}},formula:"1 m = 100 cm",q:`Convert ${cm} cm to metres.`,steps:[`${cm} ÷ 100 = ${round2(cm/100)}`]});
+    const km = i*1.2;
+    add({id:`len-km-m-${i}`,topic:"Meting: lengte",level:"Maklik",unit:"m",answer:round2(km*1000),visual:{type:"convert",data:{}},formula:"1 km = 1000 m",q:`Convert ${km} km to metres.`,steps:[`${km} × 1000 = ${round2(km*1000)}`]});
   }
 
-  function money(v){
-    return "R" + Number(v).toFixed(2).replace(".", ",");
+  for(let i=1;i<=12;i++){
+    const g = i*250;
+    add({id:`mass-g-kg-${i}`,topic:"Meting: massa",level:"Maklik",unit:"kg",answer:round2(g/1000),visual:{type:"convert",data:{}},formula:"1 kg = 1000 g",q:`Convert ${g} g to kilograms.`,steps:[`${g} ÷ 1000 = ${round2(g/1000)}`]});
   }
 
-  function makeBankStatement(){
-    return `
-      <div class="uct-doc">
-        <div class="uct-doc-title">BANKSTAAT</div>
-        <div class="uct-doc-sub">Savings account statement — March</div>
-        <table class="uct-table">
-          <tr>
-            <th>Date</th>
-            <th>Transaction</th>
-            <th class="uct-money">Payment</th>
-            <th class="uct-money">Deposit</th>
-            <th class="uct-money">Balance</th>
-          </tr>
-          <tr>
-            <td>01/03</td>
-            <td>Opening balance</td>
-            <td></td>
-            <td></td>
-            <td class="uct-money">R1 200,00</td>
-          </tr>
-          <tr>
-            <td>03/03</td>
-            <td>Deposit</td>
-            <td></td>
-            <td class="uct-money">R500,00</td>
-            <td class="uct-money">(A)</td>
-          </tr>
-          <tr>
-            <td>05/03</td>
-            <td>ATM cash</td>
-            <td class="uct-money">R100,00</td>
-            <td></td>
-            <td class="uct-money">(B)</td>
-          </tr>
-          <tr>
-            <td>28/03</td>
-            <td>Bank charges</td>
-            <td class="uct-money">R12,00</td>
-            <td></td>
-            <td class="uct-money">?</td>
-          </tr>
-        </table>
-        <div class="uct-note">Gebruik die bankstaat om die closing balance te bereken.</div>
+  for(let i=1;i<=14;i++){
+    const litres = i*2.5;
+    add({id:`vol-l-ml-${i}`,topic:"Meting: volume en kapasiteit",level:"Maklik",unit:"ml",answer:round2(litres*1000),visual:{type:"convert",data:{}},formula:"1 litre = 1000 ml",q:`Convert ${litres} litres to millilitres.`,steps:[`${litres} × 1000 = ${round2(litres*1000)}`]});
+    const r = 3+i;
+    const h = 8+i;
+    const vol = round2(3.14*r*r*h);
+    add({id:`cyl-vol-${i}`,topic:"Meting: volume en kapasiteit",level:"Medium",unit:"cm³",answer:vol,visual:{type:"cylinder",data:{r,h}},formula:"Volume cylinder = πr²h",q:`Gebruik die silinder. Radius is ${r} cm en hoogte is ${h} cm. Bereken volume. Gebruik π = 3.14.`,steps:[`3.14 × ${r}² × ${h} = ${vol}`]});
+  }
+
+  for(let i=1;i<=12;i++){
+    const c = -10 + i*5;
+    const f = round2((c*9/5)+32);
+    add({id:`temp-${i}`,topic:"Meting: temperatuur",level:"Medium",unit:"°F",answer:f,visual:{type:"temp",data:{c}},formula:"°F = °C × 9/5 + 32",q:`Convert ${c} °C to Fahrenheit.`,steps:[`${c} × 9/5 + 32 = ${f}`]});
+  }
+}
+
+function buildScaleAndPlans(){
+  for(let i=1;i<=14;i++){
+    const realM = 6 + i*0.5;
+    const scale = 50 + i*5;
+    const plan = Math.round((realM*1000)/scale);
+    const data = {realM,scale,plan};
+    add({id:`scale-${i}`,topic:"Kaarte en skaal",level:"Medium",unit:"mm",answer:plan,visual:{type:"plan",data},formula:"Plan length = real length ÷ scale",q:`Die werklike lengte is ${realM} m. Skaal is 1:${scale}. Bereken die lengte op die plan in mm.`,steps:[`${realM} m = ${realM*1000} mm`,`${realM*1000} ÷ ${scale} = ${plan} mm` ]});
+  }
+
+  for(let i=1;i<=12;i++){
+    const l = 5+i;
+    const w = 3+i%4;
+    const area = l*w;
+    add({id:`floor-area-${i}`,topic:"Planne en vloerplanne",level:"Medium",unit:"m²",answer:area,visual:{type:"room",data:{l,w}},formula:"Area = length × width",q:`Gebruik die vloerplan. Kamer lengte is ${l} m en breedte is ${w} m. Bereken die area.`,steps:[`${l} × ${w} = ${area}`]});
+  }
+
+  const pos = [
+    ["north",0],["east",90],["south",180],["west",270],
+    ["north-east",45],["south-east",135],["south-west",225],["north-west",315]
+  ];
+  pos.forEach((p,idx)=>{
+    add({id:`rel-${idx}`,topic:"Relatiewe posisie",level:"Maklik",unit:"°",answer:p[1],visual:{type:"compass",data:{dir:p[0]}},formula:"Compass bearing: N=0°, E=90°, S=180°, W=270°",q:`Wat is die bearing vir ${p[0]}?`,steps:[`${p[0]} = ${p[1]}°`]});
+  });
+}
+
+function buildProfit(){
+  for(let i=1;i<=14;i++){
+    const cost = 100+i*35;
+    const sell = cost + 50 + i*12;
+    const profit = sell-cost;
+    const pct = round2(profit/cost*100);
+    add({id:`profit-${i}`,topic:"Wins, verlies en persentasies",level:"Medium",unit:"%",answer:pct,visual:{type:"profit",data:{cost,sell}},formula:"Profit % = profit ÷ cost price × 100",q:`Cost price is ${money(cost)} and selling price is ${money(sell)}. Calculate profit percentage.`,steps:[`Profit = ${money(sell)} - ${money(cost)} = ${money(profit)}`,`${money(profit)} ÷ ${money(cost)} × 100 = ${pct}%`]});
+  }
+}
+
+function buildAll(){
+  for(let i=0;i<16;i++) buildBank(i);
+  for(let i=0;i<14;i++) buildInvoice(i);
+  for(let i=0;i<10;i++) buildPayslip(i);
+  for(let i=0;i<12;i++) buildTariff(i);
+  for(let i=0;i<10;i++) buildCredit(i);
+  buildMeasure();
+  buildScaleAndPlans();
+  buildProfit();
+}
+
+function renderVisual(q){
+  const v = q.visual || {};
+  const d = v.data || {};
+
+  if(v.type==="bank"){
+    return `<div class="doc">
+      <div class="doc-title">BANKSTAAT</div>
+      <div class="doc-sub">Savings account statement — March</div>
+      <table>
+        <tr><th>Date</th><th>Transaction</th><th class="money">Payment</th><th class="money">Deposit</th><th class="money">Balance</th></tr>
+        <tr><td>01/03</td><td>Opening balance</td><td></td><td></td><td class="money">${money(d.opening)}</td></tr>
+        <tr><td>03/03</td><td>Deposit</td><td></td><td class="money">${money(d.deposit)}</td><td class="money">(A)</td></tr>
+        <tr><td>05/03</td><td>ATM cash</td><td class="money">${money(d.atm)}</td><td></td><td class="money">(B)</td></tr>
+        <tr><td>20/03</td><td>Bank charges</td><td class="money">${money(d.charge)}</td><td></td><td class="money">(C)</td></tr>
+        <tr><td>26/03</td><td>Debit card purchase</td><td class="money">${money(d.debitPurchase)}</td><td></td><td class="money">?</td></tr>
+      </table>
+      <div class="note">Lees die Balance-kolom. Deposits tel by. Payments trek af.</div>
+    </div>`;
+  }
+
+  if(v.type==="invoice"){
+    return `<div class="doc">
+      <div class="doc-title">TAX INVOICE</div>
+      <div class="doc-grid">
+        <div class="box"><b>DEALS 4 WHEELS</b><br>Corner Stone Mall<br>Mandela Main Road</div>
+        <div class="box"><b>Invoice #:</b> INV-${Math.floor(d.total*10)}<br><b>VAT:</b> 15%<br><b>Deposit paid:</b> ${money(d.deposit)}</div>
       </div>
-    `;
+      <table>
+        <tr><th>Item</th><th>Description</th><th class="money">Qty</th><th class="money">Unit Price</th><th class="money">Amount</th></tr>
+        <tr><td>A</td><td>Motor part</td><td class="money">${d.qty[0]}</td><td class="money">${money(d.prices[0])}</td><td class="money">(A)</td></tr>
+        <tr><td>B</td><td>Service kit</td><td class="money">${d.qty[1]}</td><td class="money">${money(d.prices[1])}</td><td class="money">(B)</td></tr>
+        <tr><td>C</td><td>Labour</td><td class="money">${d.qty[2]}</td><td class="money">${money(d.prices[2])}</td><td class="money">(C)</td></tr>
+        <tr><td colspan="4" class="money"><b>Subtotal</b></td><td class="money">?</td></tr>
+        <tr><td colspan="4" class="money"><b>VAT 15%</b></td><td class="money">?</td></tr>
+        <tr><td colspan="4" class="money"><b>Total including VAT</b></td><td class="money">?</td></tr>
+        <tr><td colspan="4" class="money"><b>Balance due after deposit</b></td><td class="money">?</td></tr>
+      </table>
+    </div>`;
   }
 
-  function makeInvoice(){
-    return `
-      <div class="uct-doc">
-        <div class="uct-doc-title">TAX INVOICE</div>
-        <div class="uct-invoice-grid">
-          <div class="uct-box">
-            <b>DEALS 4 WHEELS</b><br>
-            Corner Stone Mall<br>
-            Mandela Main Road<br>
-            Mandela Square 6699
-          </div>
-          <div class="uct-box">
-            <b>Invoice #:</b> 0002245<br>
-            <b>Date:</b> 1 June 2020<br>
-            <b>VAT:</b> 15%<br>
-            <b>Customer:</b> Mr J Doe
-          </div>
-        </div>
-        <table class="uct-table">
-          <tr>
-            <th>Item</th>
-            <th>Description</th>
-            <th class="uct-money">Qty</th>
-            <th class="uct-money">Unit cost</th>
-            <th class="uct-money">Price</th>
-          </tr>
-          <tr><td>Head</td><td>Engine head</td><td class="uct-money">1</td><td class="uct-money">R28 315,79</td><td class="uct-money">R28 315,79</td></tr>
-          <tr><td>Gasket</td><td>Head gasket</td><td class="uct-money">1</td><td class="uct-money">R1 754,39</td><td class="uct-money">R1 754,39</td></tr>
-          <tr><td>Labour</td><td>Labour</td><td class="uct-money">7,5</td><td class="uct-money">R600,00</td><td class="uct-money">R4 500,00</td></tr>
-          <tr><td colspan="4" class="uct-money"><b>Subtotal</b></td><td class="uct-money">?</td></tr>
-          <tr><td colspan="4" class="uct-money"><b>VAT 15%</b></td><td class="uct-money">?</td></tr>
-          <tr><td colspan="4" class="uct-money"><b>Balance due</b></td><td class="uct-money">?</td></tr>
-        </table>
+  if(v.type==="payslip"){
+    return `<div class="doc">
+      <div class="doc-title">PAYSLIP</div>
+      <div class="doc-grid">
+        <div class="box"><b>Employee:</b> Lucinda Adams<br><b>Basic salary:</b> ${money(d.basic)}<br><b>Overtime:</b> ${d.hours} hours @ ${money(d.rate)}/h</div>
+        <div class="box"><b>Deductions</b><br>PAYE/TAX: ${money(d.paye)}<br>Medical Aid: ${money(d.medical)}<br>UIF: 1% of basic salary</div>
       </div>
-    `;
+      <table>
+        <tr><th>Description</th><th class="money">Amount</th></tr>
+        <tr><td>Basic salary</td><td class="money">${money(d.basic)}</td></tr>
+        <tr><td>Overtime</td><td class="money">(a)</td></tr>
+        <tr><td>UIF</td><td class="money">(b)</td></tr>
+        <tr><td>Total income</td><td class="money">(c)</td></tr>
+        <tr><td>Total deductions</td><td class="money">(d)</td></tr>
+        <tr><td>Net pay</td><td class="money">(e)</td></tr>
+      </table>
+    </div>`;
   }
 
-  function makeTariffTable(){
-    return `
-      <div class="uct-doc">
-        <div class="uct-doc-title">TARIFF TABLE</div>
-        <div class="uct-doc-sub">Electricity / water style tariff system</div>
-        <table class="uct-table">
-          <tr><th>Usage block</th><th>Units</th><th class="uct-money">Rate</th></tr>
-          <tr><td>Block 1</td><td>0–50 units</td><td class="uct-money">R1,85 per unit</td></tr>
-          <tr><td>Block 2</td><td>51–100 units</td><td class="uct-money">R2,25 per unit</td></tr>
-          <tr><td>Block 3</td><td>101+ units</td><td class="uct-money">R2,90 per unit</td></tr>
-          <tr><td>Service fee</td><td>Monthly</td><td class="uct-money">R65,00</td></tr>
-        </table>
-        <div class="uct-note">Lees die tarief per blok en bereken die totale koste.</div>
+  if(v.type==="tariff"){
+    return `<div class="doc">
+      <div class="doc-title">TARIFF TABLE</div>
+      <div class="doc-sub">Total usage: ${d.units} units</div>
+      <table>
+        <tr><th>Block</th><th>Units</th><th class="money">Rate</th></tr>
+        <tr><td>Block 1</td><td>0–50 units</td><td class="money">R1,85 per unit</td></tr>
+        <tr><td>Block 2</td><td>51–100 units</td><td class="money">R2,25 per unit</td></tr>
+        <tr><td>Block 3</td><td>101+ units</td><td class="money">R2,90 per unit</td></tr>
+        <tr><td>Service fee</td><td>Monthly</td><td class="money">${money(d.service)}</td></tr>
+      </table>
+    </div>`;
+  }
+
+  if(v.type==="credit"){
+    return `<div class="doc">
+      <div class="doc-title">ON SALE!</div>
+      <div class="doc-grid">
+        <div class="box"><b>40-inch Plasma TV set</b><br>Limited stock available<br>Cash price: <b>${money(d.cash)}</b></div>
+        <div class="box"><b>Hire purchase</b><br>Monthly instalment: <b>${money(d.installment)}</b><br>Term: <b>${d.months} months</b><br>Deposit: <b>${money(d.deposit)}</b></div>
       </div>
-    `;
+    </div>`;
   }
 
-  function makePayslip(){
-    return `
-      <div class="uct-doc">
-        <div class="uct-doc-title">PAYSLIP</div>
-        <div class="uct-doc-sub">Design & All — Salary advice</div>
-        <div class="uct-invoice-grid">
-          <div class="uct-box">
-            <b>Employee:</b> Lucinda Adams<br>
-            <b>Basic salary:</b> R15 780,00<br>
-            <b>Overtime:</b> 38 hours @ R85/h
-          </div>
-          <div class="uct-box">
-            <b>Deductions</b><br>
-            PAYE/TAX: R2 865,83<br>
-            Medical Aid: R1 420,00<br>
-            UIF: 1% of basic salary
-          </div>
-        </div>
-        <table class="uct-table">
-          <tr><th>Description</th><th class="uct-money">Amount</th></tr>
-          <tr><td>Basic salary</td><td class="uct-money">R15 780,00</td></tr>
-          <tr><td>Overtime</td><td class="uct-money">(a)</td></tr>
-          <tr><td>UIF</td><td class="uct-money">(b)</td></tr>
-          <tr><td>Total deductions</td><td class="uct-money">(e)</td></tr>
-          <tr><td>Net pay</td><td class="uct-money">(f)</td></tr>
-        </table>
-      </div>
-    `;
+  if(v.type==="convert"){
+    return `<div class="doc">
+      <div class="doc-title">CONVERSION TABLE</div>
+      <table>
+        <tr><th>Length</th><th>Mass</th><th>Capacity</th><th>Area / Volume</th></tr>
+        <tr><td>1 m = 100 cm</td><td>1 kg = 1 000 g</td><td>1 ℓ = 1 000 ml</td><td>1 m² = 10 000 cm²</td></tr>
+        <tr><td>1 km = 1 000 m</td><td>1 t = 1 000 kg</td><td>1 m³ = 1 000 ℓ</td><td>1 m³ = 1 000 000 cm³</td></tr>
+      </table>
+    </div>`;
   }
 
-  function makeMeasurement(){
-    return `
-      <div class="uct-doc">
-        <div class="uct-doc-title">MEASUREMENT CONVERSION</div>
-        <table class="uct-table">
-          <tr><th>Length</th><th>Mass</th><th>Capacity</th><th>Area / Volume</th></tr>
-          <tr><td>1 m = 100 cm</td><td>1 kg = 1 000 g</td><td>1 ℓ = 1 000 ml</td><td>1 m² = 10 000 cm²</td></tr>
-          <tr><td>1 km = 1 000 m</td><td>1 t = 1 000 kg</td><td>1 m³ = 1 000 ℓ</td><td>1 m³ = 1 000 000 cm³</td></tr>
-        </table>
-        <div class="uct-note">Gebruik die tabel soos in ’n toets: kies die regte conversion factor.</div>
-      </div>
-    `;
+  if(v.type==="cylinder"){
+    return `<div class="doc">
+      <div class="doc-title">3D SHAPE</div>
+      <svg viewBox="0 0 620 300">
+        <ellipse cx="310" cy="70" rx="160" ry="38" fill="#fff" stroke="#123c69" stroke-width="4"/>
+        <line x1="150" y1="70" x2="150" y2="230" stroke="#123c69" stroke-width="4"/>
+        <line x1="470" y1="70" x2="470" y2="230" stroke="#123c69" stroke-width="4"/>
+        <ellipse cx="310" cy="230" rx="160" ry="38" fill="#fff" stroke="#123c69" stroke-width="4"/>
+        <line x1="310" y1="230" x2="470" y2="230" stroke="#d45b7a" stroke-width="3"/>
+        <text x="365" y="220" font-size="28" fill="#d45b7a">${d.r} cm</text>
+        <text x="490" y="155" font-size="28" fill="#d45b7a">${d.h} cm</text>
+      </svg>
+    </div>`;
   }
 
-  function makeCylinder(){
-    return `
-      <div class="uct-doc">
-        <div class="uct-doc-title">3D SHAPE</div>
-        <svg class="uct-shape" viewBox="0 0 620 300">
-          <ellipse cx="310" cy="70" rx="160" ry="38" fill="#ffffff" stroke="#123c69" stroke-width="4"/>
-          <line x1="150" y1="70" x2="150" y2="230" stroke="#123c69" stroke-width="4"/>
-          <line x1="470" y1="70" x2="470" y2="230" stroke="#123c69" stroke-width="4"/>
-          <ellipse cx="310" cy="230" rx="160" ry="38" fill="#ffffff" stroke="#123c69" stroke-width="4"/>
-          <line x1="310" y1="230" x2="470" y2="230" stroke="#d45b7a" stroke-width="3"/>
-          <text x="375" y="220" font-size="28" fill="#d45b7a">6 cm</text>
-          <text x="490" y="155" font-size="28" fill="#d45b7a">12 cm</text>
-        </svg>
-        <div class="uct-note">Lees radius/hoogte vanaf die diagram en gebruik die volume- of surface-area formule.</div>
-      </div>
-    `;
+  if(v.type==="plan" || v.type==="room"){
+    const length = d.realM || d.l || 7.3;
+    const width = d.w || 4.2;
+    return `<div class="doc">
+      <div class="doc-title">FLOOR PLAN</div>
+      <svg viewBox="0 0 760 340">
+        <rect x="70" y="55" width="620" height="230" fill="#fffdf2" stroke="#918b45" stroke-width="8"/>
+        <line x1="380" y1="55" x2="380" y2="285" stroke="#918b45" stroke-width="8"/>
+        <line x1="70" y1="165" x2="690" y2="165" stroke="#918b45" stroke-width="8"/>
+        <line x1="230" y1="165" x2="230" y2="285" stroke="#918b45" stroke-width="8"/>
+        <line x1="480" y1="165" x2="480" y2="285" stroke="#918b45" stroke-width="8"/>
+        <text x="165" y="115" font-size="22">Bedroom 1</text>
+        <text x="500" y="115" font-size="22">Bedroom 2</text>
+        <text x="120" y="235" font-size="22">Kitchen</text>
+        <text x="300" y="235" font-size="22">Bathroom</text>
+        <text x="555" y="235" font-size="22">Lounge</text>
+        <line x1="70" y1="30" x2="690" y2="30" stroke="#333" stroke-width="2"/>
+        <text x="335" y="25" font-size="24">${length} m</text>
+        <text x="700" y="170" font-size="20">N ↑</text>
+      </svg>
+      <div class="note">${v.type==="plan" ? "Gebruik die skaal: 1:"+d.scale : "Gebruik area = length × width. Breedte: "+width+" m"}</div>
+    </div>`;
   }
 
-  function makeFloorPlan(){
-    return `
-      <div class="uct-doc">
-        <div class="uct-doc-title">FLOOR PLAN</div>
-        <svg class="uct-plan" viewBox="0 0 760 340">
-          <rect x="70" y="55" width="620" height="230" fill="#fffdf2" stroke="#918b45" stroke-width="8"/>
-          <line x1="380" y1="55" x2="380" y2="285" stroke="#918b45" stroke-width="8"/>
-          <line x1="70" y1="165" x2="690" y2="165" stroke="#918b45" stroke-width="8"/>
-          <line x1="230" y1="165" x2="230" y2="285" stroke="#918b45" stroke-width="8"/>
-          <line x1="480" y1="165" x2="480" y2="285" stroke="#918b45" stroke-width="8"/>
-          <rect x="190" y="52" width="90" height="12" fill="#5bbbd6"/>
-          <rect x="520" y="52" width="90" height="12" fill="#5bbbd6"/>
-          <rect x="300" y="278" width="70" height="12" fill="#5bbbd6"/>
-          <text x="165" y="115" font-size="22" fill="#333">Bedroom 1</text>
-          <text x="500" y="115" font-size="22" fill="#333">Bedroom 2</text>
-          <text x="120" y="235" font-size="22" fill="#333">Kitchen</text>
-          <text x="300" y="235" font-size="22" fill="#333">Bathroom</text>
-          <text x="555" y="235" font-size="22" fill="#333">Lounge</text>
-          <line x1="70" y1="30" x2="690" y2="30" stroke="#333" stroke-width="2"/>
-          <text x="345" y="25" font-size="24" fill="#333">7,3 m</text>
-          <text x="700" y="175" font-size="20" fill="#333">N ↑</text>
-        </svg>
-        <div class="uct-note">Gebruik die plan saam met die skaal om werklike of plan-afmetings te bereken.</div>
-      </div>
-    `;
+  if(v.type==="temp"){
+    return `<div class="doc"><div class="doc-title">TEMPERATURE</div><div class="note">Formula: °F = °C × 9/5 + 32</div></div>`;
   }
 
-  function chooseVisual(topic, question){
-    const t = String(topic || "").toLowerCase();
-    const q = String(question || "").toLowerCase();
-
-    if(t.includes("finansiële dokumente") || q.includes("bankstaat") || q.includes("opening balance") || q.includes("closing balance")){
-      return makeBankStatement();
-    }
-    if(t.includes("fakture") || q.includes("invoice") || q.includes("vat")){
-      return makeInvoice();
-    }
-    if(t.includes("krediet") || q.includes("deposit") || q.includes("instalment") || q.includes("cash price")){
-      return makeInvoice();
-    }
-    if(t.includes("tarief")){
-      return makeTariffTable();
-    }
-    if(q.includes("salary") || q.includes("payslip") || q.includes("uif") || q.includes("overtime")){
-      return makePayslip();
-    }
-    if(t.includes("lengte") || t.includes("massa") || t.includes("temperatuur") || q.includes("convert")){
-      return makeMeasurement();
-    }
-    if(t.includes("volume") || q.includes("cylinder") || q.includes("3d")){
-      return makeCylinder();
-    }
-    if(t.includes("kaart") || t.includes("plan") || t.includes("skaal") || q.includes("floor plan") || q.includes("scale")){
-      return makeFloorPlan();
-    }
-    return "";
+  if(v.type==="profit"){
+    return `<div class="doc"><div class="doc-title">PROFIT TABLE</div><table><tr><th>Cost price</th><th>Selling price</th></tr><tr><td class="money">${money(d.cost)}</td><td class="money">${money(d.sell)}</td></tr></table></div>`;
   }
 
-  function ensureVisualArea(){
-    if(document.getElementById("visualDocArea")) return;
-
-    const qEl = document.getElementById("question");
-    if(!qEl) return;
-
-    const area = document.createElement("div");
-    area.id = "visualDocArea";
-    qEl.parentNode.insertBefore(area, qEl);
+  if(v.type==="compass"){
+    return `<div class="doc"><div class="doc-title">COMPASS</div><svg viewBox="0 0 300 260"><circle cx="150" cy="130" r="90" fill="#fff" stroke="#123c69" stroke-width="4"/><text x="140" y="45" font-size="22">N</text><text x="238" y="137" font-size="22">E</text><text x="142" y="230" font-size="22">S</text><text x="48" y="137" font-size="22">W</text><line x1="150" y1="130" x2="150" y2="55" stroke="#d45b7a" stroke-width="5"/></svg></div>`;
   }
 
-  function updateVisual(){
-    ensureVisualArea();
+  return "";
+}
 
-    const area = document.getElementById("visualDocArea");
-    if(!area) return;
+function renderTiles(){
+  const box=document.getElementById("topicTiles");
+  box.innerHTML = topics.map(t=>{
+    const count = t==="Alles" ? allQuestions.length : allQuestions.filter(q=>q.topic===t).length;
+    return `<div class="tile ${selectedTopic===t?'active':''}" onclick="selectTopic('${t}')"><b>${t}</b><span>${count} vrae</span></div>`;
+  }).join("");
+}
 
-    const topic = safeText("topic");
-    const question = safeText("question");
-    const html = chooseVisual(topic, question);
+function selectTopic(t){selectedTopic=t;renderTiles();startFreshTest()}
 
-    if(html){
-      area.style.display = "block";
-      area.innerHTML = html;
-    } else {
-      area.style.display = "none";
-      area.innerHTML = "";
-    }
+function pool(){
+  return selectedTopic==="Alles" ? [...allQuestions] : allQuestions.filter(q=>q.topic===selectedTopic);
+}
+
+function shuffle(arr){return arr.sort(()=>Math.random()-0.5)}
+
+function startFreshTest(){
+  questions = shuffle(pool());
+  current = 0;
+  answers = {};
+  wrongQuestions = [];
+  document.getElementById("review").innerHTML = "";
+  render();
+}
+
+function startWrongOnlyTest(){
+  const wrong = getSavedWrong();
+  if(!wrong.length){
+    document.getElementById("review").innerHTML = `<div class="feedback good">✅ Geen verkeerde vrae gestoor nie. Begin eers ’n nuwe toets.</div>`;
+    return;
   }
+  questions = shuffle(selectedTopic==="Alles" ? wrong : wrong.filter(q=>q.topic===selectedTopic));
+  if(!questions.length) questions = wrong;
+  current = 0;
+  answers = {};
+  wrongQuestions = [];
+  document.getElementById("review").innerHTML = "";
+  render();
+}
 
-  const oldRender = window.render;
-  if(typeof oldRender === "function"){
-    window.render = function(){
-      oldRender.apply(this, arguments);
-      setTimeout(updateVisual, 50);
-    };
-  }
+function shuffleCurrent(){
+  questions = shuffle(questions.length ? questions : pool());
+  current = 0;
+  answers = {};
+  wrongQuestions = [];
+  document.getElementById("review").innerHTML = "";
+  render();
+}
 
-  window.addEventListener("load", updateVisual);
-  document.addEventListener("DOMContentLoaded", updateVisual);
-  setInterval(updateVisual, 700);
-})();
+function render(){
+  if(!questions.length) questions = shuffle(pool());
+  const q = questions[current];
+  document.getElementById("meta").innerHTML = `<b>Vraag ${current+1} van ${questions.length}</b> — ${q.topic} • ${q.level}`;
+  document.getElementById("visual").innerHTML = renderVisual(q);
+  document.getElementById("question").textContent = q.q;
+  document.getElementById("unit").textContent = q.unit || "";
+  document.getElementById("answer").value = answers[qKey(q)] || "";
+  document.getElementById("status").textContent = `Totaal in bank: ${allQuestions.length} vrae | Hierdie toets: ${questions.length}`;
+  document.getElementById("stars").textContent = "⭐ " + stars;
+  document.getElementById("bar").style.width = ((current)/questions.length*100) + "%";
+  setTimeout(()=>document.getElementById("answer").focus(),50);
+}
+
+function submitAnswer(){
+  const q = questions[current];
+  answers[qKey(q)] = document.getElementById("answer").value;
+  if(current < questions.length-1){current++;render()} else finishTest()
+}
+
+function skipQuestion(){
+  const q = questions[current];
+  answers[qKey(q)] = "";
+  if(current < questions.length-1){current++;render()} else finishTest()
+}
+
+function finishTest(){
+  if(!questions.length)return;
+  const q = questions[current];
+  if(q) answers[qKey(q)] = document.getElementById("answer").value;
+
+  wrongQuestions=[];
+  let correct=0;
+  questions.forEach(item=>{
+    if(isCorrect(answers[qKey(item)], item.answer)) correct++;
+    else wrongQuestions.push(item);
+  });
+
+  stars += correct;
+  save();
+
+  document.getElementById("bar").style.width = "100%";
+  document.getElementById("meta").innerHTML = "<b>Toets klaar</b>";
+  document.getElementById("visual").innerHTML = "";
+  document.getElementById("question").textContent = `Jy het ${correct} uit ${questions.length} reg.`;
+  document.getElementById("answer").value = "";
+  document.getElementById("unit").textContent = "";
+  document.getElementById("stars").textContent = "⭐ " + stars;
+  document.getElementById("status").textContent = "Volgende toets vra net die vrae wat verkeerd was.";
+
+  let html = wrongQuestions.length
+    ? `<div class="feedback bad">❌ Leer hierdie verkeerde vrae. Klik daarna “Volgende toets: net verkeerdes”.</div>`
+    : `<div class="feedback good">✅ Perfek! Alles reg.</div>`;
+
+  html += `<div class="review"><h2>Verkeerde vrae met verduideliking</h2>`;
+  wrongQuestions.forEach((item,idx)=>{
+    const userAns = answers[qKey(item)] || "(oop gelos)";
+    html += `<div class="feedback bad">
+      <b>${idx+1}. ${item.topic}</b><br>
+      <b>Vraag:</b> ${item.q}<br>
+      <b>Jou antwoord:</b> ${userAns}<br>
+      <b>Regte antwoord:</b> ${item.answer} ${item.unit || ""}<br>
+      <b>Formule:</b> ${item.formula}<br>
+      <b>Stappe:</b><br>${item.steps.map((s,i)=>(i+1)+". "+s).join("<br>")}
+    </div>`;
+  });
+  html += `</div>`;
+  document.getElementById("review").innerHTML = html;
+}
+
+document.addEventListener("keydown",e=>{if(e.key==="Enter")submitAnswer()});
+
+buildAll();
+renderTiles();
+startFreshTest();
 </script>
-<!-- ENRICO_VISUAL_DOCS_END -->
-<!-- ENRICO_NEXT_FIX_START -->
-<script id="enrico-next-button-fix-js">
-(function(){
-  function getAnswerValue(){
-    var el = document.getElementById("answer");
-    return el ? el.value : "";
-  }
-
-  window.submitAnswer = function(){
-    try {
-      if (typeof window.nextQuestion === "function") {
-        window.nextQuestion();
-        return;
-      }
-
-      if (typeof nextQuestion === "function") {
-        nextQuestion();
-        return;
-      }
-
-      var buttons = Array.from(document.querySelectorAll("button"));
-      var nextBtn = buttons.find(function(b){
-        return (b.innerText || "").trim().toLowerCase().includes("volgende");
-      });
-
-      if(nextBtn){
-        nextBtn.blur();
-      }
-    } catch(e) {
-      alert("Volgende fout: " + e.message);
-    }
-  };
-
-  window.skipQuestion = function(){
-    var el = document.getElementById("answer");
-    if(el) el.value = "";
-    window.submitAnswer();
-  };
-
-  window.finishTest = function(){
-    try {
-      if (typeof window.checkAnswer === "function") {
-        window.checkAnswer();
-        return;
-      }
-      if (typeof checkAnswer === "function") {
-        checkAnswer();
-        return;
-      }
-      alert("Klaar met toets werk nog nie. Ek moet die engine vervang.");
-    } catch(e) {
-      alert("Klaar fout: " + e.message);
-    }
-  };
-
-  document.addEventListener("click", function(e){
-    var btn = e.target.closest("button");
-    if(!btn) return;
-
-    var txt = (btn.innerText || "").trim().toLowerCase();
-
-    if(txt === "volgende"){
-      e.preventDefault();
-      e.stopPropagation();
-      window.submitAnswer();
-    }
-
-    if(txt === "los op" || txt === "los oop"){
-      e.preventDefault();
-      e.stopPropagation();
-      window.skipQuestion();
-    }
-
-    if(txt === "klaar met toets"){
-      e.preventDefault();
-      e.stopPropagation();
-      window.finishTest();
-    }
-  }, true);
-})();
-</script>
-<!-- ENRICO_NEXT_FIX_END -->
-<!-- ENRICO_DYNAMIC_BANKSTAAT_START -->
-<script id="enrico-dynamic-bankstaat-js">
-(function(){
-  function cleanMoney(n){
-    return "R" + Number(n).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-  }
-
-  function parseMoney(text){
-    const matches = String(text || "").match(/R\s*[0-9][0-9\s]*([,.][0-9]{1,2})?/gi) || [];
-    return matches.map(m => {
-      let x = m.replace(/R/gi, "").replace(/\s/g, "").replace(",", ".");
-      return Number(x);
-    }).filter(n => !Number.isNaN(n));
-  }
-
-  function getText(id){
-    const el = document.getElementById(id);
-    return el ? (el.innerText || el.textContent || "") : "";
-  }
-
-  function buildBankStatement(questionText){
-    const nums = parseMoney(questionText);
-
-    // Expected order in these questions:
-    // opening balance, deposit, ATM cash/payment, bank charge
-    const opening = nums[0] ?? 0;
-    const deposit = nums[1] ?? 0;
-    const atm = nums[2] ?? 0;
-    const charge = nums[3] ?? 0;
-
-    const balanceA = opening + deposit;
-    const balanceB = balanceA - atm;
-    const closing = balanceB - charge;
-
-    return `
-      <div class="uct-doc">
-        <div class="uct-doc-title">BANKSTAAT</div>
-        <div class="uct-doc-sub">Savings account statement — March</div>
-        <table class="uct-table">
-          <tr>
-            <th>Date</th>
-            <th>Transaction</th>
-            <th class="uct-money">Payment</th>
-            <th class="uct-money">Deposit</th>
-            <th class="uct-money">Balance</th>
-          </tr>
-          <tr>
-            <td>01/03</td>
-            <td>Opening balance</td>
-            <td></td>
-            <td></td>
-            <td class="uct-money">${cleanMoney(opening)}</td>
-          </tr>
-          <tr>
-            <td>03/03</td>
-            <td>Deposit</td>
-            <td></td>
-            <td class="uct-money">${cleanMoney(deposit)}</td>
-            <td class="uct-money">(A)</td>
-          </tr>
-          <tr>
-            <td>05/03</td>
-            <td>ATM cash</td>
-            <td class="uct-money">${cleanMoney(atm)}</td>
-            <td></td>
-            <td class="uct-money">(B)</td>
-          </tr>
-          <tr>
-            <td>28/03</td>
-            <td>Bank charges</td>
-            <td class="uct-money">${cleanMoney(charge)}</td>
-            <td></td>
-            <td class="uct-money">?</td>
-          </tr>
-        </table>
-        <div class="uct-note">
-          Werk so: ${cleanMoney(opening)} + ${cleanMoney(deposit)} - ${cleanMoney(atm)} - ${cleanMoney(charge)} = closing balance.
-        </div>
-      </div>
-    `;
-  }
-
-  function updateDynamicBankStatement(){
-    const topic = getText("topic").toLowerCase();
-    const question = getText("question");
-
-    if(!question) return;
-
-    const isBank =
-      topic.includes("finansiële dokumente") &&
-      question.toLowerCase().includes("bankstaat") &&
-      question.toLowerCase().includes("closing balance");
-
-    if(!isBank) return;
-
-    const area = document.getElementById("visualDocArea");
-    if(!area) return;
-
-    area.style.display = "block";
-    area.innerHTML = buildBankStatement(question);
-  }
-
-  // Hard override after old visual script draws its generic statement
-  window.addEventListener("load", updateDynamicBankStatement);
-  document.addEventListener("DOMContentLoaded", updateDynamicBankStatement);
-  setInterval(updateDynamicBankStatement, 250);
-})();
-</script>
-<!-- ENRICO_DYNAMIC_BANKSTAAT_END -->
-</body></html>
-
-
-
-
+</body>
+</html>
