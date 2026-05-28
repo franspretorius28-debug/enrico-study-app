@@ -498,7 +498,117 @@ function resetProgress(){if(confirm('Reset alle sterre?')){stars=0;correctDone={
 })();
 </script>
 <!-- ENRICO_NEXT_FIX_END -->
+<!-- ENRICO_DYNAMIC_BANKSTAAT_START -->
+<script id="enrico-dynamic-bankstaat-js">
+(function(){
+  function cleanMoney(n){
+    return "R" + Number(n).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  }
+
+  function parseMoney(text){
+    const matches = String(text || "").match(/R\s*[0-9][0-9\s]*([,.][0-9]{1,2})?/gi) || [];
+    return matches.map(m => {
+      let x = m.replace(/R/gi, "").replace(/\s/g, "").replace(",", ".");
+      return Number(x);
+    }).filter(n => !Number.isNaN(n));
+  }
+
+  function getText(id){
+    const el = document.getElementById(id);
+    return el ? (el.innerText || el.textContent || "") : "";
+  }
+
+  function buildBankStatement(questionText){
+    const nums = parseMoney(questionText);
+
+    // Expected order in these questions:
+    // opening balance, deposit, ATM cash/payment, bank charge
+    const opening = nums[0] ?? 0;
+    const deposit = nums[1] ?? 0;
+    const atm = nums[2] ?? 0;
+    const charge = nums[3] ?? 0;
+
+    const balanceA = opening + deposit;
+    const balanceB = balanceA - atm;
+    const closing = balanceB - charge;
+
+    return `
+      <div class="uct-doc">
+        <div class="uct-doc-title">BANKSTAAT</div>
+        <div class="uct-doc-sub">Savings account statement — March</div>
+        <table class="uct-table">
+          <tr>
+            <th>Date</th>
+            <th>Transaction</th>
+            <th class="uct-money">Payment</th>
+            <th class="uct-money">Deposit</th>
+            <th class="uct-money">Balance</th>
+          </tr>
+          <tr>
+            <td>01/03</td>
+            <td>Opening balance</td>
+            <td></td>
+            <td></td>
+            <td class="uct-money">${cleanMoney(opening)}</td>
+          </tr>
+          <tr>
+            <td>03/03</td>
+            <td>Deposit</td>
+            <td></td>
+            <td class="uct-money">${cleanMoney(deposit)}</td>
+            <td class="uct-money">(A)</td>
+          </tr>
+          <tr>
+            <td>05/03</td>
+            <td>ATM cash</td>
+            <td class="uct-money">${cleanMoney(atm)}</td>
+            <td></td>
+            <td class="uct-money">(B)</td>
+          </tr>
+          <tr>
+            <td>28/03</td>
+            <td>Bank charges</td>
+            <td class="uct-money">${cleanMoney(charge)}</td>
+            <td></td>
+            <td class="uct-money">?</td>
+          </tr>
+        </table>
+        <div class="uct-note">
+          Werk so: ${cleanMoney(opening)} + ${cleanMoney(deposit)} - ${cleanMoney(atm)} - ${cleanMoney(charge)} = closing balance.
+        </div>
+      </div>
+    `;
+  }
+
+  function updateDynamicBankStatement(){
+    const topic = getText("topic").toLowerCase();
+    const question = getText("question");
+
+    if(!question) return;
+
+    const isBank =
+      topic.includes("finansiële dokumente") &&
+      question.toLowerCase().includes("bankstaat") &&
+      question.toLowerCase().includes("closing balance");
+
+    if(!isBank) return;
+
+    const area = document.getElementById("visualDocArea");
+    if(!area) return;
+
+    area.style.display = "block";
+    area.innerHTML = buildBankStatement(question);
+  }
+
+  // Hard override after old visual script draws its generic statement
+  window.addEventListener("load", updateDynamicBankStatement);
+  document.addEventListener("DOMContentLoaded", updateDynamicBankStatement);
+  setInterval(updateDynamicBankStatement, 250);
+})();
+</script>
+<!-- ENRICO_DYNAMIC_BANKSTAAT_END -->
 </body></html>
+
 
 
 
