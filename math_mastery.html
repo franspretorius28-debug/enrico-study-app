@@ -416,6 +416,89 @@ function resetProgress(){if(confirm('Reset alle sterre?')){stars=0;correctDone={
 })();
 </script>
 <!-- ENRICO_VISUAL_DOCS_END -->
+<!-- ENRICO_NEXT_FIX_START -->
+<script id="enrico-next-button-fix-js">
+(function(){
+  function getAnswerValue(){
+    var el = document.getElementById("answer");
+    return el ? el.value : "";
+  }
+
+  window.submitAnswer = function(){
+    try {
+      if (typeof window.nextQuestion === "function") {
+        window.nextQuestion();
+        return;
+      }
+
+      if (typeof nextQuestion === "function") {
+        nextQuestion();
+        return;
+      }
+
+      var buttons = Array.from(document.querySelectorAll("button"));
+      var nextBtn = buttons.find(function(b){
+        return (b.innerText || "").trim().toLowerCase().includes("volgende");
+      });
+
+      if(nextBtn){
+        nextBtn.blur();
+      }
+    } catch(e) {
+      alert("Volgende fout: " + e.message);
+    }
+  };
+
+  window.skipQuestion = function(){
+    var el = document.getElementById("answer");
+    if(el) el.value = "";
+    window.submitAnswer();
+  };
+
+  window.finishTest = function(){
+    try {
+      if (typeof window.checkAnswer === "function") {
+        window.checkAnswer();
+        return;
+      }
+      if (typeof checkAnswer === "function") {
+        checkAnswer();
+        return;
+      }
+      alert("Klaar met toets werk nog nie. Ek moet die engine vervang.");
+    } catch(e) {
+      alert("Klaar fout: " + e.message);
+    }
+  };
+
+  document.addEventListener("click", function(e){
+    var btn = e.target.closest("button");
+    if(!btn) return;
+
+    var txt = (btn.innerText || "").trim().toLowerCase();
+
+    if(txt === "volgende"){
+      e.preventDefault();
+      e.stopPropagation();
+      window.submitAnswer();
+    }
+
+    if(txt === "los op" || txt === "los oop"){
+      e.preventDefault();
+      e.stopPropagation();
+      window.skipQuestion();
+    }
+
+    if(txt === "klaar met toets"){
+      e.preventDefault();
+      e.stopPropagation();
+      window.finishTest();
+    }
+  }, true);
+})();
+</script>
+<!-- ENRICO_NEXT_FIX_END -->
 </body></html>
+
 
 
