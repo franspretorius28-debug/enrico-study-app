@@ -1132,7 +1132,10 @@ function render(){
   document.getElementById("question").textContent = q.q;
   document.getElementById("unit").textContent = q.unit || "";
   document.getElementById("answer").value = answers[qKey(q)] || "";
-  document.getElementById("status").textContent = `Bemeester: ${masteredKeys.length}/${allQuestions.length} sterre | Hierdie toets: ${questions.length} vrae`;
+  let wrongCountNow = 0;
+try { wrongCountNow = getSavedWrong().length; } catch(e) { wrongCountNow = 0; }
+const outstandingNow = Math.max(0, allQuestions.length - masteredKeys.length);
+document.getElementById("status").textContent = `Bemeester: ${masteredKeys.length}/${allQuestions.length} | Uitstaande: ${outstandingNow} | Verkeerd laaste toets: ${wrongCountNow} | Hierdie toets: ${questions.length} vrae`;
   document.getElementById("stars").textContent = "⭐ " + masteredKeys.length + "/" + allQuestions.length;
   document.getElementById("bar").style.width = ((current)/questions.length*100) + "%";
   setTimeout(()=>document.getElementById("answer").focus(),50);
@@ -1278,6 +1281,7 @@ startFreshTest();
 </script>
 </body>
 </html>
+
 
 
 
