@@ -1190,6 +1190,13 @@ function submitAnswer(){
 
   setTimeout(()=>{
     window.__teaeMarkBusy = false;
+
+    const teaeDoneNow = teaeAnsweredInThisTest();
+    if(teaeNeedWhatsappAfterDone(teaeDoneNow)){
+      teaeShowWhatsappGate();
+      return;
+    }
+
     if(current < questions.length-1){
       current++;
       render();
@@ -1211,6 +1218,13 @@ function skipQuestion(){
 
   setTimeout(()=>{
     window.__teaeMarkBusy = false;
+
+    const teaeDoneNow = teaeAnsweredInThisTest();
+    if(teaeNeedWhatsappAfterDone(teaeDoneNow)){
+      teaeShowWhatsappGate();
+      return;
+    }
+
     if(current < questions.length-1){
       current++;
       render();
@@ -1326,12 +1340,204 @@ document.addEventListener("click", function(e){
   }
 }, true);
 
+// TEAE_WHATSAPP_STOP_EVERY_10_V2
+function teaeAnsweredInThisTest(){
+  try {
+    return questions.filter(q => {
+      const k = qKey(q);
+      return Object.prototype.hasOwnProperty.call(answers, k) &&
+        String(answers[k] ?? "").trim() !== "";
+    }).length;
+  } catch(e) { return 0; }
+}
+
+function teaeCorrectInThisTest(){
+  try {
+    return questions.filter(q => {
+      const k = qKey(q);
+      return Object.prototype.hasOwnProperty.call(answers, k) &&
+        String(answers[k] ?? "").trim() !== "" &&
+        isCorrect(answers[k], q.answer);
+    }).length;
+  } catch(e) { return 0; }
+}
+
+function teaeWrongInThisTest(){
+  try {
+    return questions.filter(q => {
+      const k = qKey(q);
+      return Object.prototype.hasOwnProperty.call(answers, k) &&
+        String(answers[k] ?? "").trim() !== "" &&
+        !isCorrect(answers[k], q.answer);
+    }).length;
+  } catch(e) { return 0; }
+}
+
+function teaeNeedWhatsappAfterDone(done){
+  try {
+    if(done <= 0) return false;
+    if(done % 10 !== 0) return false;
+    const testId = String(questions.map(q => qKey(q)).join("|")).slice(0,120);
+    const key = "teae_wa_sent_" + testId + "_" + done;
+    return localStorage.getItem(key) !== "yes";
+  } catch(e) { return false; }
+}
+
+function teaeMarkWhatsappSent(done){
+  try {
+    const testId = String(questions.map(q => qKey(q)).join("|")).slice(0,120);
+    const key = "teae_wa_sent_" + testId + "_" + done;
+    localStorage.setItem(key, "yes");
+  } catch(e) {}
+}
+
+function teaeShowWhatsappGate(){
+  const done = teaeAnsweredInThisTest();
+  const correct = teaeCorrectInThisTest();
+  const wrong = teaeWrongInThisTest();
+  const pending = Math.max(0, questions.length - done);
+
+  const status = document.getElementById("status");
+  if(!status) return;
+
+  status.innerHTML =
+    `<div style="background:#ecfeff;color:#164e63;border:2px solid #06b6d4;border-radius:16px;padding:12px;font-weight:1000;margin-top:10px">
+      📲 WhatsApp update nodig na ${done} vrae.<br>
+      Reg: ${correct} | Verkeerd: ${wrong} | Uitstaande in hierdie toets: ${pending}<br>
+      <button id="teaeWaUpdateBtn" style="margin-top:10px;background:#16a34a;color:white;border:0;border-radius:12px;padding:12px 16px;font-weight:1000;font-size:16px">
+        Stuur WhatsApp update na Dad
+      </button>
+    </div>`;
+
+  const btn = document.getElementById("teaeWaUpdateBtn");
+  if(btn){
+    btn.onclick = function(){
+      const dad = window.TEAE_DAD_WHATSAPP || "27642203726";
+      const msg =
+`Enrico Wiskunde Update
+Vrae gedoen: ${done}/${questions.length}
+Reg: ${correct}
+Verkeerd: ${wrong}
+Uitstaande in hierdie toets: ${pending}
+Bemeester: ${Array.from(new Set(masteredKeys)).length}/${allQuestions.length}`;
+
+      teaeMarkWhatsappSent(done);
+      window.open("https://wa.me/" + dad + "?text=" + encodeURIComponent(msg), "_blank");
+
+      setTimeout(function(){
+        if(current < questions.length - 1){
+          current++;
+          render();
+        } else {
+          finishTest();
+        }
+      }, 700);
+    };
+  }
+}
+
+
+// TEAE_WHATSAPP_LAST10_DETAILS_V3
+function teaeCleanText(v){
+  return String(v ?? "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function teaeLastAnsweredQuestionDetails(limit){
+  try {
+    const answered = questions
+      .map((q, idx) => ({ q, idx }))
+      .filter(x => {
+        const k = qKey(x.q);
+        return Object.prototype.hasOwnProperty.call(answers, k) &&
+          String(answers[k] ?? "").trim() !== "";
+      });
+
+    const last = answered.slice(-limit);
+
+    return last.map(x => {
+      const q = x.q;
+      const k = qKey(q);
+      const given = String(answers[k] ?? "").trim();
+      const correct = String(q.answer ?? "").trim();
+      const ok = isCorrect(given, q.answer);
+
+      return `${x.idx + 1}. ${ok ? "✅ REG" : "❌ VERKEERD"}
+Afdeling: ${q.topic || q.unit || ""}
+Vraag: ${teaeCleanText(q.q)}
+Enrico: ${given}
+Regte antwoord: ${correct}`;
+    }).join("\n\n");
+  } catch(e) {
+    return "Kon nie vraag-detail lees nie.";
+  }
+}
+
+function teaeShowWhatsappGate(){
+  const done = teaeAnsweredInThisTest();
+  const correct = teaeCorrectInThisTest();
+  const wrong = teaeWrongInThisTest();
+  const pending = Math.max(0, questions.length - done);
+
+  const status = document.getElementById("status");
+  if(!status) return;
+
+  status.innerHTML =
+    `<div style="background:#ecfeff;color:#164e63;border:2px solid #06b6d4;border-radius:16px;padding:12px;font-weight:1000;margin-top:10px">
+      📲 WhatsApp update nodig na ${done} vrae.<br>
+      Reg: ${correct} | Verkeerd: ${wrong} | Uitstaande in hierdie toets: ${pending}<br>
+      Die WhatsApp sal ook die laaste 10 vrae wys met Enrico se antwoord en die regte antwoord.<br>
+      <button id="teaeWaUpdateBtn" style="margin-top:10px;background:#16a34a;color:white;border:0;border-radius:12px;padding:12px 16px;font-weight:1000;font-size:16px">
+        Stuur WhatsApp update na Dad
+      </button>
+    </div>`;
+
+  const btn = document.getElementById("teaeWaUpdateBtn");
+  if(btn){
+    btn.onclick = function(){
+      const dad = window.TEAE_DAD_WHATSAPP || "27642203726";
+
+      const details = teaeLastAnsweredQuestionDetails(10);
+
+      const msg =
+`Enrico Wiskunde Update
+
+Vrae gedoen: ${done}/${questions.length}
+Reg: ${correct}
+Verkeerd: ${wrong}
+Uitstaande in hierdie toets: ${pending}
+Bemeester: ${Array.from(new Set(masteredKeys)).length}/${allQuestions.length}
+
+Laaste 10 vrae:
+${details}`;
+
+      teaeMarkWhatsappSent(done);
+      window.open("https://wa.me/" + dad + "?text=" + encodeURIComponent(msg), "_blank");
+
+      setTimeout(function(){
+        if(current < questions.length - 1){
+          current++;
+          render();
+        } else {
+          finishTest();
+        }
+      }, 700);
+    };
+  }
+}
+
+
 buildAll();
 renderTiles();
 startFreshTest();
 </script>
 </body>
 </html>
+
+
+
 
 
 
