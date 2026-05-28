@@ -57,7 +57,7 @@
     .formulaLine{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:white;border:1px solid #e2e8f0;border-radius:14px;padding:8px;margin-top:6px;font-weight:900}
     .mathlitWorkBox{margin-top:12px;border:1px solid #dbeafe;background:#eff6ff;border-radius:20px;padding:12px}
     .mathlitWorkBox b{color:#1e3a8a}
-    .mathlitInput{width:100%;border:2px solid #cbd5e1;border-radius:18px;padding:14px 16px;font-weight:900;background:white;margin-top:10px}
+    .mathlitInput{width:100%;border:2px solid #94a3b8;border-radius:18px;padding:14px 16px;font-weight:900;background:white;margin-top:10px;min-height:58px;resize:vertical;display:block;pointer-events:auto;position:relative;z-index:5}
     .mathlitInput:focus{border-color:#0f172a;outline:none;background:#f8fafc}
     .mathlitResult{border-radius:18px;padding:12px;font-weight:900;margin-top:10px}
     .mathlitResult.good{background:var(--good);color:#14532d;border:1px solid var(--goodLine)}
@@ -7984,7 +7984,8 @@ function mathlitWrittenQuestionHTML(q, i, bucket, key, reveal){
   html += '<div class="row space"><span class="pill active">' + esc(q.unit || q.m || "MathLit") + '</span><span class="pill">self antwoord</span></div>';
   html += '<b>' + (i+1) + '. ' + esc(q.q) + '</b>';
   html += '<div class="mathlitWorkBox"><b>Formule / metode:</b><br>' + esc(mathlitFormulaHint(q)) + '</div>';
-  html += '<input class="mathlitInput" value="' + esc(val) + '" placeholder="Tik jou antwoord hier. Wys bv. R165, 165, 2 km, 750 ml..." oninput="mathlitSetWrittenAnswer(\'' + bucket + '\',\'' + key + '\',this.value)">';
+  html += '<label class="field" style="margin-top:12px">Klik hier en tik jou antwoord:</label>';
+  html += '<textarea class="mathlitInput" rows="2" placeholder="Tik jou antwoord hier. Wys bv. R165, 165, 2 km, 750 ml..." oninput="mathlitSetWrittenAnswer(\'' + bucket + '\',\'' + key + '\',this.value)">' + esc(val) + '</textarea>';
 
   if(reveal){
     html += '<div class="mathlitResult ' + (ok ? 'good' : 'bad') + '">' + (ok ? 'Reg' : 'Nog nie reg nie') + '</div>';
@@ -8151,7 +8152,8 @@ function teaeWrittenQuestionAnyHTML(q, i, bucket, key, reveal, visualHtml){
   html += '<div class="row space"><span class="pill active">' + esc(q.unit || q.m || "Vraag") + '</span><span class="pill">self antwoord</span></div>';
   html += '<b>' + (i+1) + '. ' + esc(q.q) + '</b>';
   html += '<div class="mathlitWorkBox"><b>Metode / rede:</b><br>' + esc(teaeMethodHintAny(q)) + '</div>';
-  html += '<input class="mathlitInput" value="' + esc(val) + '" placeholder="Tik jou antwoord hier, nie A/B/C/D nie..." oninput="teaeSetWrittenAny(\'' + bucket + '\',\'' + key + '\',this.value)">';
+  html += '<label class="field" style="margin-top:12px">Klik hier en tik jou antwoord:</label>';
+  html += '<textarea class="mathlitInput" rows="2" placeholder="Tik jou antwoord hier, nie A/B/C/D nie..." oninput="teaeSetWrittenAny(\'' + bucket + '\',\'' + key + '\',this.value)">' + esc(val) + '</textarea>';
 
   if(reveal){
     html += '<div class="mathlitResult ' + (ok ? 'good' : 'bad') + '">' + (ok ? 'Reg' : 'Nog nie reg nie') + '</div>';
@@ -8301,6 +8303,8 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 
 
 <!-- DASHBOARD PATCH 2: clean home text and safe header icon -->
+
+
 
 
 
