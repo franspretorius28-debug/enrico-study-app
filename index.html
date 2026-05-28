@@ -8251,62 +8251,120 @@ function render(){
 }
 load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFinished) startTimer();
 </script>
-<!-- ENRICO_SAFE_NEW_MATH_LINK_START -->
-<script id="enrico-safe-new-math-link-js">
+<!-- ENRICO_REPLACE_SUBJECT_MATH_CARD_START -->
+<script id="enrico-replace-subject-math-card-js">
 (function(){
-  const NEW_MATH_URL = "math_mastery.html?v=14";
+  const NEW_MATH_URL = "math_mastery.html?v=16";
 
-  function textOf(el){
+  function txt(el){
     return String((el && (el.innerText || el.textContent)) || "").toLowerCase();
   }
 
-  function isMathTrigger(el){
-    const t = textOf(el);
-    const href = el.getAttribute ? String(el.getAttribute("href") || "").toLowerCase() : "";
-
+  function isOldMathText(t){
+    t = String(t || "").toLowerCase();
     return (
-      t.includes("start nuwe wiskunde") ||
-      t.includes("start mathlit test") ||
-      t.includes("wiskunde") ||
-      t.includes("mathlit") ||
-      t.includes("mathematical literacy") ||
       t.includes("wiskundige geletterdheid") ||
-      href.includes("math") ||
-      href.includes("mathlit")
+      t.includes("mathematical literacy") ||
+      t.includes("mathlit") ||
+      t.includes("math lit") ||
+      t.includes("ml")
     );
   }
 
-  function goMath(e){
+  function goNewMath(e){
     if(e){
       e.preventDefault();
       e.stopPropagation();
+      if(e.stopImmediatePropagation) e.stopImmediatePropagation();
     }
     window.location.href = NEW_MATH_URL;
     return false;
   }
 
-  function wire(){
-    document.querySelectorAll("a, button, [role='button']").forEach(function(el){
-      if(isMathTrigger(el) && el.dataset.enricoSafeMath !== "1"){
-        el.dataset.enricoSafeMath = "1";
+  function replaceSubjectCard(){
+    document.querySelectorAll("a, button, [role='button'], .card, .tile, .subject-card, div").forEach(function(el){
+      const t = txt(el);
+      const href = el.getAttribute ? String(el.getAttribute("href") || "").toLowerCase() : "";
+
+      const isTopButton = t.includes("start nuwe wiskunde") || t.includes("start mathlit test");
+      const isSubjectMath =
+        t.includes("wiskundige geletterdheid") ||
+        t.includes("mathematical literacy") ||
+        href.includes("mathlit");
+
+      if(isTopButton || isSubjectMath){
+        if(el.dataset.enricoNewMathCard === "1") return;
+        el.dataset.enricoNewMathCard = "1";
+
+        if(isSubjectMath){
+          // Verander net die vakkaart se sigbare inhoud, nie die hele app nie.
+          const strongs = el.querySelectorAll("h1,h2,h3,h4,b,strong");
+          strongs.forEach(function(s){
+            const st = txt(s);
+            if(st.includes("wiskundige geletterdheid") || st === "ml" || st.includes("mathematical literacy")){
+              s.textContent = "Graad 10 Wiskunde Kwartaal 2";
+            }
+          });
+
+          // Fallback as die kaart net plain text het
+          if(t.includes("wiskundige geletterdheid") && el.children.length < 8){
+            el.setAttribute("title", "Nuwe Wiskunde Mastery Check");
+          }
+        }
+
         el.style.cursor = "pointer";
 
         if(el.tagName === "A"){
           el.setAttribute("href", NEW_MATH_URL);
         }
 
-        el.addEventListener("click", goMath, true);
+        el.addEventListener("click", goNewMath, true);
+      }
+    });
+
+    // Maak seker die ML kaart lyk soos nuwe Wiskunde
+    document.querySelectorAll("*").forEach(function(el){
+      const t = txt(el);
+      if(t === "ml"){
+        el.textContent = "📘";
+      }
+      if(t === "wiskundige geletterdheid"){
+        el.textContent = "Graad 10 Wiskunde Kwartaal 2";
+      }
+      if(t.includes("graad 10 - kwartaal 2") && el.parentElement && txt(el.parentElement).includes("graad 10 wiskunde kwartaal 2")){
+        el.textContent = "Nuwe eksamenvoorbereiding";
       }
     });
   }
 
-  document.addEventListener("DOMContentLoaded", wire);
-  window.addEventListener("load", wire);
-  setTimeout(wire, 500);
-  setTimeout(wire, 1500);
+  // Capture click: keer dat die ou app se ML click ooit eers loop.
+  document.addEventListener("click", function(e){
+    const target = e.target;
+    const box = target.closest("a, button, [role='button'], .card, .tile, .subject-card, div");
+    if(!box) return;
+
+    const t = txt(box);
+    if(
+      t.includes("start nuwe wiskunde") ||
+      t.includes("start mathlit test") ||
+      t.includes("wiskundige geletterdheid") ||
+      t.includes("graad 10 wiskunde kwartaal 2") ||
+      t.includes("mathematical literacy") ||
+      t.includes("mathlit")
+    ){
+      return goNewMath(e);
+    }
+  }, true);
+
+  document.addEventListener("DOMContentLoaded", replaceSubjectCard);
+  window.addEventListener("load", replaceSubjectCard);
+  setTimeout(replaceSubjectCard, 300);
+  setTimeout(replaceSubjectCard, 1000);
+  setTimeout(replaceSubjectCard, 2500);
+  setInterval(replaceSubjectCard, 3000);
 })();
 </script>
-<!-- ENRICO_SAFE_NEW_MATH_LINK_END -->
+<!-- ENRICO_REPLACE_SUBJECT_MATH_CARD_END -->
 </body>
 </html>
 
@@ -8379,6 +8437,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 
 
 <!-- DASHBOARD PATCH 2: clean home text and safe header icon -->
+
 
 
 
