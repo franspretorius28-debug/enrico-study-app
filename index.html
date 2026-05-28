@@ -57,7 +57,7 @@
     .formulaLine{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:white;border:1px solid #e2e8f0;border-radius:14px;padding:8px;margin-top:6px;font-weight:900}
     .mathlitWorkBox{margin-top:12px;border:1px solid #dbeafe;background:#eff6ff;border-radius:20px;padding:12px}
     .mathlitWorkBox b{color:#1e3a8a}
-    .mathlitInput{width:100%;border:2px solid #94a3b8;border-radius:18px;padding:14px 16px;font-weight:900;background:white;margin-top:10px;min-height:58px;resize:vertical;display:block;pointer-events:auto;position:relative;z-index:5;font-size:16px;line-height:1.4;-webkit-user-select:text;user-select:text;-webkit-appearance:none;appearance:none;touch-action:manipulation;}
+    .mathlitInput{width:100%;border:2px solid #cbd5e1;border-radius:18px;padding:14px 16px;font-weight:900;background:white;margin-top:10px}
     .mathlitInput:focus{border-color:#0f172a;outline:none;background:#f8fafc}
     .mathlitResult{border-radius:18px;padding:12px;font-weight:900;margin-top:10px}
     .mathlitResult.good{background:var(--good);color:#14532d;border:1px solid var(--goodLine)}
@@ -147,7 +147,7 @@
   </style>
 </head>
 <body>
-<div id="app"></div>
+  <div id="app"></div>
 
 <script>
 const STUDENT_NAME = "Enrico";
@@ -3919,7 +3919,7 @@ function topbar(){
   if(isMathlit){
     subjectText = "- Wiskundige Geletterdheid";
     studyAction = "selectSubject('mathlit')";
-    examText = "Start Nuwe Wiskunde";
+    examText = "Start MathLit Test";
     examAction = "startMathlitExam()";
   }
 
@@ -7984,9 +7984,7 @@ function mathlitWrittenQuestionHTML(q, i, bucket, key, reveal){
   html += '<div class="row space"><span class="pill active">' + esc(q.unit || q.m || "MathLit") + '</span><span class="pill">self antwoord</span></div>';
   html += '<b>' + (i+1) + '. ' + esc(q.q) + '</b>';
   html += '<div class="mathlitWorkBox"><b>Formule / metode:</b><br>' + esc(mathlitFormulaHint(q)) + '</div>';
-  html += '<label class="field" style="margin-top:12px">Klik hier en tik jou antwoord:</label>';
-  html += '<textarea class="mathlitInput" rows="2" placeholder="Tik jou antwoord hier. Wys bv. R165, 165, 2 km, 750 ml..." onclick="this.focus()" ontouchend="this.focus()" oninput="mathlitSetWrittenAnswer(\'' + bucket + '\',\'' + key + '\',this.value)">' + esc(val) + '</textarea>';
-  html += '<button type="button" class="btn secondary" style="margin-top:8px;width:100%" onclick="mathlitPromptAnswer(\'' + bucket + '\',\'' + key + '\')">Tik antwoord op phone</button>';
+  html += '<input class="mathlitInput" value="' + esc(val) + '" placeholder="Tik jou antwoord hier. Wys bv. R165, 165, 2 km, 750 ml..." oninput="mathlitSetWrittenAnswer(\'' + bucket + '\',\'' + key + '\',this.value)">';
 
   if(reveal){
     html += '<div class="mathlitResult ' + (ok ? 'good' : 'bad') + '">' + (ok ? 'Reg' : 'Nog nie reg nie') + '</div>';
@@ -8013,7 +8011,7 @@ function mathlitStudyHTML(){
   let html = topbar();
   html += '<div class="wrap grid">';
 
-  html += '<div class="card"><div class="row space"><div><h2>Wiskundige Geletterdheid</h2><p class="muted">Graad 10 - Kwartaal 2</p></div><div class="row"><button class="btn secondary" onclick="setState({screen:\'dashboard\'})">Subjects</button><button class="btn" onclick="startMathlitExam()">Start Nuwe Wiskunde</button></div></div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>Wiskundige Geletterdheid</h2><p class="muted">Graad 10 - Kwartaal 2</p></div><div class="row"><button class="btn secondary" onclick="setState({screen:\'dashboard\'})">Subjects</button><button class="btn" onclick="startMathlitExam()">Start MathLit Test</button></div></div></div>';
 
   html += '<div class="card"><div class="row space"><div><h2>Study Hub</h2><p class="muted">Kwartaal 2 dek Finansies, Meting, Kaarte/Planne en Waarskynlikheid. Hierdie hub dek Finansies, Meting, Kaarte en Waarskynlikheid met n groot vraagbank en prentvrae.</p></div><span class="pill active">' + mathlitQuestions.length + ' vrae</span></div>';
   html += '<div class="grid subjects" style="margin-top:14px">';
@@ -8144,24 +8142,6 @@ function teaeMethodHintAny(q){
 
   return "Metode: Lees die vraag, skryf die belangrike vakterm neer, en antwoord in n volledige sin.";
 }
-
-// === TEAE_MOBILE_PROMPT_TYPING_V1 ===
-function teaePromptAnswer(bucket, key){
-  const current = ((state[bucket] || {})[key] || "");
-  const ans = prompt("Tik jou antwoord hier:", current);
-  if(ans === null) return;
-  teaeSetWrittenAny(bucket, key, ans);
-  render();
-}
-function mathlitPromptAnswer(bucket, key){
-  const current = ((state[bucket] || {})[key] || "");
-  const ans = prompt("Tik jou antwoord hier:", current);
-  if(ans === null) return;
-  mathlitSetWrittenAnswer(bucket, key, ans);
-  render();
-}
-// === END TEAE_MOBILE_PROMPT_TYPING_V1 ===
-
 function teaeWrittenQuestionAnyHTML(q, i, bucket, key, reveal, visualHtml){
   const val = ((state[bucket] || {})[key] || "");
   const correctText = teaeCorrectTextAny(q);
@@ -8171,9 +8151,7 @@ function teaeWrittenQuestionAnyHTML(q, i, bucket, key, reveal, visualHtml){
   html += '<div class="row space"><span class="pill active">' + esc(q.unit || q.m || "Vraag") + '</span><span class="pill">self antwoord</span></div>';
   html += '<b>' + (i+1) + '. ' + esc(q.q) + '</b>';
   html += '<div class="mathlitWorkBox"><b>Metode / rede:</b><br>' + esc(teaeMethodHintAny(q)) + '</div>';
-  html += '<label class="field" style="margin-top:12px">Klik hier en tik jou antwoord:</label>';
-  html += '<textarea class="mathlitInput" rows="2" placeholder="Tik jou antwoord hier, nie A/B/C/D nie..." onclick="this.focus()" ontouchend="this.focus()" oninput="teaeSetWrittenAny(\'' + bucket + '\',\'' + key + '\',this.value)">' + esc(val) + '</textarea>';
-  html += '<button type="button" class="btn secondary" style="margin-top:8px;width:100%" onclick="teaePromptAnswer(\'' + bucket + '\',\'' + key + '\')">Tik antwoord op phone</button>';
+  html += '<input class="mathlitInput" value="' + esc(val) + '" placeholder="Tik jou antwoord hier, nie A/B/C/D nie..." oninput="teaeSetWrittenAny(\'' + bucket + '\',\'' + key + '\',this.value)">';
 
   if(reveal){
     html += '<div class="mathlitResult ' + (ok ? 'good' : 'bad') + '">' + (ok ? 'Reg' : 'Nog nie reg nie') + '</div>';
@@ -8251,120 +8229,6 @@ function render(){
 }
 load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFinished) startTimer();
 </script>
-<!-- ENRICO_REPLACE_SUBJECT_MATH_CARD_START -->
-<script id="enrico-replace-subject-math-card-js">
-(function(){
-  const NEW_MATH_URL = "math_mastery.html?v=16";
-
-  function txt(el){
-    return String((el && (el.innerText || el.textContent)) || "").toLowerCase();
-  }
-
-  function isOldMathText(t){
-    t = String(t || "").toLowerCase();
-    return (
-      t.includes("wiskundige geletterdheid") ||
-      t.includes("mathematical literacy") ||
-      t.includes("mathlit") ||
-      t.includes("math lit") ||
-      t.includes("ml")
-    );
-  }
-
-  function goNewMath(e){
-    if(e){
-      e.preventDefault();
-      e.stopPropagation();
-      if(e.stopImmediatePropagation) e.stopImmediatePropagation();
-    }
-    window.location.href = NEW_MATH_URL;
-    return false;
-  }
-
-  function replaceSubjectCard(){
-    document.querySelectorAll("a, button, [role='button'], .card, .tile, .subject-card, div").forEach(function(el){
-      const t = txt(el);
-      const href = el.getAttribute ? String(el.getAttribute("href") || "").toLowerCase() : "";
-
-      const isTopButton = t.includes("start nuwe wiskunde") || t.includes("start mathlit test");
-      const isSubjectMath =
-        t.includes("wiskundige geletterdheid") ||
-        t.includes("mathematical literacy") ||
-        href.includes("mathlit");
-
-      if(isTopButton || isSubjectMath){
-        if(el.dataset.enricoNewMathCard === "1") return;
-        el.dataset.enricoNewMathCard = "1";
-
-        if(isSubjectMath){
-          // Verander net die vakkaart se sigbare inhoud, nie die hele app nie.
-          const strongs = el.querySelectorAll("h1,h2,h3,h4,b,strong");
-          strongs.forEach(function(s){
-            const st = txt(s);
-            if(st.includes("wiskundige geletterdheid") || st === "ml" || st.includes("mathematical literacy")){
-              s.textContent = "Graad 10 Wiskunde Kwartaal 2";
-            }
-          });
-
-          // Fallback as die kaart net plain text het
-          if(t.includes("wiskundige geletterdheid") && el.children.length < 8){
-            el.setAttribute("title", "Nuwe Wiskunde Mastery Check");
-          }
-        }
-
-        el.style.cursor = "pointer";
-
-        if(el.tagName === "A"){
-          el.setAttribute("href", NEW_MATH_URL);
-        }
-
-        el.addEventListener("click", goNewMath, true);
-      }
-    });
-
-    // Maak seker die ML kaart lyk soos nuwe Wiskunde
-    document.querySelectorAll("*").forEach(function(el){
-      const t = txt(el);
-      if(t === "ml"){
-        el.textContent = "📘";
-      }
-      if(t === "wiskundige geletterdheid"){
-        el.textContent = "Graad 10 Wiskunde Kwartaal 2";
-      }
-      if(t.includes("graad 10 - kwartaal 2") && el.parentElement && txt(el.parentElement).includes("graad 10 wiskunde kwartaal 2")){
-        el.textContent = "Nuwe eksamenvoorbereiding";
-      }
-    });
-  }
-
-  // Capture click: keer dat die ou app se ML click ooit eers loop.
-  document.addEventListener("click", function(e){
-    const target = e.target;
-    const box = target.closest("a, button, [role='button'], .card, .tile, .subject-card, div");
-    if(!box) return;
-
-    const t = txt(box);
-    if(
-      t.includes("start nuwe wiskunde") ||
-      t.includes("start mathlit test") ||
-      t.includes("wiskundige geletterdheid") ||
-      t.includes("graad 10 wiskunde kwartaal 2") ||
-      t.includes("mathematical literacy") ||
-      t.includes("mathlit")
-    ){
-      return goNewMath(e);
-    }
-  }, true);
-
-  document.addEventListener("DOMContentLoaded", replaceSubjectCard);
-  window.addEventListener("load", replaceSubjectCard);
-  setTimeout(replaceSubjectCard, 300);
-  setTimeout(replaceSubjectCard, 1000);
-  setTimeout(replaceSubjectCard, 2500);
-  setInterval(replaceSubjectCard, 3000);
-})();
-</script>
-<!-- ENRICO_REPLACE_SUBJECT_MATH_CARD_END -->
 </body>
 </html>
 
@@ -8437,20 +8301,6 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 
 
 <!-- DASHBOARD PATCH 2: clean home text and safe header icon -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
