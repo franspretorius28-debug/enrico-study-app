@@ -1133,9 +1133,17 @@ function render(){
   document.getElementById("unit").textContent = q.unit || "";
   document.getElementById("answer").value = answers[qKey(q)] || "";
   let wrongCountNow = 0;
-try { wrongCountNow = getSavedWrong().length; } catch(e) { wrongCountNow = 0; }
-const outstandingNow = Math.max(0, allQuestions.length - masteredKeys.length);
-document.getElementById("status").textContent = `Bemeester: ${masteredKeys.length}/${allQuestions.length} | Uitstaande: ${outstandingNow} | Verkeerd laaste toets: ${wrongCountNow} | Hierdie toets: ${questions.length} vrae`;
+try {
+  wrongCountNow = questions.filter(q => {
+    const k = qKey(q);
+    return Object.prototype.hasOwnProperty.call(answers, k) &&
+      String(answers[k] ?? "").trim() !== "" &&
+      !isCorrect(answers[k], q.answer);
+  }).length;
+} catch(e) { wrongCountNow = 0; }
+
+const outstandingNow = Math.max(0, allQuestions.length - Array.from(new Set(masteredKeys)).length);
+document.getElementById("status").textContent = `Bemeester: ${Array.from(new Set(masteredKeys)).length}/${allQuestions.length} | Uitstaande: ${outstandingNow} | Verkeerd hierdie toets: ${wrongCountNow} | Hierdie toets: ${questions.length} vrae`;
   document.getElementById("stars").textContent = "⭐ " + masteredKeys.length + "/" + allQuestions.length;
   document.getElementById("bar").style.width = ((current)/questions.length*100) + "%";
   setTimeout(()=>document.getElementById("answer").focus(),50);
@@ -1213,6 +1221,13 @@ function skipQuestion(){
 }
 
 function finishTest(){
+  try {
+    const left = teaeUnansweredCount();
+    if(left > 0){
+      teaeShowNoCheatMessage();
+      return;
+    }
+  } catch(e) {}
   if(!questions.length)return;
   const q = questions[current];
   if(q) answers[qKey(q)] = document.getElementById("answer").value;
@@ -1275,12 +1290,49 @@ function resetMasteryRound(){
 
 document.addEventListener("keydown",e=>{if(e.key==="Enter")submitAnswer()});
 
+
+// TEAE_NO_CHEAT_FINISH_GUARD_V1
+function teaeUnansweredCount(){
+  try {
+    return questions.filter(q => {
+      const k = qKey(q);
+      return !Object.prototype.hasOwnProperty.call(answers, k) ||
+        String(answers[k] ?? "").trim() === "";
+    }).length;
+  } catch(e) {
+    return 0;
+  }
+}
+
+function teaeShowNoCheatMessage(){
+  const left = teaeUnansweredCount();
+  const status = document.getElementById("status");
+  if(status){
+    status.innerHTML = `<span style="display:inline-block;background:#fee2e2;color:#7f1d1d;border:2px solid #ef4444;border-radius:999px;padding:10px 16px;font-weight:1000">⛔ Jy kan nie antwoorde kyk voor die toets klaar is nie. Nog uitstaande in hierdie toets: ${left}</span>`;
+  }
+}
+
+document.addEventListener("click", function(e){
+  const txt = String((e.target && e.target.textContent) || "").trim().toLowerCase();
+  if(txt.includes("klaar met toets") || txt.includes("done with test")){
+    const left = teaeUnansweredCount();
+    if(left > 0){
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      teaeShowNoCheatMessage();
+      return false;
+    }
+  }
+}, true);
+
 buildAll();
 renderTiles();
 startFreshTest();
 </script>
 </body>
 </html>
+
 
 
 
