@@ -122,7 +122,8 @@ const topics = [
   "Meting: temperatuur",
   "Kaarte en skaal",
   "Planne en vloerplanne",
-  "Relatiewe posisie"
+  "Relatiewe posisie",
+  "Waarskynlikheid"
 ];
 
 let allQuestions = [];
@@ -305,6 +306,76 @@ function buildProfit(){
   }
 }
 
+function buildProbabilityQ2(){
+  const sets = [
+    {name:"sak lekkers", red:3, blue:5, green:2, yellow:4},
+    {name:"spinner", red:4, blue:4, green:1, yellow:3},
+    {name:"knikker-sak", red:6, blue:2, green:5, yellow:7},
+    {name:"kaart-pak", red:8, blue:6, green:3, yellow:3},
+    {name:"teller-boks", red:2, blue:7, green:4, yellow:5},
+    {name:"speelgoed-boks", red:5, blue:5, green:5, yellow:5},
+    {name:"raffle-boks", red:9, blue:3, green:6, yellow:2},
+    {name:"kleurwiel", red:1, blue:4, green:7, yellow:8},
+    {name:"bal-sak", red:10, blue:5, green:5, yellow:10},
+    {name:"vorm-boks", red:6, blue:9, green:3, yellow:6}
+  ];
+
+  sets.forEach((s, i)=>{
+    const total = s.red + s.blue + s.green + s.yellow;
+    const redProb = round2(s.red / total);
+    const blueProb = round2(s.blue / total);
+    const notGreen = round2((total - s.green) / total);
+    const yellowPct = round2((s.yellow / total) * 100);
+
+    add({
+      id:`prob-${i}-red-decimal`,
+      topic:"Waarskynlikheid",
+      level:"Maklik",
+      unit:"",
+      answer:redProb,
+      visual:{type:"probability",data:s},
+      formula:"Probability = favourable outcomes ÷ total outcomes",
+      q:`Gebruik die tabel. Wat is die waarskynlikheid om rooi te kies? Gee die antwoord as 'n desimale getal.`,
+      steps:[`Rooi = ${s.red}`,`Totaal = ${total}`,`${s.red} ÷ ${total} = ${redProb}`]
+    });
+
+    add({
+      id:`prob-${i}-blue-decimal`,
+      topic:"Waarskynlikheid",
+      level:"Maklik",
+      unit:"",
+      answer:blueProb,
+      visual:{type:"probability",data:s},
+      formula:"Probability = favourable outcomes ÷ total outcomes",
+      q:`Gebruik die tabel. Wat is die waarskynlikheid om blou te kies? Gee die antwoord as 'n desimale getal.`,
+      steps:[`Blou = ${s.blue}`,`Totaal = ${total}`,`${s.blue} ÷ ${total} = ${blueProb}`]
+    });
+
+    add({
+      id:`prob-${i}-not-green`,
+      topic:"Waarskynlikheid",
+      level:"Medium",
+      unit:"",
+      answer:notGreen,
+      visual:{type:"probability",data:s},
+      formula:"P(not green) = outcomes that are not green ÷ total outcomes",
+      q:`Gebruik die tabel. Wat is die waarskynlikheid om NIE groen te kies nie? Gee die antwoord as 'n desimale getal.`,
+      steps:[`Nie groen = ${total} - ${s.green} = ${total - s.green}`,`Totaal = ${total}`,`${total - s.green} ÷ ${total} = ${notGreen}`]
+    });
+
+    add({
+      id:`prob-${i}-yellow-percent`,
+      topic:"Waarskynlikheid",
+      level:"Medium",
+      unit:"%",
+      answer:yellowPct,
+      visual:{type:"probability",data:s},
+      formula:"Percentage probability = favourable outcomes ÷ total outcomes × 100",
+      q:`Gebruik die tabel. Wat is die waarskynlikheid om geel te kies? Gee die antwoord as 'n persentasie.`,
+      steps:[`Geel = ${s.yellow}`,`Totaal = ${total}`,`${s.yellow} ÷ ${total} × 100 = ${yellowPct}%`]
+    });
+  });
+}
 function buildAll(){
   for(let i=0;i<16;i++) buildBank(i);
   for(let i=0;i<14;i++) buildInvoice(i);
@@ -314,6 +385,7 @@ function buildAll(){
   buildMeasure();
   buildScaleAndPlans();
   buildProfit();
+  buildProbabilityQ2();
 }
 
 function renderVisual(q){
@@ -461,6 +533,22 @@ function renderVisual(q){
     return `<div class="doc"><div class="doc-title">COMPASS</div><svg viewBox="0 0 300 260"><circle cx="150" cy="130" r="90" fill="#fff" stroke="#123c69" stroke-width="4"/><text x="140" y="45" font-size="22">N</text><text x="238" y="137" font-size="22">E</text><text x="142" y="230" font-size="22">S</text><text x="48" y="137" font-size="22">W</text><line x1="150" y1="130" x2="150" y2="55" stroke="#d45b7a" stroke-width="5"/></svg></div>`;
   }
 
+  if(v.type==="probability"){
+    const total = d.red + d.blue + d.green + d.yellow;
+    return `<div class="doc">
+      <div class="doc-title">WAARSKYNLIKHEID</div>
+      <div class="doc-sub">Kleur items in die ${d.name}</div>
+      <table>
+        <tr><th>Kleur</th><th class="money">Aantal</th></tr>
+        <tr><td>Rooi</td><td class="money">${d.red}</td></tr>
+        <tr><td>Blou</td><td class="money">${d.blue}</td></tr>
+        <tr><td>Groen</td><td class="money">${d.green}</td></tr>
+        <tr><td>Geel</td><td class="money">${d.yellow}</td></tr>
+        <tr><td><b>Totaal</b></td><td class="money"><b>${total}</b></td></tr>
+      </table>
+      <div class="note">Gebruik: probability = gunstige uitkomste ÷ totale uitkomste.</div>
+    </div>`;
+  }
   return "";
 }
 
@@ -585,7 +673,7 @@ function finishTest(){
   document.getElementById("answer").value = "";
   document.getElementById("unit").textContent = "";
   document.getElementById("stars").textContent = "⭐ " + masteredKeys.length + "/" + allQuestions.length;
-  document.getElementById("status").textContent = wrongQuestions.length ? "Volgende toets vra net die vrae wat verkeerd was." : "Mooi! Alles in hierdie toets is reg. As 406/406 bereik is, kan jy 'n vars ronde begin.";
+  document.getElementById("status").textContent = wrongQuestions.length ? "Volgende toets vra net die vrae wat verkeerd was." : "Mooi! Alles in hierdie toets is reg. As alles bemeester is, kan jy 'n vars ronde begin.";
 
   let html = wrongQuestions.length
     ? `<div class="feedback bad">❌ Leer hierdie verkeerde vrae. Klik daarna “Volgende toets: net verkeerdes”.</div>`
@@ -627,6 +715,7 @@ startFreshTest();
 </script>
 </body>
 </html>
+
 
 
 
