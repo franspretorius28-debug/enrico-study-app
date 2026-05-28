@@ -123,6 +123,7 @@ const topics = [
   "Kaarte en skaal",
   "Planne en vloerplanne",
   "Relatiewe posisie",
+  "ChatGPT Prente & Vrae",
   "Waarskynlikheid"
 ];
 
@@ -139,7 +140,25 @@ let stars = masteredKeys.length;
 function money(n){return "R" + Number(n).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g," ")}
 function round2(n){return Math.round(Number(n)*100)/100}
 function norm(v){return String(v || "").trim().replace(",", ".").replace(/\s/g,"")}
-function isCorrect(v,a){let n=Number(norm(v));return !Number.isNaN(n) && Math.abs(n-Number(a))<0.01}
+function isCorrect(v,a){
+  const raw = String(v || "").trim().toLowerCase();
+  const ansRaw = String(a || "").trim().toLowerCase();
+  const n = Number(norm(v));
+  const an = Number(norm(a));
+  if(!Number.isNaN(n) && !Number.isNaN(an)) return Math.abs(n-an)<0.01;
+  const clean = s => String(s||"").toLowerCase().trim()
+    .replace(/\s+/g," ")
+    .replace(/-/g," ")
+    .replace(/_/g," ");
+  const user = clean(raw);
+  const ans = clean(ansRaw);
+  if(user === ans) return true;
+  const trueWords = ["true","waar","yes","ja"];
+  const falseWords = ["false","vals","no","nee"];
+  if(trueWords.includes(user) && trueWords.includes(ans)) return true;
+  if(falseWords.includes(user) && falseWords.includes(ans)) return true;
+  return false;
+}
 function qKey(q){return q.id}
 function save(){
   stars = masteredKeys.length;
@@ -376,6 +395,509 @@ function buildProbabilityQ2(){
     });
   });
 }
+
+// === TEAE_CHATGPT_SCREENSHOT_QUESTIONS_V1 ===
+function chatDoc(title, body){
+  return `<div class="doc"><div class="doc-title">${title}</div>${body}</div>`;
+}
+
+function buildChatGPTScreenshotQuestions(){
+  const topic = "ChatGPT Prente & Vrae";
+
+  const items = [
+    
+    {
+      id:"cg-range-1",
+      level:"Maklik",
+      unit:"",
+      answer:34,
+      visual:{type:"cgStats"},
+      formula:"Range = highest value - lowest value",
+      q:"Bereken die range: 35; 17; 8; 21; 4; 15; 16; 12; 1; 25",
+      steps:["Highest = 35","Lowest = 1","35 - 1 = 34"]
+    },
+    {
+      id:"cg-perimeter-composite",
+      level:"Medium",
+      unit:"cm",
+      answer:35,
+      visual:{type:"cgCompositePerimeter"},
+      formula:"Perimeter = add outside edges",
+      q:"Composite shape: left side 5 cm, top 6 cm, bottom 14 cm. Die slanted side is ongeveer 10 cm. Bereken perimeter.",
+      steps:["Outside edges: 5 + 6 + 10 + 14 = 35"]
+    },
+{
+      id:"cg-budget-advertising",
+      level:"Medium",
+      unit:"R",
+      answer:36000,
+      visual:{type:"cgBudget"},
+      formula:"Advertising = Salary - 20% of Salary",
+      q:"GG's Golf Shop: Salaries is R45 000. Advertising is 20% less than salaries. Bereken advertising expense.",
+      steps:["20% van R45 000 = R9 000","R45 000 - R9 000 = R36 000"]
+    },
+    {
+      id:"cg-tour-income-formula",
+      level:"Maklik",
+      unit:"",
+      answer:"650 x packages",
+      visual:{type:"cgTour"},
+      formula:"Total income = selling price × number sold",
+      q:"Amy-Jo verkoop tour packages vir R650 elk. Tik die formule vir total income as: 650 x packages",
+      steps:["Prys per package = R650","Total income = R650 × number of packages sold"]
+    },
+    {
+      id:"cg-variable-cost",
+      level:"Medium",
+      unit:"R",
+      answer:1850,
+      visual:{type:"cgTourCosts"},
+      formula:"Variable cost per package = cost per package + cost per package",
+      q:"Bereken Amy-Jo se variable costs per tour package. Cell phone/internet is R20, stationery is R50, staff is R1000 en travel agency fees is R780 per package.",
+      steps:["R20 + R50 + R1000 + R780 = R1850"]
+    },
+    {
+      id:"cg-break-even-definition",
+      level:"Maklik",
+      unit:"",
+      answer:"income equals expenses",
+      visual:{type:"cgBreakEven"},
+      formula:"Break-even point: income = expenses",
+      q:"Wat beteken break-even point? Tik: income equals expenses",
+      steps:["By break-even is daar nie profit of loss nie.","Income = expenses."]
+    },
+    {
+      id:"cg-capital-decrease",
+      level:"Maklik",
+      unit:"",
+      answer:"North West, KwaZulu-Natal and Limpopo",
+      visual:{type:"cgProvinceChart"},
+      formula:"Biggest decrease = most negative values",
+      q:"Noem die drie provinsies met die grootste afname in capital expenditure. Tik: North West, KwaZulu-Natal and Limpopo",
+      steps:["Die grootste negatiewe waardes is North West, KwaZulu-Natal en Limpopo."]
+    },
+
+    {
+      id:"cg-vat-excl",
+      level:"Maklik",
+      unit:"R",
+      answer:682.61,
+      visual:{type:"cgVat"},
+      formula:"VAT-exclusive price = VAT-inclusive price ÷ 1.15",
+      q:"’n Paar skoene kos R785 VAT included. Bereken die VAT-exclusive price. Rond af tot 2 desimale.",
+      steps:["R785 ÷ 1.15 = R682.61"]
+    },
+    {
+      id:"cg-vat-payable",
+      level:"Maklik",
+      unit:"R",
+      answer:117.75,
+      visual:{type:"cgVat"},
+      formula:"VAT = VAT-exclusive price × 15%",
+      q:"Bereken VAT payable op ’n item van R785 VAT excluded.",
+      steps:["R785 × 15% = R117.75"]
+    },
+    {
+      id:"cg-uif-year",
+      level:"Medium",
+      unit:"R",
+      answer:1054.56,
+      visual:{type:"cgUIF"},
+      formula:"Employer UIF = 1% of salary × 52 weeks",
+      q:"John verdien R678/week, Zonica R550/week en Jack R800/week. Bereken die employer UIF vir een jaar.",
+      steps:["Total weekly salary = R2028","1% = R20.28 per week","Employer UIF: R20.28 × 52 = R1054.56"],
+    },
+
+        {
+      id:"cg-electricity-390",
+      level:"Medium",
+      unit:"R",
+      answer:429.58,
+      visual:{type:"cgElectricityBlocks"},
+      formula:"Cost = first block + second block",
+      q:"Bereken electricity cost vir 390 kWh in 2019. Block 1: 0–350 kWh = 108.76 c/kWh. Block 2: >350 kWh = 122.30 c/kWh. Antwoord in Rand.",
+      steps:["350 × 108.76c = R380.66","40 × 122.30c = R48.92","Total = R429.58"]
+    },
+    {
+      id:"cg-water-28kl",
+      level:"Medium",
+      unit:"R",
+      answer:418.6,
+      visual:{type:"cgWaterStep"},
+      formula:"Total = kilolitres × stepped price",
+      q:"Water kos R14.95 per kL vir 25–30 kL. Bereken die VAT inclusive water cost vir 28 kL.",
+      steps:["28 × R14.95 = R418.60"]
+    },
+    {
+      id:"cg-taxi-15km",
+      level:"Medium",
+      unit:"R",
+      answer:322,
+      visual:{type:"cgTaxi"},
+      formula:"Cost = basic charge + rate × distance",
+      q:"Jan se taxi charge is R10 + R30/km. Lee se taxi charge is R22 + R20/km. Wat is die goedkoopste cost vir 15 km?",
+      steps:["Jan: 10 + 30×15 = R460","Lee: 22 + 20×15 = R322","Goedkoopste = R322"]
+    },
+
+    {
+      id:"cg-research-first-step",
+      level:"Maklik",
+      unit:"",
+      answer:"develop or pose a question",
+      visual:{type:"cgResearch"},
+      formula:"Research starts with a question",
+      q:"Wat is die eerste stap in die research process? Tik: develop or pose a question",
+      steps:["Eers besluit jy wat jy wil uitvind."]
+    },
+    {
+      id:"cg-question-age",
+      level:"Maklik",
+      unit:"",
+      answer:"reliable",
+      visual:{type:"cgQuestionnaire"},
+      formula:"Reliable question = clear and answerable",
+      q:"Is die vraag 'How old are you?' reliable of unreliable vir ’n questionnaire? Tik reliable of unreliable.",
+      steps:["Dit is duidelik en meet ’n spesifieke ding."]
+    },
+    {
+      id:"cg-observation-gender",
+      level:"Maklik",
+      unit:"",
+      answer:"observation",
+      visual:{type:"cgDataMethods"},
+      formula:"Observation = watch and record",
+      q:"Beste metode om die gender van shoppers in ’n shopping centre tydens lunch te tel. Tik: observation",
+      steps:["Jy kyk en teken aan sonder om elke persoon te vra."]
+    },
+    {
+      id:"cg-database-car-brands",
+      level:"Maklik",
+      unit:"",
+      answer:"database",
+      visual:{type:"cgDataMethods"},
+      formula:"Database = large stored data set",
+      q:"Beste metode om die gewildste car brands worldwide te vergelyk. Tik: database",
+      steps:["Worldwide data is groot en kom gewoonlik uit databasis/records."]
+    },
+
+    {
+      id:"cg-mode-definition",
+      level:"Maklik",
+      unit:"",
+      answer:"false",
+      visual:{type:"cgStats"},
+      formula:"Median = middle value; mode = most common value",
+      q:"True or false: The mode is the middle value when data is arranged in order.",
+      steps:["Median is die middle value.","Mode is die most common value."]
+    },
+    {
+      id:"cg-range-2",
+      level:"Maklik",
+      unit:"",
+      answer:34,
+      visual:{type:"cgStats"},
+      formula:"Range = highest value - lowest value",
+      q:"Bereken die range: 35; 17; 8; 21; 4; 15; 16; 12; 1; 25",
+      steps:["Highest = 35","Lowest = 1","35 - 1 = 34"]
+    },
+    {
+      id:"cg-median-percent",
+      level:"Maklik",
+      unit:"%",
+      answer:63.5,
+      visual:{type:"cgStats"},
+      formula:"Median = middle value after sorting",
+      q:"Rose se test results is 65%, 63%, 22%, 69%, 60%, 64%. Bereken die median.",
+      steps:["Order: 22, 60, 63, 64, 65, 69","Middle two: 63 and 64","Median = 63.5"]
+    },
+    {
+      id:"cg-boxplot-q1",
+      level:"Maklik",
+      unit:"",
+      answer:50,
+      visual:{type:"cgBoxPlot"},
+      formula:"Q1 = lower quartile",
+      q:"In die box-and-whisker plot is A by die linkerkant van die box. Wat is A?",
+      steps:["A is die lower quartile, Q1.","Op die skaal is dit 50."]
+    },
+    {
+      id:"cg-boxplot-iqr",
+      level:"Medium",
+      unit:"",
+      answer:20,
+      visual:{type:"cgBoxPlot"},
+      formula:"IQR = Q3 - Q1",
+      q:"In die boxplot is Q1 = 50 en Q3 = 70. Bereken IQR.",
+      steps:["70 - 50 = 20"]
+    },
+
+    {
+      id:"cg-km-m",
+      level:"Maklik",
+      unit:"m",
+      answer:79400,
+      visual:{type:"cgMetricLength"},
+      formula:"1 km = 1000 m",
+      q:"Convert 79.4 km to metres.",
+      steps:["79.4 × 1000 = 79400"]
+    },
+    {
+      id:"cg-km2-m2",
+      level:"Maklik",
+      unit:"m²",
+      answer:35500000,
+      visual:{type:"cgMetricArea"},
+      formula:"1 km² = 1 000 000 m²",
+      q:"Convert 35.5 km² to square metres.",
+      steps:["35.5 × 1 000 000 = 35 500 000"]
+    },
+    {
+      id:"cg-km3-m3",
+      level:"Maklik",
+      unit:"m³",
+      answer:179400000000,
+      visual:{type:"cgMetricVolume"},
+      formula:"1 km³ = 1 000 000 000 m³",
+      q:"Convert 179.4 km³ to cubic metres.",
+      steps:["179.4 × 1 000 000 000 = 179 400 000 000"]
+    },
+    {
+      id:"cg-bucket-litres",
+      level:"Medium",
+      unit:"L",
+      answer:20,
+      visual:{type:"cgCapacity"},
+      formula:"1 cm³ = 1 ml; 1000 ml = 1 litre",
+      q:"’n Bucket het volume 20 052.4 cm³. Bereken die kapasiteit in litres, rounded to nearest litre.",
+      steps:["20 052.4 cm³ = 20 052.4 ml","20 052.4 ÷ 1000 = 20.0524 L","Nearest litre = 20"]
+    },
+    {
+      id:"cg-ribbon-cost",
+      level:"Medium",
+      unit:"R",
+      answer:55.63,
+      visual:{type:"cgMetricLength"},
+      formula:"Total cost = total metres × price per metre",
+      q:"Anne benodig 125 mm ribbon per bowtie en maak 50 bowties. Ribbon kos R8.90 per metre. Bereken total cost.",
+      steps:["125 mm = 0.125 m","0.125 × 50 = 6.25 m","6.25 × R8.90 = R55.63"]
+    },
+
+    {
+      id:"cg-circumference",
+      level:"Maklik",
+      unit:"cm",
+      answer:25,
+      visual:{type:"cgCircle"},
+      formula:"Circumference = 2πr",
+      q:"Bereken die circumference van ’n circle met radius 4 cm. Gebruik π = 3.14. Rond tot nearest whole number.",
+      steps:["2 × 3.14 × 4 = 25.12","Nearest whole number = 25"]
+    },
+    {
+      id:"cg-area-circle-formula",
+      level:"Maklik",
+      unit:"",
+      answer:"pi r squared",
+      visual:{type:"cgCircle"},
+      formula:"Area of circle = πr²",
+      q:"Wat is die formula vir area van ’n circle? Tik: pi r squared",
+      steps:["Area van circle gebruik radius squared."]
+    },
+    {
+      id:"cg-perimeter-composite-2",
+      level:"Medium",
+      unit:"cm",
+      answer:35,
+      visual:{type:"cgCompositePerimeter"},
+      formula:"Perimeter = add outside edges",
+      q:"Composite shape: left side 5 cm, top 6 cm, bottom 14 cm. Regter driehoek se vertical height is 5 cm en horizontal is 8 cm, slanted side is ongeveer 10 cm. Bereken perimeter.",
+      steps:["Outside edges: 5 + 6 + 10 + 14 = 35"]
+    },
+    {
+      id:"cg-surface-cuboid",
+      level:"Medium",
+      unit:"cm²",
+      answer:52,
+      visual:{type:"cgCuboidNet"},
+      formula:"Surface area = 2lw + 2lh + 2wh",
+      q:"Cuboid: length 4 cm, breadth 3 cm, height 2 cm. Bereken total surface area.",
+      steps:["2×4×3 = 24","2×4×2 = 16","2×3×2 = 12","Total = 52"]
+    },
+    {
+      id:"cg-volume-rubiks",
+      level:"Maklik",
+      unit:"cm³",
+      answer:27,
+      visual:{type:"cgCubeBlocks"},
+      formula:"Cube volume = side × side × side",
+      q:"’n Cube bestaan uit 3 × 3 × 3 klein blokkies. Elke blokkie is 1 cm³. Bereken volume.",
+      steps:["3 × 3 × 3 = 27"]
+    },
+    {
+      id:"cg-volume-cuboid-net",
+      level:"Maklik",
+      unit:"cm³",
+      answer:252,
+      visual:{type:"cgCuboidNet"},
+      formula:"Volume = length × width × height",
+      q:"Cuboid length is 7 cm, width is 9 cm en height is 4 cm. Bereken volume.",
+      steps:["7 × 9 × 4 = 252"]
+    },
+    {
+      id:"cg-cylinder-paint-left",
+      level:"Medium",
+      unit:"cm³",
+      answer:9426,
+      visual:{type:"cgPaintTin"},
+      formula:"Volume = πr²h",
+      q:"Cylinder tin diameter is 20 cm and height is 40 cm. 25% paint is used. Hoeveel volume is left? Gebruik π = 3.142.",
+      steps:["r = 10","Full volume = 3.142×10²×40 = 12568","75% left = 9426"]
+    },
+
+    {
+      id:"cg-scale-16cm",
+      level:"Medium",
+      unit:"km",
+      answer:19.2,
+      visual:{type:"cgScale"},
+      formula:"Actual distance = map distance × scale",
+      q:"Wat is die actual distance van 16 cm op ’n map met scale 1:120 000? Antwoord in km.",
+      steps:["16 × 120 000 = 1 920 000 cm","1 920 000 cm = 19.2 km"]
+    },
+    {
+      id:"cg-scale-small",
+      level:"Maklik",
+      unit:"",
+      answer:"small scale",
+      visual:{type:"cgMapScale"},
+      formula:"Large second number = small scale map",
+      q:"A map has ratio scale 1:15 000 000. Is dit small scale of large scale? Tik: small scale",
+      steps:["1:15 000 000 wys ’n groot area met min detail."]
+    },
+    {
+      id:"cg-bloem-pretoria-dir",
+      level:"Maklik",
+      unit:"",
+      answer:"south west",
+      visual:{type:"cgCompass"},
+      formula:"Direction from one place to another",
+      q:"In which general direction is Bloemfontein from Pretoria? Tik: south west",
+      steps:["Bloemfontein lê onder en links van Pretoria."]
+    },
+    {
+      id:"cg-taung-road",
+      level:"Maklik",
+      unit:"",
+      answer:"N12",
+      visual:{type:"cgRoadMap"},
+      formula:"Read the road label nearest the town",
+      q:"Name the national road on which Taung lies. Tik: N12",
+      steps:["Taung is langs die N12 pad op die map."]
+    },
+    {
+      id:"cg-stadium-gates",
+      level:"Maklik",
+      unit:"",
+      answer:"quick and easy",
+      visual:{type:"cgStadium"},
+      formula:"Many gates reduce queues",
+      q:"Gee een rede hoekom ’n stadium baie gates het. Tik: quick and easy",
+      steps:["Baie gates maak entrance en exit vinniger en makliker."]
+    },
+    {
+      id:"cg-grid-b3",
+      level:"Maklik",
+      unit:"",
+      answer:"true",
+      visual:{type:"cgGridMap"},
+      formula:"Grid reference = column letter + row number",
+      q:"True or false: Mr de la Sylva's house could be found in B3.",
+      steps:["Die huis lê in kolom B en ry 3."]
+    }
+  ];
+
+  items.forEach(x => add({
+    id:x.id,
+    topic,
+    level:x.level,
+    unit:x.unit,
+    answer:x.answer,
+    visual:x.visual,
+    formula:x.formula,
+    q:x.q,
+    steps:x.steps
+  }));
+}
+
+const TEAE_OLD_RENDER_VISUAL = renderVisual;
+renderVisual = function(q){
+  const v = q.visual || {};
+  const d = v.data || {};
+  switch(v.type){
+    case "cgBudget":
+      return chatDoc("Budget / Income and Expenses", `<table><tr><th>Income</th><th>Expenses</th></tr><tr><td>Sales: R85 200</td><td>Rent: R20 200<br>Advertising: C<br>Salaries: R45 000<br>Insurance: R2 800</td></tr></table><div class="note">Advertising is 20% less than salary expense.</div>`);
+    case "cgTour":
+      return chatDoc("Tour packages", `<div class="note">Selling price = R650 per tour package. Total income = price × number sold.</div>`);
+    case "cgTourCosts":
+      return chatDoc("Amy-Jo Transport Company", `<table><tr><th>Expense</th><th>Amount</th></tr><tr><td>Cell phone and internet</td><td>R20 per package</td></tr><tr><td>Stationery</td><td>R50 per package</td></tr><tr><td>Staff</td><td>R1000 per package sold</td></tr><tr><td>Travel agency fees</td><td>R780 per package sold</td></tr><tr><td>Equipment</td><td>R3450 fixed</td></tr><tr><td>Rent</td><td>R4000 fixed</td></tr></table>`);
+    case "cgBreakEven":
+      return chatDoc("Break-even analysis", `<svg viewBox="0 0 500 260"><line x1="60" y1="220" x2="470" y2="220" stroke="#123c69" stroke-width="4"/><line x1="60" y1="220" x2="60" y2="30" stroke="#123c69" stroke-width="4"/><line x1="60" y1="200" x2="430" y2="40" stroke="#26a69a" stroke-width="5"/><line x1="60" y1="150" x2="430" y2="80" stroke="#e6b800" stroke-width="5"/><circle cx="230" cy="126" r="7" fill="#111"/><text x="240" y="118" font-size="20">Break-even point</text><text x="320" y="60" font-size="20">Profit</text><text x="80" y="180" font-size="20">Loss</text></svg>`);
+    case "cgProvinceChart":
+      return chatDoc("Capital expenditure decrease", `<table><tr><th>Province</th><th>Change</th></tr><tr><td>North West</td><td>-R486 million</td></tr><tr><td>KwaZulu-Natal</td><td>-R458 million</td></tr><tr><td>Limpopo</td><td>-R447 million</td></tr><tr><td>Gauteng</td><td>-R390 million</td></tr></table>`);
+    case "cgVat":
+      return chatDoc("VAT 15%", `<div class="note">VAT excluded → add 15%. VAT included → divide by 1.15 to remove VAT.</div>`);
+    case "cgUIF":
+      return chatDoc("UIF", `<div class="note">UIF is normally calculated as a percentage of salary. Employer and employee contributions can both be calculated.</div>`);
+    case "cgElectricityBlocks":
+      return chatDoc("ESKOM electricity blocks", `<table><tr><th>Block</th><th>2019 price</th></tr><tr><td>Block 1: 0–350 kWh</td><td>108.76 c/kWh</td></tr><tr><td>Block 2: above 350 kWh</td><td>122.30 c/kWh</td></tr></table>`);
+    case "cgWaterStep":
+      return chatDoc("Stepped water graph", `<table><tr><th>kL used</th><th>Price per kL</th></tr><tr><td>0–9</td><td>R9.50</td></tr><tr><td>9–25</td><td>R11.22</td></tr><tr><td>25–30</td><td>R14.95</td></tr><tr><td>30–45</td><td>R23.05</td></tr></table>`);
+    case "cgTaxi":
+      return chatDoc("Taxi tariff", `<table><tr><th>Taxi</th><th>Charge</th></tr><tr><td>Jan</td><td>R10 + R30/km</td></tr><tr><td>Lee</td><td>R22 + R20/km</td></tr></table>`);
+    case "cgResearch":
+      return chatDoc("Research process", `<div class="note">1. Develop/pose a question → 2. Collect data → 3. Organise → 4. Analyse → 5. Present.</div>`);
+    case "cgQuestionnaire":
+      return chatDoc("Questionnaire", `<div class="note">A reliable question is clear and gives useful data.</div>`);
+    case "cgDataMethods":
+      return chatDoc("Methods of data collection", `<table><tr><th>Method</th><th>Use</th></tr><tr><td>Observation</td><td>Watch and count</td></tr><tr><td>Questionnaire</td><td>Ask many people same questions</td></tr><tr><td>Interview</td><td>Ask detailed questions</td></tr><tr><td>Database</td><td>Use stored records/data</td></tr></table>`);
+    case "cgStats":
+      return chatDoc("Summarise data", `<div class="note">Mean = average. Median = middle. Mode = most common. Range = highest - lowest.</div>`);
+    case "cgBoxPlot":
+      return chatDoc("Box-and-whisker plot", `<svg viewBox="0 0 520 220"><line x1="70" y1="110" x2="450" y2="110" stroke="#111" stroke-width="3"/><rect x="170" y="80" width="170" height="60" fill="#fff" stroke="#111" stroke-width="3"/><line x1="255" y1="80" x2="255" y2="140" stroke="#111" stroke-width="3"/><circle cx="70" cy="110" r="4"/><circle cx="450" cy="110" r="4"/><text x="55" y="180">30</text><text x="155" y="180">50</text><text x="245" y="180">60</text><text x="325" y="180">70</text><text x="435" y="180">90</text></svg>`);
+    case "cgMetricLength":
+      return chatDoc("Metric length", `<div class="note">km → m → cm → mm. Move right: multiply. Move left: divide.</div>`);
+    case "cgMetricArea":
+      return chatDoc("Metric area", `<div class="note">Area units are squared: km² to m² multiply by 1000².</div>`);
+    case "cgMetricVolume":
+      return chatDoc("Metric volume", `<div class="note">Volume units are cubed: km³ to m³ multiply by 1000³.</div>`);
+    case "cgCapacity":
+      return chatDoc("Capacity", `<div class="note">1 cm³ = 1 ml and 1000 ml = 1 litre.</div>`);
+    case "cgCircle":
+      return chatDoc("Circle", `<svg viewBox="0 0 260 180"><circle cx="130" cy="90" r="60" fill="#eef7ff" stroke="#0b78bd" stroke-width="4"/><line x1="130" y1="90" x2="190" y2="90" stroke="#d94a4a" stroke-width="4"/><text x="145" y="82">r</text></svg>`);
+    case "cgCompositePerimeter":
+      return chatDoc("Composite perimeter", `<svg viewBox="0 0 420 200"><path d="M60 150 L60 70 L200 70 L310 150 Z" fill="#fff" stroke="#111" stroke-width="5"/><line x1="200" y1="70" x2="200" y2="150" stroke="#111" stroke-dasharray="8 8"/><text x="120" y="55">6 cm</text><text x="30" y="115">5 cm</text><text x="145" y="175">14 cm</text></svg>`);
+    case "cgCuboidNet":
+      return chatDoc("Cuboid net", `<svg viewBox="0 0 520 230"><rect x="190" y="70" width="90" height="110" fill="#bdd2f6" stroke="#111" stroke-width="3"/><rect x="100" y="70" width="90" height="110" fill="#fff" stroke="#111" stroke-width="3"/><rect x="280" y="70" width="90" height="110" fill="#fff" stroke="#111" stroke-width="3"/><rect x="190" y="10" width="90" height="60" fill="#fff" stroke="#111" stroke-width="3"/><rect x="190" y="180" width="90" height="40" fill="#fff" stroke="#111" stroke-width="3"/><rect x="370" y="70" width="90" height="110" fill="#d9ffc9" stroke="#111" stroke-width="3"/><text x="225" y="28">7</text><text x="462" y="130">9</text><text x="283" y="64">4</text></svg>`);
+    case "cgCubeBlocks":
+      return chatDoc("Cube blocks", `<div class="note">3 rows × 3 columns × 3 layers = 27 small cubes.</div>`);
+    case "cgPaintTin":
+      return chatDoc("Paint tin", `<svg viewBox="0 0 330 240"><ellipse cx="165" cy="50" rx="75" ry="22" fill="#ffe4f1" stroke="#c06291" stroke-width="4"/><rect x="90" y="50" width="150" height="130" fill="#ffe4f1" stroke="#c06291" stroke-width="4"/><ellipse cx="165" cy="180" rx="75" ry="22" fill="#e9c9da" stroke="#c06291" stroke-width="4"/><rect x="92" y="80" width="146" height="100" fill="#e9c9da" opacity=".7"/><text x="110" y="220">Diameter 20 cm, height 40 cm</text></svg>`);
+    case "cgScale":
+      return chatDoc("Map scale", `<div class="note">Scale 1:120 000 means 1 cm on map = 120 000 cm in real life.</div>`);
+    case "cgMapScale":
+      return chatDoc("Small vs large scale", `<div class="note">Small scale maps show large areas with less detail.</div>`);
+    case "cgCompass":
+      return chatDoc("Compass", `<svg viewBox="0 0 260 230"><text x="120" y="35">N</text><text x="220" y="120">E</text><text x="120" y="215">S</text><text x="25" y="120">W</text><line x1="130" y1="110" x2="80" y2="160" stroke="#0b78bd" stroke-width="6"/><text x="45" y="180">SW</text></svg>`);
+    case "cgRoadMap":
+      return chatDoc("Road map", `<table><tr><th>Town</th><th>Road</th></tr><tr><td>Taung</td><td>N12</td></tr><tr><td>Kimberley</td><td>N12 / N8</td></tr><tr><td>Bloemfontein</td><td>N8</td></tr></table>`);
+    case "cgStadium":
+      return chatDoc("Stadium gates", `<div class="note">Many gates help people enter and exit quickly and safely.</div>`);
+    case "cgGridMap":
+      return chatDoc("Grid reference", `<table><tr><th></th><th>A</th><th>B</th><th>C</th></tr><tr><th>1</th><td></td><td></td><td></td></tr><tr><th>2</th><td></td><td></td><td></td></tr><tr><th>3</th><td></td><td>House</td><td></td></tr></table>`);
+  }
+  return TEAE_OLD_RENDER_VISUAL(q);
+};
+// === END TEAE_CHATGPT_SCREENSHOT_QUESTIONS_V1 ===
+
 function buildAll(){
   for(let i=0;i<16;i++) buildBank(i);
   for(let i=0;i<14;i++) buildInvoice(i);
@@ -386,6 +908,7 @@ function buildAll(){
   buildScaleAndPlans();
   buildProfit();
   buildProbabilityQ2();
+  buildChatGPTScreenshotQuestions();
 }
 
 function renderVisual(q){
@@ -635,15 +1158,55 @@ function markCurrentQuestionQuietly(){
 }
 
 function submitAnswer(){
+  if(window.__teaeMarkBusy) return;
+  window.__teaeMarkBusy = true;
+
   const q = questions[current];
+  if(!q){
+    window.__teaeMarkBusy = false;
+    return;
+  }
+
+  const val = document.getElementById("answer").value;
+  const ok = isCorrect(val, q.answer);
+
   markCurrentQuestionQuietly();
-  if(current < questions.length-1){current++;render()} else finishTest()
+
+  const status = document.getElementById("status");
+  status.innerHTML = ok
+    ? `<span style="display:inline-block;background:#dcfce7;color:#14532d;border:2px solid #22c55e;border-radius:999px;padding:10px 16px;font-weight:1000;font-size:20px">✅ Correct</span>`
+    : `<span style="display:inline-block;background:#fee2e2;color:#7f1d1d;border:2px solid #ef4444;border-radius:999px;padding:10px 16px;font-weight:1000;font-size:20px">❌ Incorrect</span>`;
+
+  setTimeout(()=>{
+    window.__teaeMarkBusy = false;
+    if(current < questions.length-1){
+      current++;
+      render();
+    } else {
+      finishTest();
+    }
+  }, 750);
 }
 
 function skipQuestion(){
+  if(window.__teaeMarkBusy) return;
+  window.__teaeMarkBusy = true;
+
   const q = questions[current];
   if(q) answers[qKey(q)] = "";
-  if(current < questions.length-1){current++;render()} else finishTest()
+
+  const status = document.getElementById("status");
+  status.innerHTML = `<span style="display:inline-block;background:#fef3c7;color:#92400e;border:2px solid #f59e0b;border-radius:999px;padding:10px 16px;font-weight:1000;font-size:20px">⏭ Oop gelos</span>`;
+
+  setTimeout(()=>{
+    window.__teaeMarkBusy = false;
+    if(current < questions.length-1){
+      current++;
+      render();
+    } else {
+      finishTest();
+    }
+  }, 500);
 }
 
 function finishTest(){
@@ -715,6 +1278,20 @@ startFreshTest();
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
