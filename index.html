@@ -145,48 +145,9 @@
       h2{font-size:21px}
     }
   </style>
-<style id="enrico-math-mastery-css">
-  .math-mastery-wrap{max-width:1050px;margin:20px auto;padding:18px;font-family:Arial,sans-serif;color:#172033}
-  .math-topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
-  .math-title{font-size:28px;font-weight:900;color:#123c69}
-  .math-sub{font-size:15px;color:#506070;margin-top:4px}
-  .math-stars{font-size:22px;font-weight:900;white-space:nowrap;background:#fff7d6;border:1px solid #f1d08b;border-radius:999px;padding:8px 14px}
-  .math-card{background:#fff;border:1px solid #d8e1ec;border-radius:20px;padding:24px;box-shadow:0 8px 25px rgba(0,0,0,.08)}
-  .math-mode-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
-  .math-btn{border:0;border-radius:999px;padding:11px 18px;font-size:16px;font-weight:800;cursor:pointer;background:#0b78bd;color:#fff}
-  .math-btn.secondary{background:#eef4fa;color:#123c69;border:1px solid #d8e1ec}
-  .math-btn.danger{background:#d94a4a;color:#fff}
-  .math-topic{font-size:16px;margin-bottom:10px;color:#506070}
-  .math-formula{background:#f3f8ff;border-left:5px solid #0b78bd;padding:14px 16px;border-radius:12px;margin:12px 0 20px;font-size:20px;font-weight:900}
-  .math-question{font-size:25px;line-height:1.45;margin:16px 0;font-weight:800}
-  .math-answer-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0}
-  .math-input{width:240px;max-width:100%;font-size:24px;padding:12px 14px;border-radius:12px;border:2px solid #bfd0df}
-  .math-unit{font-size:20px;font-weight:900}
-  .math-feedback{margin-top:16px;padding:16px;border-radius:14px;font-size:18px;line-height:1.45;display:none}
-  .math-feedback.good{background:#e9f8ef;border:1px solid #90d4a5}
-  .math-feedback.bad{background:#fff0f0;border:1px solid #e7a0a0}
-  .math-steps{margin-top:10px;font-size:17px}
-  .math-dots{display:flex;justify-content:center;gap:8px;margin-top:22px}
-  .math-dot{width:12px;height:12px;border-radius:50%;border:2px solid #0b78bd;background:#fff}
-  .math-dot.active{background:#0b78bd}
-  .math-score{margin-top:16px;font-size:18px;font-weight:800}
-  #openMathMasteryBtn{position:fixed;right:18px;bottom:18px;z-index:99999;border:0;border-radius:999px;padding:14px 18px;background:#0b78bd;color:#fff;font-weight:900;box-shadow:0 8px 22px rgba(0,0,0,.22);cursor:pointer}
-  @media(max-width:700px){
-    .math-mastery-wrap{padding:10px;margin:8px auto}
-    .math-title{font-size:22px}
-    .math-card{padding:16px}
-    .math-question{font-size:20px}
-    .math-formula{font-size:17px}
-    .math-input{font-size:20px;width:180px}
-    .math-topbar{align-items:flex-start}
-  }
-</style>
 </head>
 <body>
-<a id="math-master-page-link" href="math_mastery.html" style="position:fixed;right:18px;bottom:18px;z-index:999999;background:#0b78bd;color:#fff;padding:14px 18px;border-radius:999px;font-weight:900;text-decoration:none;box-shadow:0 8px 22px rgba(0,0,0,.25);font-family:Arial,sans-serif;">
-📘 Wiskunde Mastery Check
-</a>
-  <div id="app"></div>
+<div id="app"></div>
 
 <script>
 const STUDENT_NAME = "Enrico";
@@ -8521,196 +8482,48 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
   }
 })();
 </script>
-<script id="enrico-force-math-button-js">
-(function(){
-  function ensureMathButton(){
-    if(typeof window.openMathMastery !== "function") return;
-
-    if(!document.getElementById("openMathMasteryBtn")){
-      const btn = document.createElement("button");
-      btn.id = "openMathMasteryBtn";
-      btn.textContent = "📘 Wiskunde Mastery Check";
-      btn.style.position = "fixed";
-      btn.style.right = "18px";
-      btn.style.bottom = "18px";
-      btn.style.zIndex = "999999";
-      btn.style.border = "0";
-      btn.style.borderRadius = "999px";
-      btn.style.padding = "14px 18px";
-      btn.style.background = "#0b78bd";
-      btn.style.color = "#fff";
-      btn.style.fontWeight = "900";
-      btn.style.boxShadow = "0 8px 22px rgba(0,0,0,.25)";
-      btn.style.cursor = "pointer";
-      btn.onclick = window.openMathMastery;
-      document.body.appendChild(btn);
-    }
-
-    if(!document.getElementById("mathMasteryTopBtn")){
-      const topBtn = document.createElement("button");
-      topBtn.id = "mathMasteryTopBtn";
-      topBtn.textContent = "📘 Wiskunde";
-      topBtn.style.margin = "8px";
-      topBtn.style.padding = "10px 14px";
-      topBtn.style.border = "0";
-      topBtn.style.borderRadius = "12px";
-      topBtn.style.background = "#0b78bd";
-      topBtn.style.color = "#fff";
-      topBtn.style.fontWeight = "900";
-      topBtn.style.cursor = "pointer";
-      topBtn.onclick = window.openMathMastery;
-
-      const target = document.querySelector("header") || document.querySelector("nav") || document.body;
-      target.prepend(topBtn);
-    }
-  }
-
-  window.addEventListener("load", ensureMathButton);
-  document.addEventListener("DOMContentLoaded", ensureMathButton);
-
-  setTimeout(ensureMathButton, 500);
-  setTimeout(ensureMathButton, 1500);
-  setTimeout(ensureMathButton, 3000);
-
-  setInterval(ensureMathButton, 2000);
-})();
-</script>
-<!-- ENRICO_MATH_REPLACE_START -->
-<style id="enrico-math-replace-css">
-  #enrico-math-q2-launcher{
-    position:fixed;
-    right:18px;
-    bottom:18px;
-    z-index:999999;
-    background:#0b78bd;
-    color:#fff;
-    padding:14px 18px;
-    border-radius:999px;
-    font-weight:900;
-    text-decoration:none;
-    box-shadow:0 8px 22px rgba(0,0,0,.25);
-    font-family:Arial,sans-serif;
-  }
-  #enrico-math-q2-banner{
-    background:#eef7ff;
-    border:1px solid #b9daf5;
-    border-radius:18px;
-    padding:16px;
-    margin:14px;
-    font-family:Arial,sans-serif;
-    box-shadow:0 6px 18px rgba(0,0,0,.08);
-  }
-  #enrico-math-q2-banner strong{
-    color:#123c69;
-    font-size:18px;
-  }
-  #enrico-math-q2-banner a{
-    display:inline-block;
-    margin-top:10px;
-    background:#0b78bd;
-    color:#fff;
-    padding:10px 14px;
-    border-radius:999px;
-    text-decoration:none;
-    font-weight:900;
-  }
-</style>
-
-<script id="enrico-math-replace-js">
+<!-- ENRICO_MATH_SILENT_LINK_START -->
+<script id="enrico-math-silent-link-js">
 (function(){
   const MATH_URL = "math_mastery.html";
-  const words = [
-    "wiskunde",
-    "maths",
-    "mathematics",
-    "mathematical literacy",
-    "wiskunde geletterdheid",
-    "graad 10 wiskunde"
-  ];
+  const mathWords = ["wiskunde", "maths", "mathematics", "mathematical literacy", "wiskunde geletterdheid"];
 
   function isMathText(txt){
     txt = String(txt || "").toLowerCase();
-    return words.some(w => txt.includes(w));
+    return mathWords.some(w => txt.includes(w));
   }
 
-  function goMath(e){
-    if(e){
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    window.location.href = MATH_URL;
-    return false;
-  }
-
-  function addLauncher(){
-    if(!document.getElementById("enrico-math-q2-launcher")){
-      const a = document.createElement("a");
-      a.id = "enrico-math-q2-launcher";
-      a.href = MATH_URL;
-      a.textContent = "📘 Graad 10 Wiskunde";
-      document.body.appendChild(a);
-    }
-  }
-
-  function addBanner(){
-    if(document.getElementById("enrico-math-q2-banner")) return;
-
-    const banner = document.createElement("div");
-    banner.id = "enrico-math-q2-banner";
-    banner.innerHTML = `
-      <strong>📘 Graad 10 Kwartaal 2 Wiskunde</strong><br>
-      Eksamen-styl oefening: antwoorde wys eers aan die einde; volgende toets vra net die verkeerde vrae.
-      <br><a href="${MATH_URL}">Maak Wiskunde oop</a>
-    `;
-
-    const target =
-      document.querySelector("main") ||
-      document.querySelector(".container") ||
-      document.querySelector("#app") ||
-      document.body;
-
-    target.prepend(banner);
-  }
-
-  function replaceMathClicks(){
-    const items = document.querySelectorAll("a, button, div, section, article, .card, [role='button']");
-    items.forEach(el => {
+  function wireMathLinks(){
+    document.querySelectorAll("a, button, [role='button'], .card, .tile").forEach(function(el){
       const text = el.innerText || el.textContent || "";
-      const href = el.getAttribute && el.getAttribute("href");
+      const href = el.getAttribute ? (el.getAttribute("href") || "") : "";
 
       if(isMathText(text) || isMathText(href)){
-        if(el.id === "enrico-math-q2-launcher" || el.closest("#enrico-math-q2-banner")) return;
+        if(el.dataset.enricoMathSilent === "1") return;
 
+        el.dataset.enricoMathSilent = "1";
         el.style.cursor = "pointer";
-        el.setAttribute("data-enrico-math-replaced", "1");
 
         if(el.tagName === "A"){
           el.setAttribute("href", MATH_URL);
         }
 
-        el.onclick = goMath;
+        el.addEventListener("click", function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          window.location.href = MATH_URL;
+        }, true);
       }
     });
   }
 
-  function run(){
-    addLauncher();
-    addBanner();
-    replaceMathClicks();
-  }
-
-  window.addEventListener("load", run);
-  document.addEventListener("DOMContentLoaded", run);
-
-  setTimeout(run, 300);
-  setTimeout(run, 1000);
-  setTimeout(run, 2500);
-
-  const observer = new MutationObserver(run);
-  observer.observe(document.documentElement, {childList:true, subtree:true});
+  document.addEventListener("DOMContentLoaded", wireMathLinks);
+  window.addEventListener("load", wireMathLinks);
+  setTimeout(wireMathLinks, 500);
+  setTimeout(wireMathLinks, 1500);
 })();
 </script>
-<!-- ENRICO_MATH_REPLACE_END -->
+<!-- ENRICO_MATH_SILENT_LINK_END -->
 </body>
 </html>
 
@@ -8783,6 +8596,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 
 
 <!-- DASHBOARD PATCH 2: clean home text and safe header icon -->
+
 
 
 
