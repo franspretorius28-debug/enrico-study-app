@@ -3919,7 +3919,7 @@ function topbar(){
   if(isMathlit){
     subjectText = "- Wiskundige Geletterdheid";
     studyAction = "selectSubject('mathlit')";
-    examText = "Start MathLit Test";
+    examText = "Start Nuwe Wiskunde";
     examAction = "startMathlitExam()";
   }
 
@@ -8013,7 +8013,7 @@ function mathlitStudyHTML(){
   let html = topbar();
   html += '<div class="wrap grid">';
 
-  html += '<div class="card"><div class="row space"><div><h2>Wiskundige Geletterdheid</h2><p class="muted">Graad 10 - Kwartaal 2</p></div><div class="row"><button class="btn secondary" onclick="setState({screen:\'dashboard\'})">Subjects</button><button class="btn" onclick="startMathlitExam()">Start MathLit Test</button></div></div></div>';
+  html += '<div class="card"><div class="row space"><div><h2>Wiskundige Geletterdheid</h2><p class="muted">Graad 10 - Kwartaal 2</p></div><div class="row"><button class="btn secondary" onclick="setState({screen:\'dashboard\'})">Subjects</button><button class="btn" onclick="startMathlitExam()">Start Nuwe Wiskunde</button></div></div></div>';
 
   html += '<div class="card"><div class="row space"><div><h2>Study Hub</h2><p class="muted">Kwartaal 2 dek Finansies, Meting, Kaarte/Planne en Waarskynlikheid. Hierdie hub dek Finansies, Meting, Kaarte en Waarskynlikheid met n groot vraagbank en prentvrae.</p></div><span class="pill active">' + mathlitQuestions.length + ' vrae</span></div>';
   html += '<div class="grid subjects" style="margin-top:14px">';
@@ -8251,373 +8251,140 @@ function render(){
 }
 load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFinished) startTimer();
 </script>
-<script id="enrico-math-mastery-js">
-(function(){
-  const questions = [
-    {
-      topic:"Eenhede",
-      formula:"1 m = 100 cm",
-      q:"Convert 20 cm into metres.",
-      unit:"m",
-      answer:0.2,
-      hint:"Jy moet cm na m omskakel. Daar is 100 cm in 1 m.",
-      steps:["20 ÷ 100 = 0.2","Antwoord = 0.2 m"]
-    },
-    {
-      topic:"Eenhede",
-      formula:"1 kg = 1000 g",
-      q:"Convert 500 g into kilograms.",
-      unit:"kg",
-      answer:0.5,
-      hint:"Gram na kilogram beteken jy deel deur 1000.",
-      steps:["500 ÷ 1000 = 0.5","Antwoord = 0.5 kg"]
-    },
-    {
-      topic:"Area van driehoek",
-      formula:"Area = 1/2 × base × height",
-      q:"Calculate the area of a triangle where b = 90 mm and h = 40 mm.",
-      unit:"mm²",
-      answer:1800,
-      hint:"Gebruik die driehoek formule: half × basis × hoogte.",
-      steps:["Area = 1/2 × 90 × 40","90 × 40 = 3600","3600 ÷ 2 = 1800"]
-    },
-    {
-      topic:"Area van reghoek",
-      formula:"Area = length × width",
-      q:"Calculate the area of a rectangle with length 6 cm and width 4 cm.",
-      unit:"cm²",
-      answer:24,
-      hint:"Vir 'n reghoek maal jy lengte met breedte.",
-      steps:["Area = 6 × 4","Area = 24 cm²"]
-    },
-    {
-      topic:"Volume",
-      formula:"Volume = length × width × height",
-      q:"Calculate the volume of a rectangular prism: length 10 cm, width 4 cm, height 2 cm.",
-      unit:"cm³",
-      answer:80,
-      hint:"Volume kry jy deur al 3 afmetings te maal.",
-      steps:["Volume = 10 × 4 × 2","Volume = 80 cm³"]
-    },
-    {
-      topic:"Profit margin",
-      formula:"Profit margin = profit ÷ income × 100",
-      q:"Income is R85 200 and expenses are R69 150. Calculate the profit margin percentage rounded to 2 decimals.",
-      unit:"%",
-      answer:18.84,
-      hint:"Kry eers profit: income minus expenses.",
-      steps:["Profit = 85 200 - 69 150 = 16 050","Profit margin = 16 050 ÷ 85 200 × 100","Profit margin = 18.84%"]
-    }
-  ];
-
-  let current = 0;
-  let stars = 0;
-  let mode = "learn";
-  let lockedCorrect = {};
-
-  function normaliseAnswer(v){
-    return String(v || "").trim().replace(",", ".");
-  }
-
-  function isCorrect(userVal, answer){
-    const n = Number(normaliseAnswer(userVal));
-    if(Number.isNaN(n)) return false;
-    return Math.abs(n - answer) < 0.01;
-  }
-
-  window.openMathMastery = function(){
-    document.body.innerHTML = `
-      <div class="math-mastery-wrap">
-        <div class="math-topbar">
-          <div>
-            <div class="math-title">Wiskunde Mastery Check</div>
-            <div class="math-sub">Een vraag op 'n slag, check, retry en stap-vir-stap verduideliking.</div>
-          </div>
-          <div class="math-stars" id="mathStars">⭐ 0</div>
-        </div>
-
-        <div class="math-card">
-          <div class="math-mode-row">
-            <button class="math-btn secondary" onclick="setMathMode('learn')">Learn Mode</button>
-            <button class="math-btn secondary" onclick="setMathMode('exam')">Exam Mode</button>
-            <button class="math-btn danger" onclick="location.reload()">Terug</button>
-          </div>
-
-          <div class="math-topic" id="mathTopic"></div>
-          <div class="math-formula" id="mathFormula"></div>
-          <div class="math-question" id="mathQuestion"></div>
-
-          <div class="math-answer-row">
-            <span>Antwoord:</span>
-            <input class="math-input" id="mathAnswer" autocomplete="off" />
-            <span class="math-unit" id="mathUnit"></span>
-          </div>
-
-          <div class="math-mode-row">
-            <button class="math-btn" onclick="checkMathAnswer()">Check</button>
-            <button class="math-btn secondary" onclick="retryMathQuestion()">Retry</button>
-            <button class="math-btn secondary" onclick="prevMathQuestion()">Vorige</button>
-            <button class="math-btn secondary" onclick="nextMathQuestion()">Volgende</button>
-          </div>
-
-          <div class="math-feedback" id="mathFeedback"></div>
-          <div class="math-score" id="mathScore"></div>
-          <div class="math-dots" id="mathDots"></div>
-        </div>
-      </div>
-    `;
-    renderMathQuestion();
-  };
-
-  window.setMathMode = function(newMode){
-    mode = newMode;
-    renderMathQuestion();
-  };
-
-  function renderMathQuestion(){
-    const item = questions[current];
-    document.getElementById("mathTopic").innerHTML = `<b>Vraag ${current+1} van ${questions.length}</b> — ${item.topic}`;
-    document.getElementById("mathFormula").textContent = mode === "learn" ? item.formula : "Exam Mode: geen hulp totdat jy klaar is nie.";
-    document.getElementById("mathQuestion").textContent = item.q;
-    document.getElementById("mathUnit").textContent = item.unit;
-    document.getElementById("mathAnswer").value = "";
-    document.getElementById("mathFeedback").style.display = "none";
-    document.getElementById("mathScore").textContent = `Mode: ${mode === "learn" ? "Learn Mode" : "Exam Mode"}`;
-    document.getElementById("mathStars").textContent = `⭐ ${stars}`;
-    renderDots();
-    setTimeout(function(){
-      const input = document.getElementById("mathAnswer");
-      if(input) input.focus();
-    }, 50);
-  }
-
-  function renderDots(){
-    let html = "";
-    for(let i=0;i<questions.length;i++){
-      html += `<span class="math-dot ${i===current ? "active" : ""}"></span>`;
-    }
-    document.getElementById("mathDots").innerHTML = html;
-  }
-
-  window.checkMathAnswer = function(){
-    const item = questions[current];
-    const input = document.getElementById("mathAnswer");
-    const raw = normaliseAnswer(input.value);
-    const fb = document.getElementById("mathFeedback");
-
-    if(raw === "" || Number.isNaN(Number(raw))){
-      fb.className = "math-feedback bad";
-      fb.style.display = "block";
-      fb.innerHTML = "Tik net die numeriese antwoord in.";
-      return;
-    }
-
-    if(isCorrect(raw, item.answer)){
-      fb.className = "math-feedback good";
-      fb.style.display = "block";
-      fb.innerHTML = `✅ Reg! Antwoord: <b>${item.answer}</b> ${item.unit}`;
-      if(!lockedCorrect[current]){
-        stars++;
-        lockedCorrect[current] = true;
-      }
-      document.getElementById("mathStars").textContent = `⭐ ${stars}`;
-      document.getElementById("mathScore").textContent = `Mooi! Jy het ${stars} sterre.`;
-      return;
-    }
-
-    fb.className = "math-feedback bad";
-    fb.style.display = "block";
-
-    if(mode === "exam"){
-      fb.innerHTML = "❌ Verkeerd. In Exam Mode wys ek nie die stappe dadelik nie. Probeer weer.";
-    } else {
-      fb.innerHTML = `
-        ❌ Nog nie reg nie.<br>
-        <b>Hint:</b> ${item.hint}
-        <div class="math-steps">
-          <b>Stappe:</b><br>
-          ${item.steps.map((s,i)=>`${i+1}. ${s}`).join("<br>")}
-        </div>
-      `;
-    }
-  };
-
-  window.retryMathQuestion = function(){
-    const input = document.getElementById("mathAnswer");
-    const fb = document.getElementById("mathFeedback");
-    if(input) input.value = "";
-    if(fb) fb.style.display = "none";
-    if(input) input.focus();
-  };
-
-  window.nextMathQuestion = function(){
-    current = (current + 1) % questions.length;
-    renderMathQuestion();
-  };
-
-  window.prevMathQuestion = function(){
-    current = (current - 1 + questions.length) % questions.length;
-    renderMathQuestion();
-  };
-
-  document.addEventListener("keydown", function(e){
-    if(e.key === "Enter" && document.getElementById("mathAnswer")){
-      checkMathAnswer();
-    }
-  });
-
-  window.addMathMasteryButton = function(){
-    if(document.getElementById("openMathMasteryBtn")) return;
-    const btn = document.createElement("button");
-    btn.id = "openMathMasteryBtn";
-    btn.textContent = "📘 Wiskunde Mastery Check";
-    btn.onclick = window.openMathMastery;
-    document.body.appendChild(btn);
-  };
-
-  if(document.readyState === "loading"){
-    document.addEventListener("DOMContentLoaded", window.addMathMasteryButton);
-  } else {
-    window.addMathMasteryButton();
-  }
-})();
-</script>
-<!-- ENRICO_MATH_SILENT_LINK_START -->
-<script id="enrico-math-silent-link-js">
-(function(){
-  const MATH_URL = "math_mastery.html";
-  const mathWords = ["wiskunde", "maths", "mathematics", "mathematical literacy", "wiskunde geletterdheid"];
-
-  function isMathText(txt){
-    txt = String(txt || "").toLowerCase();
-    return mathWords.some(w => txt.includes(w));
-  }
-
-  function wireMathLinks(){
-    document.querySelectorAll("a, button, [role='button'], .card, .tile").forEach(function(el){
-      const text = el.innerText || el.textContent || "";
-      const href = el.getAttribute ? (el.getAttribute("href") || "") : "";
-
-      if(isMathText(text) || isMathText(href)){
-        if(el.dataset.enricoMathSilent === "1") return;
-
-        el.dataset.enricoMathSilent = "1";
-        el.style.cursor = "pointer";
-
-        if(el.tagName === "A"){
-          el.setAttribute("href", MATH_URL);
-        }
-
-        el.addEventListener("click", function(e){
-          e.preventDefault();
-          e.stopPropagation();
-          window.location.href = MATH_URL;
-        }, true);
-      }
-    });
-  }
-
-  document.addEventListener("DOMContentLoaded", wireMathLinks);
-  window.addEventListener("load", wireMathLinks);
-  setTimeout(wireMathLinks, 500);
-  setTimeout(wireMathLinks, 1500);
-})();
-</script>
-<!-- ENRICO_MATH_SILENT_LINK_END -->
-<!-- ENRICO_REMOVE_OLD_MATHLIT_START -->
-<style id="enrico-remove-old-mathlit-css">
-  .enrico-old-mathlit-hidden{
+<!-- ENRICO_DELETE_OLD_MOBILE_MATH_START -->
+<style id="enrico-delete-old-mobile-math-css">
+  /* Ou MathLit vraagkaarte heeltemal weg op desktop en mobile */
+  .enrico-old-mathlit-kill,
+  [data-enrico-old-mathlit-kill="1"]{
     display:none !important;
+    visibility:hidden !important;
+    height:0 !important;
+    max-height:0 !important;
+    overflow:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
   }
 </style>
 
-<script id="enrico-remove-old-mathlit-js">
+<script id="enrico-delete-old-mobile-math-js">
 (function(){
-  const MATH_URL = "math_mastery.html";
+  const NEW_MATH_URL = "math_mastery.html?v=13";
 
-  function txt(el){
+  function lowerText(el){
     return String((el && (el.innerText || el.textContent)) || "").toLowerCase();
   }
 
-  function isMathButtonText(t){
+  function isMathTriggerText(t){
+    t = String(t || "").toLowerCase();
     return (
+      t.includes("start nuwe wiskunde") ||
       t.includes("start mathlit test") ||
-      t.includes("mathlit test") ||
-      t.includes("wiskunde") ||
+      t.includes("mathlit") ||
+      t.includes("math lit") ||
       t.includes("mathematical literacy") ||
-      t.includes("wiskundige geletterdheid")
+      t.includes("wiskundige geletterdheid") ||
+      t.includes("wiskunde")
     );
   }
 
-  function redirectToNewMath(e){
+  function goNewMath(e){
     if(e){
       e.preventDefault();
       e.stopPropagation();
+      e.stopImmediatePropagation && e.stopImmediatePropagation();
     }
-    window.location.href = MATH_URL;
+    window.location.href = NEW_MATH_URL;
     return false;
   }
 
-  function wireButtons(){
-    document.querySelectorAll("a, button, [role='button']").forEach(function(el){
-      const t = txt(el);
+  function wireAllMathButtons(){
+    document.querySelectorAll("a, button, [role='button'], .tile, .card, .subject-card, .tab, li").forEach(function(el){
+      const t = lowerText(el);
       const href = el.getAttribute ? String(el.getAttribute("href") || "").toLowerCase() : "";
 
-      if(isMathButtonText(t) || isMathButtonText(href)){
-        if(el.dataset.enricoNewMath === "1") return;
+      if(isMathTriggerText(t) || isMathTriggerText(href)){
+        if(el.dataset.enricoNewMathOnly !== "1"){
+          el.dataset.enricoNewMathOnly = "1";
+          el.style.cursor = "pointer";
 
-        el.dataset.enricoNewMath = "1";
-        el.style.cursor = "pointer";
+          if(el.tagName === "A"){
+            el.setAttribute("href", NEW_MATH_URL);
+          }
 
-        if(el.tagName === "A"){
-          el.setAttribute("href", MATH_URL);
+          el.addEventListener("click", goNewMath, true);
         }
-
-        el.addEventListener("click", redirectToNewMath, true);
       }
     });
   }
 
-  function hideOldMathlitQuestions(){
-    document.querySelectorAll("section, article, .card, .question, .quiz, div").forEach(function(el){
-      const t = txt(el);
+  function killOldMathLitBlocks(){
+    document.querySelectorAll("section, article, main > div, .card, .quiz, .question, .study, .module, div").forEach(function(el){
+      const t = lowerText(el);
 
-      const looksLikeOldQuestion =
+      const looksOldMath =
         t.includes("tik antwoord op phone") ||
+        t.includes("tik jou antwoord hier") ||
         t.includes("self antwoord") ||
         t.includes("formule / metode") ||
         t.includes("klik hier en tik jou antwoord") ||
-        t.includes("tik jou antwoord hier");
+        t.includes("logged in as enrico") && t.includes("wiskundige geletterdheid") ||
+        t.includes("start nuwe wiskunde") && t.includes("tik antwoord op phone");
 
-      if(looksLikeOldQuestion){
-        let box = el.closest(".card") || el.closest("section") || el;
-        box.classList.add("enrico-old-mathlit-hidden");
+      if(looksOldMath){
+        const box = el.closest(".card") || el.closest("section") || el.closest("article") || el;
+        box.classList.add("enrico-old-mathlit-kill");
+        box.setAttribute("data-enrico-old-mathlit-kill","1");
       }
     });
   }
 
-  function goHomeIfRequested(){
-    if(window.location.search.includes("home=1")){
+  function forceHomeWhenBackFromMath(){
+    const qs = window.location.search || "";
+    if(qs.includes("home=1")){
       setTimeout(function(){
         window.scrollTo(0,0);
-      }, 100);
+        killOldMathLitBlocks();
+      },100);
     }
   }
 
-  function run(){
-    wireButtons();
-    hideOldMathlitQuestions();
-    goHomeIfRequested();
+  function clearOldCache(){
+    try {
+      if("serviceWorker" in navigator){
+        navigator.serviceWorker.getRegistrations().then(function(regs){
+          regs.forEach(function(reg){ reg.unregister(); });
+        }).catch(function(){});
+      }
+      if(window.caches && caches.keys){
+        caches.keys().then(function(keys){
+          keys.forEach(function(k){
+            if(String(k).toLowerCase().includes("enrico") || String(k).toLowerCase().includes("study")){
+              caches.delete(k);
+            }
+          });
+        }).catch(function(){});
+      }
+    } catch(e){}
   }
 
+  function run(){
+    wireAllMathButtons();
+    killOldMathLitBlocks();
+    forceHomeWhenBackFromMath();
+  }
+
+  clearOldCache();
   document.addEventListener("DOMContentLoaded", run);
   window.addEventListener("load", run);
-  setTimeout(run, 500);
-  setTimeout(run, 1500);
-  setTimeout(run, 3000);
+  document.addEventListener("click", function(){ setTimeout(run,50); }, true);
+
+  setTimeout(run, 300);
+  setTimeout(run, 1000);
+  setTimeout(run, 2500);
+  setInterval(run, 3000);
 })();
 </script>
-<!-- ENRICO_REMOVE_OLD_MATHLIT_END -->
+<!-- ENRICO_DELETE_OLD_MOBILE_MATH_END -->
 </body>
 </html>
 
@@ -8690,6 +8457,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 
 
 <!-- DASHBOARD PATCH 2: clean home text and safe header icon -->
+
 
 
 
