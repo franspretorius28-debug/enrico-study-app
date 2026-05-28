@@ -71,6 +71,7 @@ svg{max-width:100%;height:auto}
   <div class="card">
     <div class="row">
       <button onclick="startFreshTest()">Begin nuwe toets</button>
+      <button class="secondary" onclick="resetMasteryRound()">Begin vars ronde</button>
       <button class="secondary" onclick="startWrongOnlyTest()">Volgende toets: net verkeerdes</button>
       <button class="secondary" onclick="shuffleCurrent()">Random</button>
       <a class="back danger" href="index.html?home=1">Terug na App</a>
@@ -130,14 +131,21 @@ let current = 0;
 let selectedTopic = "Alles";
 let answers = {};
 let wrongQuestions = [];
-let stars = Number(localStorage.getItem("enricoMathStars") || "0");
+let masteredKeys = [];
+try { masteredKeys = JSON.parse(localStorage.getItem("enricoMathMasteredKeys") || "[]"); } catch(e) { masteredKeys = []; }
+let stars = masteredKeys.length;
 
 function money(n){return "R" + Number(n).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g," ")}
 function round2(n){return Math.round(Number(n)*100)/100}
 function norm(v){return String(v || "").trim().replace(",", ".").replace(/\s/g,"")}
 function isCorrect(v,a){let n=Number(norm(v));return !Number.isNaN(n) && Math.abs(n-Number(a))<0.01}
 function qKey(q){return q.id}
-function save(){localStorage.setItem("enricoMathStars", String(stars));localStorage.setItem("enricoMathWrongKeys", JSON.stringify(wrongQuestions.map(qKey)))}
+function save(){
+  stars = masteredKeys.length;
+  localStorage.setItem("enricoMathStars", String(stars));
+  localStorage.setItem("enricoMathMasteredKeys", JSON.stringify(masteredKeys));
+  localStorage.setItem("enricoMathWrongKeys", JSON.stringify(wrongQuestions.map(qKey)));
+}
 function getSavedWrong(){let keys=[];try{keys=JSON.parse(localStorage.getItem("enricoMathWrongKeys")||"[]")}catch(e){};return allQuestions.filter(q=>keys.includes(qKey(q)))}
 
 function add(q){allQuestions.push(q)}
@@ -513,7 +521,7 @@ function render(){
   document.getElementById("question").textContent = q.q;
   document.getElementById("unit").textContent = q.unit || "";
   document.getElementById("answer").value = answers[qKey(q)] || "";
-  document.getElementById("status").textContent = `Totaal in bank: ${allQuestions.length} vrae | Hierdie toets: ${questions.length}`;
+  document.getElementById("status").textContent = `Bemeester: ${masteredKeys.length}/${allQuestions.length} sterre | Hierdie toets: ${questions.length} vrae`;
   document.getElementById("stars").textContent = "⭐ " + stars;
   document.getElementById("bar").style.width = ((current)/questions.length*100) + "%";
   setTimeout(()=>document.getElementById("answer").focus(),50);
@@ -539,11 +547,16 @@ function finishTest(){
   wrongQuestions=[];
   let correct=0;
   questions.forEach(item=>{
-    if(isCorrect(answers[qKey(item)], item.answer)) correct++;
-    else wrongQuestions.push(item);
+    const key = qKey(item);
+    if(isCorrect(answers[key], item.answer)) {
+      correct++;
+      if(!masteredKeys.includes(key)) masteredKeys.push(key);
+    } else {
+      wrongQuestions.push(item);
+    }
   });
 
-  stars += correct;
+  stars = masteredKeys.length;
   save();
 
   document.getElementById("bar").style.width = "100%";
@@ -553,7 +566,7 @@ function finishTest(){
   document.getElementById("answer").value = "";
   document.getElementById("unit").textContent = "";
   document.getElementById("stars").textContent = "⭐ " + stars;
-  document.getElementById("status").textContent = "Volgende toets vra net die vrae wat verkeerd was.";
+  document.getElementById("status").textContent = wrongQuestions.length ? "Volgende toets vra net die vrae wat verkeerd was." : "Mooi! Alles in hierdie toets is reg. As 406/406 bereik is, kan jy 'n vars ronde begin.";
 
   let html = wrongQuestions.length
     ? `<div class="feedback bad">❌ Leer hierdie verkeerde vrae. Klik daarna “Volgende toets: net verkeerdes”.</div>`
@@ -575,6 +588,18 @@ function finishTest(){
   document.getElementById("review").innerHTML = html;
 }
 
+function resetMasteryRound(){
+  if(!confirm("Begin vars ronde? Dit maak sterre en verkeerde vrae skoon.")) return;
+  masteredKeys = [];
+  stars = 0;
+  wrongQuestions = [];
+  answers = {};
+  localStorage.removeItem("enricoMathMasteredKeys");
+  localStorage.removeItem("enricoMathWrongKeys");
+  localStorage.setItem("enricoMathStars", "0");
+  startFreshTest();
+}
+
 document.addEventListener("keydown",e=>{if(e.key==="Enter")submitAnswer()});
 
 buildAll();
@@ -583,4 +608,5 @@ startFreshTest();
 </script>
 </body>
 </html>
+
 
