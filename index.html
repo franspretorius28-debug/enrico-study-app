@@ -8524,6 +8524,100 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 })();
 </script>
 <!-- ENRICO_MATH_SILENT_LINK_END -->
+<!-- ENRICO_REMOVE_OLD_MATHLIT_START -->
+<style id="enrico-remove-old-mathlit-css">
+  .enrico-old-mathlit-hidden{
+    display:none !important;
+  }
+</style>
+
+<script id="enrico-remove-old-mathlit-js">
+(function(){
+  const MATH_URL = "math_mastery.html";
+
+  function txt(el){
+    return String((el && (el.innerText || el.textContent)) || "").toLowerCase();
+  }
+
+  function isMathButtonText(t){
+    return (
+      t.includes("start mathlit test") ||
+      t.includes("mathlit test") ||
+      t.includes("wiskunde") ||
+      t.includes("mathematical literacy") ||
+      t.includes("wiskundige geletterdheid")
+    );
+  }
+
+  function redirectToNewMath(e){
+    if(e){
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    window.location.href = MATH_URL;
+    return false;
+  }
+
+  function wireButtons(){
+    document.querySelectorAll("a, button, [role='button']").forEach(function(el){
+      const t = txt(el);
+      const href = el.getAttribute ? String(el.getAttribute("href") || "").toLowerCase() : "";
+
+      if(isMathButtonText(t) || isMathButtonText(href)){
+        if(el.dataset.enricoNewMath === "1") return;
+
+        el.dataset.enricoNewMath = "1";
+        el.style.cursor = "pointer";
+
+        if(el.tagName === "A"){
+          el.setAttribute("href", MATH_URL);
+        }
+
+        el.addEventListener("click", redirectToNewMath, true);
+      }
+    });
+  }
+
+  function hideOldMathlitQuestions(){
+    document.querySelectorAll("section, article, .card, .question, .quiz, div").forEach(function(el){
+      const t = txt(el);
+
+      const looksLikeOldQuestion =
+        t.includes("tik antwoord op phone") ||
+        t.includes("self antwoord") ||
+        t.includes("formule / metode") ||
+        t.includes("klik hier en tik jou antwoord") ||
+        t.includes("tik jou antwoord hier");
+
+      if(looksLikeOldQuestion){
+        let box = el.closest(".card") || el.closest("section") || el;
+        box.classList.add("enrico-old-mathlit-hidden");
+      }
+    });
+  }
+
+  function goHomeIfRequested(){
+    if(window.location.search.includes("home=1")){
+      setTimeout(function(){
+        window.scrollTo(0,0);
+      }, 100);
+    }
+  }
+
+  function run(){
+    wireButtons();
+    hideOldMathlitQuestions();
+    goHomeIfRequested();
+  }
+
+  document.addEventListener("DOMContentLoaded", run);
+  window.addEventListener("load", run);
+  setTimeout(run, 500);
+  setTimeout(run, 1500);
+  setTimeout(run, 3000);
+})();
+</script>
+<!-- ENRICO_REMOVE_OLD_MATHLIT_END -->
 </body>
 </html>
 
@@ -8596,6 +8690,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 
 
 <!-- DASHBOARD PATCH 2: clean home text and safe header icon -->
+
 
 
 
