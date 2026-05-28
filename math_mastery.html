@@ -1567,12 +1567,526 @@ ${details}`;
 }
 
 
+
+// === TEAE_MORE_CHATGPT_MATH_SCREENSHOTS_V1 ===
+function buildMoreChatGPTMathScreenshotQuestions(){
+  const topic = "ChatGPT Mastery: Finance, Maps, Exchange & Probability";
+
+  const items = [
+    {
+      id:"cg2-interest-words-1",
+      level:"Maklik",
+      unit:"",
+      answer:"smaller,higher,simple",
+      formula:"Simple interest stays on original amount; compound interest grows on previous interest too.",
+      q:"Complete: The return with simple interest is ____ when compared to compound interest, and the return amount is ____ with compound interest. With ____ interest the principal stays constant.",
+      steps:["simple interest = smaller","compound interest = higher","simple interest keeps principal constant"]
+    },
+    {
+      id:"cg2-compound-saving-1",
+      level:"Medium",
+      unit:"R",
+      answer:16288.95,
+      formula:"A = P(1 + r)^n",
+      q:"Praveen deposited R10 000 in a savings account. The account earns 5% interest compounded annually. Calculate the balance after 10 years.",
+      steps:["A = 10000(1.05)^10","A = R16288.95"]
+    },
+    {
+      id:"cg2-compound-saving-interest",
+      level:"Medium",
+      unit:"R",
+      answer:6288.95,
+      formula:"Interest = final balance - principal",
+      q:"Praveen deposited R10 000 at 5% compounded annually. If the balance after 10 years is R16 288.95, calculate the interest earned.",
+      steps:["Interest = 16288.95 - 10000","Interest = R6288.95"]
+    },
+    {
+      id:"cg2-interest-types-1",
+      level:"Maklik",
+      unit:"",
+      answer:"interest,simple interest,compound interest",
+      q:"Complete: Money paid regularly at a rate for the use or loan of money is ____. Interest charged only on the original amount is ____. Interest charged on an amount due including interest to date is ____.",
+      steps:["interest","simple interest","compound interest"]
+    },
+    {
+      id:"cg2-daily-interest-1",
+      level:"Medium",
+      unit:"R",
+      answer:0.46,
+      formula:"Daily interest = P × r ÷ 365",
+      q:"Major Bank offers an interest rate of 8.5% per annum, compounded daily. Calculate the interest John will receive if he invests R2 000 for one day.",
+      steps:["2000 × 0.085 ÷ 365","= R0.46"]
+    },
+    {
+      id:"cg2-monthly-compound-1",
+      level:"Medium",
+      unit:"R",
+      answer:8046.67,
+      formula:"Monthly interest = P × rate ÷ 12",
+      q:"Lerato has R8 000 in a savings account at 7% interest compounded monthly. Calculate the balance after one month.",
+      steps:["Monthly rate = 7% ÷ 12","8000 × 0.07 ÷ 12 = 46.67","8000 + 46.67 = R8046.67"]
+    },
+    {
+      id:"cg2-house-deposit",
+      level:"Maklik",
+      unit:"R",
+      answer:15000,
+      formula:"Deposit = percentage × sale price",
+      q:"A house sells for R100 000. The required deposit is 15%. Calculate the deposit.",
+      steps:["15% × 100000","= R15000"]
+    },
+    {
+      id:"cg2-loan-invest-interest",
+      level:"Maklik",
+      unit:"",
+      answer:"loan,investment,interest",
+      q:"Complete: A ____ is an agreed sum of money lent by a bank or moneylender. Something in which you have invested money is an ____. Money paid regularly at a rate is called ____.",
+      steps:["loan","investment","interest"]
+    },
+    {
+      id:"cg2-bank-products",
+      level:"Medium",
+      unit:"",
+      answer:"credit card,money market accounts,cheque accounts,debit card",
+      q:"Match the banking product: purchase now and repay later; higher interest than savings; day-to-day transactions; only spend money available.",
+      steps:["credit card","money market accounts","cheque accounts","debit card"]
+    },
+    {
+      id:"cg2-savings-advantage",
+      level:"Maklik",
+      unit:"",
+      answer:"everyday use but low interest rates",
+      q:"Choose the best advantage and disadvantage of a savings account.",
+      steps:["Advantage: everyday use","Disadvantage: very low interest rates"]
+    },
+    {
+      id:"cg2-pension-annuity",
+      level:"Maklik",
+      unit:"",
+      answer:"pension plan,retirement annuity",
+      q:"Complete: A ____ is typically provided by an employer. A ____ is typically purchased by an individual.",
+      steps:["pension plan","retirement annuity"]
+    },
+    {
+      id:"cg2-stokvels-1",
+      level:"Maklik",
+      unit:"",
+      answer:"stokvels",
+      q:"Which informal saving group is often used to access financial services where formal channels are difficult to obtain?",
+      steps:["Stokvels"]
+    },
+    {
+      id:"cg2-stokvel-advantages",
+      level:"Medium",
+      unit:"",
+      answer:"advantage,disadvantage,advantage,disadvantage",
+      q:"Classify stokvel statements: collective bargaining; may not offer formal credit; community support; limited ability to scale up.",
+      steps:["collective bargaining = advantage","limited formal services = disadvantage","community support = advantage","limited scale = disadvantage"]
+    },
+    {
+      id:"cg2-car-loan-secured",
+      level:"Maklik",
+      unit:"",
+      answer:"true",
+      q:"True or False: A car loan is a secured loan.",
+      steps:["True, because the car can act as security/collateral."]
+    },
+    {
+      id:"cg2-loan-terms-residual",
+      level:"Maklik",
+      unit:"",
+      answer:"loan term,interest,residual",
+      q:"Complete: The period to repay a loan is the ____. Money paid for using/borrowing money is ____. Money remaining after obligations are paid is ____.",
+      steps:["loan term","interest","residual"]
+    },
+    {
+      id:"cg2-home-loan-interest-diff",
+      level:"Medium",
+      unit:"R",
+      answer:44250,
+      q:"A home loan interest amount changes from R1 316 000 to R1 271 750 after increasing the instalment. How much less interest is paid?",
+      steps:["1316000 - 1271750","= R44250"]
+    },
+    {
+      id:"cg2-investment-increase",
+      level:"Maklik",
+      unit:"",
+      answer:"false",
+      q:"True or False: An annual increase in investment monthly premiums will have little effect on the total final investment total.",
+      steps:["False, over time increases can have a big effect."]
+    },
+    {
+      id:"cg2-playstation-deposit",
+      level:"Maklik",
+      unit:"R",
+      answer:520,
+      q:"A PlayStation costs R6 500. It requires an 8% deposit. Calculate the deposit.",
+      steps:["6500 × 8%","= R520"]
+    },
+    {
+      id:"cg2-playstation-total",
+      level:"Maklik",
+      unit:"R",
+      answer:6820,
+      q:"A PlayStation has an 8% deposit on R6 500 plus 18 monthly instalments of R350. Calculate the total cost.",
+      steps:["Deposit = R520","18 × 350 = R6300","Total = R6820"]
+    },
+    {
+      id:"cg2-loan-table-interest",
+      level:"Medium",
+      unit:"R",
+      answer:31663,
+      q:"A loan of R82 000 has a total repayment of R113 663. Calculate the interest amount.",
+      steps:["113663 - 82000","= R31663"]
+    },
+    {
+      id:"cg2-loan-table-years",
+      level:"Maklik",
+      unit:"years",
+      answer:7,
+      q:"The longest loan term is 84 months. Convert this to years.",
+      steps:["84 ÷ 12","= 7 years"]
+    },
+    {
+      id:"cg2-loan-table-rate",
+      level:"Medium",
+      unit:"%",
+      answer:38.61,
+      q:"The interest on an R82 000 loan is R31 663. Calculate the interest rate percentage.",
+      steps:["31663 ÷ 82000 × 100","= 38.61%"]
+    },
+    {
+      id:"cg2-inflation-axis",
+      level:"Maklik",
+      unit:"",
+      answer:"period of time,inflation rate percentages",
+      q:"On a graph showing inflation, the x-axis shows ____ and the y-axis shows ____.",
+      steps:["x-axis = period of time","y-axis = inflation rate percentages"]
+    },
+    {
+      id:"cg2-inflation-backpack",
+      level:"Maklik",
+      unit:"R",
+      answer:472.95,
+      q:"A backpack costs R450 in 2020. Inflation is 5.1%. Calculate the 2021 price.",
+      steps:["450 × 1.051","= R472.95"]
+    },
+    {
+      id:"cg2-car-inflation-rate",
+      level:"Medium",
+      unit:"%",
+      answer:5.55,
+      q:"A Hyundai Atos increased from R199 900 to R211 000. Calculate the inflation rate.",
+      steps:["211000 - 199900 = 11100","11100 ÷ 199900 × 100","= 5.55%"]
+    },
+    {
+      id:"cg2-car-old-price",
+      level:"Medium",
+      unit:"R",
+      answer:408325.36,
+      q:"A car costs R426 700 in 2022 after 4.5% inflation. Calculate the 2021 price.",
+      steps:["426700 ÷ 1.045","= R408325.36"]
+    },
+    {
+      id:"cg2-inflation-2000",
+      level:"Maklik",
+      unit:"R",
+      answer:2160,
+      q:"If inflation is 8%, what will R2 000 be worth after inflation?",
+      steps:["2000 × 1.08","= R2160"]
+    },
+    {
+      id:"cg2-onions-decrease",
+      level:"Medium",
+      unit:"%",
+      answer:36.33,
+      q:"The price of onions changed from R12.25/kg to R7.80/kg. Calculate the percentage decrease.",
+      steps:["12.25 - 7.80 = 4.45","4.45 ÷ 12.25 × 100","= 36.33%"]
+    },
+    {
+      id:"cg2-coke-inflation",
+      level:"Maklik",
+      unit:"R",
+      answer:26.34,
+      q:"Two litres of Coca-Cola costs R24.50. Expected inflation is 7.5%. Calculate next year's price.",
+      steps:["24.50 × 1.075","= R26.34"]
+    },
+    {
+      id:"cg2-bose-old-price",
+      level:"Medium",
+      unit:"R",
+      answer:3195.96,
+      q:"A Bose speaker costs R3400.50 in 2021. Inflation was 6.4%. Calculate the 2020 price.",
+      steps:["3400.50 ÷ 1.064","= R3195.96"]
+    },
+    {
+      id:"cg2-petrol-increase",
+      level:"Maklik",
+      unit:"R",
+      answer:7.33,
+      q:"Petrol increased from R16.13 in 2019 to R23.46 in 2022. Calculate the rand increase.",
+      steps:["23.46 - 16.13","= R7.33"]
+    },
+    {
+      id:"cg2-petrol-percent",
+      level:"Medium",
+      unit:"%",
+      answer:45.44,
+      q:"Petrol increased from R16.13 to R23.46. Calculate the percentage increase.",
+      steps:["7.33 ÷ 16.13 × 100","= 45.44%"]
+    },
+    {
+      id:"cg2-yen-exchange",
+      level:"Maklik",
+      unit:"JPY",
+      answer:85713.60,
+      q:"If R1 = 7.1428 Japanese yen, calculate how many yen you get for R12 000.",
+      steps:["12000 × 7.1428","= 85713.60 yen"]
+    },
+    {
+      id:"cg2-usd-to-rand",
+      level:"Medium",
+      unit:"R",
+      answer:274223.03,
+      q:"If R1 = buildAll();.0547, calculate the rand value of $15 000.",
+      steps:["15000 ÷ 0.0547","= R274223.03"]
+    },
+    {
+      id:"cg2-angola-rand",
+      level:"Medium",
+      unit:"R",
+      answer:1300.46,
+      q:"If 1 ZAR = 27.99 Angolan kwanza, convert 36 400 kwanza to rand.",
+      steps:["36400 ÷ 27.99","= R1300.46"]
+    },
+    {
+      id:"cg2-kenya-rand",
+      level:"Maklik",
+      unit:"R",
+      answer:336.93,
+      q:"If 1 ZAR = 7.42 Kenyan shillings, convert 2 500 Kenyan shillings to rand.",
+      steps:["2500 ÷ 7.42","= R336.93"]
+    },
+    {
+      id:"cg2-rand-to-usd",
+      level:"Medium",
+      unit:"USD",
+      answer:1389.49,
+      q:"Using the exchange rate $1 = R17.985, convert R25 000 to US dollars.",
+      steps:["25000 ÷ 17.985","= $1389.49"]
+    },
+    {
+      id:"cg2-currency-strength",
+      level:"Maklik",
+      unit:"",
+      answer:"stronger currency,weaker currency",
+      q:"Complete: A ____ may make foreign online purchases more affordable, while a ____ may increase the overall cost.",
+      steps:["stronger currency","weaker currency"]
+    },
+    {
+      id:"cg2-purchasing-power",
+      level:"Maklik",
+      unit:"",
+      answer:"false",
+      q:"True or False: When comparing purchasing power in different countries, only one factor is considered.",
+      steps:["False, many factors can affect purchasing power."]
+    },
+    {
+      id:"cg2-probability-range",
+      level:"Maklik",
+      unit:"",
+      answer:"impossible,certain",
+      q:"Complete: The probability of any event is given as a number between 0, ____ and 1, ____.",
+      steps:["0 = impossible","1 = certain"]
+    },
+    {
+      id:"cg2-probability-percentage",
+      level:"Maklik",
+      unit:"",
+      answer:"percentage",
+      q:"A probability can be described as a fraction, decimal or a ____.",
+      steps:["percentage"]
+    },
+    {
+      id:"cg2-landing-sun",
+      level:"Maklik",
+      unit:"",
+      answer:"impossible",
+      q:"Use probability words: Probability of landing on the sun.",
+      steps:["Landing on the sun is impossible."]
+    },
+    {
+      id:"cg2-dice-seven",
+      level:"Maklik",
+      unit:"",
+      answer:0,
+      q:"Find the probability as a decimal fraction of rolling a 7 on a normal dice.",
+      steps:["Normal dice has 1 to 6 only","Probability = 0"]
+    },
+    {
+      id:"cg2-coin-heads",
+      level:"Maklik",
+      unit:"%",
+      answer:50,
+      q:"Find the probability as a percentage of flipping a coin and having heads facing up.",
+      steps:["1 favourable side out of 2","1 ÷ 2 × 100 = 50%"]
+    },
+    {
+      id:"cg2-green-ball",
+      level:"Maklik",
+      unit:"%",
+      answer:20,
+      q:"A box has 5 balls and 1 is green. Calculate the probability percentage of selecting the green ball.",
+      steps:["1 ÷ 5 × 100","= 20%"]
+    },
+    {
+      id:"cg2-pink-ball",
+      level:"Maklik",
+      unit:"",
+      answer:0.2,
+      q:"A box has 5 balls and 1 is pink. Calculate the probability as a decimal of selecting the pink ball.",
+      steps:["1 ÷ 5","= 0.2"]
+    },
+    {
+      id:"cg2-rugby-win",
+      level:"Maklik",
+      unit:"%",
+      answer:50,
+      q:"Probability of correctly choosing a team winning a rugby match.",
+      steps:["Two simple outcomes: win or not win","= 50%"]
+    },
+    {
+      id:"cg2-lottery-one-ticket",
+      level:"Maklik",
+      unit:"",
+      answer:"close to impossible",
+      q:"Use probability words: Probability of winning the lottery if a person buys one ticket.",
+      steps:["It is not impossible, but very unlikely.","Close to impossible"]
+    },
+    {
+      id:"cg2-heart-card",
+      level:"Maklik",
+      unit:"",
+      answer:"unlikely",
+      q:"Use probability words: Probability of choosing a heart from a normal deck of cards.",
+      steps:["13 hearts out of 52 cards","13 ÷ 52 = 25%","25% = unlikely"]
+    },
+    {
+      id:"cg2-hiv-test-likely",
+      level:"Maklik",
+      unit:"",
+      answer:"likely",
+      q:"An advert says a home HIV/AIDS test has an accuracy of 75%. Use the probability scale to describe it.",
+      steps:["75% = likely"]
+    },
+    {
+      id:"cg2-hiv-test-experimental",
+      level:"Medium",
+      unit:"",
+      answer:"experimental probability",
+      q:"An advert says a home HIV/AIDS test has 75% accuracy. Is this experimental or theoretical probability?",
+      steps:["Accuracy usually comes from testing/recorded results.","Experimental probability"]
+    },
+    {
+      id:"cg2-floor-doors",
+      level:"Maklik",
+      unit:"",
+      answer:6,
+      q:"Floor plan question: Count the doors in Tumi's apartment. The correct count is 6.",
+      steps:["Count each door symbol on the plan","Total = 6"]
+    },
+    {
+      id:"cg2-kitchen-area-percent",
+      level:"Medium",
+      unit:"m²",
+      answer:15.3,
+      q:"The kitchen area is 70% less than the living and dining room area of 51 m². Calculate the kitchen area.",
+      steps:["70% less means 30% remains","51 × 0.30 = 15.3 m²"]
+    },
+    {
+      id:"cg2-stadium-gate-direction",
+      level:"Maklik",
+      unit:"",
+      answer:"south west",
+      q:"On a stadium plan, Gate 9 is south-west from Gate 2. Choose the direction.",
+      steps:["Use the compass: from Gate 2 to Gate 9 moves left and down.","South West"]
+    },
+    {
+      id:"cg2-stadium-capacity",
+      level:"Maklik",
+      unit:"",
+      answer:5600,
+      q:"If each A and C section seats about 100 spectators and there are 56 sections, calculate total spectators.",
+      steps:["56 × 100","= 5600"]
+    },
+    {
+      id:"cg2-campus-sports",
+      level:"Maklik",
+      unit:"",
+      answer:3,
+      q:"Campus layout: Identify the number of sports facilities: basketball court, tennis court and soccer field.",
+      steps:["basketball court","tennis court","soccer field","Total = 3"]
+    },
+    {
+      id:"cg2-campus-direction",
+      level:"Maklik",
+      unit:"",
+      answer:"south",
+      q:"If the parking area is on the north side of the campus, the sport facilities are on the ____ side.",
+      steps:["Opposite of north is south."]
+    },
+    {
+      id:"cg2-kitchen-south-side",
+      level:"Maklik",
+      unit:"",
+      answer:"cool environment",
+      q:"Why are kitchens often constructed on the southern side in South Africa?",
+      steps:["Southern side is usually cooler.","Useful for food items needing a cooler environment."]
+    },
+    {
+      id:"cg2-north-facing-warmer",
+      level:"Maklik",
+      unit:"",
+      answer:"true",
+      q:"True or False: North-facing rooms are warmer because they face towards the sun.",
+      steps:["True in South Africa."]
+    },
+    {
+      id:"cg2-bedroom-paint",
+      level:"Medium",
+      unit:"R",
+      answer:939.98,
+      q:"Bedroom 2 has wall area 25.84 m². Paint covers 4 m² per litre and is sold in 5-litre containers at R469.99 each. Calculate cost.",
+      steps:["5 litres covers 20 m²","25.84 m² needs 2 containers","2 × R469.99 = R939.98"]
+    },
+    {
+      id:"cg2-handyman-cost",
+      level:"Medium",
+      unit:"R",
+      answer:2038.50,
+      q:"A handyman charges R135.90/h normally. Saturday is 50% more. He works 6 hours Friday and 6 hours Saturday. Calculate total.",
+      steps:["Friday: 6 × 135.90 = 815.40","Saturday rate: 135.90 × 1.5 = 203.85","Saturday: 6 × 203.85 = 1223.10","Total = R2038.50"]
+    }
+  ];
+
+  items.forEach(q => {
+    q.topic = topic;
+    if (!q.unit) q.unit = "";
+    if (!q.level) q.level = "Medium";
+    allQuestions.push(q);
+  });
+}
+// === END TEAE_MORE_CHATGPT_MATH_SCREENSHOTS_V1 ===
+
+
 buildAll();
+try { buildMoreChatGPTMathScreenshotQuestions(); } catch(e) { console.error('More ChatGPT questions failed', e); }
 renderTiles();
 startFreshTest();
 </script>
 </body>
 </html>
+
 
 
 
