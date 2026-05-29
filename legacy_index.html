@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -8236,6 +8236,159 @@ function render(){
 }
 load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFinished) startTimer();
 </script>
+<!-- TEAE_ENRICO_LEGACY_SUBJECT_ROUTER_V1_START -->
+<style>
+#teaeSubjectRouterBar{
+  position:sticky;
+  top:0;
+  z-index:99999;
+  background:#0f172a;
+  color:white;
+  padding:14px 18px;
+  display:none;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  font-family:Arial,sans-serif;
+}
+#teaeSubjectRouterBar b{
+  font-size:20px;
+}
+#teaeSubjectRouterBar a{
+  background:#dc2626;
+  color:white;
+  text-decoration:none;
+  padding:10px 14px;
+  border-radius:12px;
+  font-weight:bold;
+}
+.teae-router-dim{
+  opacity:.20 !important;
+}
+</style>
+
+<script>
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const subject = (params.get("subject") || "").toLowerCase();
+
+  if(!subject) return;
+
+  const subjectMap = {
+    k53: ["k53", "learner", "licence", "license"],
+    cat: ["cat", "rtt", "computer", "computers"],
+    landbou: ["landbou", "landbou wetenskappe", "agri", "agriculture"],
+    mathlit: ["mathlit", "wiskundige geletterdheid", "wiskunde geletterdheid"]
+  };
+
+  const titleMap = {
+    k53: "K53",
+    cat: "RTT / CAT",
+    landbou: "Landbou",
+    mathlit: "MathLit"
+  };
+
+  const wanted = subjectMap[subject] || [subject];
+  const pretty = titleMap[subject] || subject.toUpperCase();
+
+  function norm(x){
+    return String(x || "").toLowerCase().replace(/\s+/g," ").trim();
+  }
+
+  function makeBar(){
+    if(document.getElementById("teaeSubjectRouterBar")) return;
+
+    const bar = document.createElement("div");
+    bar.id = "teaeSubjectRouterBar";
+    bar.innerHTML = `
+      <b>Enrico - ${pretty}</b>
+      <span>Hierdie blad is direk oopgemaak vir ${pretty}.</span>
+      <a href="index.html">Terug hoofkieslys</a>
+    `;
+
+    document.body.insertBefore(bar, document.body.firstChild);
+    bar.style.display = "flex";
+  }
+
+  function scoreElement(el){
+    const t = norm(el.innerText || el.textContent || "");
+    if(!t) return 0;
+
+    let score = 0;
+    wanted.forEach(w => {
+      if(t.includes(norm(w))) score += 10;
+    });
+
+    if(t.includes("open")) score += 5;
+    if(t.includes("exam")) score += 5;
+    if(t.includes("start")) score += 5;
+    if(t.includes("begin")) score += 5;
+
+    return score;
+  }
+
+  function findBestClickable(){
+    const clickables = Array.from(document.querySelectorAll("button,a,[onclick],.card,.subject-card"));
+    let best = null;
+    let bestScore = 0;
+
+    clickables.forEach(el => {
+      const s = scoreElement(el);
+      if(s > bestScore){
+        best = el;
+        bestScore = s;
+      }
+    });
+
+    return bestScore >= 10 ? best : null;
+  }
+
+  function tryOpenSubject(){
+    makeBar();
+
+    const best = findBestClickable();
+
+    if(best){
+      best.scrollIntoView({behavior:"smooth", block:"center"});
+      setTimeout(() => {
+        try { best.click(); } catch(e) {}
+      }, 350);
+      return true;
+    }
+
+    return false;
+  }
+
+  function reduceWholeAppLook(){
+    // Maak net visueel minder deurmekaar as hy nog op die hoof legacy blad is.
+    const headings = Array.from(document.querySelectorAll("h1,h2,h3"));
+    headings.forEach(h => {
+      const t = norm(h.innerText);
+      if(t.includes("all subjects progress") || t.includes("choose a subject")){
+        const box = h.closest("section,div,main") || h;
+        box.style.border = "3px solid #2563eb";
+        box.style.borderRadius = "18px";
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    makeBar();
+
+    let tries = 0;
+    const timer = setInterval(function(){
+      tries++;
+      const ok = tryOpenSubject();
+      reduceWholeAppLook();
+
+      if(ok || tries > 10){
+        clearInterval(timer);
+      }
+    }, 600);
+  });
+})();
+</script>
+<!-- TEAE_ENRICO_LEGACY_SUBJECT_ROUTER_V1_END -->
 </body>
 </html>
 
@@ -8308,6 +8461,7 @@ load(); render(); if(state.screen==="exam" && state.examStarted && !state.examFi
 
 
 <!-- DASHBOARD PATCH 2: clean home text and safe header icon -->
+
 
 
 
