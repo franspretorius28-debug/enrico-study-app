@@ -57,76 +57,237 @@ svg{max-width:100%;height:auto}
   table{font-size:13px}
 }
 </style>
-<!-- TEAE_ENRICO_EDRICK_STYLE_V1_START -->
+<!-- TEAE_ENRICO_MATH_EDRICK_DASHBOARD_V2_START -->
 <style>
-/* Enrico Wiskunde Edrick-style shell - styling only */
 body{
   background:#eef2ff !important;
   color:#111827 !important;
   font-family:Arial,sans-serif !important;
 }
-body::before{
-  content:"Enrico - Study App";
-  display:block;
+.enrico-edrick-top{
   background:#0f172a;
-  color:#fff;
+  color:white;
   text-align:center;
+  padding:34px 14px 42px;
+  margin:-10px -10px 34px -10px;
+}
+.enrico-edrick-top h1{
+  margin:0 0 18px;
   font-size:38px;
   font-weight:800;
   letter-spacing:1px;
-  padding:30px 12px 8px;
 }
-body::after{
-  content:"Wiskunde | Oefen | Leer | Hou jou progress";
-  display:block;
-  position:fixed;
-  top:78px;
-  left:0;
-  right:0;
-  color:#fff;
-  text-align:center;
+.enrico-edrick-top p{
+  margin:0;
   font-size:18px;
-  pointer-events:none;
-  z-index:9999;
 }
-body{
-  padding-top:34px !important;
+.enrico-edrick-wrap{
+  max-width:1060px;
+  margin:0 auto 22px;
+  padding:0 16px;
 }
-main, .wrap, .container, #app, .app, section{
-  max-width:1040px !important;
+.enrico-edrick-card{
+  background:white;
+  border-radius:18px;
+  padding:26px;
+  box-shadow:0 12px 30px #0002;
 }
-.container, .wrap, main, .panel, .card, section{
-  border-radius:18px !important;
+.enrico-edrick-card h2{
+  margin:0 0 18px;
+  font-size:30px;
 }
-button, .btn, input[type="button"], input[type="submit"]{
-  border-radius:999px !important;
-  font-weight:800 !important;
+.enrico-edrick-grid{
+  display:grid;
+  grid-template-columns:1.1fr 1fr;
+  gap:18px;
 }
-button.primary, .primary, .btn-primary{
-  background:#0284c7 !important;
+.enrico-edrick-stats{
+  border:1px solid #e5e7eb;
+  border-radius:16px;
+  padding:18px;
+  background:#f8fafc;
 }
-button.danger, .danger, .btn-danger{
-  background:#dc2626 !important;
+.enrico-edrick-row{
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid #e5e7eb;
+  padding:9px 0;
+  font-size:18px;
 }
-input, select, textarea{
-  border-radius:12px !important;
+.enrico-edrick-row:last-child{border-bottom:0}
+.enrico-big{
+  font-size:30px;
+  color:#2563eb;
+  font-weight:900;
 }
-.card, .panel, .question-card, .section-card, .quiz-card{
-  box-shadow:0 10px 28px #0001 !important;
-  border:1px solid #e5e7eb !important;
+.enrico-edrick-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
 }
-h1, h2{
-  letter-spacing:.4px;
+.enrico-edrick-actions button,
+.enrico-edrick-actions a{
+  min-height:66px;
+  border:0;
+  border-radius:14px;
+  padding:14px;
+  color:white;
+  text-decoration:none;
+  font-weight:900;
+  font-size:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  cursor:pointer;
 }
-a[href="index.html"], a[href="./index.html"], button[onclick*="index"]{
-  border-radius:999px !important;
+.enrico-green{background:#16a34a}
+.enrico-red{background:#dc2626}
+.enrico-blue{background:#2563eb}
+.enrico-dark{background:#475569}
+.enrico-help{
+  margin-top:14px;
+  background:#eef2ff;
+  border:1px solid #c7d2fe;
+  border-radius:16px;
+  padding:14px;
+  line-height:1.45;
+  font-size:17px;
 }
-@media(max-width:700px){
-  body::before{font-size:30px;padding-top:24px}
-  body::after{top:66px;font-size:15px}
+@media(max-width:800px){
+  .enrico-edrick-top h1{font-size:30px}
+  .enrico-edrick-grid{grid-template-columns:1fr}
+  .enrico-edrick-actions{grid-template-columns:1fr}
 }
 </style>
-<!-- TEAE_ENRICO_EDRICK_STYLE_V1_END -->
+
+<script>
+(function(){
+  function parseProgress(){
+    var text = document.body.innerText || "";
+    var m = text.match(/(\d+)\s*\/\s*(\d+)/);
+    var done = 0, total = 547;
+
+    if(m){
+      done = parseInt(m[1],10) || 0;
+      total = parseInt(m[2],10) || 547;
+    }
+
+    return {
+      done: done,
+      total: total,
+      remaining: Math.max(0,total-done)
+    };
+  }
+
+  function findButtonByText(words){
+    var buttons = Array.from(document.querySelectorAll("button,a"));
+    return buttons.find(function(b){
+      var t = (b.innerText || b.textContent || "").toLowerCase();
+      return words.every(function(w){ return t.includes(w); });
+    });
+  }
+
+  window.enricoStartNew = function(){
+    var b = findButtonByText(["begin","nuwe"]) || findButtonByText(["begin"]);
+    if(b) b.click();
+  };
+
+  window.enricoWrongOnly = function(){
+    var b = findButtonByText(["verkeerde"]) || findButtonByText(["volgende"]);
+    if(b) b.click();
+  };
+
+  window.enricoRandom = function(){
+    var b = findButtonByText(["random"]);
+    if(b) b.click();
+  };
+
+  function buildDashboard(){
+    if(document.getElementById("enricoEdrickDash")) return;
+
+    var p = parseProgress();
+
+    var top = document.createElement("div");
+    top.className = "enrico-edrick-top";
+    top.innerHTML = `
+      <h1>Enrico - Finale Oefen Toetse</h1>
+      <p>Wiskunde | Groot vraebank | Adaptiewe leer | Outomaties gemerk</p>
+    `;
+
+    var wrap = document.createElement("div");
+    wrap.className = "enrico-edrick-wrap";
+    wrap.id = "enricoEdrickDash";
+    wrap.innerHTML = `
+      <section class="enrico-edrick-card">
+        <h2>Wiskunde</h2>
+        <p>Hier is nie vaste vraestelnommers nie. Enrico werk deur die groot vraebank totdat alles reg is.</p>
+
+        <div class="enrico-edrick-grid">
+          <div class="enrico-edrick-stats">
+            <h3>Wiskunde Adaptiewe Leerbank</h3>
+
+            <div class="enrico-edrick-row">
+              <b>Vrae in groot bank</b>
+              <span id="enricoBankTotal">${p.total}</span>
+            </div>
+
+            <div class="enrico-edrick-row">
+              <b>Reeds reg</b>
+              <span id="enricoBankDone">${p.done}</span>
+            </div>
+
+            <div class="enrico-edrick-row">
+              <b>Vrae nog oor</b>
+              <span class="enrico-big" id="enricoBankRemaining">${p.remaining}</span>
+            </div>
+
+            <p style="color:#64748b">
+              Hierdie dashboard wys Enrico se bestaande Wiskunde progress. Geen vrae is weggevat of gereset nie.
+            </p>
+          </div>
+
+          <div>
+            <div class="enrico-edrick-actions">
+              <button class="enrico-green" onclick="enricoStartNew()">Begin volgende oefensessie</button>
+              <button class="enrico-blue" onclick="enricoWrongOnly()">Net verkeerde vrae</button>
+              <button class="enrico-dark" onclick="enricoRandom()">Random</button>
+              <a class="enrico-red" href="index.html">Terug hoofkieslys</a>
+            </div>
+
+            <div class="enrico-help">
+              <b>Hoe dit werk:</b><br>
+              Enrico se bestaande Wiskunde app hou sy eie progress. Hierdie skerm wys dit nou soos Edrick se layout.
+              Vrae en bestaande werk word nie uitgevee nie.
+            </div>
+          </div>
+        </div>
+      </section>
+    `;
+
+    document.body.insertBefore(wrap, document.body.firstChild);
+    document.body.insertBefore(top, wrap);
+  }
+
+  function updateDashboard(){
+    var p = parseProgress();
+    var total = document.getElementById("enricoBankTotal");
+    var done = document.getElementById("enricoBankDone");
+    var remaining = document.getElementById("enricoBankRemaining");
+
+    if(total) total.textContent = p.total;
+    if(done) done.textContent = p.done;
+    if(remaining) remaining.textContent = p.remaining;
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    buildDashboard();
+    updateDashboard();
+    setInterval(updateDashboard, 1000);
+  });
+})();
+</script>
+<!-- TEAE_ENRICO_MATH_EDRICK_DASHBOARD_V2_END -->
 </head>
 <body>
 <div class="wrap">
@@ -2156,6 +2317,7 @@ startFreshTest();
 </script>
 </body>
 </html>
+
 
 
 
