@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="af">
 <head>
 <meta charset="UTF-8">
@@ -57,6 +57,76 @@ svg{max-width:100%;height:auto}
   table{font-size:13px}
 }
 </style>
+<!-- TEAE_ENRICO_EDRICK_STYLE_V1_START -->
+<style>
+/* Enrico Wiskunde Edrick-style shell - styling only */
+body{
+  background:#eef2ff !important;
+  color:#111827 !important;
+  font-family:Arial,sans-serif !important;
+}
+body::before{
+  content:"Enrico - Study App";
+  display:block;
+  background:#0f172a;
+  color:#fff;
+  text-align:center;
+  font-size:38px;
+  font-weight:800;
+  letter-spacing:1px;
+  padding:30px 12px 8px;
+}
+body::after{
+  content:"Wiskunde | Oefen | Leer | Hou jou progress";
+  display:block;
+  position:fixed;
+  top:78px;
+  left:0;
+  right:0;
+  color:#fff;
+  text-align:center;
+  font-size:18px;
+  pointer-events:none;
+  z-index:9999;
+}
+body{
+  padding-top:34px !important;
+}
+main, .wrap, .container, #app, .app, section{
+  max-width:1040px !important;
+}
+.container, .wrap, main, .panel, .card, section{
+  border-radius:18px !important;
+}
+button, .btn, input[type="button"], input[type="submit"]{
+  border-radius:999px !important;
+  font-weight:800 !important;
+}
+button.primary, .primary, .btn-primary{
+  background:#0284c7 !important;
+}
+button.danger, .danger, .btn-danger{
+  background:#dc2626 !important;
+}
+input, select, textarea{
+  border-radius:12px !important;
+}
+.card, .panel, .question-card, .section-card, .quiz-card{
+  box-shadow:0 10px 28px #0001 !important;
+  border:1px solid #e5e7eb !important;
+}
+h1, h2{
+  letter-spacing:.4px;
+}
+a[href="index.html"], a[href="./index.html"], button[onclick*="index"]{
+  border-radius:999px !important;
+}
+@media(max-width:700px){
+  body::before{font-size:30px;padding-top:24px}
+  body::after{top:66px;font-size:15px}
+}
+</style>
+<!-- TEAE_ENRICO_EDRICK_STYLE_V1_END -->
 </head>
 <body>
 <div class="wrap">
@@ -2086,6 +2156,7 @@ startFreshTest();
 </script>
 </body>
 </html>
+
 
 
 

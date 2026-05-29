@@ -5,71 +5,138 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Enrico - Study App</title>
 <style>
-:root{
-  --bg:#eef2ff; --nav:#0f172a; --card:#ffffff; --text:#111827; --muted:#6b7280;
-  --border:#e5e7eb; --blue:#2563eb; --green:#16a34a; --red:#dc2626;
-  --orange:#f97316; --purple:#7c3aed; --dark:#475569;
-}
 *{box-sizing:border-box}
-body{font-family:Arial,sans-serif;margin:0;background:var(--bg);color:var(--text)}
-header{background:var(--nav);color:white;text-align:center;padding:28px 14px}
-header h1{margin:0 0 12px;font-size:34px;letter-spacing:.3px}
-header p{margin:0;font-size:17px}
-.wrap{max-width:980px;margin:34px auto;padding:12px}
-.panel{background:var(--card);border-radius:18px;padding:24px;box-shadow:0 10px 28px #0002}
-.panel h2{margin:0 0 10px;font-size:28px}
-.panel .intro{font-size:17px;line-height:1.5;margin:0 0 20px}
-.subject-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-.subject-card{min-height:118px;border-radius:16px;color:white;padding:18px;text-decoration:none;display:flex;justify-content:space-between;gap:16px;align-items:center;font-weight:bold;box-shadow:0 8px 18px #0001}
-.subject-card h3{margin:0 0 8px;font-size:22px}
-.subject-card p{margin:0;font-size:14px;line-height:1.35;opacity:.92;font-weight:normal}
-.subject-card span{background:#ffffff22;border:1px solid #ffffff44;padding:8px 12px;border-radius:999px;white-space:nowrap}
-.blue{background:var(--blue)} .green{background:var(--green)} .red{background:var(--red)}
-.orange{background:var(--orange)} .purple{background:var(--purple)} .dark{background:var(--dark)}
-.gray{background:#64748b}
-.notice{background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:16px}
-.footer-note{margin-top:18px;background:#f8fafc;border:1px solid var(--border);border-radius:14px;padding:14px;color:var(--muted);line-height:1.45}
-@media(max-width:600px){header h1{font-size:28px}.panel{padding:18px}.subject-card{min-height:105px}}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#eef2ff;
+  color:#111827;
+}
+header{
+  background:#0f172a;
+  color:white;
+  text-align:center;
+  padding:34px 14px 38px;
+}
+header h1{
+  margin:0 0 14px;
+  font-size:38px;
+  letter-spacing:1px;
+}
+header p{
+  margin:0;
+  font-size:18px;
+}
+.wrap{
+  max-width:1040px;
+  margin:46px auto;
+  padding:0 16px;
+}
+.card{
+  background:white;
+  border-radius:18px;
+  padding:26px;
+  box-shadow:0 12px 30px #0002;
+}
+h2{
+  margin:0 0 18px;
+  font-size:30px;
+}
+.intro{
+  margin:0 0 26px;
+  font-size:18px;
+  line-height:1.55;
+}
+.subject-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:16px;
+}
+.subject-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  min-height:112px;
+  border-radius:16px;
+  padding:20px;
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+}
+.subject-card h3{
+  margin:0 0 8px;
+  font-size:25px;
+}
+.subject-card p{
+  margin:0;
+  font-size:15px;
+  line-height:1.4;
+  font-weight:normal;
+  opacity:.95;
+}
+.subject-card span{
+  border:1px solid #ffffff55;
+  background:#ffffff22;
+  border-radius:999px;
+  padding:9px 16px;
+}
+.blue{background:#2563eb}
+.green{background:#16a34a}
+.dark{background:#475569}
+.note{
+  margin-top:18px;
+  background:#f8fafc;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:14px 16px;
+  color:#64748b;
+  line-height:1.45;
+}
+@media(max-width:700px){
+  header h1{font-size:30px}
+  .wrap{margin:24px auto}
+  .card{padding:18px}
+  .subject-card{min-height:96px}
+}
 </style>
 </head>
 <body>
 <header>
   <h1>Enrico - Study App</h1>
-  <p>Vakke | Oefen | Leer | Hou jou progress</p>
+  <p>Vakke | Groot vraebanke | Adaptiewe leer | Hou jou progress</p>
 </header>
 
 <main class="wrap">
-  <section class="panel">
-    <h2>Kies vak</h2>
+  <section class="card">
+    <h2>Begin</h2>
     <p class="intro">
-      Kies ’n vak om voort te gaan. Enrico se bestaande Wiskunde progress word nie uitgevee nie.
-      Hierdie launcher verander net die voorkoms en hou al die bestaande vakke beskikbaar.
+      Kies ’n vak. Enrico se bestaande Wiskunde progress word nie uitgevee nie.
+      Die uitleg is nou dieselfde styl as Edrick se app.
     </p>
 
     <div class="subject-grid">
-      
-      <a class="subject-card green" href="legacy_index.html">
+      <a class="subject-card blue" href="math_mastery.html">
         <div>
-          <h3>Ou App / Ander Vakke</h3>
-          <p>Maak die ou Enrico launcher oop vir K53, Landbou, CAT of enige ou vakke wat daarbinne was.</p>
+          <h3>Wiskunde</h3>
+          <p>Graad 10 Wiskunde Geletterdheid. Gaan voort waar Enrico gebly het.</p>
         </div>
         <span>Open</span>
       </a>
-<a class="subject-card blue" href="math_mastery.html">
+
+      <a class="subject-card green" href="legacy_index.html">
         <div>
-          <h3>Wiskunde</h3>
-          <p>Gaan voort met Enrico se bestaande Wiskunde app. Sy klaar werk/progress word nie gereset nie.</p>
+          <h3>Ou App / Ander Vakke</h3>
+          <p>Maak die ou Enrico launcher oop vir K53, Landbou, CAT of enige ou vakke.</p>
         </div>
         <span>Open</span>
       </a>
     </div>
 
-    <div class="footer-note">
-      <b>Belangrik:</b> Hierdie update het net <code>index.html</code> verander.
-      <code>math_mastery.html</code> en die ander vak-apps is nie verander nie.
+    <div class="note">
+      <b>Belangrik:</b> Hierdie blad verander net die voorkoms. Wiskunde se vrae en progress word nie gereset nie.
     </div>
   </section>
 </main>
 </body>
 </html>
-
