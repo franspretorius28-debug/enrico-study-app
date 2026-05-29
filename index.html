@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enrico - Study App</title>
+<title>Enrico - Finale Oefen Toetse</title>
 <style>
 *{box-sizing:border-box}
 body{
@@ -14,26 +14,28 @@ body{
 }
 header{
   background:#0f172a;
-  color:white;
+  color:#fff;
   text-align:center;
-  padding:34px 14px 38px;
+  padding:34px 14px 42px;
 }
 header h1{
-  margin:0 0 14px;
+  margin:0 0 18px;
   font-size:38px;
+  font-weight:800;
   letter-spacing:1px;
 }
 header p{
   margin:0;
   font-size:18px;
+  font-weight:500;
 }
 .wrap{
-  max-width:1040px;
-  margin:46px auto;
+  max-width:1060px;
+  margin:48px auto;
   padding:0 16px;
 }
 .card{
-  background:white;
+  background:#fff;
   border-radius:18px;
   padding:26px;
   box-shadow:0 12px 30px #0002;
@@ -43,47 +45,44 @@ h2{
   font-size:30px;
 }
 .intro{
-  margin:0 0 26px;
+  margin:0 0 18px;
   font-size:18px;
-  line-height:1.55;
+  line-height:1.5;
 }
-.subject-grid{
+input{
+  width:100%;
+  padding:13px 14px;
+  border:1px solid #cbd5e1;
+  border-radius:10px;
+  font-size:17px;
+  margin:0 0 22px;
+}
+h3{
+  margin:0 0 16px;
+  font-size:22px;
+}
+.subject-row{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:16px;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
 }
-.subject-card{
+.subject-btn{
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  gap:18px;
-  min-height:112px;
-  border-radius:16px;
-  padding:20px;
+  justify-content:center;
+  min-height:54px;
+  padding:14px 16px;
+  background:#2563eb;
   color:white;
   text-decoration:none;
-  font-weight:bold;
+  border-radius:12px;
+  font-weight:800;
+  text-align:center;
+  border:0;
 }
-.subject-card h3{
-  margin:0 0 8px;
-  font-size:25px;
+.subject-btn:hover{
+  background:#1d4ed8;
 }
-.subject-card p{
-  margin:0;
-  font-size:15px;
-  line-height:1.4;
-  font-weight:normal;
-  opacity:.95;
-}
-.subject-card span{
-  border:1px solid #ffffff55;
-  background:#ffffff22;
-  border-radius:999px;
-  padding:9px 16px;
-}
-.blue{background:#2563eb}
-.green{background:#16a34a}
-.dark{background:#475569}
 .note{
   margin-top:18px;
   background:#f8fafc;
@@ -93,48 +92,41 @@ h2{
   color:#64748b;
   line-height:1.45;
 }
-@media(max-width:700px){
+@media(max-width:800px){
   header h1{font-size:30px}
-  .wrap{margin:24px auto}
+  .wrap{margin:26px auto}
   .card{padding:18px}
-  .subject-card{min-height:96px}
+  .subject-row{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 <header>
-  <h1>Enrico - Study App</h1>
-  <p>Vakke | Groot vraebanke | Adaptiewe leer | Hou jou progress</p>
+  <h1>Enrico - Finale Oefen Toetse</h1>
+  <p>4 vakke | Groot vraebanke | Adaptiewe leer | Outomaties gemerk</p>
 </header>
 
 <main class="wrap">
   <section class="card">
     <h2>Begin</h2>
     <p class="intro">
-      Kies ’n vak. Enrico se bestaande Wiskunde progress word nie uitgevee nie.
-      Die uitleg is nou dieselfde styl as Edrick se app.
+      Vul Enrico se naam in en kies ’n vak. Sy bestaande Wiskunde progress word nie uitgevee nie.
     </p>
 
-    <div class="subject-grid">
-      <a class="subject-card blue" href="math_mastery.html">
-        <div>
-          <h3>Wiskunde</h3>
-          <p>Graad 10 Wiskunde Geletterdheid. Gaan voort waar Enrico gebly het.</p>
-        </div>
-        <span>Open</span>
-      </a>
+    <input id="studentName" value="Enrico" placeholder="Enrico">
 
-      <a class="subject-card green" href="legacy_index.html">
-        <div>
-          <h3>Ou App / Ander Vakke</h3>
-          <p>Maak die ou Enrico launcher oop vir K53, Landbou, CAT of enige ou vakke.</p>
-        </div>
-        <span>Open</span>
-      </a>
+    <h3>Kies vak</h3>
+
+    <div class="subject-row">
+      <a class="subject-btn" href="math_mastery.html">Wiskunde</a>
+      <a class="subject-btn" href="legacy_index.html">K53</a>
+      <a class="subject-btn" href="legacy_index.html">RTT / CAT</a>
+      <a class="subject-btn" href="legacy_index.html">Landbou</a>
     </div>
 
     <div class="note">
-      <b>Belangrik:</b> Hierdie blad verander net die voorkoms. Wiskunde se vrae en progress word nie gereset nie.
+      <b>Belangrik:</b> Wiskunde maak direk oop. K53, RTT/CAT en Landbou maak die ou app oop waar daardie vakke reeds binne was.
+      Hierdie blad verander net die voorkoms soos Edrick s’n.
     </div>
   </section>
 </main>
