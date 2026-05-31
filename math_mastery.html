@@ -2315,8 +2315,50 @@ try { buildMoreChatGPTMathScreenshotQuestions(); } catch(e) { console.error('Mor
 renderTiles();
 startFreshTest();
 </script>
+<script>
+// TEAE_MATH_ALLOW_ABC_INPUT_V1
+(function () {
+  function fixInputs() {
+    document.querySelectorAll("input, textarea").forEach(function (el) {
+      if (el.tagName === "INPUT" && el.type === "number") {
+        try { el.type = "text"; } catch(e) {}
+      }
+      el.setAttribute("inputmode", "text");
+      el.removeAttribute("pattern");
+      el.removeAttribute("min");
+      el.removeAttribute("max");
+      el.removeAttribute("step");
+      el.setAttribute("autocapitalize", "characters");
+    });
+  }
+
+  document.addEventListener("keydown", function(e) {
+    var el = document.activeElement;
+    if (!el || !["INPUT","TEXTAREA"].includes(el.tagName)) return;
+    if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+    if (e.key && e.key.length === 1 && /^[a-zA-Z]$/.test(e.key)) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      var start = el.selectionStart || el.value.length;
+      var end = el.selectionEnd || el.value.length;
+      el.value = el.value.slice(0,start) + e.key.toUpperCase() + el.value.slice(end);
+
+      try { el.setSelectionRange(start+1,start+1); } catch(err) {}
+
+      el.dispatchEvent(new Event("input", {bubbles:true}));
+      el.dispatchEvent(new Event("change", {bubbles:true}));
+    }
+  }, true);
+
+  fixInputs();
+  setInterval(fixInputs, 1000);
+})();
+</script>
 </body>
 </html>
+
 
 
 
