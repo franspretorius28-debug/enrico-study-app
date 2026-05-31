@@ -126,6 +126,128 @@ h3{
     </div>
   </section>
 </main>
+<script>
+// TEAE_FAMILY_MAIN_FOUR_KIDS_V1
+// Wys al 4 kinders weer op main screen en laat vakke werk met gekose kind.
+
+(function () {
+  const KIDS = ["Enrico", "Edrick", "Elona", "Echart"];
+
+  function findNameInput() {
+    const inputs = Array.from(document.querySelectorAll("input"));
+    return inputs.find(i =>
+      (i.value || "").toLowerCase() === "enrico" ||
+      (i.placeholder || "").toLowerCase().includes("naam") ||
+      i.type === "text"
+    );
+  }
+
+  function setKid(name) {
+    localStorage.setItem("teae_selected_child", name);
+
+    const input = findNameInput();
+    if (input) {
+      input.value = name;
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    document.querySelectorAll(".teae-kid-btn").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.kid === name);
+    });
+
+    const label = document.getElementById("teae-selected-kid-label");
+    if (label) label.textContent = "Gekose kind: " + name;
+  }
+
+  function fixText() {
+    document.querySelectorAll("h1, h2, h3").forEach(el => {
+      if ((el.textContent || "").includes("Enrico - Finale")) {
+        el.textContent = "Familie Leer App - Finale Oefen Toetse";
+      }
+    });
+
+    document.querySelectorAll("p, div").forEach(el => {
+      const txt = el.textContent || "";
+      if (txt.includes("Vul Enrico se naam")) {
+        el.textContent = "Kies ’n kind en kies dan ’n vak. Elke kind se vordering bly apart.";
+      }
+    });
+  }
+
+  function insertKidButtons() {
+    if (document.getElementById("teae-family-kids-row")) return;
+
+    const input = findNameInput();
+    if (!input) return;
+
+    const holder = document.createElement("div");
+    holder.id = "teae-family-kids-row";
+    holder.innerHTML = `
+      <h3 style="margin:18px 0 10px 0;">Kies kind</h3>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:10px;">
+        ${KIDS.map(k => `<button type="button" class="teae-kid-btn" data-kid="${k}">${k}</button>`).join("")}
+      </div>
+      <div id="teae-selected-kid-label" style="font-weight:700;margin-bottom:14px;color:#334155;"></div>
+    `;
+
+    input.insertAdjacentElement("afterend", holder);
+
+    document.querySelectorAll(".teae-kid-btn").forEach(btn => {
+      btn.addEventListener("click", function () {
+        setKid(this.dataset.kid);
+      });
+    });
+
+    const saved = localStorage.getItem("teae_selected_child") || input.value || "Enrico";
+    setKid(saved);
+  }
+
+  function addStyle() {
+    if (document.getElementById("teae-family-kids-style")) return;
+
+    const style = document.createElement("style");
+    style.id = "teae-family-kids-style";
+    style.textContent = `
+      .teae-kid-btn {
+        background:#2563eb;
+        color:white;
+        border:0;
+        border-radius:10px;
+        padding:16px 10px;
+        font-weight:800;
+        font-size:16px;
+        cursor:pointer;
+      }
+      .teae-kid-btn.active {
+        background:#0f172a;
+        outline:4px solid rgba(37,99,235,.22);
+      }
+      @media (max-width: 700px) {
+        #teae-family-kids-row > div {
+          grid-template-columns:repeat(2,1fr) !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function run() {
+    fixText();
+    addStyle();
+    insertKidButtons();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", run);
+  } else {
+    run();
+  }
+
+  setTimeout(run, 300);
+})();
+</script>
 </body>
 </html>
+
 
