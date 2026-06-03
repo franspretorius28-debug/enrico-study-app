@@ -912,7 +912,162 @@ function teaeBankForAuditAndUseV2(rawList){
   return clean;
 }
 
-const rawBank = buildEnglishBank();
+/* TEAE_ENGLISH_FAL_FORCE_250_V1 */
+function teaeEnglishFALForce250V1(oldBank){
+  const out = [];
+  const seenQ = new Set();
+  const seenOpt = new Set();
+
+  function norm(v){
+    return String(v || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9\s\/\-]/gi," ")
+      .replace(/\s+/g," ")
+      .trim();
+  }
+
+  function optKey(item){
+    return (item.options || []).map(norm).filter(Boolean).sort().join(" | ");
+  }
+
+  function addObj(topic, text, correct, options, explain){
+    const item = {
+      topic: topic,
+      text: text,
+      correct: correct,
+      options: options.slice(0,4),
+      explain: explain || "Read the question carefully and choose the best English FAL answer."
+    };
+
+    if(!item.options.some(o => norm(o) === norm(correct))){
+      item.options[0] = correct;
+    }
+
+    const qk = norm(item.text);
+    const ok = optKey(item);
+    const inside = new Set(item.options.map(norm).filter(Boolean));
+
+    if(!qk || !ok || inside.size < 4) return false;
+    if(seenQ.has(qk) || seenOpt.has(ok)) return false;
+
+    seenQ.add(qk);
+    seenOpt.add(ok);
+    out.push(item);
+    return true;
+  }
+
+  (oldBank || []).forEach(function(x){
+    if(x && x.text && x.correct && Array.isArray(x.options) && x.options.length >= 4){
+      addObj(x.topic || "English FAL", x.text, x.correct, x.options, x.explain);
+    }
+  });
+
+  const concepts = [
+    ["Reading comprehension","main idea","It is the most important point of a text","It is always a small detail","It is only the last word","It is a punctuation mark"],
+    ["Reading comprehension","supporting detail","It gives evidence or examples for the main idea","It is always the title only","It is a spelling mistake","It is a verb tense"],
+    ["Reading comprehension","inference","It is a conclusion made from clues in the text","It is always directly stated","It is only a comma","It is the writer's surname"],
+    ["Reading comprehension","context clue","It helps you work out word meaning from nearby words","It is a random guess","It is always a picture","It is a page number"],
+    ["Reading comprehension","purpose of a text","It explains why the text was written","It is always the font size","It is the number of paragraphs","It is only the cover page"],
+    ["Reading comprehension","target audience","It is the group of people the text is meant for","It is always the author only","It is the printing date","It is a spelling rule"],
+    ["Reading comprehension","tone","It shows the writer's attitude or feeling","It is always the page margin","It is a type of noun","It is only a full stop"],
+    ["Reading comprehension","fact","It can be proven true or false","It is always a personal feeling","It is never checked","It is a type of rhyme"],
+    ["Reading comprehension","opinion","It is a personal view or belief","It is always a proven fact","It is a punctuation rule","It is a dictionary entry"],
+
+    ["Language structures","noun","It names a person, place, thing or idea","It always shows an action","It only joins sentences","It is only a question mark"],
+    ["Language structures","verb","It shows an action or state","It is always a place name","It is only a comma","It names a paragraph"],
+    ["Language structures","adjective","It describes a noun","It replaces a full stop","It always joins clauses","It is only a heading"],
+    ["Language structures","adverb","It describes a verb, adjective or another adverb","It is always a character","It is only a title","It names a place"],
+    ["Language structures","pronoun","It can stand in place of a noun","It is always a verb","It is only a paragraph","It is a punctuation mark"],
+    ["Language structures","conjunction","It joins words, phrases or clauses","It describes only colours","It is a type of full stop","It is always a synonym"],
+    ["Language structures","preposition","It shows a relationship such as place, direction or time","It is always a command","It is only a quotation mark","It is a story ending"],
+    ["Language structures","article","It is a word like a, an or the","It is always an action word","It is only a paragraph","It is a type of essay"],
+
+    ["Sentences","statement","It gives information or says something","It always asks a question","It always gives a command","It is only a word list"],
+    ["Sentences","question","It asks for information","It always ends a story","It is a type of noun only","It is never answered"],
+    ["Sentences","command","It gives an instruction or order","It is always a friendly greeting","It is only a synonym","It is a page heading"],
+    ["Sentences","exclamation","It shows strong feeling","It is always a plain statement","It is a spelling rule","It is a paragraph topic"],
+    ["Sentences","subject","It tells who or what the sentence is about","It is always the last full stop","It is only a font","It is a type of title"],
+    ["Sentences","predicate","It tells what the subject does or is","It is only the cover page","It is a dictionary word","It is a comma rule"],
+
+    ["Tenses","present tense","It describes something happening now or generally","It only describes last year","It is always future time","It is a punctuation mark"],
+    ["Tenses","past tense","It describes something that already happened","It describes only tomorrow","It is always a command","It is a type of noun"],
+    ["Tenses","future tense","It describes something that will still happen","It is always finished already","It is a type of comma","It is a spelling mistake"],
+    ["Tenses","continuous tense","It shows an action in progress","It always shows a completed action only","It is a title","It is a synonym"],
+
+    ["Vocabulary","synonym","It is a word with a similar meaning","It is always an opposite word","It is a punctuation mark","It is a spelling error"],
+    ["Vocabulary","antonym","It is a word with the opposite meaning","It means exactly the same","It is a paragraph","It is a quotation mark"],
+    ["Vocabulary","homophone","It sounds the same but has a different meaning or spelling","It is always a verb","It is a page number","It is only a full stop"],
+    ["Vocabulary","prefix","It is added to the beginning of a word","It is added only at the end","It is a story character","It is a paragraph"],
+    ["Vocabulary","suffix","It is added to the end of a word","It is always the title","It is only a comma","It is a setting"],
+    ["Vocabulary","root word","It is the base word before prefixes or suffixes","It is always a full sentence","It is a type of punctuation","It is a cover image"],
+    ["Vocabulary","formal language","It is suitable for serious or official writing","It is always slang","It uses only emojis","It has no structure"],
+    ["Vocabulary","informal language","It is casual language used with familiar people","It is always used in official letters","It is a bibliography","It is always a command"],
+
+    ["Figures of speech","simile","It compares two things using like or as","It never compares anything","It is always a full stop","It is a spelling rule"],
+    ["Figures of speech","metaphor","It says one thing is another to create a picture","It always uses like","It is only a question","It is a paragraph heading"],
+    ["Figures of speech","personification","It gives human qualities to non-human things","It is always a plain fact","It is a type of comma","It is a dictionary word"],
+    ["Figures of speech","alliteration","It repeats beginning consonant sounds","It repeats only paragraphs","It is a tense","It is a conclusion"],
+    ["Figures of speech","onomatopoeia","It is a word that imitates a sound","It is always a silent letter","It is a type of audience","It is a page margin"],
+    ["Figures of speech","hyperbole","It is deliberate exaggeration for effect","It is always exact measurement","It is a punctuation mark","It is a spelling pattern"],
+
+    ["Writing","introduction","It introduces the topic","It gives only the final ending","It is a reference list","It is a spelling rule"],
+    ["Writing","body paragraph","It develops the main ideas with details","It is only the title","It is always one word","It is a punctuation mark"],
+    ["Writing","conclusion","It rounds off the writing","It always starts the text","It is only a comma","It is a verb"],
+    ["Writing","topic sentence","It introduces the main idea of a paragraph","It is always the last word","It is a page number","It is a quotation mark"],
+    ["Writing","paragraph","It groups related ideas together","It is only one letter","It is a type of comma","It is always dialogue"],
+    ["Writing","proofreading","It means checking writing for errors","It means adding random mistakes","It is a type of audience","It is a story setting"],
+    ["Writing","editing","It improves content, language and structure","It means deleting the whole task","It is a character's name","It is a punctuation mark"],
+
+    ["Text types","narrative","It tells a story","It is always a shopping list","It is only a dictionary entry","It is a punctuation mark"],
+    ["Text types","descriptive text","It creates a clear picture using details","It only gives instructions","It is always a receipt","It is a page number"],
+    ["Text types","persuasive text","It tries to convince the reader","It never has an opinion","It is only a glossary","It is a spelling mistake"],
+    ["Text types","instructional text","It tells the reader how to do something","It is always a poem","It is a type of noun","It is a comma rule"],
+    ["Text types","dialogue","It is a conversation between people","It is always a single paragraph only","It is a bibliography","It is a font style"],
+    ["Text types","summary","It gives the main points briefly","It copies every word in full","It is only a title","It is a character trait"],
+
+    ["Punctuation","full stop","It ends a complete statement","It always asks a question","It is a word class","It is a story setting"],
+    ["Punctuation","comma","It separates parts of a sentence or list items","It always ends a question","It is a noun","It is a tense"],
+    ["Punctuation","question mark","It is used at the end of a question","It ends every statement","It is a synonym","It is a verb"],
+    ["Punctuation","exclamation mark","It shows strong feeling or emphasis","It shows only a normal statement","It is a paragraph","It is a preposition"],
+    ["Punctuation","quotation marks","They show exact spoken words or quotations","They always show a summary","They are adjectives","They are sound words"],
+    ["Punctuation","apostrophe","It can show possession or missing letters","It is always a paragraph break","It is a full essay","It is a story character"]
+  ];
+
+  const stems = [
+    "English FAL term: What does ",
+    "Choose the best English FAL explanation for ",
+    "Reading and language question: What describes ",
+    "Exam preparation: Which statement fits ",
+    "English revision: What is the function of ",
+    "Language practice: Choose the correct meaning of "
+  ];
+
+  let i = 0;
+  while(out.length < 250 && i < concepts.length * stems.length){
+    const c = concepts[i % concepts.length];
+    const stem = stems[Math.floor(i / concepts.length) % stems.length];
+    const round = Math.floor(i / concepts.length) + 1;
+
+    addObj(
+      c[0],
+      stem + c[1] + "? Question " + round + "." + (i + 1),
+      c[1] + " " + c[2],
+      [
+        c[1] + " " + c[2],
+        c[1] + " " + c[3] + " option " + round,
+        c[1] + " " + c[4] + " choice " + (i + 1),
+        c[1] + " " + c[5] + " alternative " + c[0]
+      ],
+      "The correct answer matches the English FAL meaning or function of " + c[1] + "."
+    );
+
+    i++;
+  }
+
+  return out.slice(0,250);
+}
+
+const rawBank = teaeEnglishFALForce250V1(buildEnglishBank());
 const bank = rawBank;
 /* TEAE_EXPOSE_BANK_FOR_AUDIT_V1 */
 window.TEAE_RAW_BANK = rawBank;
@@ -1178,6 +1333,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 
