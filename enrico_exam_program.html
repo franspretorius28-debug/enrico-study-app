@@ -42,7 +42,7 @@ button,a.btn{display:inline-block;text-decoration:none;padding:11px 14px;border:
     <div class="exam"><b>26 Junie:</b> Besigheidstudies</div>
 
     <div class="note">
-      Enrico moet by sy tye hou. As hy agter raak, moet hy die <b>Opvangblok</b> gebruik om in te haal.
+      Enrico moet by sy tye hou. As hy agter raak, moet hy later ekstra oefen.
       Ná elke toets-sessie stuur hy <b>WhatsApp Dad</b>. Breuke en gewone take merk hy net as <b>Klaar</b>.
     </div>
 
@@ -173,6 +173,20 @@ const plan = [
     ["12:00","Program voltooi","Eksamen klaar."]
   ]}
 ];
+
+// TEAE_REMOVE_UNNECESSARY_PROGRAM_TASKS_V1
+plan.forEach(function(day){
+  day.tasks = day.tasks.filter(function(t){
+    const title = String(t[1] || "").toLowerCase();
+    const note = String(t[2] || "").toLowerCase();
+
+    if(title.includes("opvangblok")) return false;
+    if(title.includes("kort terugvoer")) return false;
+    if(note.includes("stuur whatsapp update")) return false;
+
+    return true;
+  });
+});
 
 function keyFor(dayIndex, taskIndex){
   return "enricoProgramDone_" + dayIndex + "_" + taskIndex;
@@ -308,6 +322,7 @@ renderPlan();
 </script>
 </body>
 </html>
+
 
 
 
