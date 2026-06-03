@@ -202,70 +202,6 @@ button.gray,
     font-size:13px;
   }
 }
-/* TEAE_GAP_FEEDBACK_STYLE_V1 */
-.teaeFeedbackBox{
-  margin-top:14px !important;
-  padding:14px 16px !important;
-  border-radius:12px !important;
-  font-weight:800 !important;
-  line-height:1.45 !important;
-  border:2px solid transparent !important;
-  box-shadow:none !important;
-}
-
-.teaeFeedbackBox *{
-  color:inherit !important;
-}
-
-.teaeFeedbackCorrect{
-  background:#052e16 !important;
-  color:#dcfce7 !important;
-  border-color:#22c55e !important;
-}
-
-.teaeFeedbackWrong{
-  background:#450a0a !important;
-  color:#fee2e2 !important;
-  border-color:#ef4444 !important;
-}
-
-.teaeFeedbackNeutral{
-  background:#111827 !important;
-  color:#ffffff !important;
-  border-color:#374151 !important;
-}
-
-.teaeFeedbackTitle{
-  display:block !important;
-  font-size:28px !important;
-  font-weight:900 !important;
-  margin-bottom:6px !important;
-  letter-spacing:.2px !important;
-}
-
-.teaeFeedbackCorrect .teaeFeedbackTitle{
-  color:#22c55e !important;
-}
-
-.teaeFeedbackWrong .teaeFeedbackTitle{
-  color:#ef4444 !important;
-}
-
-.teaeFeedbackAnswer{
-  display:block !important;
-  margin-top:8px !important;
-  padding:8px 10px !important;
-  border-radius:8px !important;
-  background:rgba(255,255,255,.06) !important;
-  font-weight:900 !important;
-}
-
-.teaeFeedbackExplain{
-  display:block !important;
-  margin-top:8px !important;
-  font-weight:700 !important;
-  opacity:1 !important;
-}
 </style>
 </head>
 <body>
@@ -560,7 +496,7 @@ function finishQuiz(){
     }
 
     html += `<div class="result"><span class="ok">🎉 Alles eerste keer reg!</span></div>`;
-    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Teacher - submit progress</button>`;
+    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
   }
 
   document.getElementById("finalResult").innerHTML = html;
@@ -678,8 +614,8 @@ function finishWrongRetry(){
   const html = `<h2>Wrong Retry klaar 🎉</h2>
     <p style="font-size:22px;font-weight:900">Al ${retryOriginalCount} verkeerde vrae is nou reggemaak.</p>
     <p>Mooi Enrico — nou tel hierdie sessie as klaar.</p>
-    <div class="result"><span class="ok">Stuur nou die WhatsApp progress update na Teacher.</span></div>
-    <button class="green" onclick="sendWhatsapp()">WhatsApp Teacher - submit progress</button>`;
+    <div class="result"><span class="ok">Stuur nou die WhatsApp update na Dad.</span></div>
+    <button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
 
   document.getElementById("finalResult").innerHTML = html;
   document.getElementById("finalResult").style.display = "block";
@@ -698,9 +634,8 @@ nextQuestion = function(){
 function sendWhatsapp(){
   const originalWrong = retryOriginalCount > 0 ? retryOriginalCount : (25 - score);
 
-  let msg = `Enrico Besigheidstudies progress update:
+  let msg = `Enrico Besigheidstudies update:
 Sessie: ${sessionTitle}
-Teacher must submit progress to Head Office.
 Vraagbank: 250 Besigheidstudies vrae
 Punt: ${25 - originalWrong}/25
 Oorspronklik verkeerd: ${originalWrong}`;
@@ -720,11 +655,7 @@ Oorspronklik verkeerd: ${originalWrong}`;
 
 render();
 </script>
-
 </body>
 </html>
-
-
-
 
 
