@@ -21,9 +21,192 @@ button,a.btn{display:inline-block;text-decoration:none;padding:12px 15px;border:
 .green{background:#16a34a!important}.gray{background:#475569!important}.orange{background:#f97316!important}
 .ok{color:#16a34a;font-weight:900;font-size:19px}.bad{color:#dc2626;font-weight:900;font-size:19px}
 .small{color:#64748b;font-size:15px}.result{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin-top:14px}
+/* TEAE_GAP_STYLE_ALL_QUIZ_PAGES_V1 */
+body{
+  background:#000 !important;
+  color:#ffffff !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+}
+
+header{
+  background:#050505 !important;
+  color:#ffffff !important;
+  border-bottom:1px solid #303030 !important;
+  padding:32px 18px !important;
+}
+
+header h1{
+  color:#ffffff !important;
+  font-size:34px !important;
+  font-weight:900 !important;
+}
+
+header p{
+  color:#d1d5db !important;
+  font-weight:700 !important;
+}
+
+.wrap{
+  max-width:980px !important;
+  margin:28px auto !important;
+  padding:14px !important;
+}
+
+.card{
+  background:#1a1a1a !important;
+  color:#ffffff !important;
+  border:1px solid #303030 !important;
+  border-radius:16px !important;
+  box-shadow:none !important;
+}
+
+.banner{
+  background:#111827 !important;
+  border:2px solid #b51fa5 !important;
+  color:#ffffff !important;
+}
+
+.banner *,
+.banner .small{
+  color:#ffffff !important;
+}
+
+.result{
+  background:#111827 !important;
+  border:1px solid #374151 !important;
+  color:#ffffff !important;
+}
+
+.result *,
+.result b,
+.result p,
+.result h2,
+.result h3{
+  color:#ffffff !important;
+}
+
+.topic{
+  color:#d946ef !important;
+  font-weight:900 !important;
+}
+
+.question{
+  color:#ffffff !important;
+  font-weight:900 !important;
+}
+
+.option{
+  background:#111827 !important;
+  color:#ffffff !important;
+  border:1px solid #374151 !important;
+  font-weight:900 !important;
+}
+
+.option:hover{
+  background:#2a1630 !important;
+  border-color:#b51fa5 !important;
+}
+
+.option.selected{
+  background:#b51fa5 !important;
+  color:#ffffff !important;
+  border-color:#d946ef !important;
+}
+
+button,
+a.btn{
+  background:#b51fa5 !important;
+  color:#ffffff !important;
+  border:0 !important;
+  border-radius:10px !important;
+  font-weight:900 !important;
+}
+
+button:hover,
+a.btn:hover{
+  filter:brightness(1.12);
+}
+
+button.green,
+.green{
+  background:#16a34a !important;
+  color:#ffffff !important;
+}
+
+button.orange,
+.orange{
+  background:#f97316 !important;
+  color:#ffffff !important;
+}
+
+button.gray,
+.gray{
+  background:#374151 !important;
+  color:#ffffff !important;
+}
+
+.ok{
+  color:#22c55e !important;
+  font-weight:900 !important;
+}
+
+.bad{
+  color:#ef4444 !important;
+  font-weight:900 !important;
+}
+
+.small{
+  color:#d1d5db !important;
+}
+
+/* Maak verduidelikings en gewone teks leesbaar */
+#feedback,
+#explain,
+#progress,
+#finalResult{
+  color:#ffffff !important;
+}
+
+#feedback *,
+#explain *,
+#progress *,
+#finalResult *{
+  color:inherit !important;
+}
+
+/* Logout / terug knoppie vir quiz pages */
+.quizBackBtn{
+  position:fixed;
+  right:18px;
+  top:18px;
+  z-index:9999;
+  background:#1a1a1a !important;
+  color:#ffffff !important;
+  border:1px solid #303030 !important;
+  border-radius:10px !important;
+  padding:11px 15px !important;
+  font-weight:900 !important;
+  text-decoration:none !important;
+  cursor:pointer !important;
+}
+
+.quizBackBtn:hover{
+  background:#b51fa5 !important;
+}
+
+@media(max-width:700px){
+  .quizBackBtn{
+    top:10px;
+    right:10px;
+    padding:9px 12px !important;
+    font-size:13px;
+  }
+}
 </style>
 </head>
 <body>
+<!-- TEAE_QUIZ_BACK_BUTTON_V1 -->
+<button class="quizBackBtn" onclick="window.location.href='enrico_exam_program.html?v=' + Date.now()">Program</button>
 <header>
   <h1>Enrico K53 English</h1>
   <p>250-question bank | 25 questions per session | Wrong answers must be fixed</p>
@@ -463,3 +646,4 @@ render();
 </script>
 </body>
 </html>
+
