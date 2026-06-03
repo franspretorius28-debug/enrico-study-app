@@ -1,0 +1,96 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Enrico Question Preview</title>
+<style>
+body{font-family:Arial;background:#050505;color:#fff;margin:0;padding:28px}
+h1{font-size:34px;margin-bottom:8px}
+.card{background:#1a1a1a;border:1px solid #22c55e;border-radius:14px;padding:18px;margin:18px 0}
+.q{background:#111827;border:1px solid #374151;border-radius:12px;padding:14px;margin:12px 0}
+.q h3{margin:0 0 8px;font-size:18px}
+.topic{color:#d946ef;font-weight:900}
+.opts{margin-top:8px;color:#d1d5db}
+.ok{color:#22c55e;font-weight:900}
+.bad{color:#ef4444;font-weight:900}
+iframe{display:none}
+</style>
+</head>
+<body>
+<h1>Enrico Question Preview</h1>
+<p>Kyk hier of die vrae natuurlik lyk. Hierdie bladsy wys die eerste 30 unieke vrae per vak.</p>
+<div id="results">Loading...</div>
+
+<script>
+const files = [
+  ["K53", "enrico_k53_english_quiz.html?title=K53%20Preview&di=0&ti=0&v=" + Date.now()],
+  ["RTT / CAT", "enrico_rtt_cat_quiz.html?title=RTT%20Preview&di=0&ti=0&v=" + Date.now()],
+  ["Landbou", "enrico_landbou_quiz.html?title=Landbou%20Preview&di=0&ti=0&v=" + Date.now()],
+  ["Wisk Geletterdheid", "enrico_wisk_geletterdheid_quiz.html?title=Wisk%20Preview&di=0&ti=0&v=" + Date.now()],
+  ["Afrikaans", "enrico_afrikaans_quiz.html?title=Afrikaans%20Preview&di=0&ti=0&v=" + Date.now()],
+  ["English FAL", "enrico_english_quiz.html?title=English%20Preview&di=0&ti=0&v=" + Date.now()],
+  ["Besigheidstudies", "enrico_besigheid_quiz.html?title=Besigheid%20Preview&di=0&ti=0&v=" + Date.now()]
+];
+
+function loadOne(name, src){
+  return new Promise(resolve => {
+    const frame = document.createElement("iframe");
+    frame.src = src;
+    document.body.appendChild(frame);
+
+    frame.onload = () => {
+      setTimeout(() => {
+        try{
+          const w = frame.contentWindow;
+          const bank = w.TEAE_BANK || [];
+          resolve({name, bank});
+        }catch(e){
+          resolve({name, error:e.message, bank:[]});
+        }
+        frame.remove();
+      }, 800);
+    };
+  });
+}
+
+async function run(){
+  const results = [];
+  for(const [name,src] of files){
+    results.push(await loadOne(name,src));
+  }
+
+  let html = "";
+
+  results.forEach(r => {
+    html += `<div class="card">`;
+    html += `<h2>${r.name} <span class="${r.bank.length >= 200 ? 'ok' : 'bad'}">${r.bank.length} vrae</span></h2>`;
+
+    if(r.error){
+      html += `<p class="bad">Error: ${r.error}</p></div>`;
+      return;
+    }
+
+    r.bank.slice(0,30).forEach((q,i) => {
+      const text = q.text || q.q || "";
+      const topic = q.topic || "";
+      const correct = q.correct || "";
+      const options = q.options || [];
+
+      html += `<div class="q">
+        <h3>${i+1}. ${text}</h3>
+        <div class="topic">${topic}</div>
+        <div class="opts"><b>Reg:</b> ${correct}</div>
+        <div class="opts"><b>Opsies:</b> ${options.join(" | ")}</div>
+      </div>`;
+    });
+
+    html += `</div>`;
+  });
+
+  document.getElementById("results").innerHTML = html;
+}
+
+run();
+</script>
+</body>
+</html>
