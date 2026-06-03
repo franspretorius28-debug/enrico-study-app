@@ -1,0 +1,240 @@
+﻿<!DOCTYPE html>
+<html lang="af" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enrico Eksamen Program</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#eef3ff;color:#0f172a}
+header{background:#0f172a;color:white;text-align:center;padding:30px 12px}
+header h1{margin:0;font-size:38px}
+.wrap{max-width:1100px;margin:24px auto;padding:12px}
+.card{background:white;border-radius:18px;padding:22px;box-shadow:0 12px 30px rgba(15,23,42,.14);margin-bottom:18px}
+.exam,.day{border:1px solid #dbeafe;background:#eff6ff;border-radius:14px;padding:14px;margin:10px 0}
+.day{background:white}
+.task{border-top:1px solid #e2e8f0;padding:12px 0}
+.task:first-of-type{border-top:0}
+.time{font-weight:900;color:#475569}
+.title{font-weight:900;font-size:17px}
+.small{font-size:14px;color:#64748b;margin-top:4px}
+button,a.btn{display:inline-block;text-decoration:none;padding:11px 14px;border:0;border-radius:12px;background:#2563eb;color:white;font-weight:900;font-size:15px;cursor:pointer;margin:5px 4px}
+.green{background:#16a34a!important}.gray{background:#475569!important}.red{background:#dc2626!important}
+.doneText{color:#16a34a;font-weight:900}.waitText{color:#dc2626;font-weight:900}
+.note{background:#fff7cc;border:1px solid #facc15;border-radius:14px;padding:12px;margin-top:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Enrico Eksamen Program</h1>
+  <p>Kwartaal 2 | Begin Donderdag 04 Junie | Geen Saterdag/Sondag | Vrydae net tot 12:00</p>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <h2>Eksamen volgorde</h2>
+    <div class="exam"><b>09 Junie:</b> K53</div>
+    <div class="exam"><b>12 Junie:</b> RTT / CAT</div>
+    <div class="exam"><b>19 Junie:</b> Landbouwetenskappe</div>
+    <div class="exam"><b>23 Junie:</b> Wiskundige Geletterdheid</div>
+    <div class="exam"><b>24 Junie:</b> Afrikaans HT</div>
+    <div class="exam"><b>25 Junie:</b> English FAL</div>
+    <div class="exam"><b>26 Junie:</b> Besigheidstudies</div>
+
+    <div class="note">
+      Enrico moet by sy tye hou. As hy agter raak, moet hy die <b>Opvangblok</b> gebruik om in te haal.
+      Ná elke sessie druk hy <b>Klaar</b> en dan <b>WhatsApp Dad</b>.
+    </div>
+
+    <h3 id="overallProgress"></h3>
+    <a class="btn gray" href="index.html?v=program">Terug main</a>
+  </div>
+
+  <div class="card">
+    <h2>Daaglikse leerprogram</h2>
+    <div id="plan"></div>
+  </div>
+</div>
+
+<script>
+const DAD = "27642203726";
+
+const plan = [
+  {date:"2026-06-04",label:"Donderdag 04 Junie",focus:"K53 moet sterk begin. Geen uitstel.",tasks:[
+    ["09:00 - 09:45","K53 Sessie 1","Padtekens en basiese reëls. 25 vrae."],
+    ["09:45 - 10:05","Breek","Rus en drink water."],
+    ["10:05 - 10:50","K53 Sessie 2","Regulatory signs en warning signs. 25 vrae."],
+    ["10:50 - 11:20","Lang breek","Stap weg van die skerm."],
+    ["11:20 - 12:05","K53 Sessie 3","Mixed K53 toets. 25 vrae."],
+    ["14:30 - 15:10","RTT Sessie 1","Kwartaal 2 begin."],
+    ["15:10 - 15:40","Opvangblok","As K53 of RTT agter is, vang nou op."]
+  ]},
+  {date:"2026-06-05",label:"Vrydag 05 Junie",focus:"Vrydag net oggend tot 12:00.",tasks:[
+    ["09:00 - 09:45","K53 Sessie 4","Mixed toets. Mik vir 95%."],
+    ["09:45 - 10:05","Breek","Kort rus."],
+    ["10:05 - 10:50","K53 Sessie 5","Mock toets. 25 vrae."],
+    ["10:50 - 11:30","K53 fouteboek","Maak foute reg."],
+    ["11:30 - 12:00","Opvangblok","Slegs as hy agter is. Daarna klaar."]
+  ]},
+  {date:"2026-06-08",label:"Maandag 08 Junie",focus:"Dag voor K53. Net vaslê.",tasks:[
+    ["09:00 - 09:45","K53 Finale Mock 1","Mik vir 95%."],
+    ["09:45 - 10:10","Breek","Rus."],
+    ["10:10 - 10:55","K53 Finale Mock 2","Nog 25 vrae."],
+    ["10:55 - 11:30","K53 fouteboek","Net foute oordoen."],
+    ["14:30 - 15:10","RTT Sessie 2","Kort RTT voorbereiding."],
+    ["15:10 - 15:40","Opvangblok","As K53 onder 95% is, doen nog foute."]
+  ]},
+  {date:"2026-06-09",label:"Dinsdag 09 Junie - K53 Eksamen",focus:"K53 skryf. Daarna RTT.",tasks:[
+    ["Voor eksamen","K53 laaste kyk","Net vinnig deur tekens."],
+    ["Na eksamen","Rus","Eet en haal asem."],
+    ["15:00 - 15:45","RTT Sessie 3","Stelseltegnologieë en netwerke."],
+    ["16:05 - 16:50","RTT Sessie 4","Word/Excel/PowerPoint begrippe."]
+  ]},
+  {date:"2026-06-10",label:"Woensdag 10 Junie",focus:"RTT hoofdag.",tasks:[
+    ["09:00 - 09:45","RTT Sessie 5","Teorie mixed 25 vrae."],
+    ["10:05 - 10:50","RTT Sessie 6","Praktiese begrippe."],
+    ["11:20 - 12:05","RTT Sessie 7","Internet, e-pos en lêerbestuur."],
+    ["14:30 - 15:15","RTT Mock 1","Gemengde 25 vrae."],
+    ["15:15 - 15:45","Opvangblok","Vang RTT op as nodig."]
+  ]},
+  {date:"2026-06-11",label:"Donderdag 11 Junie",focus:"Laaste RTT voorbereiding.",tasks:[
+    ["09:00 - 09:45","RTT Finale Mock 1","25 vrae."],
+    ["10:10 - 10:55","RTT Finale Mock 2","25 vrae."],
+    ["10:55 - 11:30","RTT fouteboek","Net swak areas."],
+    ["14:30 - 15:10","Landbou Sessie 1","Begin kwartaal 2 kernbegrippe."]
+  ]},
+  {date:"2026-06-12",label:"Vrydag 12 Junie - RTT Eksamen",focus:"Vrydag net tot 12:00.",tasks:[
+    ["Voor eksamen","RTT laaste kyk","Net hoofpunte."],
+    ["Na eksamen tot 12:00","Kort terugvoer","Stuur WhatsApp update."],
+    ["12:00","Klaar vir die dag","Geen nuwe leerwerk Vrydagmiddag nie."]
+  ]},
+  {date:"2026-06-15",label:"Maandag 15 Junie",focus:"Landbou week.",tasks:[
+    ["09:00 - 09:45","Landbou Sessie 2","25 vrae."],
+    ["10:05 - 10:50","Landbou Sessie 3","25 vrae."],
+    ["11:20 - 12:05","Landbou Sessie 4","25 vrae."],
+    ["14:30 - 15:10","Wisk Geletterdheid Sessie 1","Finansiële dokumente begin."],
+    ["15:10 - 15:40","Opvangblok","Landbou opvang."]
+  ]},
+  {date:"2026-06-16",label:"Dinsdag 16 Junie",focus:"Landbou + ligte tale.",tasks:[
+    ["09:00 - 09:45","Landbou Sessie 5","25 vrae."],
+    ["10:05 - 10:50","Landbou Sessie 6","25 vrae."],
+    ["11:20 - 12:05","Landbou Mock 1","Gemengde vrae."],
+    ["14:30 - 15:10","Afrikaans Sessie 1","Kwartaal 2 begin."],
+    ["15:25 - 16:05","English Sessie 1","Term 2 Unit 6–7."]
+  ]},
+  {date:"2026-06-17",label:"Woensdag 17 Junie",focus:"Landbou finale werk.",tasks:[
+    ["09:00 - 09:45","Landbou Sessie 7","25 vrae."],
+    ["10:05 - 10:50","Landbou Finale Mock 1","25 vrae."],
+    ["11:20 - 12:00","Landbou fouteboek","Maak foute reg."],
+    ["14:30 - 15:10","Wisk Geletterdheid Sessie 2","Meting."],
+    ["15:10 - 15:40","Opvangblok","Landbou moet op datum wees."]
+  ]},
+  {date:"2026-06-18",label:"Donderdag 18 Junie",focus:"Dag voor Landbou.",tasks:[
+    ["09:00 - 09:45","Landbou Finale Mock 2","25 vrae."],
+    ["10:10 - 10:50","Landbou laaste foute","Definisies en foute."],
+    ["14:30 - 15:10","Wisk Geletterdheid Sessie 3","Kaarte en planne."],
+    ["15:10 - 15:40","Opvangblok","Vang op as nodig."]
+  ]},
+  {date:"2026-06-19",label:"Vrydag 19 Junie - Landbou Eksamen",focus:"Vrydag net oggend tot 12:00.",tasks:[
+    ["Voor eksamen","Landbou laaste kyk","Net hoofbegrippe."],
+    ["Na eksamen tot 12:00","Kort terugvoer","Stuur WhatsApp update."],
+    ["12:00","Klaar vir die dag","Geen nuwe leerwerk nie."]
+  ]},
+  {date:"2026-06-22",label:"Maandag 22 Junie",focus:"Wisk Geletterdheid + tale.",tasks:[
+    ["09:00 - 09:45","Wisk Geletterdheid Sessie 4","Finansies en tariewe."],
+    ["10:05 - 10:50","Wisk Geletterdheid Sessie 5","Meting."],
+    ["11:20 - 12:05","Wisk Geletterdheid Sessie 6","Kaarte, planne en waarskynlikheid."],
+    ["14:30 - 15:10","Afrikaans Sessie 2","Kwartaal 2."],
+    ["15:25 - 16:05","English Sessie 2","Term 2."],
+    ["16:05 - 16:30","Opvangblok","Vang Wisk Geletterdheid op."]
+  ]},
+  {date:"2026-06-23",label:"Dinsdag 23 Junie - Wisk Geletterdheid Eksamen",focus:"Daarna Afrikaans.",tasks:[
+    ["Voor eksamen","Wisk laaste kyk","Formules en stappe."],
+    ["Na eksamen","Rus","Eet en breek."],
+    ["15:00 - 15:45","Afrikaans Sessie 3","Begrip en taal."],
+    ["16:05 - 16:50","Afrikaans Sessie 4","Skryfwerk / opsomming."]
+  ]},
+  {date:"2026-06-24",label:"Woensdag 24 Junie - Afrikaans Eksamen",focus:"Daarna English.",tasks:[
+    ["Voor eksamen","Afrikaans laaste kyk","Taal en skryfwerk."],
+    ["Na eksamen","Rus","Eet en breek."],
+    ["15:00 - 15:45","English Sessie 3","Comprehension and grammar."],
+    ["16:05 - 16:50","English Sessie 4","Writing and literature."]
+  ]},
+  {date:"2026-06-25",label:"Donderdag 25 Junie - English Eksamen",focus:"Daarna Besigheidstudies.",tasks:[
+    ["Voor eksamen","English laaste kyk","Grammar en writing."],
+    ["Na eksamen","Rus","Eet en breek."],
+    ["15:00 - 15:45","Besigheidstudies Sessie 1","Sosio-ekonomiese kwessies."],
+    ["16:05 - 16:50","Besigheidstudies Sessie 2","Sosiale verantwoordelikheid."],
+    ["19:00 - 19:25","Besigheidstudies fouteboek","Entrepreneur/eienaarskap definisies."]
+  ]},
+  {date:"2026-06-26",label:"Vrydag 26 Junie - Besigheidstudies Eksamen",focus:"Vrydag net tot 12:00. Laaste vak.",tasks:[
+    ["Voor eksamen","Besigheidstudies laaste kyk","Entrepreneur, eienaarskap en sosiale verantwoordelikheid."],
+    ["Na eksamen tot 12:00","Klaar","Stuur laaste WhatsApp update."],
+    ["12:00","Program voltooi","Eksamen klaar."]
+  ]}
+];
+
+function keyFor(dayIndex, taskIndex){ return "enricoProgramDone_" + dayIndex + "_" + taskIndex; }
+function isDone(dayIndex, taskIndex){ return localStorage.getItem(keyFor(dayIndex, taskIndex)) === "1"; }
+function setDone(dayIndex, taskIndex){ localStorage.setItem(keyFor(dayIndex, taskIndex), "1"); renderPlan(); }
+function countTotal(){ return plan.reduce((n,d)=>n+d.tasks.length,0); }
+function countDone(){
+  let n=0;
+  plan.forEach((d,di)=>d.tasks.forEach((t,ti)=>{ if(isDone(di,ti)) n++; }));
+  return n;
+}
+function nextTaskText(dayIndex, taskIndex){
+  if(taskIndex + 1 < plan[dayIndex].tasks.length) return plan[dayIndex].tasks[taskIndex+1][1];
+  if(dayIndex + 1 < plan.length) return plan[dayIndex+1].label + " - " + plan[dayIndex+1].tasks[0][1];
+  return "Program klaar";
+}
+function whatsapp(dayIndex, taskIndex){
+  const day = plan[dayIndex], t = day.tasks[taskIndex];
+  const msg = `Enrico update:
+Dag: ${day.label}
+Sessie klaar: ${t[1]}
+Tyd: ${t[0]}
+Nota: ${t[2]}
+Vordering: ${countDone()}/${countTotal()} take klaar.
+Volgende: ${nextTaskText(dayIndex, taskIndex)}`;
+  window.open("https://wa.me/" + DAD + "?text=" + encodeURIComponent(msg), "_blank");
+}
+function clearAll(){
+  if(!confirm("Maak Enrico se program vordering skoon?")) return;
+  Object.keys(localStorage).forEach(k=>{ if(k.startsWith("enricoProgramDone_")) localStorage.removeItem(k); });
+  renderPlan();
+}
+function renderPlan(){
+  const box = document.getElementById("plan");
+  let html = "";
+  plan.forEach((day,di)=>{
+    html += `<div class="day"><h3>${day.label}</h3><div class="small"><b>Fokus:</b> ${day.focus}</div>`;
+    day.tasks.forEach((t,ti)=>{
+      const done = isDone(di,ti);
+      html += `<div class="task">
+        <div class="time">${t[0]}</div>
+        <div class="title">${t[1]}</div>
+        <div class="small">${t[2]}</div>
+        <span class="${done ? "doneText":"waitText"}">${done ? "Klaar ✓":"Nog nie klaar nie"}</span><br>
+        <button class="green" onclick="setDone(${di},${ti})">Klaar</button>
+        <button onclick="whatsapp(${di},${ti})">WhatsApp Dad</button>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  box.innerHTML = html;
+  document.getElementById("overallProgress").textContent = "Totale vordering: " + countDone() + " uit " + countTotal() + " take klaar.";
+
+  if(!document.getElementById("clearBtn")){
+    const btn = document.createElement("button");
+    btn.id = "clearBtn";
+    btn.className = "red";
+    btn.textContent = "Maak vordering skoon";
+    btn.onclick = clearAll;
+    document.querySelector(".card").appendChild(btn);
+  }
+}
+renderPlan();
+</script>
+</body>
+</html>
