@@ -202,6 +202,65 @@ button.gray,
     font-size:13px;
   }
 }
+/* TEAE_SAFE_GREEN_RED_FEEDBACK_V2 */
+
+/* Correct / reg feedback */
+#feedback .ok,
+.ok{
+  display:block !important;
+  background:#052e16 !important;
+  color:#dcfce7 !important;
+  border:2px solid #22c55e !important;
+  border-radius:12px !important;
+  padding:14px 16px !important;
+  margin-top:14px !important;
+  font-size:22px !important;
+  font-weight:900 !important;
+  line-height:1.35 !important;
+}
+
+/* Wrong / incorrect feedback */
+#feedback .bad,
+.bad{
+  display:block !important;
+  background:#450a0a !important;
+  color:#fee2e2 !important;
+  border:2px solid #ef4444 !important;
+  border-radius:12px !important;
+  padding:14px 16px !important;
+  margin-top:14px !important;
+  font-size:22px !important;
+  font-weight:900 !important;
+  line-height:1.35 !important;
+}
+
+/* Maak seker alle text binne correct/wrong duidelik bly */
+#feedback .ok *,
+#feedback .bad *,
+.ok *,
+.bad *{
+  color:inherit !important;
+  font-weight:900 !important;
+}
+
+/* Explanation onder die antwoord */
+#explain{
+  display:block !important;
+  background:#111827 !important;
+  color:#d1d5db !important;
+  border:1px solid #374151 !important;
+  border-radius:10px !important;
+  padding:10px 12px !important;
+  margin-top:10px !important;
+  font-size:15px !important;
+  font-weight:700 !important;
+  line-height:1.45 !important;
+}
+
+/* Wanneer daar nog geen explanation is nie, moenie leë blok wys nie */
+#explain:empty{
+  display:none !important;
+}
 </style>
 </head>
 <body>
@@ -657,5 +716,6 @@ render();
 </script>
 </body>
 </html>
+
 
 
