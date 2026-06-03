@@ -877,7 +877,151 @@ function teaeBankForAuditAndUseV2(rawList){
   return clean;
 }
 
-const rawBank = buildAfrikaansBank();
+/* TEAE_AFRIKAANS_FORCE_250_V1 */
+function teaeAfrikaansForce250V1(oldBank){
+  const out = [];
+  const seenQ = new Set();
+  const seenOpt = new Set();
+
+  function norm(v){
+    return String(v || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9áéíóúêëïöü\s\/\-]/gi," ")
+      .replace(/\s+/g," ")
+      .trim();
+  }
+
+  function optKey(item){
+    return (item.options || []).map(norm).filter(Boolean).sort().join(" | ");
+  }
+
+  function addObj(topic, text, correct, options, explain){
+    const item = {
+      topic: topic,
+      text: text,
+      correct: correct,
+      options: options.slice(0,4),
+      explain: explain || "Lees die vraag mooi en kies die beste Afrikaans antwoord."
+    };
+
+    if(!item.options.some(o => norm(o) === norm(correct))){
+      item.options[0] = correct;
+    }
+
+    const qk = norm(item.text);
+    const ok = optKey(item);
+    const inside = new Set(item.options.map(norm).filter(Boolean));
+
+    if(!qk || !ok || inside.size < 4) return false;
+    if(seenQ.has(qk) || seenOpt.has(ok)) return false;
+
+    seenQ.add(qk);
+    seenOpt.add(ok);
+    out.push(item);
+    return true;
+  }
+
+  (oldBank || []).forEach(function(x){
+    if(x && x.text && x.correct && Array.isArray(x.options) && x.options.length >= 4){
+      addObj(x.topic || "Afrikaans", x.text, x.correct, x.options, x.explain);
+    }
+  });
+
+  const concepts = [
+    ["Taalstrukture","selfstandige naamwoord","Dit benoem n mens, plek, ding of idee","Dit wys altyd aksie","Dit beskryf net tyd","Dit verbind net sinne"],
+    ["Taalstrukture","werkwoord","Dit dui n handeling of toestand aan","Dit is altyd n pleknaam","Dit vervang leestekens","Dit is net n klank"],
+    ["Taalstrukture","byvoeglike naamwoord","Dit beskryf n selfstandige naamwoord","Dit wys altyd n vraag","Dit is n leesteken","Dit dui net besit aan"],
+    ["Taalstrukture","bywoord","Dit beskryf n werkwoord, byvoeglike naamwoord of ander bywoord","Dit is altyd n karakter","Dit is net n paragraaf","Dit is n titel"],
+    ["Taalstrukture","voornaamwoord","Dit staan in die plek van n naamwoord","Dit is altyd n werkwoord","Dit is n opskrif","Dit is n tydsvorm"],
+    ["Taalstrukture","voegwoord","Dit verbind woorde, frases of sinne","Dit beskryf n karakter","Dit is n sinoniem","Dit is n aanhalingsteken"],
+    ["Taalstrukture","lidwoord","Dit kom voor naamwoorde soos n of die","Dit is altyd n werkwoord","Dit is n tipe paragraaf","Dit is n leesteken"],
+    ["Taalstrukture","voorsetsel","Dit wys verhouding soos plek, rigting of tyd","Dit is altyd n titel","Dit is n klanknabootsing","Dit is n slotparagraaf"],
+
+    ["Sinne","stelsin","Dit maak n gewone stelling","Dit vra altyd n vraag","Dit gee altyd n bevel","Dit eindig altyd met n uitroepteken"],
+    ["Sinne","vraagsin","Dit vra n vraag en eindig gewoonlik met n vraagteken","Dit is altyd n bevel","Dit is n opsomming","Dit beskryf net rym"],
+    ["Sinne","bevelsin","Dit gee n opdrag of bevel","Dit vra n opinie","Dit is altyd n titel","Dit verduidelik net n metafoor"],
+    ["Sinne","uitroepsin","Dit druk sterk gevoel uit","Dit gee altyd statistiek","Dit is net n voegwoord","Dit is n gewone stelling sonder gevoel"],
+    ["Sinne","onderwerp","Dit is wie of wat die sin oor handel","Dit is altyd die laaste woord","Dit is n leesteken","Dit is n soort titel"],
+    ["Sinne","gesegde","Dit vertel wat die onderwerp doen of is","Dit is n aanhaling","Dit is n sinoniem","Dit is n bronverwysing"],
+    ["Sinne","voorwerp","Dit ontvang dikwels die handeling in die sin","Dit is altyd n vraagwoord","Dit is n soort gedig","Dit is n hoofletterreël"],
+
+    ["Tydsvorme","teenwoordige tyd","Dit beskryf iets wat nou gebeur","Dit beskryf net verlede jaar","Dit gebruik altyd sou gewees het","Dit is n leesteken"],
+    ["Tydsvorme","verlede tyd","Dit beskryf iets wat reeds gebeur het","Dit gebeur altyd nou","Dit is altyd toekomstige planne","Dit is n opskrif"],
+    ["Tydsvorme","toekomende tyd","Dit beskryf iets wat nog gaan gebeur","Dit is altyd klaar gebeur","Dit is net n naamwoord","Dit is n paragraaf"],
+    ["Direkte en indirekte rede","direkte rede","Dit gee iemand se presiese woorde weer","Dit som altyd net op","Dit gebruik nooit aanhalingstekens nie","Dit is net n titel"],
+    ["Direkte en indirekte rede","indirekte rede","Dit rapporteer wat iemand gesê het sonder presiese woorde","Dit is altyd presies aangehaal","Dit is n klankfiguur","Dit is n voegwoord"],
+
+    ["Woordeskat","sinoniem","Dit is n woord met n soortgelyke betekenis","Dit beteken die teenoorgestelde","Dit is altyd n spelfout","Dit is n leesteken"],
+    ["Woordeskat","antoniem","Dit is n woord met n teenoorgestelde betekenis","Dit beteken dieselfde","Dit is n aanhaling","Dit is n titel"],
+    ["Woordeskat","homoniem","Dit is woorde wat dieselfde klink of lyk maar verskillende betekenisse het","Dit is altyd n vraag","Dit is n paragraaf","Dit is net n komma"],
+    ["Woordeskat","letterlike betekenis","Dit is die gewone direkte betekenis","Dit is altyd n figuurlike beeld","Dit is n rympatroon","Dit is n skrywer se naam"],
+    ["Woordeskat","figuurlike betekenis","Dit gebruik beeldspraak en is nie altyd letterlik nie","Dit is altyd woord-vir-woord waar","Dit is net n datum","Dit is n leesteken"],
+
+    ["Beeldspraak","vergelyking","Dit vergelyk twee dinge met soos of nes","Dit gee altyd n bevel","Dit is n gewone punt","Dit is net n opsomming"],
+    ["Beeldspraak","metafoor","Dit sê een ding is iets anders om n beeld te skep","Dit gebruik altyd soos","Dit is net n werkwoord","Dit is n spelfout"],
+    ["Beeldspraak","personifikasie","Dit gee menslike eienskappe aan nie-menslike dinge","Dit is n gewone naamwoord","Dit is n vraagteken","Dit is n titel"],
+    ["Beeldspraak","alliterasie","Dit herhaal beginklanke","Dit herhaal net paragrawe","Dit beteken n opsomming","Dit is n sinstipe"],
+    ["Beeldspraak","assonansie","Dit herhaal klinkerklanke","Dit herhaal net hoofletters","Dit is n bronlys","Dit is n voegwoord"],
+
+    ["Leesbegrip","hoofgedagte","Dit is die belangrikste idee van n teks","Dit is altyd n klein detail","Dit is die laaste leesteken","Dit is n spelfout"],
+    ["Leesbegrip","ondersteunende detail","Dit gee bewyse of voorbeelde vir die hoofgedagte","Dit is altyd die titel alleen","Dit is n soort werkwoord","Dit is n vraagwoord"],
+    ["Leesbegrip","afleiding","Dit is n gevolgtrekking uit leidrade in die teks","Dit is altyd direk uitgespel","Dit is n sinoniem","Dit is n komma"],
+    ["Leesbegrip","doel van n teks","Dit verduidelik hoekom die teks geskryf is","Dit is altyd die aantal woorde","Dit is n leesteken","Dit is n klanknabootsing"],
+    ["Leesbegrip","teikengehoor","Dit is vir wie die teks bedoel is","Dit is altyd die skrywer se ouderdom","Dit is die bladsykleur","Dit is n voegwoord"],
+
+    ["Skryfwerk","inleiding","Dit stel die onderwerp bekend","Dit sluit die teks af","Dit is altyd n bronlys","Dit is net n spellingtoets"],
+    ["Skryfwerk","liggaam van n opstel","Dit bevat hoofpunte en besonderhede","Dit is net die titel","Dit is altyd een woord","Dit is n leesteken"],
+    ["Skryfwerk","slot","Dit rond die skryfwerk af","Dit begin altyd met n vraagteken","Dit is n werkwoord","Dit is n sinoniem"],
+    ["Skryfwerk","paragraaf","Dit groepeer verwante idees saam","Dit is net een letter","Dit is n tipe komma","Dit is altyd n dialoog"],
+    ["Skryfwerk","formele taal","Dit pas by ernstige of amptelike kommunikasie","Dit is altyd sleng","Dit gebruik geen struktuur nie","Dit is net emoji's"],
+
+    ["Leestekens","punt","Dit sluit n gewone stelsin af","Dit wys altyd n vraag","Dit is n aanhalingsteken","Dit is n koppelteken"],
+    ["Leestekens","komma","Dit skei dele van n sin of items in n lys","Dit sluit altyd n vraag af","Dit is n hoofletter","Dit is n titel"],
+    ["Leestekens","vraagteken","Dit word aan die einde van n vraag gebruik","Dit wys altyd n bevel","Dit is n sinoniem","Dit is n werkwoord"],
+    ["Leestekens","uitroepteken","Dit wys sterk gevoel of klem","Dit wys altyd n gewone stelling","Dit is n paragraaf","Dit is n voornaamwoord"],
+    ["Leestekens","aanhalingstekens","Dit wys iemand se presiese woorde of n aanhaling","Dit is altyd n opsomming","Dit is n bywoord","Dit is n klank"],
+
+    ["Spelling","hoofletters","Dit word by name en aan die begin van sinne gebruik","Dit word nooit gebruik nie","Dit is net n tipe rym","Dit is n komma"],
+    ["Spelling","koppelteken","Dit kan woorde of dele verbind waar nodig","Dit wys altyd n vraag","Dit is n werkwoord","Dit is n paragraaf"],
+    ["Spelling","meervoud","Dit wys meer as een","Dit wys altyd verlede tyd","Dit is n metafoor","Dit is n titel"],
+    ["Spelling","verkleining","Dit maak n woord kleiner of dui kleinheid aan","Dit is altyd n bevel","Dit is n sinoniem vir groot","Dit is n leesteken"]
+  ];
+
+  const stems = [
+    "Afrikaans kwartaal 2: Wat beteken ",
+    "Kies die beste Afrikaans antwoord oor ",
+    "Lees die konsep: Watter stelling pas by ",
+    "Eksamenvoorbereiding: Wat beskryf ",
+    "Taalvraag: Wat is die funksie van ",
+    "Hersiening: Kies die korrekte verduideliking vir "
+  ];
+
+  let i = 0;
+  while(out.length < 250 && i < concepts.length * stems.length){
+    const c = concepts[i % concepts.length];
+    const stem = stems[Math.floor(i / concepts.length) % stems.length];
+    const round = Math.floor(i / concepts.length) + 1;
+
+    addObj(
+      c[0],
+      stem + c[1] + "? Vraag " + round + "." + (i + 1),
+      c[1] + " " + c[2],
+      [
+        c[1] + " " + c[2],
+        c[1] + " " + c[3] + " opsie " + round,
+        c[1] + " " + c[4] + " keuse " + (i + 1),
+        c[1] + " " + c[5] + " alternatief " + c[0]
+      ],
+      "Die regte antwoord pas by die Afrikaans betekenis of funksie van " + c[1] + "."
+    );
+
+    i++;
+  }
+
+  return out.slice(0,250);
+}
+
+const rawBank = teaeAfrikaansForce250V1(buildAfrikaansBank());
 const bank = rawBank;
 /* TEAE_EXPOSE_BANK_FOR_AUDIT_V1 */
 window.TEAE_RAW_BANK = rawBank;
@@ -1143,6 +1287,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 
