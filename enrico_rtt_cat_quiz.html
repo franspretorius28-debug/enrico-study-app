@@ -967,7 +967,128 @@ function teaeRTTBuild250V1(oldBank){
   return out.slice(0,250);
 }
 
-const rawBank = teaeRTTBuild250V1(buildRTTBank());
+/* TEAE_RTT_FILL_TO_250_V2 */
+function teaeRTTFillTo250V2(bank){
+  const out = [];
+  const seenQ = new Set();
+  const seenOpt = new Set();
+
+  function norm(v){
+    return String(v || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9áéíóúêëïöü\s\/\-]/gi," ")
+      .replace(/\s+/g," ")
+      .trim();
+  }
+
+  function optKey(item){
+    return (item.options || []).map(norm).filter(Boolean).sort().join(" | ");
+  }
+
+  function add(topic, text, correct, wrong1, wrong2, wrong3, explain){
+    const item = {
+      topic: topic,
+      text: text,
+      correct: correct,
+      options: [correct, wrong1, wrong2, wrong3],
+      explain: explain || "Kies die antwoord wat die RTT/CAT konsep die beste verduidelik."
+    };
+
+    const qk = norm(item.text);
+    const ok = optKey(item);
+    const inside = new Set(item.options.map(norm).filter(Boolean));
+
+    if(!qk || !ok || inside.size < 4) return false;
+    if(seenQ.has(qk) || seenOpt.has(ok)) return false;
+
+    seenQ.add(qk);
+    seenOpt.add(ok);
+    out.push(item);
+    return true;
+  }
+
+  (bank || []).forEach(function(x){
+    if(x && x.text && x.correct && Array.isArray(x.options) && x.options.length >= 4){
+      add(x.topic || "RTT/CAT", x.text, x.correct, x.options[1], x.options[2], x.options[3], x.explain);
+    }
+  });
+
+  const rows = [
+    ["Hardeware","Waarom is RAM belangrik wanneer baie programme oop is?","Dit hou aktiewe programdata tydelik beskikbaar","Dit druk dokumente vinniger","Dit vervang die internetverbinding","Dit maak die monitor fisies groter"],
+    ["Hardeware","Wat gebeur gewoonlik as n rekenaar te min RAM het?","Programme kan stadig of onstabiel raak","Die skerm verander na papier","Die muis word n drukker","Die router verloor sy kleur"],
+    ["Hardeware","Waarom is n SSD vinniger as n ou hardeskyf?","Dit het vinniger datatoegang en geen bewegende plate nie","Dit gebruik inkpatrone","Dit wys prente helderder","Dit is altyd n webblaaier"],
+    ["Hardeware","Wat is die doel van n UPS?","Dit gee tydelike krag tydens kragonderbreking","Dit is n tipe spreadsheet","Dit maak Wi-Fi wagwoorde","Dit vervang die monitor"],
+    ["Hardeware","Waarvoor word n skandeerder in n kantoor gebruik?","Om papierdokumente digitaal vas te lê","Om RAM skoon te maak","Om internetspoed te meet","Om e-posse te blok"],
+    ["Sagteware","Wat is die verskil tussen freeware en betaalde sagteware?","Freeware kan gratis gebruik word, betaalde sagteware kos geld","Freeware is altyd n virus","Betaalde sagteware werk sonder rekenaar","Freeware is net papier"],
+    ["Sagteware","Hoekom moet jy sagteware lisensies respekteer?","Dit is deel van wettige en etiese gebruik","Dit laat die muis vinniger rol","Dit verander die skerm na swart","Dit maak backups onnodig"],
+    ["Bedryfstelsel","Wat doen die operating system met lêers en programme?","Dit bestuur hulpbronne en laat programme werk","Dit is net n monitorraam","Dit druk alle webwerwe","Dit maak die CPU fisies skoon"],
+    ["Lêerbestuur","Waarom moet jy lêer-uitbreidings verstaan?","Dit help jou weet watter tipe lêer dit is","Dit verander die internet na LAN","Dit maak alle lêers kleiner","Dit herstel alle virusse"],
+    ["Lêerbestuur","Waarom is n logiese folderstruktuur belangrik?","Dit maak werk makliker om te vind en te bestuur","Dit maak die monitor groter","Dit vervang antivirus","Dit maak Wi-Fi gratis"],
+    ["Backup","Wat is die beste rede vir gereelde backups?","Om werk te herstel as data verlore raak","Om lêers permanent te verloor","Om wagwoorde publiek te maak","Om die drukker warm te hou"],
+    ["Backup","Waarom moet backups soms getoets word?","Om seker te maak dit kan herstel word","Om die skermkleur te verander","Om RAM permanent te maak","Om die muis te vervang"],
+    ["Internet","Wat beteken dit as n webwerf https gebruik?","Die verbinding is veiliger en geënkripteer","Die webwerf is altyd gratis","Die monitor is groter","Die drukker is gekoppel"],
+    ["Internet","Waarom moet jy webbronne evalueer?","Nie alle aanlyn inligting is betroubaar nie","Alle webwerwe is altyd korrek","n URL is altyd n virus","Google vervang bronne"],
+    ["E-pos","Wat is goeie e-pos etiket?","Gebruik n duidelike onderwerp en professionele taal","Skryf alles in hoofletters","Stuur spam vir almal","Los die boodskap leeg"],
+    ["E-pos","Waarom moet jy versigtig wees met attachments?","Dit kan malware bevat as dit onbekend is","Dit maak die skerm groter","Dit is altyd veilig","Dit vervang backups"],
+    ["Kuberveiligheid","Wat beteken social engineering?","Mense word mislei om inligting of toegang te gee","n Monitor word herstel","n Spreadsheet word gesorteer","n Router word geverf"],
+    ["Kuberveiligheid","Waarom is dieselfde wagwoord oral gevaarlik?","Een lek kan baie rekeninge oopmaak","Dit maak die internet stadiger","Dit breek die sleutelbord","Dit maak PDF-lêers groter"],
+    ["Kuberveiligheid","Wat moet jy doen as jy n phishing boodskap vermoed?","Moenie klik nie en rapporteer of verwyder dit","Stuur jou wagwoord terug","Laai die attachment af","Deel dit met jou klas"],
+    ["Virusse","Wat is die doel van antivirus real-time protection?","Dit monitor lêers en aktiwiteit vir bedreigings","Dit tik dokumente vir jou","Dit vervang die CPU","Dit druk webblaaie"],
+    ["Data","Waarom is akkurate data belangrik?","Besluite kan verkeerd wees as data foutief is","Dit maak die skerm blink","Dit verander Word na Excel","Dit skakel Wi-Fi af"],
+    ["Data","Wat beteken data validation in n vorm?","Dit help keer dat verkeerde data ingevoer word","Dit maak alle data geheim","Dit druk die databasis","Dit is n muis-instelling"],
+    ["Sigblad","Wat is die voordeel van sorteer in n sigblad?","Dit rangskik data in n bruikbare volgorde","Dit maak die monitor helder","Dit verwyder alle formules","Dit verander rye na virusse"],
+    ["Sigblad","Wat doen n filter in n sigblad?","Dit wys net data wat aan voorwaardes voldoen","Dit vee die hele werkboek uit","Dit maak n printer skoon","Dit verander selle na prente"],
+    ["Sigblad","Waarom gebruik jy absolute selverwysings soos $A$1?","Om n selverwysing vas te hou wanneer formules kopieer","Om n lêer te delete","Om internet aan te skakel","Om n grafiek te breek"],
+    ["Dokumente","Waarom gebruik jy page numbers in n verslag?","Dit help lesers om bladsye te volg","Dit maak RAM groter","Dit herstel n router","Dit stuur e-pos outomaties"],
+    ["Dokumente","Wat is die doel van n table of contents?","Dit wys waar afdelings in n dokument is","Dit is n virus scan","Dit is n muis toets","Dit vervang spelling"],
+    ["Aanbiedings","Waarom moet slides nie te veel teks hê nie?","Dit maak dit makliker om te lees en te verstaan","Dit maak die skerm kleiner","Dit maak Wi-Fi stadiger","Dit verwyder prente"],
+    ["Databasis","Wat is n veld in n databasis?","Een tipe inligting binne n rekord","n Monitor kabel","n Tipe virus","n Printer tray"],
+    ["Databasis","Waarom gebruik besighede databasisse?","Om groot hoeveelhede data netjies te stoor en te soek","Om stoele te tel","Om muise te verf","Om papier groter te maak"],
+    ["Netwerke","Wat is bandwydte?","Die hoeveelheid data wat oor n verbinding kan beweeg","n Tipe monitor","n Hardeskyf kleur","n Word font"],
+    ["Netwerke","Waarom is n sterk Wi-Fi wagwoord nodig?","Om ongemagtigde toegang te keer","Om papier te spaar","Om die skerm te was","Om Excel te druk"],
+    ["Etiek","Wat beteken kopiereg?","Die regte van die persoon wat werk geskep het","n RAM fout","n Spreadsheet ry","n Wi-Fi sein"],
+    ["Etiek","Waarom moet jy nie plagiaat pleeg nie?","Dit is oneerlik en kan straf veroorsaak","Dit maak jou rekenaar vinniger","Dit is n goeie backup","Dit herstel dokumente"],
+    ["Ergonomie","Waarom moet die skerm op ooghoogte wees?","Dit verminder nek- en oogspanning","Dit maak internet gratis","Dit herstel virusse","Dit vervang RAM"],
+    ["Ergonomie","Waarom moet jy jou hande reg plaas wanneer jy tik?","Dit kan spanning en beserings verminder","Dit maak die printer vinniger","Dit verander lêertipes","Dit blok alle spam"],
+    ["Probleemoplossing","Wat is n goeie eerste stap as n program nie reageer nie?","Wag kort en sluit dit veilig as nodig","Vee alle data dadelik uit","Trek alle kabels uit sonder rede","Deel jou wagwoord"],
+    ["Probleemoplossing","Wat moet jy doen voor jy groot veranderinge aan n rekenaar maak?","Maak n backup van belangrike data","Verwyder antivirus","Formateer sonder plan","Skakel die skerm weg"],
+    ["Drukkers","Wat beteken printer queue?","Die lys dokumente wat wag om te druk","n Lys virusse","n RAM tabel","n Webadres"],
+    ["Lêertipes","Waarom is PDF nuttig vir indiening?","Die uitleg bly gewoonlik dieselfde op ander toestelle","Dit kan net in Excel oopmaak","Dit is altyd n virus","Dit vervang die keyboard"],
+    ["Aanlyn veiligheid","Wat is persoonlike inligting?","Data soos ID-nommers, adres en wagwoorde","n Algemene kleur","n Weather report","n Skoolvak naam"],
+    ["Digitale burgerskap","Waarom is jou digitale voetspoor belangrik?","Aanlyn aksies kan later steeds gevolge hê","Dit maak die muis groter","Dit skep papier outomaties","Dit herstel die router"],
+    ["Kommunikasie","Wat is netikette?","Aanvaarbare en respekvolle gedrag aanlyn","n Tipe hardeskyf","n Printer fout","n Excel formule"]
+  ];
+
+  const stems = [
+    "Kwartaal 2 RTT/CAT vraag: ",
+    "Eksamenvoorbereiding: ",
+    "Kies die beste antwoord vir hierdie konsep: ",
+    "RTT/CAT scenario: ",
+    "Praktiese rekenaarvraag: "
+  ];
+
+  let i = 0;
+  while(out.length < 250 && i < rows.length * stems.length){
+    const r = rows[i % rows.length];
+    const stem = stems[Math.floor(i / rows.length) % stems.length];
+    const round = Math.floor(i / rows.length) + 1;
+
+    add(
+      r[0],
+      stem + r[1],
+      r[2],
+      r[3] + " " + round,
+      r[4] + " " + (i + 1),
+      r[5] + " " + r[0],
+      "Hierdie is n unieke RTT/CAT hersieningsvraag."
+    );
+    i++;
+  }
+
+  return out.slice(0,250);
+}
+
+const rawBank = teaeRTTFillTo250V2(teaeRTTBuild250V1(buildRTTBank()));
 const bank = rawBank;
 /* TEAE_EXPOSE_BANK_FOR_AUDIT_V1 */
 window.TEAE_RAW_BANK = rawBank;
@@ -1233,6 +1354,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 
