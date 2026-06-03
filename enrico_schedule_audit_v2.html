@@ -1,0 +1,151 @@
+﻿<!doctype html>
+<html lang="af">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Enrico Rooster Audit V2</title>
+  <style>
+    body{margin:0;font-family:Arial,sans-serif;background:#050505;color:#fff;padding:24px}
+    h1{font-size:32px;margin-bottom:8px}
+    .note{color:#cbd5e1;margin-bottom:20px}
+    .final{border:2px solid #22c55e;background:#052e16;border-radius:16px;padding:20px;margin-bottom:18px;font-size:24px;font-weight:900}
+    .badFinal{border-color:#ef4444;background:#450a0a}
+    .card{border:1px solid #334155;background:#111827;border-radius:14px;padding:16px;margin:14px 0}
+    .pass{color:#22c55e;font-weight:900}
+    .fail{color:#ef4444;font-weight:900}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{border-bottom:1px solid #334155;padding:9px;text-align:left;vertical-align:top}
+    iframe{width:100%;height:430px;border:2px solid #334155;border-radius:16px;margin-top:18px;background:#000}
+  </style>
+</head>
+<body>
+  <h1>Enrico Rooster Audit V2</h1>
+  <div class="note">Toets: eksamen dae 09:00, motiveringsboodskap, Vrydae net tot 12:00, en geen Saterdag/Sondag werk nie.</div>
+  <div id="final" class="final">Besig om rooster te toets...</div>
+  <div id="results"></div>
+  <iframe id="programFrame" src="enrico_exam_program.html?audit=2&v=ROOSTER_AUDIT_V2"></iframe>
+
+<script>
+(function(){
+  const expectedExams = [
+    {date:"09 Junie", subject:"K53"},
+    {date:"12 Junie", subject:"RTT"},
+    {date:"19 Junie", subject:"Landbou"},
+    {date:"23 Junie", subject:"Wiskundige Geletterdheid"},
+    {date:"24 Junie", subject:"Afrikaans"},
+    {date:"25 Junie", subject:"English"},
+    {date:"26 Junie", subject:"Besigheidstudies"}
+  ];
+
+  function clean(s){ return String(s || "").replace(/\s+/g," ").trim(); }
+  function add(list,name,ok,detail){ list.push({name,ok,detail:detail || ""}); }
+
+  function getTimes(text){
+    const out = [];
+    const re = /\b(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})\b/g;
+    let m;
+    while((m = re.exec(text))){
+      out.push({raw:m[0], startH:+m[1], startM:+m[2], endH:+m[3], endM:+m[4]});
+    }
+    return out;
+  }
+
+  function after12(t){
+    return t.startH > 12 || (t.startH === 12 && t.startM > 0) || t.endH > 12 || (t.endH === 12 && t.endM > 0);
+  }
+
+  function findBlock(doc, date){
+    const all = Array.from(doc.querySelectorAll("section,article,div,li"));
+    const candidates = all.filter(function(el){
+      const t = clean(el.innerText);
+      if(t.length < 20 || t.length > 12000) return false;
+      if(t.toLowerCase().indexOf(date.toLowerCase()) === -1) return false;
+      if(t.indexOf("Eksamen volgorde") !== -1 && t.indexOf("Maak toets oop") === -1) return false;
+      return /Maak toets oop|Fokus|Nog nie klaar nie|Klaar|Eksamen begin|Jy is nou reg/i.test(t);
+    });
+
+    candidates.sort(function(a,b){ return clean(a.innerText).length - clean(b.innerText).length; });
+    return candidates[0] || null;
+  }
+
+  function findFridayBlocks(doc){
+    const all = Array.from(doc.querySelectorAll("section,article,div,li"));
+    return all.filter(function(el){
+      const t = clean(el.innerText);
+      if(t.length < 20 || t.length > 12000) return false;
+      if(!/Vrydag\s+\d{2}\s+Junie/i.test(t)) return false;
+      if(t.indexOf("Eksamen volgorde") !== -1 && t.indexOf("Maak toets oop") === -1) return false;
+      return /Maak toets oop|Fokus|Nog nie klaar nie|Klaar|\d{2}:\d{2}/i.test(t);
+    }).sort(function(a,b){ return clean(a.innerText).length - clean(b.innerText).length; });
+  }
+
+  function runAudit(){
+    const checks = [];
+    const frame = document.getElementById("programFrame");
+    const doc = frame.contentDocument || frame.contentWindow.document;
+    const bodyText = clean(doc.body.innerText || "");
+
+    expectedExams.forEach(function(exam){
+      const hasDate = bodyText.toLowerCase().indexOf(exam.date.toLowerCase()) !== -1;
+      const hasSubject = bodyText.toLowerCase().indexOf(exam.subject.toLowerCase()) !== -1;
+      add(checks, "Eksamen datum: " + exam.date + " - " + exam.subject, hasDate && hasSubject, hasDate && hasSubject ? "Gevind op rooster." : "Datum/vak ontbreek.");
+    });
+
+    expectedExams.forEach(function(exam){
+      const block = findBlock(doc, exam.date);
+      if(!block){
+        add(checks, "Eksamenblok gevind: " + exam.date, false, "Geen duidelike dagblok gevind nie.");
+        return;
+      }
+
+      const txt = clean(block.innerText);
+      const hasNine = /09:00|09h00/i.test(txt);
+      const hasMsg = /jy is nou reg|hoof eksamen app|kwartaal 2|sterkte|jy kan dit doen/i.test(txt);
+
+      add(checks, "Eksamen begin 09:00: " + exam.date, hasNine, hasNine ? "09:00/09h00 wys." : "09:00 wys nie duidelik nie.");
+      add(checks, "Motiveringsboodskap: " + exam.date, hasMsg, hasMsg ? "Boodskap wys." : "Motiveringsboodskap ontbreek.");
+    });
+
+    const fridayBlocks = findFridayBlocks(doc);
+    if(fridayBlocks.length === 0){
+      add(checks, "Vrydae net tot 12:00", true, "Geen Vrydagblokke gevind met werk ná 12:00 nie.");
+    } else {
+      fridayBlocks.forEach(function(block, idx){
+        const bad = getTimes(clean(block.innerText)).filter(after12);
+        add(checks, "Vrydag net tot 12:00 - blok " + (idx+1), bad.length === 0, bad.length ? "Tye ná 12:00: " + bad.map(x=>x.raw).join(", ") : "Geen tyd ná 12:00 gevind nie.");
+      });
+    }
+
+    ["Saterdag","Sondag"].forEach(function(day){
+      const hasWeekendWork = bodyText.match(new RegExp(day + "\\s+\\d{2}\\s+Junie[\\s\\S]{0,900}(Maak toets oop|Nog nie klaar nie|\\d{2}:\\d{2}\\s*-)", "i"));
+      add(checks, day + " geen leerblokke", !hasWeekendWork, hasWeekendWork ? "Moontlike werk/toets op " + day + " gevind." : "Geen werk/toetse op " + day + " gevind nie.");
+    });
+
+    const pass = checks.filter(c => c.ok).length;
+    const fail = checks.filter(c => !c.ok).length;
+    const final = document.getElementById("final");
+
+    if(fail === 0){
+      final.className = "final";
+      final.innerHTML = "Final Result: ROOSTER IS REG ✅";
+    } else {
+      final.className = "final badFinal";
+      final.innerHTML = "Final Result: ROOSTER HET NOG " + fail + " PROBLEEM(E) ❌";
+    }
+
+    document.getElementById("results").innerHTML =
+      '<div class="card"><h2>Opsomming</h2>' +
+      '<p><span class="pass">PASS:</span> ' + pass + ' | <span class="fail">FAIL:</span> ' + fail + '</p>' +
+      '<table><thead><tr><th>Check</th><th>Status</th><th>Detail</th></tr></thead><tbody>' +
+      checks.map(c => '<tr><td>'+c.name+'</td><td class="'+(c.ok?'pass':'fail')+'">'+(c.ok?'PASS':'FAIL')+'</td><td>'+c.detail+'</td></tr>').join("") +
+      '</tbody></table></div>';
+  }
+
+  document.getElementById("programFrame").addEventListener("load", function(){
+    setTimeout(runAudit, 2000);
+    setTimeout(runAudit, 3500);
+  });
+})();
+</script>
+</body>
+</html>
