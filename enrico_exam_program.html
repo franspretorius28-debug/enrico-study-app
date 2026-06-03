@@ -43,7 +43,7 @@ button,a.btn{display:inline-block;text-decoration:none;padding:11px 14px;border:
 
     <div class="note">
       Enrico moet by sy tye hou. As hy agter raak, moet hy die <b>Opvangblok</b> gebruik om in te haal.
-      Ná elke sessie druk hy <b>Klaar</b> en dan <b>WhatsApp Dad</b>.
+      Ná elke toets-sessie stuur hy <b>WhatsApp Dad</b>. Breuke en gewone take merk hy net as <b>Klaar</b>.
     </div>
 
     <h3 id="overallProgress"></h3>
@@ -275,8 +275,7 @@ function renderPlan(){
           : `${quizLinkHtml(t[1], di, ti)}`;
       } else {
         buttons = `
-          <button class="green" onclick="setDone(${di},${ti})">Klaar</button>
-          <button onclick="whatsapp(${di},${ti})">WhatsApp Dad</button>`;
+          <button class="green" onclick="setDone(${di},${ti})">Klaar</button>`;
       }
 
       html += `<div class="task">
@@ -309,6 +308,7 @@ renderPlan();
 </script>
 </body>
 </html>
+
 
 
 
