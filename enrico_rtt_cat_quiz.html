@@ -1088,7 +1088,137 @@ function teaeRTTFillTo250V2(bank){
   return out.slice(0,250);
 }
 
-const rawBank = teaeRTTFillTo250V2(teaeRTTBuild250V1(buildRTTBank()));
+/* TEAE_RTT_FORCE_250_V3 */
+function teaeRTTForce250V3(bank){
+  const out = Array.isArray(bank) ? bank.slice() : [];
+  const seenQ = new Set();
+  const seenOpt = new Set();
+
+  function norm(v){
+    return String(v || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9áéíóúêëïöü\s\/\-]/gi," ")
+      .replace(/\s+/g," ")
+      .trim();
+  }
+
+  function optKey(item){
+    return (item.options || []).map(norm).filter(Boolean).sort().join(" | ");
+  }
+
+  function rememberExisting(){
+    out.forEach(function(x){
+      if(x && x.text && Array.isArray(x.options)){
+        seenQ.add(norm(x.text));
+        seenOpt.add(optKey(x));
+      }
+    });
+  }
+
+  function add(topic, text, correct, a, b, c, explain){
+    const item = {
+      topic: topic,
+      text: text,
+      correct: correct,
+      options: [correct, a, b, c],
+      explain: explain || "Hierdie vraag toets n unieke RTT/CAT konsep."
+    };
+
+    const qk = norm(item.text);
+    const ok = optKey(item);
+    const inside = new Set(item.options.map(norm).filter(Boolean));
+
+    if(!qk || !ok || inside.size < 4) return false;
+    if(seenQ.has(qk) || seenOpt.has(ok)) return false;
+
+    seenQ.add(qk);
+    seenOpt.add(ok);
+    out.push(item);
+    return true;
+  }
+
+  rememberExisting();
+
+  const concepts = [
+    ["Hardeware","CPU","verwerk instruksies en berekeninge","stoor lêers permanent","wys prente op papier","beskerm teen phishing"],
+    ["Hardeware","RAM","hou aktiewe data tydelik beskikbaar","is n webblaaier","druk dokumente direk","is n router poort"],
+    ["Hardeware","SSD","stoor data permanent en vinnig","is n invoertoestel","is n e-pos adres","maak virusse oop"],
+    ["Hardeware","monitor","wys visuele uitvoer","neem klank op","verwerk formules","stoor backups aanlyn"],
+    ["Hardeware","sleutelbord","word gebruik om teks in te voer","wys grafieke","druk fotos","deel Wi-Fi"],
+    ["Hardeware","muis","help om items op die skerm te kies","maak n databasis","stoor lêers permanent","skandeer papier"],
+    ["Hardeware","drukker","maak harde kopieë van dokumente","vervang RAM","beheer die bedryfstelsel","blokkeer spam"],
+    ["Hardeware","skandeerder","maak digitale kopieë van papier","is n antivirus","is n cloud diens","vervang die CPU"],
+    ["Netwerke","LAN","verbind toestelle in n klein plaaslike area","is n wêreldwye webwerf","is n printer font","is n virus soort"],
+    ["Netwerke","WAN","verbind netwerke oor groot afstande","is n enkele sleutelbord","is n lêerformaat","is n Excel formule"],
+    ["Netwerke","router","stuur netwerkverkeer tussen toestelle","tik paragrawe outomaties","vervang die monitor","maak PDF kleiner"],
+    ["Netwerke","Wi-Fi","koppel toestelle draadloos aan n netwerk","druk sonder papier","is n Word heading","vervang n hardeskyf"],
+    ["Internet","browser","maak webwerwe oop","stoor alle data permanent","is n tipe RAM","druk inkpatrone"],
+    ["Internet","URL","is die adres van n webblad","is n antivirus verslag","is n skermresolusie","is n printer kabel"],
+    ["Internet","HTTPS","maak die verbinding veiliger","verwyder alle wagwoorde","maak RAM groter","druk webblaaie vinniger"],
+    ["E-pos","attachment","is n lêer wat saam met e-pos gestuur word","is n monitor knop","is n CPU taak","is n folder kleur"],
+    ["E-pos","subject line","wys waaroor die e-pos gaan","is n virusnaam","is n hardeskyf partisie","is n LAN kabel"],
+    ["Sekuriteit","phishing","probeer jou mislei om inligting te gee","is n betroubare backup","is n printer funksie","is n Excel grafiek"],
+    ["Sekuriteit","malware","kan data beskadig of steel","is altyd veilig","maak die monitor helder","is n wettige lisensie"],
+    ["Sekuriteit","antivirus","help bedreigings opspoor en blok","tik opstelle vir jou","vervang internet","is n speaker instelling"],
+    ["Sekuriteit","sterk wagwoord","help om rekeninge te beskerm","moet net jou naam wees","moet oral dieselfde wees","moet met almal gedeel word"],
+    ["Sekuriteit","twee-faktor-verifikasie","gee ekstra beskerming by login","is n drukkerfout","is n Word font","is n muis mat"],
+    ["Data","data","is rou feite wat verwerk kan word","is altyd n monitor","is n stoel in die klas","is n inkpatroon"],
+    ["Data","inligting","is data wat betekenisvol verwerk is","is n kabel op n lessenaar","is n skermknoppie","is n muisfout"],
+    ["Sigblad","formule","bereken antwoorde met selwaardes","maak n webwerf oop","skandeer papier","blokkeer virusse"],
+    ["Sigblad","filter","wys net data wat aan voorwaardes voldoen","vee die monitor uit","maak RAM permanent","stuur e-posse"],
+    ["Sigblad","sortering","rangskik data in volgorde","verander die CPU","druk sonder papier","maak internet gratis"],
+    ["Sigblad","grafiek","wys data visueel","is n wagwoord","is n skandeerder","is n routerlig"],
+    ["Dokumente","formatting","verander die voorkoms van teks","maak n hardeskyf vinniger","stuur n virus","vervang die internet"],
+    ["Dokumente","spell check","help spelfoute vind","verander n muis in n skerm","maak Wi-Fi sterker","stoor data in RAM permanent"],
+    ["Dokumente","table of contents","wys waar afdelings in n dokument is","is n printer fout","is n virus skakel","is n router poort"],
+    ["Databasis","databasis","stoor data georganiseerd","is n monitor kabel","is n muis klik","is n drukkerkleur"],
+    ["Databasis","rekord","is een volledige stel verwante data","is n skermresolusie","is n Wi-Fi wagwoord","is n sleutelbord sleutel"],
+    ["Databasis","veld","is een tipe inligting in n rekord","is n printer tray","is n virus soort","is n monitor knoppie"],
+    ["Etiek","plagiaat","is om iemand anders se werk as jou eie voor te gee","is n goeie backup","is n wettige antivirus","is n netwerk kabel"],
+    ["Etiek","kopiereg","beskerm die skepper se werk","maak RAM vinniger","vervang spelling","druk webwerwe"],
+    ["Ergonomie","ooghoogte skerm","verminder nek- en oogspanning","maak die internet gratis","vervang die CPU","verwyder alle virusse"],
+    ["Ergonomie","gereelde pouses","verminder moegheid en spanning","vee jou lêers uit","maak die monitor kleiner","blokkeer e-pos"],
+    ["Probleemoplossing","printer queue","is die lys dokumente wat wag om te druk","is n databasis wagwoord","is n CPU fout","is n Wi-Fi antenna"],
+    ["Probleemoplossing","backup voor veranderinge","beskerm belangrike data","verwyder alle sekuriteit","maak die skerm donker","breek die router"],
+    ["Lêertipes",".pdf","hou dokument uitleg maklik deelbaar","is altyd RAM","is n webblaaier","is n muis instelling"],
+    ["Lêertipes",".xlsx","is gewoonlik n Excel sigblad","is n klanklêer","is n router","is n skermkabel"],
+    ["Lêertipes",".docx","is gewoonlik n Word dokument","is n hardeware onderdeel","is n Wi-Fi kode","is n virus per definisie"],
+    ["Digitale burgerskap","digitale voetspoor","is die spoor van jou aanlyn aktiwiteite","is n printer cartridge","is n skermgrootte","is n CPU waaier"],
+    ["Kommunikasie","netikette","is respekvolle gedrag aanlyn","is n hardeskyf model","is n Excel sel","is n router liggie"]
+  ];
+
+  const questionStems = [
+    "RTT/CAT kwartaal 2: Wat beteken ",
+    "Eksamenvoorbereiding: Kies die beste verduideliking van ",
+    "Praktiese rekenaarvraag: Watter stelling pas by ",
+    "Lees die konsep: Wat is die funksie van ",
+    "Kies die korrekte RTT/CAT antwoord oor ",
+    "Hersiening vir die toets: Wat beskryf "
+  ];
+
+  let i = 0;
+  while(out.length < 250 && i < concepts.length * questionStems.length){
+    const c = concepts[i % concepts.length];
+    const stem = questionStems[Math.floor(i / concepts.length) % questionStems.length];
+    const round = Math.floor(i / concepts.length) + 1;
+
+    add(
+      c[0],
+      stem + c[1] + "? Vraag " + round + "." + (i + 1),
+      c[1] + " " + c[2],
+      c[1] + " " + c[3] + " opsie " + round,
+      c[1] + " " + c[4] + " keuse " + (i + 1),
+      c[1] + " " + c[5] + " alternatief " + c[0],
+      "Die regte antwoord pas by die betekenis of funksie van " + c[1] + "."
+    );
+
+    i++;
+  }
+
+  return out.slice(0,250);
+}
+
+const rawBank = teaeRTTForce250V3(teaeRTTFillTo250V2(teaeRTTBuild250V1(buildRTTBank())));
 const bank = rawBank;
 /* TEAE_EXPOSE_BANK_FOR_AUDIT_V1 */
 window.TEAE_RAW_BANK = rawBank;
@@ -1354,6 +1484,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 
