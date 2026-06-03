@@ -60,63 +60,109 @@ button,a.btn{display:inline-block;text-decoration:none;padding:11px 14px;border:
 const DAD = "27642203726";
 
 const plan = [
-  {date:"2026-06-04",label:"Donderdag 04 Junie",focus:"K53 moet sterk begin. Geen uitstel.",tasks:[
-    ["09:00 - 09:45","K53 Sessie 1","Padtekens en basiese reëls. 25 vrae."],
+  {date:"2026-06-04",label:"Donderdag 04 Junie",focus:"K53 begin sterk. Daarna kort RTT voorbereiding.",tasks:[
+    ["09:00 - 09:45","K53 Sessie 1","Padtekens en basiese reels. 25 vrae."],
+    ["09:45 - 10:05","Breek","Kort breek."],
     ["10:05 - 10:50","K53 Sessie 2","Regulatory signs en warning signs. 25 vrae."],
-    ["10:50 - 11:20","Lang breek","Stap weg van die skerm."],
+    ["10:50 - 11:20","Lang breek","Rus bietjie."],
     ["11:20 - 12:05","K53 Sessie 3","Mixed K53 toets. 25 vrae."],
-    ["14:30 - 15:10","RTT Sessie 1","Kwartaal 2 begin."]]},
+    ["14:30 - 15:10","RTT Sessie 1","Kwartaal 2 begin. 25 vrae."]
+  ]},
+
   {date:"2026-06-05",label:"Vrydag 05 Junie",focus:"Vrydag net oggend tot 12:00.",tasks:[
     ["09:00 - 09:45","K53 Sessie 4","Mixed toets. Mik vir 95%."],
-    ["10:05 - 10:50","K53 Sessie 5","Mock toets. 25 vrae."]]},
-  {date:"2026-06-08",label:"Maandag 08 Junie",focus:"Dag voor K53. Net vaslê.",tasks:[
-    ["09:00 - 09:45","K53 Finale Mock 1","Mik vir 95%."],
-    ["10:10 - 10:55","K53 Finale Mock 2","Nog 25 vrae."],    ["14:30 - 15:10","RTT Sessie 2","Kort RTT voorbereiding."]]},
-  {date:"2026-06-09",label:"Dinsdag 09 Junie - K53 Eksamen",focus:"K53 skryf. Daarna RTT.",tasks:[    ["15:00 - 15:45","RTT Sessie 3","Stelseltegnologieë en netwerke."],
-    ["16:05 - 16:50","RTT Sessie 4","Word/Excel/PowerPoint begrippe."]
+    ["09:45 - 10:05","Breek","Kort breek."],
+    ["10:05 - 10:50","K53 Sessie 5","Mock toets. 25 vrae."]
   ]},
+
+  {date:"2026-06-08",label:"Maandag 08 Junie",focus:"Dag voor K53. Net toets-sessies, geen ekstra fouteboek nie.",tasks:[
+    ["09:00 - 09:45","K53 Finale Mock 1","Mik vir 95%."],
+    ["09:45 - 10:10","Breek","Kort breek."],
+    ["10:10 - 10:55","K53 Finale Mock 2","Nog 25 vrae."],
+    ["14:30 - 15:10","RTT Sessie 2","Kort RTT voorbereiding. 25 vrae."]
+  ]},
+
+  {date:"2026-06-09",label:"Dinsdag 09 Junie - K53 Eksamen",focus:"Na K53 begin RTT.",tasks:[
+    ["15:00 - 15:45","RTT Sessie 3","Stelseltegnologiee en netwerke. 25 vrae."],
+    ["15:45 - 16:05","Breek","Kort breek."],
+    ["16:05 - 16:50","RTT Sessie 4","Word, Excel en PowerPoint begrippe. 25 vrae."]
+  ]},
+
   {date:"2026-06-10",label:"Woensdag 10 Junie",focus:"RTT hoofdag.",tasks:[
     ["09:00 - 09:45","RTT Sessie 5","Teorie mixed 25 vrae."],
-    ["10:05 - 10:50","RTT Sessie 6","Praktiese begrippe."],
-    ["11:20 - 12:05","RTT Sessie 7","Internet, e-pos en lêerbestuur."],
-    ["14:30 - 15:15","RTT Mock 1","Gemengde 25 vrae."]]},
-  {date:"2026-06-11",label:"Donderdag 11 Junie",focus:"Laaste RTT voorbereiding.",tasks:[
+    ["09:45 - 10:05","Breek","Kort breek."],
+    ["10:05 - 10:50","RTT Sessie 6","Praktiese begrippe. 25 vrae."],
+    ["10:50 - 11:20","Lang breek","Rus bietjie."],
+    ["11:20 - 12:05","RTT Sessie 7","Internet, e-pos en leerbestuur. 25 vrae."],
+    ["14:30 - 15:15","RTT Mock 1","Gemengde 25 vrae."]
+  ]},
+
+  {date:"2026-06-11",label:"Donderdag 11 Junie",focus:"Laaste RTT voorbereiding en begin Landbou.",tasks:[
     ["09:00 - 09:45","RTT Finale Mock 1","25 vrae."],
-    ["10:10 - 10:55","RTT Finale Mock 2","25 vrae."],    ["14:30 - 15:10","Landbou Sessie 1","Begin kwartaal 2 kernbegrippe."]
+    ["09:45 - 10:10","Breek","Kort breek."],
+    ["10:10 - 10:55","RTT Finale Mock 2","25 vrae."],
+    ["14:30 - 15:10","Landbou Sessie 1","Begin kwartaal 2 kernbegrippe. 25 vrae."]
   ]},
-  {date:"2026-06-12",label:"Vrydag 12 Junie - RTT Eksamen",focus:"Vrydag net tot 12:00.",tasks:[
-  {date:"2026-06-15",label:"Maandag 15 Junie",focus:"Landbou week.",tasks:[
+
+  {date:"2026-06-15",label:"Maandag 15 Junie",focus:"Landbou week begin.",tasks:[
     ["09:00 - 09:45","Landbou Sessie 2","25 vrae."],
+    ["09:45 - 10:05","Breek","Kort breek."],
     ["10:05 - 10:50","Landbou Sessie 3","25 vrae."],
+    ["10:50 - 11:20","Lang breek","Rus bietjie."],
     ["11:20 - 12:05","Landbou Sessie 4","25 vrae."],
-    ["14:30 - 15:10","Wisk Geletterdheid Sessie 1","Finansiële dokumente begin."]]},
-  {date:"2026-06-16",label:"Dinsdag 16 Junie",focus:"Landbou + ligte tale.",tasks:[
+    ["14:30 - 15:10","Wisk Geletterdheid Sessie 1","Finansiele dokumente. 25 vrae."]
+  ]},
+
+  {date:"2026-06-16",label:"Dinsdag 16 Junie",focus:"Landbou en ligte tale.",tasks:[
     ["09:00 - 09:45","Landbou Sessie 5","25 vrae."],
+    ["09:45 - 10:05","Breek","Kort breek."],
     ["10:05 - 10:50","Landbou Sessie 6","25 vrae."],
+    ["10:50 - 11:20","Lang breek","Rus bietjie."],
     ["11:20 - 12:05","Landbou Mock 1","Gemengde vrae."],
-    ["14:30 - 15:10","Afrikaans Sessie 1","Kwartaal 2 begin."],
-    ["15:25 - 16:05","English Sessie 1","Term 2 Unit 6–7."]
+    ["14:30 - 15:10","Afrikaans Sessie 1","Kwartaal 2 werk. 25 vrae."],
+    ["15:25 - 16:05","English Sessie 1","Term 2 werk. 25 vrae."]
   ]},
-  {date:"2026-06-17",label:"Woensdag 17 Junie",focus:"Landbou finale werk.",tasks:[
+
+  {date:"2026-06-17",label:"Woensdag 17 Junie",focus:"Landbou finale werk en Wisk Geletterdheid.",tasks:[
     ["09:00 - 09:45","Landbou Sessie 7","25 vrae."],
-    ["10:05 - 10:50","Landbou Finale Mock 1","25 vrae."],    ["14:30 - 15:10","Wisk Geletterdheid Sessie 2","Meting."]]},
-  {date:"2026-06-18",label:"Donderdag 18 Junie",focus:"Dag voor Landbou.",tasks:[
-    ["09:00 - 09:45","Landbou Finale Mock 2","25 vrae."],    ["14:30 - 15:10","Wisk Geletterdheid Sessie 3","Kaarte en planne."]]},
-  {date:"2026-06-19",label:"Vrydag 19 Junie - Landbou Eksamen",focus:"Vrydag net oggend tot 12:00.",tasks:[
-  {date:"2026-06-22",label:"Maandag 22 Junie",focus:"Wisk Geletterdheid + tale.",tasks:[
-    ["09:00 - 09:45","Wisk Geletterdheid Sessie 4","Finansies en tariewe."],
-    ["10:05 - 10:50","Wisk Geletterdheid Sessie 5","Meting."],
-    ["11:20 - 12:05","Wisk Geletterdheid Sessie 6","Kaarte, planne en waarskynlikheid."],
-    ["14:30 - 15:10","Afrikaans Sessie 2","Kwartaal 2."],
-    ["15:25 - 16:05","English Sessie 2","Term 2."]]},
-  {date:"2026-06-23",label:"Dinsdag 23 Junie - Wisk Geletterdheid Eksamen",focus:"Daarna Afrikaans.",tasks:[    ["15:00 - 15:45","Afrikaans Sessie 3","Begrip en taal."],
-    ["16:05 - 16:50","Afrikaans Sessie 4","Skryfwerk / opsomming."]
+    ["09:45 - 10:05","Breek","Kort breek."],
+    ["10:05 - 10:50","Landbou Finale Mock 1","25 vrae."],
+    ["14:30 - 15:10","Wisk Geletterdheid Sessie 2","Meting. 25 vrae."]
   ]},
-  {date:"2026-06-24",label:"Woensdag 24 Junie - Afrikaans Eksamen",focus:"Daarna English.",tasks:[    ["15:00 - 15:45","English Sessie 3","Comprehension and grammar."],
-    ["16:05 - 16:50","English Sessie 4","Writing and literature."]
+
+  {date:"2026-06-18",label:"Donderdag 18 Junie",focus:"Dag voor Landbou. Net finale toets.",tasks:[
+    ["09:00 - 09:45","Landbou Finale Mock 2","25 vrae."],
+    ["09:45 - 10:10","Breek","Kort breek."],
+    ["14:30 - 15:10","Wisk Geletterdheid Sessie 3","Kaarte en planne. 25 vrae."]
   ]},
-  {date:"2026-06-25",label:"Donderdag 25 Junie - English Eksamen",focus:"Daarna Besigheidstudies.",tasks:[    ["15:00 - 15:45","Besigheidstudies Sessie 1","Sosio-ekonomiese kwessies."],
-    ["16:05 - 16:50","Besigheidstudies Sessie 2","Sosiale verantwoordelikheid."]]},
+
+  {date:"2026-06-22",label:"Maandag 22 Junie",focus:"Wisk Geletterdheid en tale.",tasks:[
+    ["09:00 - 09:45","Wisk Geletterdheid Sessie 4","Finansies en tariewe. 25 vrae."],
+    ["09:45 - 10:05","Breek","Kort breek."],
+    ["10:05 - 10:50","Wisk Geletterdheid Sessie 5","Meting. 25 vrae."],
+    ["10:50 - 11:20","Lang breek","Rus bietjie."],
+    ["11:20 - 12:05","Wisk Geletterdheid Sessie 6","Kaarte, planne en waarskynlikheid. 25 vrae."],
+    ["14:30 - 15:10","Afrikaans Sessie 2","Kwartaal 2 werk. 25 vrae."],
+    ["15:25 - 16:05","English Sessie 2","Term 2 werk. 25 vrae."]
+  ]},
+
+  {date:"2026-06-23",label:"Dinsdag 23 Junie - Wisk Geletterdheid Eksamen",focus:"Na Wisk Geletterdheid skuif hy Afrikaans toe.",tasks:[
+    ["15:00 - 15:45","Afrikaans Sessie 3","Begrip en taal. 25 vrae."],
+    ["15:45 - 16:05","Breek","Kort breek."],
+    ["16:05 - 16:50","Afrikaans Sessie 4","Skryfwerk en opsomming. 25 vrae."]
+  ]},
+
+  {date:"2026-06-24",label:"Woensdag 24 Junie - Afrikaans Eksamen",focus:"Na Afrikaans skuif hy English toe.",tasks:[
+    ["15:00 - 15:45","English Sessie 3","Comprehension and grammar. 25 vrae."],
+    ["15:45 - 16:05","Breek","Kort breek."],
+    ["16:05 - 16:50","English Sessie 4","Writing and literature. 25 vrae."]
+  ]},
+
+  {date:"2026-06-25",label:"Donderdag 25 Junie - English Eksamen",focus:"Na English doen hy Besigheidstudies.",tasks:[
+    ["15:00 - 15:45","Besigheidstudies Sessie 1","Sosio-ekonomiese kwessies. 25 vrae."],
+    ["15:45 - 16:05","Breek","Kort breek."],
+    ["16:05 - 16:50","Besigheidstudies Sessie 2","Sosiale verantwoordelikheid. 25 vrae."]
+  ]}
 ];
 
 function keyFor(dayIndex, taskIndex){
@@ -253,6 +299,7 @@ renderPlan();
 </script>
 </body>
 </html>
+
 
 
 
