@@ -1,0 +1,512 @@
+﻿<!DOCTYPE html>
+<html lang="af" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enrico English FAL</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#eef3ff;color:#0f172a}
+header{background:#7c2d12;color:white;text-align:center;padding:28px 12px}
+header h1{margin:0;font-size:34px}
+.wrap{max-width:950px;margin:24px auto;padding:12px}
+.card{background:white;border-radius:18px;padding:22px;box-shadow:0 12px 30px rgba(15,23,42,.14)}
+.banner{border:2px solid #ea580c;background:#fff7ed;border-radius:16px;padding:14px;margin-bottom:16px}
+.topic{font-weight:900;color:#ea580c;margin-bottom:8px}
+.question{font-size:25px;font-weight:900;margin:14px 0;line-height:1.35}
+.option{display:block;width:100%;text-align:left;background:#f8fafc;color:#0f172a;border:1px solid #cbd5e1;border-radius:12px;padding:13px;margin:8px 0;font-size:17px;font-weight:800;cursor:pointer}
+.option:hover{background:#ffedd5}
+.option.selected{background:#fed7aa;border-color:#ea580c}
+button,a.btn{display:inline-block;text-decoration:none;padding:12px 15px;border:0;border-radius:12px;background:#2563eb;color:white;font-weight:900;font-size:16px;cursor:pointer;margin:6px 4px}
+.green{background:#16a34a!important}.gray{background:#475569!important}.orange{background:#f97316!important}
+.ok{color:#16a34a;font-weight:900;font-size:19px}.bad{color:#dc2626;font-weight:900;font-size:19px}
+.small{color:#64748b;font-size:15px}.result{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin-top:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Enrico English FAL</h1>
+  <p>250-question bank | Term 2 | Wrong answers must be fixed</p>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <div class="banner">
+      <div style="font-size:23px;font-weight:900" id="titleBox"></div>
+      <div class="small">English First Additional Language | 25 vrae</div>
+    </div>
+
+    <div class="result" id="progress"></div>
+
+    <div id="quizBox">
+      <div class="topic" id="topic"></div>
+      <div class="question" id="question"></div>
+      <div id="options"></div>
+
+      <button class="green" onclick="markAnswer()">Mark answer</button>
+      <button onclick="nextQuestion()">Next question</button>
+
+      <div id="feedback" style="margin-top:14px"></div>
+      <div class="small" id="explain" style="margin-top:8px"></div>
+    </div>
+
+    <div id="finalResult" class="result" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+const DAD = "27642203726";
+const params = new URLSearchParams(location.search);
+const sessionTitle = params.get("title") || "English Session";
+const di = params.get("di");
+const ti = params.get("ti");
+
+let current = 0;
+let score = 0;
+let selected = null;
+let marked = false;
+let wrongList = [];
+let retryMode = false;
+let retryQuestions = [];
+let retryOriginalCount = 0;
+let retryCorrectCount = 0;
+
+function shuffle(arr){
+  arr = arr.slice();
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function q(topic, text, correct, wrongs, explain){
+  return {topic,text,correct,options:shuffle([correct,...wrongs].slice(0,4)),explain};
+}
+
+function buildEnglishBank(){
+  const b = [];
+
+  const fixed = [
+    ["Grammar","What is a noun?","A naming word",["An action word","A punctuation mark","A question"],"A noun names a person, place, thing or idea."],
+    ["Grammar","What is a verb?","An action word",["A naming word","A comma","A title"],"A verb shows action or being."],
+    ["Grammar","What is an adjective?","A word that describes a noun",["A full stop","A conjunction","A question word"],"Adjectives describe nouns."],
+    ["Grammar","What is an adverb?","A word that describes a verb",["A naming word","A capital letter","A paragraph"],"Adverbs can tell how, when or where something happens."],
+    ["Grammar","What is a pronoun?","A word used in place of a noun",["A punctuation mark","A heading","A verb only"],"Pronouns include he, she, it, they and we."],
+    ["Grammar","What is a conjunction?","A word that joins words or sentences",["A word that names something","A question mark","A paragraph"],"Conjunctions include and, but, because and although."],
+    ["Punctuation","What must a sentence start with?","A capital letter",["A comma","A small letter only","A full stop"],"A sentence starts with a capital letter."],
+    ["Punctuation","What should a statement usually end with?","A full stop",["A capital letter","A heading","A noun"],"A full stop ends a statement."],
+    ["Punctuation","What punctuation is used at the end of a question?","A question mark",["A comma","An apostrophe only","A full stop always"],"Questions end with question marks."],
+    ["Reading","What is comprehension?","Understanding what you read",["Drawing only","Typing quickly","Counting letters"],"Comprehension tests reading understanding."],
+    ["Reading","What is the main idea of a text?","The most important idea",["The last word","The page number","The author surname only"],"The main idea is the central message."],
+    ["Reading","What is context?","Words and situation around an idea",["Only the title","Only the last sentence","Only punctuation"],"Context helps you understand meaning."],
+    ["Writing","What is a summary?","A short version of the main ideas",["A full copy of the text","A list of punctuation marks","A drawing only"],"A summary keeps only the key points."],
+    ["Writing","What should you do before writing an essay?","Plan your ideas",["Write without thinking","Only write the ending","Ignore the topic"],"Planning improves writing."],
+    ["Writing","What is a paragraph?","A group of sentences about one main idea",["One letter","A comma","A spelling mistake"],"Paragraphs organise ideas."],
+    ["Literature","What is a folktale?","A traditional story passed down over time",["A bank statement","A road sign","A spreadsheet"],"Folktales are traditional stories."],
+    ["Literature","What is a myth?","A traditional story that often explains beliefs or events",["A receipt","A computer cable","A shopping list"],"Myths often explain natural or cultural ideas."],
+    ["Literature","What is humour?","Something that makes people laugh",["A bank fee","A map scale","A formal report only"],"Humour creates a funny effect."],
+    ["Viewpoint","What is a viewpoint?","Someone's opinion or way of seeing something",["A punctuation mark","A measuring tool","A folder"],"A viewpoint is a perspective or opinion."],
+    ["Viewpoint","What is bias?","Showing unfair preference for one side",["A balanced view","A type of verb","A full stop"],"Bias means a text may favour one side unfairly."]
+  ];
+
+  fixed.forEach(x=>b.push(q(x[0],x[1],x[2],x[3],x[4])));
+
+  const vocab = [
+    ["happy","joyful"],["sad","unhappy"],["angry","furious"],["quick","fast"],["large","big"],
+    ["small","tiny"],["brave","courageous"],["afraid","scared"],["funny","humorous"],["clever","intelligent"],
+    ["begin","start"],["finish","complete"],["help","assist"],["speak","talk"],["look","see"],
+    ["important","significant"],["difficult","hard"],["easy","simple"],["strange","unusual"],["dangerous","unsafe"]
+  ];
+
+  vocab.forEach(v=>{
+    b.push(q("Vocabulary","Choose the best synonym for: " + v[0],v[1],["opposite meaning","punctuation mark","main idea"],"A synonym has the same or similar meaning."));
+  });
+
+  const antonyms = [
+    ["hot","cold"],["high","low"],["light","dark"],["early","late"],["strong","weak"],
+    ["open","closed"],["front","back"],["above","below"],["fast","slow"],["good","bad"],
+    ["rich","poor"],["hard","soft"],["new","old"],["wide","narrow"],["kind","cruel"]
+  ];
+
+  antonyms.forEach(a=>{
+    b.push(q("Vocabulary","Choose the best antonym for: " + a[0],a[1],["same meaning","a noun","a heading"],"An antonym has the opposite meaning."));
+  });
+
+  const grammar = [
+    ["The boy runs quickly.","runs","verb"],
+    ["The bright sun shines.","bright","adjective"],
+    ["She reads a book.","She","pronoun"],
+    ["The dog sleeps outside.","dog","noun"],
+    ["He speaks softly.","softly","adverb"],
+    ["I studied because I had a test.","because","conjunction"],
+    ["The girl sings beautifully.","sings","verb"],
+    ["The old house is empty.","old","adjective"],
+    ["They went to school.","They","pronoun"],
+    ["The cat moved slowly.","slowly","adverb"],
+    ["We bought bread and milk.","and","conjunction"],
+    ["The teacher explains the work.","teacher","noun"],
+    ["Enrico writes neatly.","writes","verb"],
+    ["The green field is wet.","green","adjective"],
+    ["The children laughed loudly.","loudly","adverb"]
+  ];
+
+  grammar.forEach(g=>{
+    b.push(q("Parts of speech","In the sentence '" + g[0] + "' which word is a " + g[2] + "?",g[1],["the whole sentence","a full stop","no word"],"Look at the function of the word in the sentence."));
+  });
+
+  const comprehension = [
+    ["If a text explains how a machine works, what is the purpose?","To explain a process",["To sell sweets","To tell a joke only","To list road signs"],"An explanation text shows how or why something happens."],
+    ["If a character helps others, what trait is shown?","Kindness",["Selfishness","Laziness","Dishonesty"],"A character's actions reveal traits."],
+    ["If a text tries to change your opinion, what is its purpose?","To persuade",["To measure distance","To calculate tax","To draw a map"],"Persuasive texts try to influence the reader."],
+    ["If a text gives facts about a topic, what is its purpose?","To inform",["To steal","To hide meaning","To confuse the reader"],"Informative texts give facts."],
+    ["If a story includes a lesson at the end, what could that be called?","A moral",["A bank fee","A formula","A password"],"Many folktales teach a moral."],
+    ["What is an inference?","A conclusion based on clues",["A direct copy","A punctuation mark","A title only"],"Inferences use clues from the text."],
+    ["What is the function of a title?","To give a clue about the topic",["To make spelling disappear","To replace paragraphs","To count commas"],"Titles guide the reader."],
+    ["What is tone in a text?","The writer's attitude or feeling",["The number of pages","The price of the book","The font size only"],"Tone shows attitude."],
+    ["What is a fact?","Something that can be proven true",["Only someone's feeling","A guess only","A question mark"],"Facts can be checked."],
+    ["What is an opinion?","Someone's personal view",["A proven measurement only","A map scale","A receipt"],"Opinions show personal views."]
+  ];
+
+  comprehension.forEach(c=>{
+    b.push(q("Comprehension",c[0],c[1],c[2],c[3]));
+    b.push(q("Comprehension",c[0] + " Choose the best answer.",c[1],c[2],c[3]));
+  });
+
+  const writing = [
+    ["What should an introduction do?","Introduce the topic",["End the essay only","List random words","Ignore the reader"],"An introduction tells the reader what the writing is about."],
+    ["What should a conclusion do?","End the writing clearly",["Start a new unrelated topic","Repeat every word","Remove all punctuation"],"A conclusion rounds off the writing."],
+    ["Why is proofreading important?","It helps find and fix mistakes",["It creates more spelling errors","It removes all paragraphs","It changes facts into opinions"],"Proofreading improves writing."],
+    ["What makes a good paragraph?","One main idea with supporting details",["Many unrelated ideas","No topic","Only punctuation"],"Paragraphs should be focused."],
+    ["What is formal language?","Polite and respectful language",["Slang only","Rude language","Random spelling"],"Formal language is used in serious writing."],
+    ["What is informal language?","Relaxed everyday language",["Only legal language","Only exam instructions","Only headings"],"Informal language is more casual."],
+    ["What should you do if a question asks for your opinion?","Give a view and support it",["Copy the question only","Leave it blank","Only draw a picture"],"Opinions should be supported with reasons."],
+    ["What helps a story flow?","Logical order and linking words",["Random events only","No paragraphs","No punctuation"],"Flow helps the reader follow the writing."]
+  ];
+
+  writing.forEach(w=>{
+    b.push(q("Writing",w[0],w[1],w[2],w[3]));
+    b.push(q("Writing",w[0] + " Choose the best answer.",w[1],w[2],w[3]));
+  });
+
+  const literature = [
+    ["A folktale is usually passed down through generations.","True"],
+    ["A myth can explain a belief or natural event.","True"],
+    ["Humour can make a text funny.","True"],
+    ["A viewpoint is the same as a map scale.","False"],
+    ["Bias is always completely fair and balanced.","False"],
+    ["A moral is a lesson in a story.","True"],
+    ["A character is a person or being in a story.","True"],
+    ["Setting means where and when a story happens.","True"],
+    ["Plot means the events of a story.","True"],
+    ["Dialogue means characters speaking.","True"]
+  ];
+
+  literature.forEach(tf=>{
+    b.push(q("Literature",tf[0],tf[1],tf[1]==="True"?["False","Only sometimes","Never"]:["True","Only sometimes","Always"],"Read the statement carefully and choose True or False."));
+  });
+
+  const tenses = [
+    ["I walk to school.","I walked to school.","past tense"],
+    ["She plays soccer.","She played soccer.","past tense"],
+    ["They eat lunch.","They ate lunch.","past tense"],
+    ["He writes neatly.","He wrote neatly.","past tense"],
+    ["We go home.","We went home.","past tense"],
+    ["I studied yesterday.","I study today.","present tense"],
+    ["She laughed loudly.","She laughs loudly.","present tense"],
+    ["They watched the film.","They watch the film.","present tense"]
+  ];
+
+  tenses.forEach(t=>{
+    b.push(q("Tenses","Change to " + t[2] + ": " + t[0],t[1],["No change needed","Add a comma only","Make it a question"],"Tense shows time."));
+  });
+
+  const trueFalse = [
+    ["A noun names a person, place, thing or idea.","True"],
+    ["A verb usually shows action.","True"],
+    ["A synonym has the opposite meaning.","False"],
+    ["An antonym has the opposite meaning.","True"],
+    ["A summary should be shorter than the original text.","True"],
+    ["A question mark ends a question.","True"],
+    ["A paragraph usually focuses on one main idea.","True"],
+    ["Proofreading is useful before handing in writing.","True"],
+    ["An opinion can be personal.","True"],
+    ["A fact cannot be checked.","False"]
+  ];
+
+  trueFalse.forEach(tf=>{
+    b.push(q("True or False",tf[0],tf[1],tf[1]==="True"?["False","Only sometimes","Never"]:["True","Only sometimes","Always"],"Choose True or False."));
+  });
+
+  while(b.length < 250){
+    const base = b[b.length % Math.min(b.length,100)];
+    const wrongs = base.options.filter(o=>o !== base.correct);
+    b.push(q(base.topic, base.text + " Choose the best answer.", base.correct, shuffle(wrongs).slice(0,3), base.explain));
+  }
+
+  return b.slice(0,250);
+}
+
+function sessionNumber(title){
+  const m = title.match(/(\d+)/);
+  return m ? Number(m[1]) : 1;
+}
+
+const bank = buildEnglishBank();
+const start = ((sessionNumber(sessionTitle)-1) * 25) % bank.length;
+const questions = [];
+for(let i=0;i<25;i++){
+  questions.push(bank[(start+i) % bank.length]);
+}
+
+document.getElementById("titleBox").textContent = sessionTitle;
+
+function render(){
+  selected = null;
+  marked = false;
+  document.getElementById("progress").textContent = `Vraag ${current+1} van ${questions.length} | Reg: ${score}`;
+  const item = questions[current];
+
+  document.getElementById("topic").textContent = item.topic;
+  document.getElementById("question").textContent = item.text;
+  document.getElementById("feedback").innerHTML = "";
+  document.getElementById("explain").textContent = "";
+
+  const box = document.getElementById("options");
+  box.innerHTML = "";
+
+  item.options.forEach(opt=>{
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = opt;
+    btn.onclick = function(){
+      document.querySelectorAll(".option").forEach(b=>b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selected = opt;
+    };
+    box.appendChild(btn);
+  });
+}
+
+function markAnswer(){
+  if(marked) return;
+  const item = questions[current];
+
+  if(!selected){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Choose an answer first.</span>";
+    return;
+  }
+
+  marked = true;
+
+  if(selected === item.correct){
+    score++;
+    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Correct!</span>";
+  } else {
+    wrongList.push({q:item.text,your:selected,correct:item.correct,explain:item.explain});
+    document.getElementById("feedback").innerHTML = "<span class='bad'>☹ Wrong. Correct answer: " + item.correct + "</span>";
+  }
+
+  document.getElementById("explain").textContent = "Verduideliking: " + item.explain;
+  document.getElementById("progress").textContent = `Vraag ${current+1} van ${questions.length} | Reg: ${score}`;
+}
+
+function nextQuestion(){
+  if(!marked){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Mark the answer first.</span>";
+    return;
+  }
+
+  if(current < questions.length - 1){
+    current++;
+    render();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz(){
+  document.getElementById("quizBox").style.display = "none";
+  const wrong = questions.length - score;
+
+  let html = `<h2>Sessie klaar</h2>
+    <p><b>${sessionTitle}</b></p>
+    <p style="font-size:22px;font-weight:900">Punt: ${score} uit ${questions.length}</p>
+    <p>Verkeerd: ${wrong}</p>`;
+
+  if(wrongList.length > 0){
+    html += "<h3>Verkeerde antwoorde</h3>";
+    wrongList.slice(0,10).forEach(w=>{
+      html += `<div class="result"><b>Vraag:</b> ${w.q}<br><b>Sy antwoord:</b> ${w.your}<br><b>Reg:</b> ${w.correct}</div>`;
+    });
+
+    html += `<div class="result"><span class="bad">Hy moet eers sy verkeerde vrae reg oefen voordat hierdie sessie klaar tel.</span></div>`;
+    html += `<button class="orange" onclick="startWrongRetry()">Practise wrong questions again</button>`;
+  } else {
+    if(di !== null && ti !== null){
+      localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
+    }
+
+    html += `<div class="result"><span class="ok">🎉 Alles eerste keer Correct!</span></div>`;
+    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Dad - send update</button>`;
+  }
+
+  document.getElementById("finalResult").innerHTML = html;
+  document.getElementById("finalResult").style.display = "block";
+}
+
+function startWrongRetry(){
+  if(wrongList.length === 0) return;
+
+  retryMode = true;
+  retryOriginalCount = wrongList.length;
+  retryCorrectCount = 0;
+
+  retryQuestions = wrongList.map(w => ({
+    topic: "Wrong Retry",
+    text: w.q,
+    correct: w.correct,
+    options: shuffle([w.correct, w.your, "Nie seker nie", "Hersien weer"]),
+    explain: w.explain || "Hierdie vraag was vroeer verkeerd."
+  }));
+
+  current = 0;
+  score = 0;
+  selected = null;
+  marked = false;
+  wrongList = [];
+
+  document.getElementById("finalResult").style.display = "none";
+  document.getElementById("quizBox").style.display = "block";
+  renderRetry();
+}
+
+function renderRetry(){
+  selected = null;
+  marked = false;
+
+  if(retryQuestions.length === 0){
+    finishWrongRetry();
+    return;
+  }
+
+  const item = retryQuestions[current];
+
+  document.getElementById("progress").textContent =
+    "Wrong Retry: " + (current + 1) + " van " + retryQuestions.length + " | Reggemaak: " + retryCorrectCount + " van " + retryOriginalCount;
+
+  document.getElementById("topic").textContent = item.topic;
+  document.getElementById("question").textContent = item.text;
+  document.getElementById("feedback").innerHTML = "";
+  document.getElementById("explain").textContent = "";
+
+  const box = document.getElementById("options");
+  box.innerHTML = "";
+
+  item.options.forEach(opt=>{
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = opt;
+    btn.onclick = function(){
+      document.querySelectorAll(".option").forEach(b=>b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selected = opt;
+    };
+    box.appendChild(btn);
+  });
+}
+
+function markRetryAnswer(){
+  if(marked) return;
+
+  const item = retryQuestions[current];
+
+  if(!selected){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Choose an answer first.</span>";
+    return;
+  }
+
+  marked = true;
+
+  if(selected === item.correct){
+    retryCorrectCount++;
+    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Correct! Hierdie fout val nou weg.</span>";
+    retryQuestions.splice(current, 1);
+    if(current >= retryQuestions.length){ current = 0; }
+  } else {
+    document.getElementById("feedback").innerHTML =
+      "<span class='bad'>☹ Nog Wrong. Correct answer: " + item.correct + ". Jy gaan hierdie vraag weer kry.</span>";
+  }
+
+  document.getElementById("explain").textContent = item.explain;
+}
+
+function nextRetryQuestion(){
+  if(!marked){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Mark the answer first.</span>";
+    return;
+  }
+
+  if(retryQuestions.length === 0){
+    finishWrongRetry();
+    return;
+  }
+
+  if(current < retryQuestions.length - 1){ current++; } else { current = 0; }
+  renderRetry();
+}
+
+function finishWrongRetry(){
+  document.getElementById("quizBox").style.display = "none";
+
+  if(di !== null && ti !== null){
+    localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
+  }
+
+  const html = `<h2>Wrong Retry klaar 🎉</h2>
+    <p style="font-size:22px;font-weight:900">Al ${retryOriginalCount} verkeerde vrae is nou reggemaak.</p>
+    <p>Mooi Enrico — nou tel hierdie sessie as klaar.</p>
+    <div class="result"><span class="ok">Stuur nou die WhatsApp update na Dad.</span></div>
+    <button class="green" onclick="sendWhatsapp()">WhatsApp Dad - send update</button>`;
+
+  document.getElementById("finalResult").innerHTML = html;
+  document.getElementById("finalResult").style.display = "block";
+}
+
+const originalMarkAnswer = markAnswer;
+markAnswer = function(){
+  if(retryMode){ markRetryAnswer(); } else { originalMarkAnswer(); }
+};
+
+const originalNextQuestion = nextQuestion;
+nextQuestion = function(){
+  if(retryMode){ nextRetryQuestion(); } else { originalNextQuestion(); }
+};
+
+function sendWhatsapp(){
+  const originalWrong = retryOriginalCount > 0 ? retryOriginalCount : (25 - score);
+
+  let msg = `Enrico English FAL update:
+Sessie: ${sessionTitle}
+Question bank: 250 English FAL questions
+Punt: ${25 - originalWrong}/25
+Oorspronklik verkeerd: ${originalWrong}`;
+
+  if(retryOriginalCount > 0 && retryQuestions.length === 0){
+    msg += `\nWrong Retry: Klaar - ${retryOriginalCount}/${retryOriginalCount} foute reggemaak`;
+  } else if(retryOriginalCount === 0){
+    msg += `\nWrong Retry: Nie nodig nie - alles eerste keer reg`;
+  }
+
+  window.open("https://wa.me/" + DAD + "?text=" + encodeURIComponent(msg), "_blank");
+
+  setTimeout(function(){
+    window.location.href = "enrico_exam_program.html?v=" + Date.now();
+  }, 1200);
+}
+
+render();
+</script>
+</body>
+</html>
+
