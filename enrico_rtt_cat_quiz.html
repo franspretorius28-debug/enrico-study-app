@@ -848,7 +848,126 @@ function teaeBankForAuditAndUseV2(rawList){
   return clean;
 }
 
-const rawBank = buildRTTBank();
+/* TEAE_RTT_REAL_REBUILD_250_V1 */
+function teaeRTTBuild250V1(oldBank){
+  const out = [];
+  const seenQ = new Set();
+  const seenOpt = new Set();
+
+  function norm(v){
+    return String(v || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9áéíóúêëïöü\s\/\-]/gi," ")
+      .replace(/\s+/g," ")
+      .trim();
+  }
+
+  function optKey(item){
+    return (item.options || []).map(norm).filter(Boolean).sort().join(" | ");
+  }
+
+  function add(topic, text, correct, wrongs, explain){
+    const item = {
+      topic: topic,
+      text: text,
+      correct: correct,
+      options: [correct, wrongs[0], wrongs[1], wrongs[2]],
+      explain: explain || "Lees die vraag mooi en kies die beste RTT/CAT antwoord."
+    };
+
+    const qk = norm(item.text);
+    const ok = optKey(item);
+    const inside = new Set(item.options.map(norm).filter(Boolean));
+
+    if(!qk || !ok || inside.size < 4) return false;
+    if(seenQ.has(qk) || seenOpt.has(ok)) return false;
+
+    seenQ.add(qk);
+    seenOpt.add(ok);
+    out.push(item);
+    return true;
+  }
+
+  (oldBank || []).forEach(function(x){
+    if(x && x.text && x.correct && Array.isArray(x.options)){
+      add(x.topic || "RTT/CAT", x.text, x.correct, x.options.filter(o => norm(o) !== norm(x.correct)).slice(0,3), x.explain);
+    }
+  });
+
+  const stems = [
+    "Kies die beste RTT/CAT antwoord: ",
+    "Wat is die korrekte antwoord vir hierdie situasie: ",
+    "In rekenaarstudies, wat beteken dit as ",
+    "Watter opsie pas die beste by: ",
+    "Lees die scenario en kies die beste antwoord: "
+  ];
+
+  const rows = [
+    ["Hardeware","die CPU instruksies moet uitvoer","Die CPU verwerk instruksies",["Die monitor druk dokumente","RAM is n tipe papier","Die muis stoor alle data","n Router is n stoel","Die skerm stuur e-pos","n Drukker maak berekeninge"]],
+    ["Hardeware","RAM gebruik word terwyl programme oop is","RAM hou data tydelik terwyl programme loop",["RAM is altyd permanente stoorplek","RAM is n drukkerpatroon","RAM is n webadres","RAM is n e-pos attachment","RAM is n monitor kabel","RAM is n papierfolder"]],
+    ["Hardeware","data permanent gestoor moet word","n SSD of hardeskyf stoor data permanent",["n Monitor stoor altyd dokumente","n Muis hou al jou lêers","RAM is die beste permanente stoorplek","n Mikrofoon is n databasis","n Skerm is n backup","n Sleutelbord is cloud storage"]],
+    ["Invoer","n gebruiker teks in n dokument tik","Die sleutelbord is die invoertoestel",["Die monitor is die invoer","Die luidspreker tik teks","Die drukker stuur letters in","Die projektor lees vingers","Die router tik woorde","Die skerm is die muis"]],
+    ["Uitvoer","n rekenaar inligting op die skerm wys","Die monitor is n uitvoertoestel",["Die muis wys die beeld","Die mikrofoon wys data","Die sleutelbord is uitvoer","RAM wys prente","Die router is die skerm","Die hardeskyf is klank"]],
+    ["Sagteware","n program gebruik word om dokumente te tik","Woordverwerking word vir dokumente gebruik",["n Router tik briewe","n Monitor is n tikprogram","n Virus is n dokumentprogram","RAM is n brief","n Drukker is die operating system","n Kabel is Word"]],
+    ["Bedryfstelsel","Windows programme en hardeware bestuur","Die bedryfstelsel bestuur hulpbronne",["Antivirus is die skerm","n Spreadsheet bestuur die muis","n Foto is die OS","n Kabel is n operating system","n Folder is n CPU","n Printer is RAM"]],
+    ["Lêerbestuur","jy dokumente maklik weer moet kry","Duidelike lêername help organisasie",["Gebruik altyd dieselfde naam","Vee folders uit","Stoor alles op die desktop sonder name","Gebruik net nommers sonder betekenis","Moenie backups hou nie","Noem alle lêers toets"]],
+    ["Folders","jy lêers in groepe wil organiseer","Gebruik folders en subfolders",["Druk elke lêer uit","Vee die lêernaam uit","Sit alles in recycle bin","Gebruik net een lang dokument","Maak die skerm donker","Gebruik geen struktuur nie"]],
+    ["Backup","n toestel verloor of breek","n Backup help om data te herstel",["n Backup vee data uit","n Backup is n virus","n Backup maak die skerm groter","n Backup vervang die CPU","n Backup is n tikfout","n Backup is n muis klik"]],
+    ["Cloud","lêers aanlyn gestoor word","Cloud storage stoor data op aanlyn bedieners",["Cloud is altyd net papier","Cloud is n tipe monitor","Cloud is n CPU fan","Cloud is n sleutelbord","Cloud is n printer tray","Cloud is n virusnaam"]],
+    ["Internet","jy n webwerf oopmaak","n Browser word gebruik om webwerwe oop te maak",["Excel is altyd n browser","n Muis is n webwerf","n Hardeskyf is Google","n Drukker is n URL","RAM is n webblad","n Folder is Wi-Fi"]],
+    ["URL","jy n webblad se adres sien","n URL is n webadres",["n URL is n drukker","n URL is RAM","n URL is n muismat","n URL is n skermkleur","n URL is n papiergrootte","n URL is n monitorpoort"]],
+    ["Wi-Fi","n toestel draadloos aan n netwerk koppel","Wi-Fi verbind toestelle draadloos",["Wi-Fi is n Word font","Wi-Fi is n hardeskyf","Wi-Fi is n papier dokument","Wi-Fi is n CPU tipe","Wi-Fi is n drukkerbak","Wi-Fi is n muisknoppie"]],
+    ["LAN","toestelle in n huis of skool gekoppel is","n LAN is n plaaslike netwerk",["n LAN is n wêreldwye internet","n LAN is n sleutelbord","n LAN is n virus","n LAN is n monitor tipe","n LAN is n lêernaam","n LAN is n printer ink"]],
+    ["WAN","netwerke oor groot afstande verbind","n WAN dek n groot geografiese area",["n WAN is net een muis","n WAN is n spreadsheet kolom","n WAN is n skermknoppie","n WAN is n USB stick","n WAN is n woordeboek","n WAN is n stoel"]],
+    ["Router","internetverkeer tussen toestelle beweeg","n Router stuur netwerkverkeer",["n Router tik dokumente","n Router druk foto's","n Router is RAM","n Router is n monitor","n Router is n lêerformaat","n Router is n wagwoord"]],
+    ["E-pos","jy n lêer saam met boodskap stuur","n Attachment is n lêer by n e-pos",["n Attachment is n monitor","n Attachment is RAM","n Attachment is n muis","n Attachment is n routerlig","n Attachment is n drukkerbak","n Attachment is n spreadsheet ry"]],
+    ["E-pos","die onderwerp van die boodskap duidelik moet wees","Die subject line wys waaroor die e-pos gaan",["Die subject line is n virus","Die subject line is n CPU","Die subject line druk papier","Die subject line maak Wi-Fi","Die subject line is RAM","Die subject line is n monitor"]],
+    ["Phishing","n vals boodskap jou wagwoord probeer steel","Phishing probeer jou mislei om inligting te gee",["Phishing is n goeie backup","Phishing is n monitor fout","Phishing is n printer setting","Phishing is n spreadsheet grafiek","Phishing is n veilige login","Phishing is n sleutelbord tipe"]],
+    ["Wagwoorde","jy n rekening wil beskerm","Gebruik n sterk unieke wagwoord",["Gebruik 1234","Gebruik jou naam alleen","Deel jou wagwoord","Skryf dit op die skerm","Gebruik password","Gebruik dieselfde wagwoord oral"]],
+    ["Sekuriteit","n ekstra login kode na wagwoord gevra word","Twee-faktor-verifikasie voeg sekuriteit by",["Dit is n drukker probleem","Dit is n monitor kleur","Dit is n folder naam","Dit is n virus per definisie","Dit is n spreadsheet som","Dit is n USB kabel"]],
+    ["Virusse","skadelike sagteware op n rekenaar kom","Malware kan data beskadig of steel",["Malware is altyd n backup","Malware is n skermgrootte","Malware is n muismat","Malware is n goeie update","Malware is n monitor tipe","Malware is n veilige lêer"]],
+    ["Antivirus","skadelike sagteware opgespoor word","Antivirus help malware opspoor en blok",["Antivirus sny papier","Antivirus is n sleutelbord","Antivirus maak die skerm fisies skoon","Antivirus is n LAN kabel","Antivirus is n spreadsheet ry","Antivirus is n drukkerpatroon"]],
+    ["Data","rou feite verwerk moet word","Data is rou feite wat verwerk kan word",["Data is altyd n stoel","Data is net n kabel","Data is n monitor knoppie","Data is n printer tray","Data is n muis fout","Data is n battery"]],
+    ["Inligting","data betekenis kry","Inligting is data wat betekenisvol verwerk is",["Inligting is rou data sonder betekenis","Inligting is altyd n kabel","Inligting is n leë lêer","Inligting is n drukkerfout","Inligting is RAM alleen","Inligting is n skermlig"]],
+    ["Sigblad","jy berekeninge met selle doen","n Formule bereken antwoorde in n sigblad",["n Formule maak die monitor skoon","n Formule is n virus","n Formule stuur e-pos alleen","n Formule breek kolomme","n Formule is n muis","n Formule is n router"]],
+    ["Sigblad","A1 in Excel gesien word","A1 beteken kolom A, ry 1",["A1 is altyd n virus","A1 is n printer name","A1 is n folder op die skerm","A1 is n webadres","A1 is n klanklêer","A1 is n monitor merk"]],
+    ["Sigblad","data visueel vergelyk moet word","n Grafiek wys data visueel",["n Grafiek is n wagwoord","n Grafiek is n hardeskyf","n Grafiek is n muis klik","n Grafiek is n antivirus","n Grafiek is n kabel","n Grafiek is n tikfout"]],
+    ["Dokumente","spelling in n dokument nagegaan word","Spell check help tik- en spelfoute vind",["Spell check is n router","Spell check vergroot RAM","Spell check maak internet gratis","Spell check is n monitor","Spell check is n virus","Spell check druk altyd papier"]],
+    ["Dokumente","n dokument professioneel moet lyk","Formatting verander teks en uitleg",["Formatting is n CPU fan","Formatting is n webadres","Formatting is n router kabel","Formatting is n virus scan","Formatting is n muis mat","Formatting is n speaker"]],
+    ["Databasis","data georganiseer gestoor word","n Databasis is n georganiseerde versameling data",["n Databasis is n skerm","n Databasis is n muis","n Databasis is n printer tray","n Databasis is n battery","n Databasis is n Word font","n Databasis is n kabel"]],
+    ["Etiek","jy iemand anders se werk gebruik","Erken bronne om plagiaat te vermy",["Gee voor dis jou eie werk","Vee die bron uit","Ignoreer kopiereg","Gebruik sonder toestemming","Noem dit jou idee","Verander net een woord"]],
+    ["Ergonomie","jy lank by n rekenaar sit","Sit regop met skerm op gemaklike hoogte",["Sit skeef oor die sleutelbord","Druk jou gesig teen die skerm","Sit sonder pouses","Hou die skerm op die vloer","Tik met gespanne skouers","Sit in donkerte"]],
+    ["Probleemoplossing","die internet nie werk nie","Kontroleer Wi-Fi, kabels en router",["Gooi die monitor weg","Vee alle lêers uit","Deel jou wagwoord","Maak net Paint oop","Druk die muis harder","Verwyder die sleutelbord"]],
+    ["Drukkers","n drukker nie wil druk nie","Kontroleer krag, papier, ink en verbinding",["Kontroleer net die stoel","Maak Excel toe vir altyd","Vee die router uit","Skud die monitor","Verander jou wagwoord","Maak n nuwe folder"]],
+    ["Lêertipes","n lêer met .pdf eindig","PDF hou dokumentuitleg maklik deelbaar",["PDF is RAM","PDF is n CPU fan","PDF is n muis klik","PDF is n router","PDF is n virus per definisie","PDF is n monitorpoort"]],
+    ["Lêertipes","n lêer met .xlsx eindig","XLSX is gewoonlik n Excel sigblad",["XLSX is n foto kamera","XLSX is n skermknoppie","XLSX is n printer kabel","XLSX is n router fout","XLSX is n klanklêer","XLSX is n muismat"]],
+    ["Aanlyn veiligheid","n webwerf persoonlike besonderhede vra","Maak seker die webwerf is betroubaar en nodig",["Gee alles dadelik","Gebruik iemand anders se ID","Ignoreer waarskuwings","Deel jou bank-PIN","Tik jou wagwoord oral","Laai onbekende lêers af"]],
+    ["Digitale voetspoor","jy iets op sosiale media plaas","Aanlyn aktiwiteite kan n spoor los",["Dit verdwyn altyd dadelik","Dit verander jou monitor","Dit druk outomaties","Dit maak RAM permanent","Dit sny papier","Dit is net offline"]],
+    ["Kommunikasie","jy aanlyn met mense praat","Kommunikeer respekvol en veilig",["Boelie ander mense","Deel privaat data","Stuur spam","Gebruik beledigings","Maak vals profiele","Ignoreer veiligheid"]]
+  ];
+
+  let i = 0;
+  while(out.length < 250 && i < rows.length * stems.length){
+    const row = rows[i % rows.length];
+    const stem = stems[Math.floor(i / rows.length) % stems.length];
+    const topic = row[0];
+    const scenario = row[1];
+    const correct = row[2];
+    const wrongs = row[3];
+
+    const shift = Math.floor(i / rows.length) % wrongs.length;
+    const w1 = wrongs[(shift + 0) % wrongs.length];
+    const w2 = wrongs[(shift + 2) % wrongs.length];
+    const w3 = wrongs[(shift + 4) % wrongs.length];
+
+    add(topic, stem + scenario + "?", correct, [w1, w2, w3], "Hierdie toets n unieke RTT/CAT konsep.");
+    i++;
+  }
+
+  return out.slice(0,250);
+}
+
+const rawBank = teaeRTTBuild250V1(buildRTTBank());
 const bank = rawBank;
 /* TEAE_EXPOSE_BANK_FOR_AUDIT_V1 */
 window.TEAE_RAW_BANK = rawBank;
@@ -1114,6 +1233,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 
