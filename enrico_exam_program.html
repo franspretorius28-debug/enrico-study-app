@@ -836,6 +836,16 @@ header p{
     display:none;
   }
 }
+/* TEAE_TEACHER_PASSWORD_CLEAR_PROGRESS_V1 */
+.teacherOnlyBtn{
+  background:#7f1d1d !important;
+  color:#ffffff !important;
+  border:2px solid #ef4444 !important;
+  font-weight:900 !important;
+}
+.teacherOnlyBtn:before{
+  content:"🔒 ";
+}
 </style>
 </head>
 <body>
@@ -1594,6 +1604,16 @@ header p{
     display:none;
   }
 }
+/* TEAE_TEACHER_PASSWORD_CLEAR_PROGRESS_V1 */
+.teacherOnlyBtn{
+  background:#7f1d1d !important;
+  color:#ffffff !important;
+  border:2px solid #ef4444 !important;
+  font-weight:900 !important;
+}
+.teacherOnlyBtn:before{
+  content:"🔒 ";
+}
 </style>
 
 <script>
@@ -1716,8 +1736,68 @@ document.addEventListener("DOMContentLoaded", teaeClearDayHeaders);
 setTimeout(teaeClearDayHeaders, 300);
 setTimeout(teaeClearDayHeaders, 1000);
 </script>
+<script>
+/* TEAE_TEACHER_PASSWORD_CLEAR_PROGRESS_SCRIPT_V1 */
+(function(){
+  const TEACHER_PASSWORD = "teacher2026";
+
+  function protectClearButtons(){
+    const buttons = Array.from(document.querySelectorAll("button, a"));
+    buttons.forEach(function(btn){
+      const text = (btn.textContent || "").trim().toLowerCase();
+
+      if(text.includes("maak vordering skoon") || text.includes("clear progress")){
+        btn.classList.add("teacherOnlyBtn");
+
+        if(btn.dataset.teacherProtected === "1") return;
+        btn.dataset.teacherProtected = "1";
+
+        const oldClick = btn.getAttribute("onclick");
+        btn.removeAttribute("onclick");
+
+        btn.addEventListener("click", function(e){
+          e.preventDefault();
+          e.stopImmediatePropagation();
+
+          const pass = prompt("Teacher only: Enter password to clear progress.");
+
+          if(pass !== TEACHER_PASSWORD){
+            alert("Access denied. Only the teacher may clear progress.");
+            return false;
+          }
+
+          const confirmClear = confirm("Teacher confirmed. Are you sure you want to clear all progress? This cannot be undone.");
+
+          if(!confirmClear){
+            return false;
+          }
+
+          if(oldClick){
+            try{
+              new Function(oldClick)();
+            }catch(err){
+              console.error(err);
+              alert("Could not clear progress. Please contact teacher/admin.");
+            }
+          } else {
+            localStorage.clear();
+            location.reload();
+          }
+
+          return false;
+        }, true);
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", protectClearButtons);
+  setTimeout(protectClearButtons, 300);
+  setTimeout(protectClearButtons, 1000);
+})();
+</script>
 </body>
 </html>
+
 
 
 
