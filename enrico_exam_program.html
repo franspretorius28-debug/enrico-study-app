@@ -207,7 +207,13 @@ function clearAll(){
 function quizLinkHtml(title, di, ti){
   const mustTest = title.includes("Sessie") || title.includes("Mock") || title.includes("Finale");
   if(!mustTest) return "";
-  const url = "enrico_session_quiz.html?title=" + encodeURIComponent(title) + "&di=" + di + "&ti=" + ti + "&v=" + Date.now();
+
+  let file = "enrico_session_quiz.html";
+  if(title.toLowerCase().includes("k53")){
+    file = "enrico_k53_english_quiz.html";
+  }
+
+  const url = file + "?title=" + encodeURIComponent(title) + "&di=" + di + "&ti=" + ti + "&v=" + Date.now();
   return `<a class="btn" href="${url}">Maak toets oop</a>`;
 }
 
@@ -245,4 +251,5 @@ renderPlan();
 </script>
 </body>
 </html>
+
 
