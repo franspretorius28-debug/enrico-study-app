@@ -1049,9 +1049,10 @@ function teaeK53FillTo250V3(bank){
     const correct = row[2];
     const wrongs = row[3];
 
-    const w1 = wrongs[(i + 0) % wrongs.length];
-    const w2 = wrongs[(i + 2) % wrongs.length];
-    const w3 = wrongs[(i + 4) % wrongs.length];
+    const stemIndex = Math.floor(i / rows.length) % stems.length;
+    const w1 = wrongs[(stemIndex + 0) % wrongs.length];
+    const w2 = wrongs[(stemIndex + 1) % wrongs.length];
+    const w3 = wrongs[(stemIndex + 2) % wrongs.length];
 
     addObj(
       topic,
@@ -1334,6 +1335,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 
