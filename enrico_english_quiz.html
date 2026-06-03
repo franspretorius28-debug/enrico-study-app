@@ -303,7 +303,7 @@ function markAnswer(){
     score++;
     document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Correct!</span>";
   } else {
-    wrongList.push({q:item.text,your:selected,correct:item.correct,explain:item.explain});
+    wrongList.push({q:item.text,your:selected,correct:item.correct,explain:item.explain,options:item.options});
     document.getElementById("feedback").innerHTML = "<span class='bad'>☹ Wrong. Correct answer: " + item.correct + "</span>";
   }
 
@@ -366,7 +366,7 @@ function startWrongRetry(){
     topic: "Wrong Retry",
     text: w.q,
     correct: w.correct,
-    options: shuffle([w.correct, w.your, "Nie seker nie", "Hersien weer"]),
+    options: shuffle((w.options && w.options.length ? w.options : [w.correct, w.your]).slice()),
     explain: w.explain || "Hierdie vraag was vroeer verkeerd."
   }));
 
@@ -393,7 +393,7 @@ function renderRetry(){
   const item = retryQuestions[current];
 
   document.getElementById("progress").textContent =
-    "Wrong Retry: " + (current + 1) + " van " + retryQuestions.length + " | Reggemaak: " + retryCorrectCount + " van " + retryOriginalCount;
+    "Wrong Retry: " + (current + 1) + " of " + retryQuestions.length + " | Fixed: " + retryCorrectCount + " of " + retryOriginalCount;
 
   document.getElementById("topic").textContent = item.topic;
   document.getElementById("question").textContent = item.text;
@@ -430,12 +430,12 @@ function markRetryAnswer(){
 
   if(selected === item.correct){
     retryCorrectCount++;
-    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Correct! Hierdie fout val nou weg.</span>";
+    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Correct! This mistake now falls away.</span>";
     retryQuestions.splice(current, 1);
     if(current >= retryQuestions.length){ current = 0; }
   } else {
     document.getElementById("feedback").innerHTML =
-      "<span class='bad'>☹ Nog Wrong. Correct answer: " + item.correct + ". Jy gaan hierdie vraag weer kry.</span>";
+      "<span class='bad'>☹ Nog Wrong. Correct answer: " + item.correct + ". You will get this question again.</span>";
   }
 
   document.getElementById("explain").textContent = item.explain;
@@ -464,9 +464,9 @@ function finishWrongRetry(){
   }
 
   const html = `<h2>Wrong Retry klaar 🎉</h2>
-    <p style="font-size:22px;font-weight:900">Al ${retryOriginalCount} verkeerde vrae is nou reggemaak.</p>
-    <p>Mooi Enrico — nou tel hierdie sessie as klaar.</p>
-    <div class="result"><span class="ok">Stuur nou die WhatsApp update na Dad.</span></div>
+    <p style="font-size:22px;font-weight:900">All ${retryOriginalCount} wrong questions are now fixed.</p>
+    <p>Good work Enrico — this session now counts as complete.</p>
+    <div class="result"><span class="ok">Send the WhatsApp update to Dad now.</span></div>
     <button class="green" onclick="sendWhatsapp()">WhatsApp Dad - send update</button>`;
 
   document.getElementById("finalResult").innerHTML = html;
@@ -509,4 +509,5 @@ render();
 </script>
 </body>
 </html>
+
 
