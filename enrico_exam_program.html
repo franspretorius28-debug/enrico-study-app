@@ -43,7 +43,7 @@ button,a.btn{display:inline-block;text-decoration:none;padding:11px 14px;border:
 
     <div class="note">
       Enrico moet by sy tye hou. As hy agter raak, moet hy later ekstra oefen.
-      WhatsApp word net gestuur nadat hy n toets-sessie klaar gemaak het. Breuke en gewone take merk hy net as <b>Klaar</b>.
+      WhatsApp word net gestuur nadat hy n toets-sessie klaar gemaak het. Verkeerde vrae word binne die toets self weer geoefen. Breuke en gewone take merk hy net as <b>Klaar</b>.
     </div>
 
     <h3 id="overallProgress"></h3>
@@ -75,9 +75,7 @@ const plan = [
   {date:"2026-06-08",label:"Maandag 08 Junie",focus:"Dag voor K53. Net vaslê.",tasks:[
     ["09:00 - 09:45","K53 Finale Mock 1","Mik vir 95%."],
     ["09:45 - 10:10","Breek","Rus."],
-    ["10:10 - 10:55","K53 Finale Mock 2","Nog 25 vrae."],
-    ["10:55 - 11:30","K53 fouteboek","Net foute oordoen."],
-    ["14:30 - 15:10","RTT Sessie 2","Kort RTT voorbereiding."],  ]},
+    ["10:10 - 10:55","K53 Finale Mock 2","Nog 25 vrae."],    ["14:30 - 15:10","RTT Sessie 2","Kort RTT voorbereiding."],  ]},
   {date:"2026-06-09",label:"Dinsdag 09 Junie - K53 Eksamen",focus:"K53 skryf. Daarna RTT.",tasks:[
     ["Voor eksamen","K53 laaste kyk","Net vinnig deur tekens."],
     ["Na eksamen","Rus","Eet en haal asem."],
@@ -91,9 +89,7 @@ const plan = [
     ["14:30 - 15:15","RTT Mock 1","Gemengde 25 vrae."],  ]},
   {date:"2026-06-11",label:"Donderdag 11 Junie",focus:"Laaste RTT voorbereiding.",tasks:[
     ["09:00 - 09:45","RTT Finale Mock 1","25 vrae."],
-    ["10:10 - 10:55","RTT Finale Mock 2","25 vrae."],
-    ["10:55 - 11:30","RTT fouteboek","Net swak areas."],
-    ["14:30 - 15:10","Landbou Sessie 1","Begin kwartaal 2 kernbegrippe."]
+    ["10:10 - 10:55","RTT Finale Mock 2","25 vrae."],    ["14:30 - 15:10","Landbou Sessie 1","Begin kwartaal 2 kernbegrippe."]
   ]},
   {date:"2026-06-12",label:"Vrydag 12 Junie - RTT Eksamen",focus:"Vrydag net tot 12:00.",tasks:[
     ["Voor eksamen","RTT laaste kyk","Net hoofpunte."],    ["12:00","Klaar vir die dag","Geen nuwe leerwerk Vrydagmiddag nie."]
@@ -112,13 +108,9 @@ const plan = [
   ]},
   {date:"2026-06-17",label:"Woensdag 17 Junie",focus:"Landbou finale werk.",tasks:[
     ["09:00 - 09:45","Landbou Sessie 7","25 vrae."],
-    ["10:05 - 10:50","Landbou Finale Mock 1","25 vrae."],
-    ["11:20 - 12:00","Landbou fouteboek","Maak foute reg."],
-    ["14:30 - 15:10","Wisk Geletterdheid Sessie 2","Meting."],  ]},
+    ["10:05 - 10:50","Landbou Finale Mock 1","25 vrae."],    ["14:30 - 15:10","Wisk Geletterdheid Sessie 2","Meting."],  ]},
   {date:"2026-06-18",label:"Donderdag 18 Junie",focus:"Dag voor Landbou.",tasks:[
-    ["09:00 - 09:45","Landbou Finale Mock 2","25 vrae."],
-    ["10:10 - 10:50","Landbou laaste foute","Definisies en foute."],
-    ["14:30 - 15:10","Wisk Geletterdheid Sessie 3","Kaarte en planne."],  ]},
+    ["09:00 - 09:45","Landbou Finale Mock 2","25 vrae."],    ["14:30 - 15:10","Wisk Geletterdheid Sessie 3","Kaarte en planne."],  ]},
   {date:"2026-06-19",label:"Vrydag 19 Junie - Landbou Eksamen",focus:"Vrydag net oggend tot 12:00.",tasks:[
     ["Voor eksamen","Landbou laaste kyk","Net hoofbegrippe."],    ["12:00","Klaar vir die dag","Geen nuwe leerwerk nie."]
   ]},
@@ -144,9 +136,7 @@ const plan = [
     ["Voor eksamen","English laaste kyk","Grammar en writing."],
     ["Na eksamen","Rus","Eet en breek."],
     ["15:00 - 15:45","Besigheidstudies Sessie 1","Sosio-ekonomiese kwessies."],
-    ["16:05 - 16:50","Besigheidstudies Sessie 2","Sosiale verantwoordelikheid."],
-    ["19:00 - 19:25","Besigheidstudies fouteboek","Entrepreneur/eienaarskap definisies."]
-  ]},
+    ["16:05 - 16:50","Besigheidstudies Sessie 2","Sosiale verantwoordelikheid."],  ]},
   {date:"2026-06-26",label:"Vrydag 26 Junie - Besigheidstudies Eksamen",focus:"Vrydag net tot 12:00. Laaste vak.",tasks:[
     ["Voor eksamen","Besigheidstudies laaste kyk","Entrepreneur, eienaarskap en sosiale verantwoordelikheid."],
     ["Na eksamen tot 12:00","Klaar","Stuur laaste WhatsApp update."],
@@ -288,6 +278,7 @@ renderPlan();
 </script>
 </body>
 </html>
+
 
 
 
