@@ -1,10 +1,10 @@
 ﻿<!DOCTYPE html>
-<html lang="af" translate="no">
+<html lang="en" translate="no">
 <head>
 <meta charset="UTF-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enrico Sessie Toets</title>
+<title>Enrico K53 English Quiz</title>
 <style>
 body{margin:0;font-family:Arial,sans-serif;background:#eef3ff;color:#0f172a}
 header{background:#0f172a;color:white;text-align:center;padding:28px 12px}
@@ -13,7 +13,7 @@ header h1{margin:0;font-size:34px}
 .card{background:white;border-radius:18px;padding:22px;box-shadow:0 12px 30px rgba(15,23,42,.14)}
 .banner{border:2px solid #16a34a;background:#f0fdf4;border-radius:16px;padding:14px;margin-bottom:16px}
 .topic{font-weight:900;color:#2563eb;margin-bottom:8px}
-.question{font-size:24px;font-weight:900;margin:14px 0}
+.question{font-size:25px;font-weight:900;margin:14px 0}
 .option{display:block;width:100%;text-align:left;background:#f8fafc;color:#0f172a;border:1px solid #cbd5e1;border-radius:12px;padding:13px;margin:8px 0;font-size:17px;font-weight:800;cursor:pointer}
 .option:hover{background:#e0f2fe}
 .option.selected{background:#dbeafe;border-color:#2563eb}
@@ -25,15 +25,15 @@ button,a.btn{display:inline-block;text-decoration:none;padding:12px 15px;border:
 </head>
 <body>
 <header>
-  <h1>Enrico Sessie Toets</h1>
-  <p>25 vrae | Outomaties gemerk | WhatsApp update</p>
+  <h1>Enrico K53 English</h1>
+  <p>250-question bank | 25 questions per session | Wrong answers must be fixed</p>
 </header>
 
 <div class="wrap">
   <div class="card">
     <div class="banner">
       <div style="font-size:23px;font-weight:900" id="titleBox"></div>
-      <div class="small" id="subBox"></div>
+      <div class="small">K53 - English | 25 questions</div>
     </div>
 
     <div class="result" id="progress"></div>
@@ -43,24 +43,24 @@ button,a.btn{display:inline-block;text-decoration:none;padding:12px 15px;border:
       <div class="question" id="question"></div>
       <div id="options"></div>
 
-      <button class="green" onclick="markAnswer()">Merk antwoord</button>
-      <button onclick="nextQuestion()">Volgende vraag</button>
+      <button class="green" onclick="markAnswer()">Mark answer</button>
+      <button onclick="nextQuestion()">Next question</button>
 
       <div id="feedback" style="margin-top:14px"></div>
       <div class="small" id="explain" style="margin-top:8px"></div>
     </div>
 
     <div id="finalResult" class="result" style="display:none"></div>
-    <a class="btn gray" href="index.html?v=back">Terug main</a>
   </div>
 </div>
 
 <script>
 const DAD = "27642203726";
 const params = new URLSearchParams(location.search);
-const sessionTitle = params.get("title") || "Enrico Sessie";
+const sessionTitle = params.get("title") || "K53 Session";
 const di = params.get("di");
 const ti = params.get("ti");
+const subject = "K53 - English";
 
 let current = 0;
 let score = 0;
@@ -85,151 +85,118 @@ function q(topic, text, correct, wrongs, explain){
   return {topic,text,correct,options:shuffle([correct,...wrongs].slice(0,4)),explain};
 }
 
-function subjectFromTitle(title){
-  return "K53 - English";
-}
+function buildK53Bank(){
+  const b = [];
 
-function buildBank(subject){
-  let b = [];
+  const fixed = [
+    ["Road signs","What does a STOP sign mean?","You must come to a complete stop",["You may drive through slowly","Only trucks must stop","You may speed up"],"At a STOP sign, the vehicle must stop completely."],
+    ["Road signs","What does a YIELD sign mean?","Slow down and give way if necessary",["Always stop for ten seconds","Speed up before traffic arrives","Ignore vehicles from the right"],"Yield means you must give way when another road user has priority."],
+    ["Road signs","What does a NO ENTRY sign mean?","You may not enter that road",["Parking is allowed","Only taxis may enter","The road is one-way towards you"],"No entry means vehicles are not allowed to enter."],
+    ["Traffic lights","What must you do at a red traffic light?","Stop",["Drive through carefully","Speed up","Only hoot and continue"],"Red means stop."],
+    ["Traffic lights","What does an amber traffic light mean?","Prepare to stop if it is safe",["Speed up immediately","Stop in the middle of the intersection","Ignore it"],"Amber warns that the light is changing to red."],
+    ["Traffic lights","What does a green traffic light mean?","Proceed if it is safe",["Drive without looking","Stop immediately","Reverse slowly"],"Green means you may go, but only when safe."],
+    ["Defensive driving","What is defensive driving?","Driving carefully while anticipating danger",["Driving as fast as possible","Driving close behind another vehicle","Ignoring other road users"],"Defensive driving helps prevent accidents."],
+    ["Observation","What must you check before changing lanes?","Mirrors, blind spot and indicators",["Only the fuel gauge","Only the radio","Only the speedometer"],"Safe lane changes need mirrors, blind spot and signal."],
+    ["Observation","What is a blind spot?","An area you cannot see in your mirrors",["A broken headlight","A road sign","A flat tyre"],"You must check blind spots by looking over your shoulder."],
+    ["Safety","When must you wear a seat belt?","Always when driving or riding in a vehicle",["Only on highways","Only at night","Only when police are nearby"],"Seat belts must be worn for safety."],
+    ["Following distance","Why is following distance important?","It gives you time to stop safely",["It saves fuel only","It makes you drive faster","It removes the need to brake"],"A safe gap helps avoid rear-end crashes."],
+    ["Pedestrians","What must you do at a pedestrian crossing?","Give way and stop if necessary",["Drive around the pedestrian","Hoot and continue","Ignore the pedestrian"],"Pedestrians at crossings must be protected."],
+    ["Emergency vehicles","What should you do for an emergency vehicle with a siren?","Move out of the way safely",["Race in front of it","Stop suddenly in the lane","Block it"],"Emergency vehicles must be given space safely."],
+    ["School zones","What should you do near a school zone?","Slow down and watch for children",["Speed up","Hoot continuously","Ignore pedestrians"],"School zones need extra care."],
+    ["Railway crossings","What must you do if a train is approaching?","Stop and wait until it is safe",["Drive across quickly","Stop on the tracks","Reverse into traffic"],"Never cross when a train is approaching."],
+    ["Overtaking","When may you overtake?","Only when it is legal, clear and safe",["On any blind rise","Without checking mirrors","When other cars must brake"],"Overtaking must be legal and safe."],
+    ["Road markings","What does a solid white line usually mean?","Do not cross unless allowed and safe",["Always overtake there","Parking only","Pedestrians only"],"Solid lines usually restrict crossing."],
+    ["Vehicle controls","What should you do before moving off?","Check mirrors, blind spots and signal",["Just accelerate","Open the door","Switch off the engine"],"Observation comes before moving off."],
+    ["Weather","What should you do in heavy rain?","Slow down and increase following distance",["Speed up to leave the rain","Use bright lights only","Drive close behind another car"],"Wet roads need slower speed and more space."],
+    ["Skid control","What should you do if the vehicle starts skidding?","Steer gently and avoid harsh braking",["Brake hard immediately","Close your eyes","Accelerate sharply"],"Smooth control helps recover from a skid."],
+    ["Roadworthiness","What does roadworthy mean?","The vehicle is safe and legally fit to drive",["The car is expensive","The car is new","The car has loud music"],"A roadworthy vehicle is safe for public roads."],
+    ["Tyres","Why must tyre tread be in good condition?","For grip and safe braking",["For louder sound","For better radio signal","For decoration"],"Tyres need grip to stop and steer safely."],
+    ["Headlights","When should headlights be used?","At night or when visibility is poor",["Only when parked","Only at noon","Never in rain"],"Lights help you see and be seen."],
+    ["Parking","Where should you not park?","Where parking is prohibited or unsafe",["In a marked legal parking bay","At home","In a safe parking area"],"Do not park where signs or danger prohibit it."],
+    ["Alcohol","What is the safest rule about alcohol and driving?","Do not drink and drive",["Drink only a little and drive faster","Drive if the road is quiet","Drink coffee and drive"],"Alcohol affects judgement and reaction time."]
+  ];
 
-  if(subject === "K53 - English"){
-    b = [
-      q("K53","What does a STOP sign mean?", "You must come to a complete stop", ["You may drive slowly without stopping","Only trucks must stop","You may speed up"], "At a STOP sign you must come to a complete stop."),
-      q("K53","What does a red triangular road sign normally mean?", "Warning or danger ahead", ["Parking allowed","You must turn left","No fuel available"], "Triangular signs normally warn you about possible danger ahead."),
-      q("K53","When must you wear a seat belt?", "Always when driving or riding in a vehicle", ["Only on highways","Only at night","Only when police are nearby"], "Seat belts must be worn for safety."),
-      q("K53","What must you do at a red traffic light?", "Stop", ["Speed up","Drive through carefully","Only hoot and continue"], "A red traffic light means stop."),
-      q("K53","What does a speed limit sign show?", "The maximum speed allowed", ["The minimum speed only","The road width","The fuel price"], "A speed limit sign shows the maximum legal speed."),
-      q("K53","What is defensive driving?", "Driving carefully and anticipating danger", ["Driving as fast as possible","Driving close behind another vehicle","Ignoring other road users"], "Defensive driving helps prevent accidents."),
-      q("K53","When should you use your indicators?", "Before turning or changing lanes", ["Only after turning","Only in rain","Never in town"], "Indicators warn other road users what you plan to do."),
-      q("K53","What does an amber/yellow traffic light mean?", "Prepare to stop if it is safe", ["Speed up immediately","Stop in the middle of the intersection","Ignore it"], "Amber means the light is about to turn red."),
-      q("K53","What must you do when a pedestrian is crossing at a pedestrian crossing?", "Give way and stop if necessary", ["Drive around the pedestrian","Hoot and continue","Ignore the pedestrian"], "Pedestrians at crossings must be given right of way."),
-      q("K53","What does a one-way sign mean?", "Traffic may only move in one direction", ["You may make a U-turn anywhere","The road is closed","Only buses may use the road"], "A one-way sign means traffic flows in one direction only."),
-      q("K53","What must you check before changing lanes?", "Mirrors, blind spot and indicators", ["Only the radio","Only your speedometer","Only the fuel gauge"], "Before changing lanes, check mirrors, blind spot and signal."),
-      q("K53","What is a blind spot?", "An area you cannot see in your mirrors", ["A broken headlight","A road sign","A traffic fine"], "You must check blind spots by looking over your shoulder."),
-      q("K53","What should you do if an emergency vehicle approaches with siren on?", "Move out of the way safely", ["Race in front of it","Stop suddenly in the lane","Ignore it"], "Emergency vehicles must be given right of way safely."),
-      q("K53","What does a solid white line mean?", "You may not cross it unless allowed and safe", ["You must overtake there","It is only for pedestrians","It means parking only"], "Solid lines usually restrict crossing or overtaking."),
-      q("K53","When should headlights be used?", "When visibility is poor or at night", ["Only when parked","Only at noon","Never in rain"], "Headlights help you see and be seen."),
-      q("K53","What should you do before moving off?", "Check mirrors, blind spots and signal", ["Just accelerate","Open the door","Switch off the engine"], "Safe observation is required before moving off."),
-      q("K53","What does following distance help prevent?", "Rear-end collisions", ["Flat tyres","Running out of fuel","Engine noise"], "A safe following distance gives you time to stop."),
-      q("K53","What should you do at a yield sign?", "Slow down and give way if necessary", ["Always stop for 10 seconds","Speed up","Ignore other traffic"], "Yield means give way when needed."),
-      q("K53","What is the correct action at a railway crossing when a train is coming?", "Stop and wait until it is safe", ["Drive across quickly","Stop on the tracks","Reverse into traffic"], "Never cross when a train is approaching."),
-      q("K53","What must you do if your vehicle starts skidding?", "Steer gently and avoid harsh braking", ["Brake hard immediately","Close your eyes","Accelerate sharply"], "Smooth control helps recover from a skid."),
-      q("K53","What does a no-entry sign mean?", "You may not enter that road", ["Parking allowed","Only slow vehicles","Road is open"], "No-entry means vehicles may not enter."),
-      q("K53","What does a round blue sign usually give?", "An instruction that must be obeyed", ["A warning only","A shop advert","A fuel price"], "Mandatory signs tell road users what they must do."),
-      q("K53","What should you do when approaching a school zone?", "Slow down and watch for children", ["Speed up","Hoot continuously","Ignore pedestrians"], "School zones require extra care."),
-      q("K53","What does roadworthiness mean?", "The vehicle is safe and legally fit to drive", ["The car is expensive","The car is new","The car has loud music"], "A roadworthy vehicle is safe to use on public roads."),
-      q("K53","What should you do before overtaking?", "Make sure it is legal, clear and safe", ["Overtake on blind rises","Overtake without looking","Force other cars to brake"], "Overtaking must only happen when legal and safe.")
-    ];
+  fixed.forEach(x=>b.push(q(x[0],x[1],x[2],x[3],x[4])));
+
+  const signs = [
+    ["STOP sign","come to a complete stop","slow down only","park here","turn around immediately"],
+    ["YIELD sign","give way if necessary","speed up","ignore crossing traffic","stop only at night"],
+    ["NO ENTRY sign","do not enter this road","enter slowly","park on the left","only trucks enter"],
+    ["ONE WAY sign","traffic moves in one direction only","you may drive both ways","the road is closed","pedestrians only"],
+    ["NO OVERTAKING sign","do not overtake","overtake immediately","drive on the shoulder","reverse only"],
+    ["SPEED LIMIT sign","do not exceed the posted speed","drive at any speed","minimum speed only","parking zone"],
+    ["PEDESTRIAN CROSSING sign","watch for pedestrians and be ready to stop","speed up","ignore pedestrians","park on the crossing"],
+    ["ROADWORKS sign","slow down and watch for workers or obstacles","drive faster","overtake all vehicles","use your phone"],
+    ["SLIPPERY ROAD sign","slow down because the road may be slippery","brake hard","speed up","ignore wet road conditions"],
+    ["ROUNDABOUT sign","give way and follow roundabout rules","stop forever","drive straight across the island","overtake inside"]
+  ];
+
+  signs.forEach(s=>{
+    b.push(q("Road signs","What does a " + s[0] + " require you to do?",s[1],[s[2],s[3],s[4]],"Read the sign and obey the instruction or warning."));
+    b.push(q("Road signs","If you see a " + s[0] + ", what is the safest response?",s[1],[s[2],s[3],s[4]],"Road signs are there to control or warn traffic."));
+    b.push(q("Road signs","Which answer best matches a " + s[0] + "?",s[1],[s[2],s[3],s[4]],"The correct meaning must match the sign."));
+  });
+
+  const situations = [
+    ["You want to turn left at an intersection","signal in time, slow down and check for pedestrians",["turn without signalling","cut across traffic","look only after turning"]],
+    ["You want to change lanes","check mirrors, blind spot and signal",["move first then look","signal after changing","ignore vehicles behind you"]],
+    ["A child runs near the road","slow down and be ready to stop",["speed up","hoot and keep speed","ignore the child"]],
+    ["A vehicle is following too closely","keep calm and maintain safe control",["brake sharply to scare the driver","speed far above the limit","swerve suddenly"]],
+    ["You approach a sharp bend","slow down before the bend",["brake hard inside the bend","speed up through it","overtake on the bend"]],
+    ["You approach a hill with poor visibility","do not overtake and keep left",["overtake quickly","drive in the middle","stop on the crest"]],
+    ["Your brakes feel weak","stop safely and have the vehicle checked",["continue fast","ignore it","pump the horn"]],
+    ["Your tyre bursts","hold the steering firmly and slow down gradually",["brake hard immediately","turn sharply","accelerate"]],
+    ["Fog reduces visibility","slow down and use appropriate lights",["switch off lights","speed up","follow very closely"]],
+    ["You are tired while driving","stop and rest",["drive faster","drink alcohol","ignore it"]]
+  ];
+
+  situations.forEach(s=>{
+    b.push(q("Driving situations","What should you do? " + s[0] + ".",s[1],s[2],"Choose the safest legal action."));
+    b.push(q("Defensive driving","Best safe action: " + s[0] + ".",s[1],s[2],"Defensive driving means preventing danger early."));
+  });
+
+  const roadRules = [
+    ["use your indicator","before turning or changing lanes","after turning","only when police are watching","only on gravel roads"],
+    ["keep a safe following distance","so you have time to stop","to race other cars","to save hooter use","to make traffic angry"],
+    ["obey speed limits","because they reduce crash risk","only when you feel like it","only near cameras","only on wet roads"],
+    ["check mirrors often","to know what is happening around you","to fix your hair","only when reversing","only when parked"],
+    ["give way to pedestrians at crossings","to protect pedestrians","only when they wave","only at night","only in rural areas"],
+    ["stop at red lights","because red means stop","unless you are late","only if the road is busy","only if there is a camera"],
+    ["avoid using a cellphone while driving","because it distracts you","unless texting is short","only in town","only on highways"],
+    ["do not overload a vehicle","because it affects control and braking","because it looks untidy only","only for new vehicles","only in rain"],
+    ["keep left where required","to allow safe traffic flow","to block faster vehicles","only at night","only for trucks"],
+    ["wear a seat belt","to reduce injury in a crash","to avoid using mirrors","to make the car faster","only during tests"]
+  ];
+
+  roadRules.forEach(r=>{
+    b.push(q("Rules of the road","Why must you " + r[0] + "?",r[1],[r[2],r[3],r[4]],"This is a basic safety rule."));
+    b.push(q("Rules of the road","When driving, you should " + r[0] + " " + r[1] + ".", "True", ["False","Only sometimes","Only for learners"], "This rule is part of safe driving."));
+  });
+
+  const controls = [
+    ["steering wheel","controls the direction of the vehicle",["controls the radio","opens the boot","checks oil"]],
+    ["brake pedal","slows or stops the vehicle",["makes the car louder","switches on lights","opens windows"]],
+    ["accelerator","increases engine power and speed",["stops the vehicle","locks doors","checks tyres"]],
+    ["clutch","helps change gears in a manual vehicle",["turns on hazards","fills fuel","cleans windscreen"]],
+    ["handbrake","helps keep the vehicle stationary when parked",["makes the engine faster","turns headlights on","changes lanes"]],
+    ["indicator switch","shows your intention to turn or change lanes",["starts the engine","checks oil","opens bonnet"]],
+    ["hazard lights","warn others of danger or breakdown",["show you are speeding","replace indicators for turning","mean you can park anywhere"]],
+    ["rear-view mirror","helps you see traffic behind",["controls speed","turns the car","fills water"]],
+    ["windscreen wipers","clear rain from the windscreen",["inflate tyres","change gears","control brakes"]],
+    ["headlights","help you see and be seen",["stop the car","change lanes","open doors"]]
+  ];
+
+  controls.forEach(c=>{
+    b.push(q("Vehicle controls","What is the purpose of the " + c[0] + "?",c[1],c[2],"Know the basic vehicle controls."));
+    b.push(q("Vehicle controls","Which vehicle control " + c[1] + "?",c[0],["brake fluid","number plate","seat cover"],"Match the control to its function."));
+  });
+
+  while(b.length < 250){
+    const base = b[b.length % Math.min(b.length,80)];
+    b.push(q(base.topic, base.text + " Choose the safest answer.", base.correct, shuffle(base.options.filter(o=>o!==base.correct)).slice(0,3), base.explain));
   }
 
-  if(subject === "RTT / CAT"){
-    b = [
-      q("RTT","Wat is hardeware?", "Fisiese dele van ’n rekenaar", ["Programme","Internet data","Wagwoorde"], "Hardeware is dele wat jy kan aanraak."),
-      q("RTT","Wat is sagteware?", "Programme wat op ’n rekenaar werk", ["Skerm en muis","Netwerkkabel","Elektrisiteit"], "Sagteware is programme."),
-      q("RTT","Wat doen ’n bedryfstelsel?", "Bestuur die rekenaar se hulpbronne", ["Maak net dokumente mooi","Druk papier","Meet internetspoed"], "Windows is ’n voorbeeld van ’n bedryfstelsel."),
-      q("RTT","Wat is ’n netwerk?", "Rekenaars wat gekoppel is om data te deel", ["’n Enkele muis","’n Papierlêer","’n Drukkerpatroon"], "Netwerke laat toestelle kommunikeer."),
-      q("RTT","Wat is ’n sigblad?", "’n Program soos Excel vir berekeninge", ["’n E-pos program","’n Foto editor","’n Webblaaier"], "Sigblaaie gebruik selle en formules."),
-      q("RTT","Watter formule tel selle op in Excel?", "SUM", ["PRINT","SAVE","OPEN"], "SUM tel waardes bymekaar."),
-      q("RTT","Wat is ’n lêergids?", "’n Plek waar lêers georganiseer word", ["’n Virus","’n Wagwoord","’n Webwerf"], "Folders hou lêers georganiseerd."),
-      q("RTT","Wat beteken backup?", "’n Kopie van data vir veiligheid", ["Data uitvee","Skerm afsit","Internet oopmaak"], "Backups beskerm teen data verlies."),
-      q("RTT","Wat is phishing?", "’n Bedrogpoging om persoonlike inligting te steel", ["’n Drukkerfout","’n Tipe muis","’n Word-funksie"], "Phishing steel inligting."),
-      q("RTT","Wat is cloud storage?", "Data wat aanlyn gestoor word", ["Data op papier","Net in RAM","Net op ’n muismat"], "Cloud storage gebruik internetdienste.")
-    ];
-  }
-
-  if(subject === "Landbouwetenskappe"){
-    b = [
-      q("Landbou","Wat is agro-ekologie?", "Die studie van landbou en die omgewing saam", ["Net boekhouding","Net rekenaars","Net padtekens"], "Agro-ekologie kyk na boerdery binne ekosisteme."),
-      q("Landbou","Wat is volhoubare landbou?", "Boerdery wat hulpbronne beskerm vir die toekoms", ["Alles vinnig gebruik","Geen grond beskerm nie","Net uitvoere"], "Volhoubaar beteken dit kan aanhou."),
-      q("Landbou","Waarom is grond belangrik?", "Plante groei daarin en kry voedingstowwe", ["Dit maak internet vinniger","Dit vervang water","Dit is net vir paaie"], "Grond ondersteun plantgroei."),
-      q("Landbou","Wat is erosie?", "Wanneer grond deur wind of water weggedra word", ["Wanneer plante groei","Wanneer diere eet","Wanneer pryse styg"], "Erosie verloor vrugbare grond."),
-      q("Landbou","Wat is kompos?", "Ontbinde organiese materiaal wat grond verbeter", ["Plastiek afval","Diesel","Soutwater"], "Kompos verbeter grondvrugbaarheid."),
-      q("Landbou","Waarom het plante water nodig?", "Vir groei en fotosintese", ["Vir geraas","Vir padtekens","Vir bankdienste"], "Water is noodsaaklik vir plante."),
-      q("Landbou","Wat is vee?", "Diere wat op ’n plaas aangehou word", ["Wolke","Masjiene alleen","Rekenaarlêers"], "Vee sluit beeste, skape, bokke ens. in."),
-      q("Landbou","Waarom is biodiversiteit belangrik?", "Dit hou ekosisteme gesond", ["Dit maak papier groter","Dit stop alle reën","Dit verwyder sonlig"], "Biodiversiteit help balans."),
-      q("Landbou","Wat beteken grondvrugbaarheid?", "Die grond se vermoë om plante te ondersteun", ["Hoe hard ’n pad is","Hoe vinnig ’n trekker ry","Hoe warm ’n skuur is"], "Vrugbare grond gee voedingstowwe."),
-      q("Landbou","Wat is besproeiing?", "Water aan gewasse gee", ["Oes verkoop","Diere tel","Grond verbrand"], "Besproeiing help plante wanneer water kort is.")
-    ];
-  }
-
-  if(subject === "Wiskundige Geletterdheid"){
-    b = [
-      q("Wisk Geletterdheid","Wat is ’n tarief?", "’n Koste per eenheid of gebruik", ["’n Gedig","’n Padteken","’n Dieresoort"], "Tariewe wys hoe koste bereken word."),
-      q("Wisk Geletterdheid","Wat wys ’n bankstaat?", "Geld wat inkom en uitgaan", ["Net diere","Net padtekens","Net grammatika"], "Bankstate wys transaksies."),
-      q("Wisk Geletterdheid","As R100 + R50 = ?", "R150", ["R50","R100","R500"], "Tel die bedrae bymekaar."),
-      q("Wisk Geletterdheid","Wat is wins?", "Inkomste minus uitgawes", ["Uitgawes plus skuld","Net belasting","Net afstand"], "Wins = inkomste - uitgawes."),
-      q("Wisk Geletterdheid","Wat meet afstand op ’n kaart?", "Skaal", ["Rente","BTW","Eienaarskap"], "Skaal help afstand bereken."),
-      q("Wisk Geletterdheid","Wat beteken waarskynlikheid?", "Kans dat iets gebeur", ["Hoeveel geld in bank","Lengte van ’n lyn","Naam van ’n winkel"], "Waarskynlikheid is kans."),
-      q("Wisk Geletterdheid","1 meter is hoeveel sentimeter?", "100 cm", ["10 cm","1000 cm","1 cm"], "1 m = 100 cm."),
-      q("Wisk Geletterdheid","Wat is ’n faktuur?", "Dokument wat wys wat gekoop en betaal moet word", ["’n Padkaart","’n Gedig","’n Foto"], "Fakture wys items en bedrae."),
-      q("Wisk Geletterdheid","Wat is ’n kwitansie?", "Bewys van betaling", ["’n Vraagteken","’n Rekenaar virus","’n Landbou dier"], "Kwitansie bewys betaling."),
-      q("Wisk Geletterdheid","Wat is BTW?", "Belasting op toegevoegde waarde", ["Basiese voertuig toets","Bome teen wind","Bank tarief waarde"], "BTW is belasting.")
-    ];
-  }
-
-  if(subject === "Afrikaans HT"){
-    b = [
-      q("Afrikaans","Wat is ’n werkwoord?", "’n Doenwoord", ["’n Naamwoord","’n Voornaamwoord","’n Leesteken"], "Werkwoorde wys aksie."),
-      q("Afrikaans","Wat is ’n selfstandige naamwoord?", "’n Naam van iets", ["’n Aksie","’n Vraag","’n Punt"], "Naamwoorde benoem mense/dinge/plekke."),
-      q("Afrikaans","Wat is ’n hoofletter?", "Groot beginletter", ["Klein letter","Komma","Vraagteken"], "Sinne begin met hoofletters."),
-      q("Afrikaans","Wat is ’n opsomming?", "Kort weergawe van belangrike punte", ["’n Lang storie sonder punt","Net prente","Net dialoog"], "Opsomming vat kernpunte saam."),
-      q("Afrikaans","Wat beteken begripstoets?", "Lees en verstaan van ’n teks", ["Net somme","Net teken","Net luister na musiek"], "Begrip toets verstaan."),
-      q("Afrikaans","Wat is ’n sinoniem?", "Woord met dieselfde betekenis", ["Teenoorgestelde woord","Leesteken","Hoofletter"], "Sinonieme beteken soortgelyk."),
-      q("Afrikaans","Wat is ’n antoniem?", "Woord met teenoorgestelde betekenis", ["Dieselfde betekenis","Naam van ’n plek","Werkwoord"], "Antonieme is teenoorgesteldes."),
-      q("Afrikaans","Wat is direkte rede?", "Iemand se presiese woorde", ["’n Som","’n Kaart","’n Rekening"], "Direkte rede gebruik aanhalingstekens."),
-      q("Afrikaans","Wat is indirekte rede?", "Iemand se woorde oorvertel", ["’n Gedig se rym","Net ’n komma","Net ’n titel"], "Indirekte rede vertel dit oor."),
-      q("Afrikaans","Wat is ’n paragraaf?", "’n Groep sinne oor een idee", ["Net een letter","Net ’n komma","Net ’n getal"], "Paragrawe organiseer idees.")
-    ];
-  }
-
-  if(subject === "English FAL"){
-    b = [
-      q("English","What is a noun?", "A naming word", ["An action word","A punctuation mark","A question"], "A noun names a person, place or thing."),
-      q("English","What is a verb?", "An action word", ["A name","A full stop","A title"], "A verb shows action."),
-      q("English","What must a sentence start with?", "Capital letter", ["Small letter only","Comma","Number"], "Sentences start with capital letters."),
-      q("English","What should a sentence end with?", "Full stop or punctuation", ["Nothing","Only a capital letter","A heading"], "Sentences need punctuation."),
-      q("English","What is a folktale?", "A traditional story", ["A bank statement","A road sign","A spreadsheet"], "Folktales are traditional stories."),
-      q("English","What is a viewpoint?", "Someone’s opinion or way of seeing something", ["A ruler","A computer cable","A farm tool"], "Viewpoint means opinion/perspective."),
-      q("English","What is a summary?", "A short version of main ideas", ["A very long copy","A picture only","A calculation"], "Summaries keep key ideas."),
-      q("English","What is a myth?", "A traditional story often explaining something", ["A receipt","A password","A keyboard"], "Myths often explain beliefs/events."),
-      q("English","What is grammar?", "Rules of language", ["A type of food","A road rule","A farm animal"], "Grammar helps sentences work."),
-      q("English","What is comprehension?", "Understanding what you read", ["Drawing only","Typing only","Driving only"], "Comprehension is reading understanding.")
-    ];
-  }
-
-  if(subject === "Besigheidstudies"){
-    b = [
-      q("Besigheidstudies","Wat is ’n entrepreneur?", "Iemand wat ’n besigheid begin en risiko neem", ["Net ’n kliënt","Net ’n werknemer","Net ’n belastingvorm"], "Entrepreneurs begin besighede."),
-      q("Besigheidstudies","Wat is sosiale verantwoordelikheid?", "Besigheid se plig om gemeenskap te help", ["Net wins vat","Net pryse verhoog","Net voorraad tel"], "Besighede moet verantwoordelik optree."),
-      q("Besigheidstudies","Wat is werkloosheid?", "Wanneer mense wil werk maar nie werk kry nie", ["Wanneer pryse daal","Wanneer voorraad verkoop","Wanneer ’n winkel oopmaak"], "Werkloosheid is ’n sosio-ekonomiese kwessie."),
-      q("Besigheidstudies","Wat is armoede?", "Wanneer mense nie basiese behoeftes kan bekostig nie", ["Groot wins","Nuwe eienaar","Goeie advertensie"], "Armoede is ’n sosio-ekonomiese probleem."),
-      q("Besigheidstudies","Wat is ’n eenmansaak?", "Besigheid met een eienaar", ["Besigheid met baie aandeelhouers","Regeringsdepartement","Skoolvak"], "Eenmansaak het een eienaar."),
-      q("Besigheidstudies","Wat is ’n vennootskap?", "Twee of meer mense besit ’n besigheid saam", ["Net een eienaar","Geen eienaar","Slegs kliënte"], "Vennootskap het meer as een eienaar."),
-      q("Besigheidstudies","Wat is kapitaal?", "Geld/hulpbronne om ’n besigheid te begin", ["Net klagtes","Net padtekens","Net grammatika"], "Kapitaal help ’n besigheid begin."),
-      q("Besigheidstudies","Wat is wins?", "Inkomste minus uitgawes", ["Uitgawes plus skuld","Net belasting","Net water"], "Wins is wat oorbly."),
-      q("Besigheidstudies","Wat is ’n behoefte?", "Iets wat mense nodig het", ["Iets altyd luuks","Net advertensie","Net wins"], "Behoeftes is nodig vir lewe of werk."),
-      q("Besigheidstudies","Wat is ’n produk?", "Iets wat verkoop word", ["Net ’n gedig","Net ’n formule","Net ’n pad"], "Produkte kan goedere of dienste wees.")
-    ];
-  }
-
-  if(b.length === 0){
-    b = [q("Algemeen","Kies die beste antwoord.", "Reg", ["Verkeerd","Nie seker","Geen antwoord"], "Lees elke vraag stadig.")];
-  }
-
-  let expanded = [];
-  for(let i=0;i<30;i++){
-    b.forEach((item,idx)=>{
-      expanded.push({
-        topic:item.topic,
-        text:item.text,
-        correct:item.correct,
-        options:shuffle(item.options),
-        explain:item.explain
-      });
-    });
-  }
-
-  return expanded;
+  return b.slice(0,250);
 }
 
 function sessionNumber(title){
@@ -237,8 +204,7 @@ function sessionNumber(title){
   return m ? Number(m[1]) : 1;
 }
 
-const subject = subjectFromTitle(sessionTitle);
-const bank = buildBank(subject);
+const bank = buildK53Bank();
 const start = ((sessionNumber(sessionTitle)-1) * 25) % bank.length;
 const questions = [];
 for(let i=0;i<25;i++){
@@ -246,13 +212,12 @@ for(let i=0;i<25;i++){
 }
 
 document.getElementById("titleBox").textContent = sessionTitle;
-document.getElementById("subBox").textContent = subject + " | 25 vrae";
 
 function render(){
   selected = null;
   marked = false;
 
-  document.getElementById("progress").textContent = `Vraag ${current+1} van ${questions.length} | Reg: ${score}`;
+  document.getElementById("progress").textContent = `Question ${current+1} of ${questions.length} | Correct: ${score}`;
   const item = questions[current];
 
   document.getElementById("topic").textContent = item.topic;
@@ -282,7 +247,7 @@ function markAnswer(){
   const item = questions[current];
 
   if(!selected){
-    document.getElementById("feedback").innerHTML = "<span class='bad'>Kies eers ’n antwoord.</span>";
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Choose an answer first.</span>";
     return;
   }
 
@@ -290,23 +255,19 @@ function markAnswer(){
 
   if(selected === item.correct){
     score++;
-    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Reg!</span>";
+    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Correct!</span>";
   } else {
-    wrongList.push({
-      q:item.text,
-      your:selected,
-      correct:item.correct
-    });
-    document.getElementById("feedback").innerHTML = "<span class='bad'>☹ Verkeerd. Regte antwoord: " + item.correct + "</span>";
+    wrongList.push({q:item.text,your:selected,correct:item.correct,explain:item.explain});
+    document.getElementById("feedback").innerHTML = "<span class='bad'>☹ Wrong. Correct answer: " + item.correct + "</span>";
   }
 
-  document.getElementById("explain").textContent = "Verduideliking: " + item.explain;
-  document.getElementById("progress").textContent = `Vraag ${current+1} van ${questions.length} | Reg: ${score}`;
+  document.getElementById("explain").textContent = "Explanation: " + item.explain;
+  document.getElementById("progress").textContent = `Question ${current+1} of ${questions.length} | Correct: ${score}`;
 }
 
 function nextQuestion(){
   if(!marked){
-    document.getElementById("feedback").innerHTML = "<span class='bad'>Merk eers die antwoord.</span>";
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Mark the answer first.</span>";
     return;
   }
 
@@ -322,31 +283,32 @@ function finishQuiz(){
   document.getElementById("quizBox").style.display = "none";
   const wrong = questions.length - score;
 
-  let html = `<h2>Sessie klaar</h2>
+  let html = `<h2>Session complete</h2>
     <p><b>${sessionTitle}</b></p>
-    <p style="font-size:22px;font-weight:900">Punt: ${score} uit ${questions.length}</p>
-    <p>Verkeerd: ${wrong}</p>`;
+    <p style="font-size:22px;font-weight:900">Score: ${score} out of ${questions.length}</p>
+    <p>Wrong: ${wrong}</p>`;
 
   if(wrongList.length > 0){
-    html += "<h3>Verkeerde antwoorde</h3>";
+    html += "<h3>Wrong answers</h3>";
     wrongList.slice(0,10).forEach(w=>{
-      html += `<div class="result"><b>Vraag:</b> ${w.q}<br><b>Sy antwoord:</b> ${w.your}<br><b>Reg:</b> ${w.correct}</div>`;
+      html += `<div class="result"><b>Question:</b> ${w.q}<br><b>His answer:</b> ${w.your}<br><b>Correct:</b> ${w.correct}</div>`;
     });
 
-    html += `<div class="result"><span class="bad">Hy moet eers sy verkeerde vrae reg oefen voordat hierdie sessie klaar tel.</span></div>`;
-    html += `<button class="orange" onclick="startWrongRetry()">Oefen verkeerde vrae weer</button>`;
+    html += `<div class="result"><span class="bad">He must first fix his wrong answers before this session counts as complete.</span></div>`;
+    html += `<button class="orange" onclick="startWrongRetry()">Practise wrong questions again</button>`;
   } else {
     if(di !== null && ti !== null){
       localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
     }
 
-    html += `<div class="result"><span class="ok">🎉 Alles eerste keer reg!</span></div>`;
-    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
+    html += `<div class="result"><span class="ok">🎉 All correct first time!</span></div>`;
+    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Dad - send update</button>`;
   }
 
   document.getElementById("finalResult").innerHTML = html;
   document.getElementById("finalResult").style.display = "block";
 }
+
 function startWrongRetry(){
   if(wrongList.length === 0) return;
 
@@ -359,7 +321,7 @@ function startWrongRetry(){
     text: w.q,
     correct: w.correct,
     options: shuffle([w.correct, w.your, "Not sure", "Review again"]),
-    explain: "This was answered incorrectly earlier. Read it carefully and choose the correct answer."
+    explain: w.explain || "This question was answered incorrectly earlier."
   }));
 
   current = 0;
@@ -385,7 +347,7 @@ function renderRetry(){
   const item = retryQuestions[current];
 
   document.getElementById("progress").textContent =
-    "Wrong Retry: " + (current + 1) + " van " + retryQuestions.length + " | Reggemaak: " + retryCorrectCount + " van " + retryOriginalCount;
+    "Wrong Retry: " + (current + 1) + " of " + retryQuestions.length + " | Fixed: " + retryCorrectCount + " of " + retryOriginalCount;
 
   document.getElementById("topic").textContent = item.topic;
   document.getElementById("question").textContent = item.text;
@@ -414,7 +376,7 @@ function markRetryAnswer(){
   const item = retryQuestions[current];
 
   if(!selected){
-    document.getElementById("feedback").innerHTML = "<span class='bad'>Kies eers ’n antwoord.</span>";
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Choose an answer first.</span>";
     return;
   }
 
@@ -422,15 +384,12 @@ function markRetryAnswer(){
 
   if(selected === item.correct){
     retryCorrectCount++;
-    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Reg! Hierdie fout val nou weg.</span>";
+    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Correct! This mistake now falls away.</span>";
     retryQuestions.splice(current, 1);
-
-    if(current >= retryQuestions.length){
-      current = 0;
-    }
+    if(current >= retryQuestions.length){ current = 0; }
   } else {
     document.getElementById("feedback").innerHTML =
-      "<span class='bad'>☹ Nog verkeerd. Regte antwoord: " + item.correct + ". Jy gaan hierdie vraag weer kry.</span>";
+      "<span class='bad'>☹ Still wrong. Correct answer: " + item.correct + ". You will get this question again.</span>";
   }
 
   document.getElementById("explain").textContent = item.explain;
@@ -438,7 +397,7 @@ function markRetryAnswer(){
 
 function nextRetryQuestion(){
   if(!marked){
-    document.getElementById("feedback").innerHTML = "<span class='bad'>Merk eers die antwoord.</span>";
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Mark the answer first.</span>";
     return;
   }
 
@@ -447,12 +406,7 @@ function nextRetryQuestion(){
     return;
   }
 
-  if(current < retryQuestions.length - 1){
-    current++;
-  } else {
-    current = 0;
-  }
-
+  if(current < retryQuestions.length - 1){ current++; } else { current = 0; }
   renderRetry();
 }
 
@@ -463,51 +417,39 @@ function finishWrongRetry(){
     localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
   }
 
-  const html = `<h2>Wrong Retry klaar 🎉</h2>
-    <p style="font-size:22px;font-weight:900">Al ${retryOriginalCount} verkeerde vrae is nou reggemaak.</p>
-    <p>Mooi Enrico — nou tel die sessie as klaar.</p>
-    <div class="result"><span class="ok">Stuur nou eers die WhatsApp update na Dad.</span></div>
-    <button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
+  const html = `<h2>Wrong Retry complete 🎉</h2>
+    <p style="font-size:22px;font-weight:900">All ${retryOriginalCount} wrong questions are now fixed.</p>
+    <p>Good work Enrico — now this session counts as complete.</p>
+    <div class="result"><span class="ok">Send the WhatsApp update to Dad now.</span></div>
+    <button class="green" onclick="sendWhatsapp()">WhatsApp Dad - send update</button>`;
 
   document.getElementById("finalResult").innerHTML = html;
   document.getElementById("finalResult").style.display = "block";
 }
+
 const originalMarkAnswer = markAnswer;
 markAnswer = function(){
-  if(retryMode){
-    markRetryAnswer();
-  } else {
-    originalMarkAnswer();
-  }
+  if(retryMode){ markRetryAnswer(); } else { originalMarkAnswer(); }
 };
 
 const originalNextQuestion = nextQuestion;
 nextQuestion = function(){
-  if(retryMode){
-    nextRetryQuestion();
-  } else {
-    originalNextQuestion();
-  }
+  if(retryMode){ nextRetryQuestion(); } else { originalNextQuestion(); }
 };
+
 function sendWhatsapp(){
-  const wrong = questions.length - score;
-  let msg = `Enrico toets update:
-Vak: ${subject}
-Sessie: ${sessionTitle}
-Punt: ${score}/${questions.length}
-Verkeerd: ${wrong}`;
+  const originalWrong = retryOriginalCount > 0 ? retryOriginalCount : (25 - score);
+
+  let msg = `Enrico K53 update:
+Session: ${sessionTitle}
+Question bank: 250 English K53 questions
+Score: ${25 - originalWrong}/25
+Original wrong: ${originalWrong}`;
 
   if(retryOriginalCount > 0 && retryQuestions.length === 0){
-    msg += `\nWrong Retry: Klaar - ${retryOriginalCount}/${retryOriginalCount} foute reggemaak`;
-  } else if(retryOriginalCount > 0){
-    msg += `\nWrong Retry: Nog besig - ${retryCorrectCount}/${retryOriginalCount} foute reggemaak`;
-  }
-
-  if(wrongList.length > 0){
-    msg += "\nEerste foute:";
-    wrongList.slice(0,5).forEach((w,i)=>{
-      msg += `\n${i+1}) ${w.q} | Reg: ${w.correct}`;
-    });
+    msg += `\nWrong Retry: Complete - ${retryOriginalCount}/${retryOriginalCount} mistakes fixed`;
+  } else if(retryOriginalCount === 0){
+    msg += `\nWrong Retry: Not needed - all correct first time`;
   }
 
   window.open("https://wa.me/" + DAD + "?text=" + encodeURIComponent(msg), "_blank");
@@ -519,37 +461,5 @@ Verkeerd: ${wrong}`;
 
 render();
 </script>
-<script>
-/* TEAE_BLOCK_BACK_UNTIL_COMPLETE_V1 */
-document.addEventListener("DOMContentLoaded", function(){
-  const links = Array.from(document.querySelectorAll("a.btn.gray"));
-  links.forEach(a => {
-    if(a.textContent.includes("Terug na program") || a.textContent.includes("Terug main")){
-      a.style.display = "none";
-    }
-  });
-});
-</script>
-<script>
-/* TEAE_HIDE_FINAL_BACK_BUTTONS_V2 */
-setInterval(function(){
-  const finalBox = document.getElementById("finalResult");
-  if(finalBox && finalBox.style.display !== "none"){
-    finalBox.querySelectorAll("a").forEach(function(a){
-      if(a.textContent.includes("Terug na program") || a.textContent.includes("Terug main")){
-        a.remove();
-      }
-    });
-  }
-}, 300);
-</script>
 </body>
 </html>
-
-
-
-
-
-
-
-
