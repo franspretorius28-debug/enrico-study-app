@@ -22,13 +22,144 @@ button,a.btn{display:inline-block;text-decoration:none;padding:11px 14px;border:
 .green{background:#16a34a!important}.gray{background:#475569!important}.red{background:#dc2626!important}
 .doneText{color:#16a34a;font-weight:900}.waitText{color:#dc2626;font-weight:900}
 .note{background:#fff7cc;border:1px solid #facc15;border-radius:14px;padding:12px;margin-top:12px}
+/* TEAE_GAP_STYLE_EXAM_PROGRAM_V1 */
+body{
+  background:#000 !important;
+  color:#f8fafc !important;
+  font-family:Arial,sans-serif !important;
+}
+header{
+  background:#050505 !important;
+  border-bottom:1px solid #2a2a2a !important;
+  color:white !important;
+  padding:32px 18px !important;
+}
+header h1{
+  color:white !important;
+  font-size:34px !important;
+  font-weight:900 !important;
+}
+header p{
+  color:#cbd5e1 !important;
+  font-weight:700 !important;
+}
+.wrap,.container,main{
+  background:#000 !important;
+}
+.card,.panel,section{
+  background:#1a1a1a !important;
+  color:#f8fafc !important;
+  border:1px solid #303030 !important;
+  box-shadow:none !important;
+}
+h2,h3,h4{
+  color:#ffffff !important;
+}
+.examRow,.day,.task,.result,.notice{
+  background:#1a1a1a !important;
+  border-color:#303030 !important;
+  color:#f8fafc !important;
+}
+.small, .muted, p{
+  color:#cbd5e1 !important;
+}
+.btn,button,a.btn{
+  background:#b51fa5 !important;
+  color:white !important;
+  border-radius:8px !important;
+  border:0 !important;
+  font-weight:900 !important;
+}
+button.green,.green{
+  background:#16a34a !important;
+}
+button.red,.red{
+  background:#dc2626 !important;
+}
+button.gray,.gray{
+  background:#374151 !important;
+}
+.doneText{
+  color:#22c55e !important;
+  font-weight:900 !important;
+}
+.notDoneText, .notdone, .pending{
+  color:#ef4444 !important;
+  font-weight:900 !important;
+}
+.gapTopCard{
+  background:#1a1a1a;
+  border:1px solid #303030;
+  border-radius:12px;
+  padding:18px;
+  margin:18px 0;
+}
+.gapStats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin:16px 0;
+}
+.gapStat{
+  background:#1a1a1a;
+  border:1px solid #303030;
+  border-radius:10px;
+  padding:16px;
+}
+.gapStat .label{
+  color:#cbd5e1;
+  font-size:14px;
+}
+.gapStat .num{
+  color:white;
+  font-size:28px;
+  font-weight:900;
+}
+.gapAlert{
+  background:#2a1630;
+  border:1px solid #b51fa5;
+  border-radius:10px;
+  padding:14px;
+  color:#fff;
+  font-weight:800;
+  margin:14px 0;
+}
+@media(max-width:700px){
+  .gapStats{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 <header>
-  <h1>Enrico Eksamen Program</h1>
-  <p>Kwartaal 2 | Begin Donderdag 04 Junie | Geen Saterdag/Sondag | Vrydae net tot 12:00</p>
+  <h1>Welcome, Student!</h1>
+  <p>Grade 10 • Afrikaans • Exam Preparation Portal</p>
 </header>
+<!-- TEAE_GAP_TOP_CARD_V1 -->
+<div class="wrap">
+  <div class="gapTopCard">
+    <h2>Enrico Exam Preparation</h2>
+    <p>Hierdie is jou voorbereidingsprogram. Voltooi jou oefensessies hier en skryf jou finale eksamen op <b>GAP Online</b>.</p>
+
+    <div class="gapStats">
+      <div class="gapStat">
+        <div class="label">Preparation App</div>
+        <div class="num">Enrico</div>
+      </div>
+      <div class="gapStat">
+        <div class="label">Final Exam Platform</div>
+        <div class="num">GAP</div>
+      </div>
+      <div class="gapStat">
+        <div class="label">Rule</div>
+        <div class="num">Finish</div>
+      </div>
+    </div>
+
+    <div class="gapAlert">
+      Belangrik: Jy berei voor op hierdie app. Wanneer jou werk klaar is, gaan jy na GAP Online → Exams om jou finale eksamen te skryf.
+    </div>
+  </div>
+</div>
 
 <div class="wrap">
   <div class="card">
@@ -315,6 +446,7 @@ renderPlan();
 </script>
 </body>
 </html>
+
 
 
 
