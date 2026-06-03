@@ -694,6 +694,148 @@ div.doneText,
   margin:26px 0 !important;
   padding:18px !important;
 }
+/* TEAE_POLISH_TOP_DASHBOARD_V1 */
+
+/* Maak boonste preparation card mooier soos GAP dashboard */
+.gapTopCard{
+  position:relative !important;
+  overflow:hidden !important;
+  background:linear-gradient(135deg,#1a1a1a 0%,#111827 65%,#2a1630 100%) !important;
+  border:1px solid #b51fa5 !important;
+  border-radius:18px !important;
+  padding:28px !important;
+  box-shadow:0 0 0 1px rgba(181,31,165,.25), 0 18px 40px rgba(0,0,0,.35) !important;
+}
+
+.gapTopCard:before{
+  content:"";
+  position:absolute;
+  right:-80px;
+  top:-80px;
+  width:220px;
+  height:220px;
+  background:radial-gradient(circle,rgba(217,70,239,.28),rgba(181,31,165,0) 70%);
+  pointer-events:none;
+}
+
+.gapTopCard:after{
+  content:"EXAM PREP";
+  position:absolute;
+  right:24px;
+  top:24px;
+  color:rgba(255,255,255,.08);
+  font-size:38px;
+  font-weight:900;
+  letter-spacing:2px;
+  pointer-events:none;
+}
+
+.gapTopCard h2{
+  color:#ffffff !important;
+  font-size:30px !important;
+  font-weight:900 !important;
+  margin-bottom:10px !important;
+}
+
+.gapTopCard h2:before{
+  content:"🎓 ";
+}
+
+.gapTopCard > p{
+  color:#e5e7eb !important;
+  font-size:16px !important;
+  line-height:1.55 !important;
+  max-width:760px !important;
+}
+
+.gapStats{
+  display:grid !important;
+  grid-template-columns:repeat(3,1fr) !important;
+  gap:16px !important;
+  margin:22px 0 18px !important;
+}
+
+.gapStat{
+  background:rgba(17,24,39,.9) !important;
+  border:1px solid #374151 !important;
+  border-radius:14px !important;
+  padding:18px !important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.03) !important;
+}
+
+.gapStat:hover{
+  border-color:#b51fa5 !important;
+}
+
+.gapStat .label{
+  color:#cbd5e1 !important;
+  font-size:13px !important;
+  font-weight:800 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.5px !important;
+}
+
+.gapStat .num{
+  color:#ffffff !important;
+  font-size:30px !important;
+  font-weight:900 !important;
+  margin-top:8px !important;
+}
+
+.gapStat:nth-child(1) .num:before{
+  content:"📘 ";
+  font-size:22px;
+}
+
+.gapStat:nth-child(2) .num:before{
+  content:"🏢 ";
+  font-size:22px;
+}
+
+.gapStat:nth-child(3) .num:before{
+  content:"✅ ";
+  font-size:22px;
+}
+
+.gapAlert{
+  background:#111827 !important;
+  color:#ffffff !important;
+  border:2px solid #b51fa5 !important;
+  border-radius:14px !important;
+  padding:16px 18px !important;
+  font-size:16px !important;
+  font-weight:900 !important;
+  line-height:1.45 !important;
+  box-shadow:0 0 18px rgba(181,31,165,.18) !important;
+}
+
+.gapAlert:before{
+  content:"⚠️ ";
+}
+
+/* Top page header ook bietjie mooier */
+header{
+  background:linear-gradient(180deg,#050505 0%,#0b0b0b 100%) !important;
+  border-bottom:1px solid #303030 !important;
+}
+
+header h1{
+  font-size:38px !important;
+  text-shadow:0 2px 14px rgba(217,70,239,.25) !important;
+}
+
+header p{
+  color:#e5e7eb !important;
+}
+
+@media(max-width:800px){
+  .gapStats{
+    grid-template-columns:1fr !important;
+  }
+  .gapTopCard:after{
+    display:none;
+  }
+}
 </style>
 </head>
 <body>
@@ -1310,6 +1452,148 @@ div.doneText,
   margin:26px 0 !important;
   padding:18px !important;
 }
+/* TEAE_POLISH_TOP_DASHBOARD_V1 */
+
+/* Maak boonste preparation card mooier soos GAP dashboard */
+.gapTopCard{
+  position:relative !important;
+  overflow:hidden !important;
+  background:linear-gradient(135deg,#1a1a1a 0%,#111827 65%,#2a1630 100%) !important;
+  border:1px solid #b51fa5 !important;
+  border-radius:18px !important;
+  padding:28px !important;
+  box-shadow:0 0 0 1px rgba(181,31,165,.25), 0 18px 40px rgba(0,0,0,.35) !important;
+}
+
+.gapTopCard:before{
+  content:"";
+  position:absolute;
+  right:-80px;
+  top:-80px;
+  width:220px;
+  height:220px;
+  background:radial-gradient(circle,rgba(217,70,239,.28),rgba(181,31,165,0) 70%);
+  pointer-events:none;
+}
+
+.gapTopCard:after{
+  content:"EXAM PREP";
+  position:absolute;
+  right:24px;
+  top:24px;
+  color:rgba(255,255,255,.08);
+  font-size:38px;
+  font-weight:900;
+  letter-spacing:2px;
+  pointer-events:none;
+}
+
+.gapTopCard h2{
+  color:#ffffff !important;
+  font-size:30px !important;
+  font-weight:900 !important;
+  margin-bottom:10px !important;
+}
+
+.gapTopCard h2:before{
+  content:"🎓 ";
+}
+
+.gapTopCard > p{
+  color:#e5e7eb !important;
+  font-size:16px !important;
+  line-height:1.55 !important;
+  max-width:760px !important;
+}
+
+.gapStats{
+  display:grid !important;
+  grid-template-columns:repeat(3,1fr) !important;
+  gap:16px !important;
+  margin:22px 0 18px !important;
+}
+
+.gapStat{
+  background:rgba(17,24,39,.9) !important;
+  border:1px solid #374151 !important;
+  border-radius:14px !important;
+  padding:18px !important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.03) !important;
+}
+
+.gapStat:hover{
+  border-color:#b51fa5 !important;
+}
+
+.gapStat .label{
+  color:#cbd5e1 !important;
+  font-size:13px !important;
+  font-weight:800 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.5px !important;
+}
+
+.gapStat .num{
+  color:#ffffff !important;
+  font-size:30px !important;
+  font-weight:900 !important;
+  margin-top:8px !important;
+}
+
+.gapStat:nth-child(1) .num:before{
+  content:"📘 ";
+  font-size:22px;
+}
+
+.gapStat:nth-child(2) .num:before{
+  content:"🏢 ";
+  font-size:22px;
+}
+
+.gapStat:nth-child(3) .num:before{
+  content:"✅ ";
+  font-size:22px;
+}
+
+.gapAlert{
+  background:#111827 !important;
+  color:#ffffff !important;
+  border:2px solid #b51fa5 !important;
+  border-radius:14px !important;
+  padding:16px 18px !important;
+  font-size:16px !important;
+  font-weight:900 !important;
+  line-height:1.45 !important;
+  box-shadow:0 0 18px rgba(181,31,165,.18) !important;
+}
+
+.gapAlert:before{
+  content:"⚠️ ";
+}
+
+/* Top page header ook bietjie mooier */
+header{
+  background:linear-gradient(180deg,#050505 0%,#0b0b0b 100%) !important;
+  border-bottom:1px solid #303030 !important;
+}
+
+header h1{
+  font-size:38px !important;
+  text-shadow:0 2px 14px rgba(217,70,239,.25) !important;
+}
+
+header p{
+  color:#e5e7eb !important;
+}
+
+@media(max-width:800px){
+  .gapStats{
+    grid-template-columns:1fr !important;
+  }
+  .gapTopCard:after{
+    display:none;
+  }
+}
 </style>
 
 <script>
@@ -1434,6 +1718,7 @@ setTimeout(teaeClearDayHeaders, 1000);
 </script>
 </body>
 </html>
+
 
 
 
