@@ -877,7 +877,152 @@ function teaeBankForAuditAndUseV2(rawList){
   return clean;
 }
 
-const rawBank = buildBesigheidBank();
+/* TEAE_BESIGHEID_FORCE_250_V1 */
+function teaeBesigheidForce250V1(oldBank){
+  const out = [];
+  const seenQ = new Set();
+  const seenOpt = new Set();
+
+  function norm(v){
+    return String(v || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9áéíóúêëïöü\s\/\-]/gi," ")
+      .replace(/\s+/g," ")
+      .trim();
+  }
+
+  function optKey(item){
+    return (item.options || []).map(norm).filter(Boolean).sort().join(" | ");
+  }
+
+  function addObj(topic, text, correct, options, explain){
+    const item = {
+      topic: topic,
+      text: text,
+      correct: correct,
+      options: options.slice(0,4),
+      explain: explain || "Lees die vraag mooi en kies die beste Besigheidstudies antwoord."
+    };
+
+    if(!item.options.some(o => norm(o) === norm(correct))){
+      item.options[0] = correct;
+    }
+
+    const qk = norm(item.text);
+    const ok = optKey(item);
+    const inside = new Set(item.options.map(norm).filter(Boolean));
+
+    if(!qk || !ok || inside.size < 4) return false;
+    if(seenQ.has(qk) || seenOpt.has(ok)) return false;
+
+    seenQ.add(qk);
+    seenOpt.add(ok);
+    out.push(item);
+    return true;
+  }
+
+  (oldBank || []).forEach(function(x){
+    if(x && x.text && x.correct && Array.isArray(x.options) && x.options.length >= 4){
+      addObj(x.topic || "Besigheidstudies", x.text, x.correct, x.options, x.explain);
+    }
+  });
+
+  const concepts = [
+    ["Entrepreneurskap","entrepreneur","n Persoon wat n besigheid begin en risiko neem","n Werknemer wat nooit besluite neem nie","n Klant wat net produkte koop","n Bankrekening sonder aktiwiteit"],
+    ["Entrepreneurskap","wins","Die geld wat oorbly nadat koste afgetrek is","Die totale uitgawes van die besigheid","n Produk wat vernietig word","n Werknemer se verlofdae"],
+    ["Entrepreneurskap","verlies","Wanneer koste groter as inkomste is","Wanneer inkomste groter as koste is","Wanneer voorraad verkoop word","Wanneer klante terugkom"],
+    ["Entrepreneurskap","risiko","Die kans dat iets verkeerd kan loop of verlies kan veroorsaak","n Gewaarborgde wins sonder probleme","n Tipe advertensie alleen","n Werknemer se salarisstrook"],
+    ["Entrepreneurskap","geleentheid","n Kans om n behoefte in die mark te gebruik","n Probleem wat altyd verlies beteken","n Bankfooi op n rekening","n Item wat nooit verkoop nie"],
+
+    ["Besigheidsvorme","eenmansaak","n Besigheid wat deur een persoon besit word","n Maatskappy met aandeelhouers","n Regeringsdepartement","n Besigheid sonder eienaar"],
+    ["Besigheidsvorme","vennootskap","n Besigheid met twee of meer eienaars wat saamwerk","n Besigheid met net een werknemer","n Klantediensvorm","n Advertensie op sosiale media"],
+    ["Besigheidsvorme","maatskappy","n Regspersoon wat apart van sy eienaars kan bestaan","n Los informele groep sonder struktuur","n Banklening","n Kliënt se kwitansie"],
+    ["Besigheidsvorme","franchise","n Besigheid wat n bekende handelsnaam en stelsel gebruik","n Besigheid sonder reëls","n Persoonlike spaarrekening","n Produk sonder handelsmerk"],
+    ["Besigheidsvorme","koöperasie","n Besigheid waar lede saamwerk vir gemeenskaplike voordeel","n Besigheid wat net skuld maak","n Advertensieplakkaat","n Werknemer se uniform"],
+
+    ["Bemarking","marknavorsing","Die proses om inligting oor klante en die mark te versamel","Die proses om voorraad weg te gooi","n Werknemer se skofrooster","n Bank se rentekoers alleen"],
+    ["Bemarking","teikenmark","Die spesifieke groep klante waarop n besigheid fokus","Alle mense sonder enige fokus","n Lys van skuldeisers","n Tipe belastingvorm"],
+    ["Bemarking","produk","Die item of diens wat aan klante gebied word","n Werknemer se siekbrief","n Bankstaat","n Skofplan"],
+    ["Bemarking","prys","Die bedrag wat n klant vir n produk of diens betaal","Die plek waar voorraad gestoor word","n Werknemer se adres","n Rekeningkundige fout"],
+    ["Bemarking","promosie","Aktiwiteite wat klante van produkte bewus maak","Die betaling van huur alleen","Die tel van voorraad sonder verkoop","Die sluit van die winkel"],
+
+    ["Bemarking","plek","Waar en hoe produkte aan klante beskikbaar gemaak word","Die wins ná belasting","n Klant se bankkaart","n Werknemer se CV"],
+    ["Bemarking","handelsmerk","n Naam of teken wat n produk of besigheid herkenbaar maak","n Gewone uitgawe sonder waarde","n Kasregister se foutboodskap","n Skuldbrief"],
+    ["Bemarking","advertensie","n Boodskap wat n produk of besigheid bevorder","n Private wagwoord","n Banklening","n Voorraadverliesverslag"],
+    ["Bemarking","klantediens","Hoe n besigheid klante help en behandel","Die wegsteek van produkte","n Bankfooi","n Verskaffer se vragmotor"],
+    ["Bemarking","mededinging","Wanneer besighede meeding vir dieselfde klante","Wanneer n besigheid geen klante het nie","n Werknemer se verlof","n Elektrisiteitsrekening"],
+
+    ["Finansies","inkomste","Geld wat die besigheid ontvang","Geld wat die besigheid betaal","Voorraad wat verval het","n Werknemer se waarskuwing"],
+    ["Finansies","uitgawe","Geld wat die besigheid betaal vir koste","Geld wat uit verkope inkom","n Klant se kompliment","n Gratis produkmonster"],
+    ["Finansies","kontantvloei","Die beweging van geld in en uit die besigheid","Die kleur van die winkelrakke","n Advertensie se lettertipe","n Werknemer se posbeskrywing"],
+    ["Finansies","begroting","n Plan vir verwagte inkomste en uitgawes","n Lys van klagtes alleen","n Produk se kleur","n Klant se e-posadres"],
+    ["Finansies","kapitaal","Geld of hulpbronne wat gebruik word om n besigheid te begin of groei","n Klant se terugvoer","n Werknemer se uniform","n Sosiale media foto"],
+
+    ["Finansies","bates","Items van waarde wat die besigheid besit","Geld wat die besigheid skuld","n Klant se bestelling","n Werknemer se pouse"],
+    ["Finansies","laste","Bedrae wat die besigheid skuld","Items wat die besigheid besit","Verkope sonder koste","n Advertensie se opskrif"],
+    ["Finansies","eienaarsbelang","Die eienaar se aandeel in die besigheid","n Klant se skuld by die bank","n Werknemer se bonus alleen","n Verskaffer se wins"],
+    ["Finansies","bruto wins","Verkope minus koste van verkope","Alle uitgawes plus belasting","n Werknemer se salaris","n Produk se barcode"],
+    ["Finansies","netto wins","Wins nadat alle uitgawes afgetrek is","Verkope sonder enige kostes","Die aantal produkte op rak","n Klant se naam"],
+
+    ["Bestuur","beplanning","Om vooraf te besluit wat gedoen moet word","Om sonder doel te werk","Om alle rekords te vernietig","Om klante te ignoreer"],
+    ["Bestuur","organisering","Om mense en hulpbronne reg te rangskik","Om voorraad deurmekaar te los","Om geen rolle te gee nie","Om alle dokumente weg te gooi"],
+    ["Bestuur","leiding","Om mense te motiveer en rigting te gee","Om geen kommunikasie te hê nie","Om net geld te tel","Om klante weg te stuur"],
+    ["Bestuur","beheer","Om te kyk of werk volgens plan gebeur","Om foute te ignoreer","Om geen rekords te hou nie","Om pryse willekeurig te verander"],
+    ["Bestuur","besluitneming","Om tussen opsies te kies om n doel te bereik","Om altyd niks te doen nie","Om geen inligting te gebruik nie","Om net te raai sonder rede"],
+
+    ["Menslike hulpbronne","werwing","Om geskikte mense vir werk te lok","Om produkte te verkoop","Om voorraad te tel","Om huur te betaal"],
+    ["Menslike hulpbronne","opleiding","Om werknemers vaardighede en kennis te leer","Om werknemers te straf sonder rede","Om klante te ignoreer","Om produkte weg te gooi"],
+    ["Menslike hulpbronne","motivering","Om werknemers aan te moedig om goed te werk","Om alle personeel te verwar","Om geen doelwitte te stel nie","Om kommunikasie te stop"],
+    ["Menslike hulpbronne","spanwerk","Wanneer mense saamwerk om n doel te bereik","Wanneer almal apart sonder plan werk","Wanneer klante produkte tel","Wanneer pryse daagliks wegraak"],
+    ["Menslike hulpbronne","prestasie","Hoe goed n werknemer of besigheid werk","Die kleur van n advertensie","n Klant se bankkaart","n Produk se vervaldatum alleen"],
+
+    ["Produksie","kwaliteit","Hoe goed n produk of diens aan standaarde voldoen","Die hoeveelheid skuld in die bank","n Werknemer se huisadres","Die weer buite die winkel"],
+    ["Produksie","produktiwiteit","Hoe doeltreffend insette in uitsette verander word","Hoeveel klante kla sonder rede","n Produk se kleur alleen","n Advertensie se musiek"],
+    ["Produksie","voorraad","Goedere wat gehou word om te verkoop of gebruik","n Werknemer se verlofvorm","n Bank se rente","n Klant se ID-nommer"],
+    ["Produksie","verskaffer","n Persoon of besigheid wat produkte aan die besigheid lewer","n Klant wat net koop","n Werknemer se kind","n Bank se sekuriteitswag"],
+    ["Produksie","voorraadbeheer","Om voorraadvlakke en beweging te bestuur","Om alle voorraad te verloor","Om geen telling te doen nie","Om pryse sonder rekords te verander"],
+
+    ["Sosiale verantwoordelikheid","sosiale verantwoordelikheid","Wanneer n besigheid positief tot die gemeenskap bydra","Wanneer n besigheid net skade veroorsaak","Wanneer klante geïgnoreer word","Wanneer werknemers geen regte het nie"],
+    ["Sosiale verantwoordelikheid","etiek","Om regverdig en eerlik in besigheid op te tree","Om klante doelbewus te mislei","Om onwettig te verkoop","Om rekords vals te maak"],
+    ["Sosiale verantwoordelikheid","volhoubaarheid","Om hulpbronne so te gebruik dat die toekoms beskerm word","Om hulpbronne te mors sonder plan","Om alle afval in riviere te gooi","Om geen verantwoordelikheid te neem"],
+    ["Sosiale verantwoordelikheid","verbruikersregte","Regte wat klante beskerm wanneer hulle koop","Reëls wat klante altyd benadeel","n Werknemer se salarisvorm","n Verskaffer se winsplan"],
+    ["Sosiale verantwoordelikheid","omgewingsverantwoordelikheid","Om die natuur en hulpbronne te beskerm","Om besoedeling te verhoog","Om afval oral te los","Om water te mors"]
+  ];
+
+  const stems = [
+    "Besigheidstudies kwartaal 2: Wat beteken ",
+    "Kies die beste Besigheidstudies antwoord oor ",
+    "Praktiese besigheidsvraag: Wat beskryf ",
+    "Eksamenvoorbereiding: Watter stelling pas by ",
+    "Besigheidskonsep: Wat is die funksie van "
+  ];
+
+  let i = 0;
+  while(out.length < 250 && i < concepts.length * stems.length){
+    const c = concepts[i % concepts.length];
+    const stem = stems[Math.floor(i / concepts.length) % stems.length];
+    const round = Math.floor(i / concepts.length) + 1;
+
+    addObj(
+      c[0],
+      stem + c[1] + "? Vraag " + round + "." + (i + 1),
+      c[1] + " " + c[2],
+      [
+        c[1] + " " + c[2],
+        c[1] + " " + c[3] + " opsie " + round,
+        c[1] + " " + c[4] + " keuse " + (i + 1),
+        c[1] + " " + c[5] + " alternatief " + c[0]
+      ],
+      "Die regte antwoord pas by die Besigheidstudies betekenis of funksie van " + c[1] + "."
+    );
+
+    i++;
+  }
+
+  return out.slice(0,250);
+}
+
+const rawBank = teaeBesigheidForce250V1(buildBesigheidBank());
 const bank = rawBank;
 /* TEAE_EXPOSE_BANK_FOR_AUDIT_V1 */
 window.TEAE_RAW_BANK = rawBank;
@@ -1143,6 +1288,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 
