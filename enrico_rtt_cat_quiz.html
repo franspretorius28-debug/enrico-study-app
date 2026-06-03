@@ -297,7 +297,7 @@ button.gray,
 </div>
 
 <script>
-const DAD = "27642203726";
+const Teacher = "27642203726";
 const params = new URLSearchParams(location.search);
 const sessionTitle = params.get("title") || "RTT Sessie";
 const di = params.get("di");
@@ -526,7 +526,7 @@ function finishQuiz(){
     }
 
     html += `<div class="result"><span class="ok">🎉 Alles eerste keer reg!</span></div>`;
-    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
+    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Teacher - submit progress</button>`;
   }
 
   document.getElementById("finalResult").innerHTML = html;
@@ -644,8 +644,8 @@ function finishWrongRetry(){
   const html = `<h2>Wrong Retry klaar 🎉</h2>
     <p style="font-size:22px;font-weight:900">Al ${retryOriginalCount} verkeerde vrae is nou reggemaak.</p>
     <p>Mooi Enrico — nou tel hierdie sessie as klaar.</p>
-    <div class="result"><span class="ok">Stuur nou die WhatsApp update na Dad.</span></div>
-    <button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
+    <div class="result"><span class="ok">Teacher must submit progress to Head Office.</span></div>
+    <button class="green" onclick="sendWhatsapp()">WhatsApp Teacher - submit progress</button>`;
 
   document.getElementById("finalResult").innerHTML = html;
   document.getElementById("finalResult").style.display = "block";
@@ -676,7 +676,7 @@ Oorspronklik verkeerd: ${originalWrong}`;
     msg += `\nWrong Retry: Nie nodig nie - alles eerste keer reg`;
   }
 
-  window.open("https://wa.me/" + DAD + "?text=" + encodeURIComponent(msg), "_blank");
+  window.open("https://wa.me/" + Teacher + "?text=" + encodeURIComponent(msg), "_blank");
 
   setTimeout(function(){
     window.location.href = "enrico_exam_program.html?v=" + Date.now();
@@ -687,5 +687,6 @@ render();
 </script>
 </body>
 </html>
+
 
 
