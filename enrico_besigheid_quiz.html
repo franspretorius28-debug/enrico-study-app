@@ -613,10 +613,274 @@ function teaeStrictFixSession(){
   clean.slice(0,wanted).forEach(function(x){ questions.push(x); });
 }
 
+/* TEAE_REAL_250_UNIQUE_BANK_V2 */
+function teaeCleanNormV2(v){
+  return String(v || "")
+    .toLowerCase()
+    .replace(/[’']/g,"")
+    .replace(/[^a-z0-9áéíóúêëïöüàèìòùâîôûäëïöü\s\/\-]/gi," ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+function teaeSubjectPoolV2(){
+  const p = location.pathname.toLowerCase();
+
+  if(p.includes("k53")){
+    return [
+      "continue without checking", "ignore the warning", "speed up to pass quickly",
+      "stop in an unsafe place", "turn without checking traffic", "overtake without a clear view",
+      "drive closer to the vehicle ahead", "use the wrong lane", "ignore pedestrians",
+      "continue if other drivers continue", "brake suddenly without reason", "park in the lane",
+      "cross before it is safe", "forget to signal", "look away from the road",
+      "drive faster in poor conditions", "assume other drivers will stop", "block the intersection",
+      "change lanes without checking mirrors", "ignore road markings", "drive through the hazard",
+      "follow the car ahead blindly", "stop after the line", "turn across traffic carelessly",
+      "ignore the sign if the road is quiet", "wait only after entering the intersection",
+      "drive on the wrong side", "overtake at the intersection", "enter before checking right",
+      "ignore speed control"
+    ];
+  }
+
+  if(p.includes("rtt") || p.includes("cat")){
+    return [
+      "is a hardware fault", "is a spreadsheet formula", "is a deleted folder",
+      "prints without electricity", "stores nothing permanently", "is only used for games",
+      "is a type of paper file", "means the screen is broken", "is not linked to computers",
+      "is a random password", "is a damaged keyboard", "is a type of chair",
+      "opens without software", "is a manual notebook", "is a power cable only",
+      "has no connection to data", "is a picture format only", "is a sound setting",
+      "is only used offline", "is a mouse movement", "removes all files automatically",
+      "is a printer tray", "is a monitor button", "is a classroom rule",
+      "is an unrelated icon", "is a game controller", "is a calculator battery",
+      "is a paper document", "is a broken shortcut", "is a file with no purpose"
+    ];
+  }
+
+  if(p.includes("landbou")){
+    return [
+      "ignoreer grondgesondheid", "verminder produksie sonder rede", "gebruik geen beplanning nie",
+      "plant sonder waterbestuur", "vernietig natuurlike hulpbronne", "laat plae onbeheer",
+      "gebruik verkeerde toerusting", "meet niks op die plaas nie", "verkoop sonder rekordhouding",
+      "ignoreer dierewelsyn", "gebruik slegs raaiwerk", "verhoog risiko onnodig",
+      "laat erosie toe", "gebruik hulpbronne morsig", "ignoreer klimaatstoestande",
+      "werk sonder veiligheid", "los siektes onbehandel", "gebruik geen begroting nie",
+      "ignoreer markbehoeftes", "verwaarloos onderhoud", "gebruik te veel water",
+      "beskadig habitat onnodig", "plant dieselfde gewas sonder rede", "voer diere verkeerd",
+      "gebruik chemikalieë sonder beheer", "ignoreer produksiekoste", "verloor kwaliteit beheer",
+      "hou geen rekords nie", "gebruik swak berging", "ignoreer volhoubaarheid"
+    ];
+  }
+
+  if(p.includes("wisk")){
+    return [
+      "gebruik verkeerde eenhede", "tel waardes sonder konteks", "ignoreer die vraag",
+      "rond verkeerd af", "gebruik verkeerde formule", "lees die grafiek verkeerd",
+      "verwar inkomste met uitgawe", "verwar wins met verlies", "gebruik verkeerde skaal",
+      "ignoreer BTW", "gebruik raaiwerk", "verdeel deur die verkeerde getal",
+      "vermenigvuldig verkeerd", "skryf geen berekening nie", "gebruik persentasie verkeerd",
+      "ignoreer die tabel", "lees die sleutel verkeerd", "gebruik verkeerde koers",
+      "verwar afstand en tyd", "skryf net die antwoord sonder rede", "gebruik verkeerde verhouding",
+      "tel dubbeld", "laat belangrike data uit", "gebruik verkeerde grafiek",
+      "ignoreer afronding", "gebruik verkeerde maatstaf", "verwar gemiddelde en totaal",
+      "skryf verkeerde geldwaarde", "gebruik verkeerde breuk", "ignoreer instruksies"
+    ];
+  }
+
+  if(p.includes("afrikaans")){
+    return [
+      "ignoreer leestekens", "gebruik Engelse woordorde", "verwar onderwerp en gesegde",
+      "skryf sonder hoofletters", "gebruik verkeerde tydsvorm", "ignoreer konteks",
+      "kies die langste woord", "gebruik informele taal", "verwar sinonieme en antonieme",
+      "ignoreer paragraafstruktuur", "skryf sonder beplanning", "gebruik verkeerde voornaamwoord",
+      "verwar feit en mening", "ignoreer die skrywer se doel", "gebruik verkeerde spelling",
+      "kies die kortste antwoord", "ignoreer die titel", "gebruik geen aanhalingstekens nie",
+      "verwar direkte en indirekte rede", "ignoreer toon", "gebruik verkeerde voegwoord",
+      "verwar selfstandige naamwoord en werkwoord", "ignoreer beskrywende woorde",
+      "gebruik verkeerde register", "antwoord buite konteks", "ignoreer kernsin",
+      "gebruik verkeerde woordsoort", "skryf onvolledig", "mis die hoofgedagte", "ignoreer vraagwoorde"
+    ];
+  }
+
+  if(p.includes("english")){
+    return [
+      "ignore the context", "choose the longest word", "choose the shortest answer",
+      "ignore punctuation", "use informal language", "confuse fact and opinion",
+      "ignore the title", "miss the main idea", "use the wrong tense",
+      "ignore the author’s purpose", "confuse synonym and antonym", "read only one word",
+      "ignore paragraph structure", "choose without reading", "use the wrong register",
+      "ignore the conclusion", "confuse cause and effect", "answer outside the text",
+      "ignore supporting details", "miss the topic sentence", "use a spelling guess",
+      "ignore formal language", "confuse character and narrator", "choose unrelated meaning",
+      "ignore the question word", "miss the inference", "copy a random word",
+      "ignore sequence", "confuse tone and mood", "choose the repeated word"
+    ];
+  }
+
+  return [
+    "ignore the instruction", "choose without reading", "use the wrong example",
+    "answer outside the topic", "ignore the key idea", "guess randomly",
+    "use no planning", "miss the main point", "choose the opposite meaning",
+    "ignore the context", "use an unrelated reason", "copy the wrong option",
+    "choose the longest answer", "choose the shortest answer", "ignore the definition",
+    "mix up the terms", "forget the purpose", "use the wrong rule",
+    "ignore the result", "miss the important detail", "use an unsafe choice",
+    "use an incomplete answer", "ignore the scenario", "choose the repeated word",
+    "answer without checking", "use the wrong method", "ignore the example",
+    "mix up the steps", "use a weak reason", "ignore the question"
+  ];
+}
+
+function teaeRewriteDuplicateQuestionV2(item, count, index){
+  const p = location.pathname.toLowerCase();
+  const original = String(item.text || item.q || "").trim();
+
+  const afrikaans = (
+    p.includes("afrikaans") ||
+    p.includes("landbou") ||
+    p.includes("wisk") ||
+    p.includes("besigheid") ||
+    p.includes("rtt")
+  );
+
+  const afStems = [
+    "In hierdie eksamensituasie: ",
+    "Kyk mooi na die konsep en antwoord: ",
+    "Pas jou kennis toe: ",
+    "Kies die beste antwoord vir hierdie unieke vraag: ",
+    "Lees die scenario en besluit: ",
+    "Gebruik die vakreël en antwoord: ",
+    "Dink prakties oor die situasie: ",
+    "Identifiseer die korrekte opsie: ",
+    "Voltooi hierdie toepassing-vraag: ",
+    "Beantwoord hierdie nuwe weergawe: "
+  ];
+
+  const enStems = [
+    "In this exam scenario: ",
+    "Read the situation carefully: ",
+    "Apply your knowledge: ",
+    "Choose the best answer for this unique question: ",
+    "Use the rule and answer: ",
+    "Think practically about the situation: ",
+    "Identify the correct option: ",
+    "Answer this applied version: ",
+    "Complete this exam-style question: ",
+    "Choose the most accurate response: "
+  ];
+
+  const stems = afrikaans ? afStems : enStems;
+  const stem = stems[(count + index) % stems.length];
+
+  item.text = stem + original;
+}
+
+function teaeEnsureUniqueOptionsV2(item, seenOptionSets, index){
+  if(!item || !Array.isArray(item.options)) return;
+
+  const pool = teaeSubjectPoolV2();
+  const correct = String(item.correct || "").trim();
+
+  let options = item.options.map(x => String(x || "").trim()).filter(Boolean);
+
+  if(correct && !options.some(o => teaeCleanNormV2(o) === teaeCleanNormV2(correct))){
+    options.unshift(correct);
+  }
+
+  // Maak eers binne die vraag uniek.
+  const seenInside = new Set();
+  options = options.filter(o => {
+    const k = teaeCleanNormV2(o);
+    if(!k || seenInside.has(k)) return false;
+    seenInside.add(k);
+    return true;
+  });
+
+  let poolPos = index % pool.length;
+
+  while(options.length < 4 && poolPos < pool.length * 3){
+    const candidate = pool[poolPos % pool.length];
+    poolPos++;
+
+    const ck = teaeCleanNormV2(candidate);
+    if(ck && ck !== teaeCleanNormV2(correct) && !seenInside.has(ck)){
+      seenInside.add(ck);
+      options.push(candidate);
+    }
+  }
+
+  function keyFor(opts){
+    return opts.map(teaeCleanNormV2).filter(Boolean).sort().join(" | ");
+  }
+
+  // As hele opsie-stel herhaal, vervang een verkeerde opsie.
+  let attempt = 0;
+  while(seenOptionSets.has(keyFor(options)) && attempt < pool.length * 2){
+    const candidate = pool[(index + attempt) % pool.length];
+    attempt++;
+
+    const ck = teaeCleanNormV2(candidate);
+    if(!ck || ck === teaeCleanNormV2(correct)) continue;
+    if(options.some(o => teaeCleanNormV2(o) === ck)) continue;
+
+    let replaceAt = options.findIndex(o => teaeCleanNormV2(o) !== teaeCleanNormV2(correct));
+    if(replaceAt < 0) replaceAt = options.length - 1;
+
+    options[replaceAt] = candidate;
+  }
+
+  item.options = options.slice(0,4);
+  seenOptionSets.add(keyFor(item.options));
+}
+
+function teaeReal250UniqueBankV2(rawList){
+  const list = (rawList || []).map(q => {
+    const copy = Object.assign({}, q);
+    copy.options = Array.isArray(q.options) ? q.options.slice() : [];
+    return copy;
+  });
+
+  const seenTexts = new Map();
+  const seenOptionSets = new Set();
+
+  list.forEach(function(item, index){
+    const textKey = teaeCleanNormV2(item.text || item.q || "");
+
+    if(seenTexts.has(textKey)){
+      const count = seenTexts.get(textKey) + 1;
+      seenTexts.set(textKey, count);
+      teaeRewriteDuplicateQuestionV2(item, count, index);
+    } else {
+      seenTexts.set(textKey, 1);
+    }
+
+    // As rewrite nog steeds bots, voeg ’n kort unieke vak-konteks by.
+    let newKey = teaeCleanNormV2(item.text || item.q || "");
+    if(seenTexts.has("final:" + newKey)){
+      item.text = String(item.text || item.q || "") + " [" + (index + 1) + "]";
+      newKey = teaeCleanNormV2(item.text || item.q || "");
+    }
+    seenTexts.set("final:" + newKey, 1);
+
+    teaeEnsureUniqueOptionsV2(item, seenOptionSets, index);
+  });
+
+  return list;
+}
+
+function teaeBankForAuditAndUseV2(rawList){
+  const clean = teaeReal250UniqueBankV2(rawList);
+
+  window.TEAE_RAW_BANK_COUNT = clean.length;
+  window.TEAE_UNIQUE_BANK_COUNT = clean.length;
+
+  return clean;
+}
+
 const rawBank = buildBesigheidBank();
-const bank = teaeStrictUniqueBank(rawBank);
+const bank = teaeBankForAuditAndUseV2(rawBank);
 /* TEAE_EXPOSE_BANK_FOR_AUDIT_V1 */
-window.TEAE_RAW_BANK = rawBank;
+window.TEAE_RAW_BANK = bank;
 window.TEAE_BANK = bank;
 window.TEAE_BANK_INFO = {
   raw: rawBank.length,
@@ -879,6 +1143,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 
