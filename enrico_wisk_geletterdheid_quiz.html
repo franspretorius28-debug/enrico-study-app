@@ -202,6 +202,70 @@ button.gray,
     font-size:13px;
   }
 }
+/* TEAE_GAP_FEEDBACK_STYLE_V1 */
+.teaeFeedbackBox{
+  margin-top:14px !important;
+  padding:14px 16px !important;
+  border-radius:12px !important;
+  font-weight:800 !important;
+  line-height:1.45 !important;
+  border:2px solid transparent !important;
+  box-shadow:none !important;
+}
+
+.teaeFeedbackBox *{
+  color:inherit !important;
+}
+
+.teaeFeedbackCorrect{
+  background:#052e16 !important;
+  color:#dcfce7 !important;
+  border-color:#22c55e !important;
+}
+
+.teaeFeedbackWrong{
+  background:#450a0a !important;
+  color:#fee2e2 !important;
+  border-color:#ef4444 !important;
+}
+
+.teaeFeedbackNeutral{
+  background:#111827 !important;
+  color:#ffffff !important;
+  border-color:#374151 !important;
+}
+
+.teaeFeedbackTitle{
+  display:block !important;
+  font-size:28px !important;
+  font-weight:900 !important;
+  margin-bottom:6px !important;
+  letter-spacing:.2px !important;
+}
+
+.teaeFeedbackCorrect .teaeFeedbackTitle{
+  color:#22c55e !important;
+}
+
+.teaeFeedbackWrong .teaeFeedbackTitle{
+  color:#ef4444 !important;
+}
+
+.teaeFeedbackAnswer{
+  display:block !important;
+  margin-top:8px !important;
+  padding:8px 10px !important;
+  border-radius:8px !important;
+  background:rgba(255,255,255,.06) !important;
+  font-weight:900 !important;
+}
+
+.teaeFeedbackExplain{
+  display:block !important;
+  margin-top:8px !important;
+  font-weight:700 !important;
+  opacity:1 !important;
+}
 </style>
 </head>
 <body>
@@ -673,6 +737,132 @@ Oorspronklik verkeerd: ${originalWrong}`;
 
 render();
 </script>
+<script>
+/* TEAE_GAP_FEEDBACK_SCRIPT_V1 */
+(function(){
+  function pickFeedbackNode(){
+    const selectors = [
+      "#feedback",
+      "#result",
+      "#finalResult",
+      "#explain",
+      ".result",
+      ".feedback",
+      "[id*='feedback']",
+      "[id*='result']"
+    ];
+    for(const s of selectors){
+      const node = document.querySelector(s);
+      if(node) return node;
+    }
+    return null;
+  }
+
+  function cleanText(el){
+    return (el.innerText || el.textContent || "").replace(/\s+/g," ").trim();
+  }
+
+  function stylizeFeedback(){
+    const el = pickFeedbackNode();
+    if(!el) return;
+
+    const txt = cleanText(el);
+    if(!txt) return;
+
+    el.classList.remove("teaeFeedbackCorrect","teaeFeedbackWrong","teaeFeedbackNeutral");
+    el.classList.add("teaeFeedbackBox");
+
+    const lower = txt.toLowerCase();
+
+    let title = "";
+    let extra = "";
+    let explanation = "";
+
+    const correctMatch = txt.match(/correct!?/i);
+    const wrongMatch = txt.match(/wrong\.?|incorrect\.?/i);
+    const answerMatch = txt.match(/correct answer:\s*(.*?)(explanation:|$)/i);
+    const explainMatch = txt.match(/explanation:\s*(.*)$/i);
+
+    if (correctMatch && !wrongMatch) {
+      el.classList.add("teaeFeedbackCorrect");
+      title = "★ Correct!";
+    } else if (wrongMatch || lower.includes("correct answer:")) {
+      el.classList.add("teaeFeedbackWrong");
+      title = "✖ Incorrect";
+    } else {
+      el.classList.add("teaeFeedbackNeutral");
+      title = "Info";
+    }
+
+    if(answerMatch && answerMatch[1]){
+      extra = answerMatch[1].trim();
+    }
+
+    if(explainMatch && explainMatch[1]){
+      explanation = explainMatch[1].trim();
+    }
+
+    let html = '<span class="teaeFeedbackTitle">' + title + '</span>';
+
+    if (wrongMatch) {
+      if(extra){
+        html += '<span class="teaeFeedbackAnswer">Correct answer: ' + extra + '</span>';
+      }
+      if(explanation){
+        html += '<span class="teaeFeedbackExplain">Explanation: ' + explanation + '</span>';
+      } else if(txt){
+        html += '<span class="teaeFeedbackExplain">' + txt.replace(/\s*correct answer:.*$/i,'').trim() + '</span>';
+      }
+    } else if (correctMatch) {
+      if(explanation){
+        html += '<span class="teaeFeedbackExplain">Explanation: ' + explanation + '</span>';
+      } else {
+        html += '<span class="teaeFeedbackExplain">' + txt.replace(/correct!?/i,'').trim() + '</span>';
+      }
+    } else {
+      html += '<span class="teaeFeedbackExplain">' + txt + '</span>';
+    }
+
+    el.innerHTML = html;
+  }
+
+  function hookButtons(){
+    const btns = Array.from(document.querySelectorAll("button"));
+    btns.forEach(btn => {
+      const t = (btn.innerText || "").toLowerCase().trim();
+      if(t.includes("mark answer")){
+        if(!btn.dataset.teaeHooked){
+          btn.dataset.teaeHooked = "1";
+          btn.addEventListener("click", function(){
+            setTimeout(stylizeFeedback, 50);
+            setTimeout(stylizeFeedback, 200);
+          });
+        }
+      }
+      if(t.includes("next question")){
+        if(!btn.dataset.teaeNextHooked){
+          btn.dataset.teaeNextHooked = "1";
+          btn.addEventListener("click", function(){
+            setTimeout(stylizeFeedback, 50);
+          });
+        }
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    hookButtons();
+    stylizeFeedback();
+
+    const obs = new MutationObserver(function(){
+      hookButtons();
+      stylizeFeedback();
+    });
+    obs.observe(document.body, { childList:true, subtree:true, characterData:true });
+  });
+})();
+</script>
 </body>
 </html>
+
 
