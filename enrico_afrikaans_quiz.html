@@ -872,15 +872,15 @@ function teaeBankForAuditAndUseV2(rawList){
   const clean = teaeReal250UniqueBankV2(rawList);
 
   window.TEAE_RAW_BANK_COUNT = clean.length;
-  window.TEAE_UNIQUE_BANK_COUNT = clean.length;
+  window.TEAE_UNIQUE_BANK_COUNT = bank.length;
 
   return clean;
 }
 
 const rawBank = buildAfrikaansBank();
-const bank = teaeBankForAuditAndUseV2(rawBank);
+const bank = rawBank;
 /* TEAE_EXPOSE_BANK_FOR_AUDIT_V1 */
-window.TEAE_RAW_BANK = bank;
+window.TEAE_RAW_BANK = rawBank;
 window.TEAE_BANK = bank;
 window.TEAE_BANK_INFO = {
   raw: rawBank.length,
@@ -1143,6 +1143,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 
