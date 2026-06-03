@@ -471,9 +471,7 @@ function nextRetryQuestion(){
 function finishWrongRetry(){
   document.getElementById("quizBox").style.display = "none";
 
-  if(di !== null && ti !== null){
-    localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
-  }
+  if(di !== null && ti !== null && wrong === 0){ localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1"); }
 
   const html = `<h2>Wrong Retry klaar 🎉</h2>
     <p style="font-size:22px;font-weight:900">Al ${retryOriginalCount} verkeerde vrae is nou reggemaak.</p>
@@ -528,8 +526,20 @@ Verkeerd: ${wrong}`;
 
 render();
 </script>
+<script>
+/* TEAE_BLOCK_BACK_UNTIL_COMPLETE_V1 */
+document.addEventListener("DOMContentLoaded", function(){
+  const links = Array.from(document.querySelectorAll("a.btn.gray"));
+  links.forEach(a => {
+    if(a.textContent.includes("Terug na program") || a.textContent.includes("Terug main")){
+      a.style.display = "none";
+    }
+  });
+});
+</script>
 </body>
 </html>
+
 
 
 
