@@ -1,0 +1,239 @@
+﻿<!DOCTYPE html>
+<html lang="af" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online App - Student Login</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#000;
+  color:#fff;
+}
+.page{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:260px 1fr;
+}
+.sidebar{
+  background:#1a1a1a;
+  border-right:1px solid #303030;
+  padding:28px 20px;
+}
+.logoBox{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:34px;
+}
+.logoCircle{
+  width:58px;
+  height:58px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#b51fa5,#7c2d8a);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  font-weight:900;
+  color:white;
+  border:1px solid #d946ef;
+}
+.logoText{
+  font-size:25px;
+  font-weight:900;
+  color:#d946ef;
+  line-height:1.05;
+}
+.logoSub{
+  color:#cbd5e1;
+  font-size:13px;
+  margin-top:6px;
+}
+.navItem{
+  padding:14px 14px;
+  border-radius:8px;
+  margin:10px 0;
+  color:#d1d5db;
+  font-weight:800;
+}
+.navItem.active{
+  background:#b51fa5;
+  color:white;
+}
+.main{
+  background:#000;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:30px;
+}
+.loginCard{
+  width:100%;
+  max-width:520px;
+  background:#1a1a1a;
+  border:1px solid #303030;
+  border-radius:16px;
+  padding:32px;
+  box-shadow:0 20px 50px rgba(0,0,0,.35);
+}
+h1{
+  margin:0 0 8px;
+  font-size:34px;
+  font-weight:900;
+}
+.sub{
+  color:#cbd5e1;
+  margin-bottom:26px;
+  font-size:15px;
+}
+label{
+  display:block;
+  margin:14px 0 7px;
+  color:#cbd5e1;
+  font-weight:800;
+}
+input{
+  width:100%;
+  background:#0b0b0b;
+  color:white;
+  border:1px solid #374151;
+  border-radius:10px;
+  padding:14px;
+  font-size:17px;
+  outline:none;
+}
+input:focus{
+  border-color:#b51fa5;
+  box-shadow:0 0 0 3px rgba(181,31,165,.25);
+}
+button{
+  width:100%;
+  margin-top:22px;
+  background:#b51fa5;
+  color:white;
+  border:0;
+  border-radius:10px;
+  padding:15px;
+  font-size:18px;
+  font-weight:900;
+  cursor:pointer;
+}
+button:hover{
+  background:#d946ef;
+}
+.info{
+  margin-top:18px;
+  background:#111827;
+  border:1px solid #374151;
+  color:#d1d5db;
+  border-radius:10px;
+  padding:14px;
+  font-size:14px;
+  line-height:1.45;
+}
+.badgeRow{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin:18px 0;
+}
+.badge{
+  background:#111827;
+  border:1px solid #374151;
+  border-radius:10px;
+  padding:14px;
+}
+.badge .label{
+  color:#94a3b8;
+  font-size:13px;
+}
+.badge .value{
+  color:#fff;
+  font-size:22px;
+  font-weight:900;
+  margin-top:5px;
+}
+.footer{
+  position:fixed;
+  bottom:16px;
+  right:20px;
+  color:#64748b;
+  font-size:12px;
+}
+@media(max-width:800px){
+  .page{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .main{align-items:flex-start;padding-top:50px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <aside class="sidebar">
+    <div class="logoBox">
+      <div class="logoCircle">GAP</div>
+      <div>
+        <div class="logoText">GAP<br>Online</div>
+        <div class="logoSub">Student Portal</div>
+      </div>
+    </div>
+
+    <div class="navItem active">Dashboard</div>
+    <div class="navItem">Subjects</div>
+    <div class="navItem">Exams</div>
+    <div class="navItem">My Progress</div>
+    <div class="navItem">Settings</div>
+  </aside>
+
+  <main class="main">
+    <div class="loginCard">
+      <h1>Welcome, Student!</h1>
+      <div class="sub">Grade 10 • Afrikaans • Exam Preparation Portal</div>
+
+      <div class="badgeRow">
+        <div class="badge">
+          <div class="label">Preparation App</div>
+          <div class="value">Enrico</div>
+        </div>
+        <div class="badge">
+          <div class="label">Final Exam</div>
+          <div class="value">GAP</div>
+        </div>
+      </div>
+
+      <label>Student Name</label>
+      <input id="studentName" value="Enrico" autocomplete="off">
+
+      <label>Password</label>
+      <input id="studentPass" type="password" value="exam2026" autocomplete="off">
+
+      <button onclick="login()">Login</button>
+
+      <div class="info">
+        Gebruik hierdie portal om jou eksamenvoorbereiding te doen. 
+        Wanneer jou voorbereiding klaar is, skryf jy jou finale eksamen op GAP Online onder <b>Exams</b>.
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="footer">Exam preparation portal</div>
+
+<script>
+function login(){
+  const name = document.getElementById("studentName").value.trim() || "Enrico";
+  localStorage.setItem("enricoExamLoginName", name);
+  localStorage.setItem("enricoExamLoggedIn", "1");
+  window.location.href = "enrico_exam_program.html?v=" + Date.now();
+}
+document.addEventListener("keydown", function(e){
+  if(e.key === "Enter") login();
+});
+</script>
+</body>
+</html>
