@@ -481,7 +481,7 @@ function markAnswer(){
     score++;
     document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Reg!</span>";
   } else {
-    wrongList.push({q:item.text,your:selected,correct:item.correct,explain:item.explain});
+    wrongList.push({q:item.text,your:selected,correct:item.correct,explain:item.explain,options:item.options});
     document.getElementById("feedback").innerHTML = "<span class='bad'>☹ Verkeerd. Regte antwoord: " + item.correct + "</span>";
   }
 
@@ -544,7 +544,7 @@ function startWrongRetry(){
     topic: "Wrong Retry",
     text: w.q,
     correct: w.correct,
-    options: shuffle([w.correct, w.your, "Nie seker nie", "Hersien weer"]),
+    options: shuffle((w.options && w.options.length ? w.options : [w.correct, w.your, "Review answer", "Try again"]).slice()),
     explain: w.explain || "Hierdie vraag was vroeer verkeerd."
   }));
 
@@ -687,6 +687,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 
