@@ -1795,23 +1795,26 @@ setTimeout(teaeClearDayHeaders, 1000);
   setTimeout(protectClearButtons, 1000);
 })();
 </script>
-<!-- TEAE_EXAM_DAYS_0900_MESSAGE_V2_START -->
+<!-- TEAE_EXAM_DAYS_0900_MESSAGE_V1_START -->
 <style>
   .teae-exam-day-highlight{
-    border: 4px solid #f59e0b !important;
-    background: linear-gradient(180deg, rgba(245,158,11,.28), rgba(88,28,13,.22)) !important;
-    box-shadow: 0 0 24px rgba(245,158,11,.35) !important;
+    border: 3px solid #f59e0b !important;
+    background: linear-gradient(180deg, rgba(245,158,11,.24), rgba(124,45,18,.18)) !important;
+    box-shadow: 0 0 0 2px rgba(255,255,255,.04), 0 0 22px rgba(245,158,11,.28) !important;
     border-radius: 18px !important;
     padding: 16px !important;
-    margin: 24px 0 !important;
+    margin-top: 22px !important;
+    margin-bottom: 22px !important;
   }
 
-  .teae-exam-day-highlight .teae-exam-title{
+  .teae-exam-day-highlight .teae-exam-title,
+  .teae-exam-day-highlight h2,
+  .teae-exam-day-highlight h3{
     background: linear-gradient(90deg, #f59e0b, #facc15) !important;
     color: #111827 !important;
     border-radius: 12px !important;
     padding: 12px 14px !important;
-    font-weight: 1000 !important;
+    font-weight: 900 !important;
     text-shadow: none !important;
   }
 
@@ -1827,14 +1830,14 @@ setTimeout(teaeClearDayHeaders, 1000);
     font-weight: 800 !important;
   }
 
-  .teae-final-exam-message .ready{
+  .teae-final-exam-message .teae-exam-ready{
     color: #86efac !important;
     font-size: 21px !important;
     display: block !important;
     margin-bottom: 6px !important;
   }
 
-  .teae-final-exam-message .time{
+  .teae-final-exam-time{
     color: #facc15 !important;
     font-weight: 1000 !important;
   }
@@ -1844,7 +1847,7 @@ setTimeout(teaeClearDayHeaders, 1000);
 (function(){
   const exams = [
     { date: "09 Junie", subject: "K53", title: "K53 eksamen" },
-    { date: "12 Junie", subject: "RTT", title: "RTT / CAT eksamen" },
+    { date: "12 Junie", subject: "RTT / CAT", title: "RTT / CAT eksamen" },
     { date: "19 Junie", subject: "Landbou", title: "Landbou eksamen" },
     { date: "23 Junie", subject: "Wiskundige Geletterdheid", title: "Wiskundige Geletterdheid eksamen" },
     { date: "24 Junie", subject: "Afrikaans", title: "Afrikaans eksamen" },
@@ -1852,69 +1855,51 @@ setTimeout(teaeClearDayHeaders, 1000);
     { date: "26 Junie", subject: "Besigheidstudies", title: "Besigheidstudies eksamen" }
   ];
 
-  function text(el){
-    return String((el && el.innerText) || "").replace(/\s+/g," ").trim();
+  function hasText(el, value){
+    return (el.innerText || "").toLowerCase().indexOf(value.toLowerCase()) !== -1;
   }
 
-  function includes(el, value){
-    return text(el).toLowerCase().indexOf(String(value).toLowerCase()) !== -1;
+  function findSmallestDayBlock(exam){
+    const all = Array.from(document.querySelectorAll("div, section, article"));
+    const matches = all.filter(function(el){
+      const txt = el.innerText || "";
+      if(txt.length < 80 || txt.length > 3500) return false;
+      if(!hasText(el, exam.date)) return false;
+      if(!hasText(el, "fokus") && !hasText(el, "maak toets oop") && !hasText(el, "eksamen")) return false;
+      if(hasText(el, "eksamen volgorde") && txt.length < 900) return false;
+      return true;
+    });
+
+    matches.sort(function(a,b){
+      return (a.innerText || "").length - (b.innerText || "").length;
+    });
+
+    return matches[0] || null;
   }
 
-  function findExamBlock(exam){
-    const all = Array.from(document.querySelectorAll("section, article, div, li"));
-
-    const candidates = all.filter(function(el){
-      const t = text(el);
-      if(t.length < 20 || t.length > 12000) return false;
-      if(t.toLowerCase().indexOf(exam.date.toLowerCase()) === -1) return false;
-
-      if(t.indexOf("Eksamen volgorde") !== -1 && t.indexOf("Maak toets oop") === -1){
-        return false;
-      }
-
-      return (
-        /Maak toets oop/i.test(t) ||
-        /Fokus/i.test(t) ||
-        /Nog nie klaar nie/i.test(t) ||
-        /Klaar/i.test(t) ||
-        /Eksamen/i.test(t)
-      );
+  function markHeading(block, exam){
+    const els = Array.from(block.querySelectorAll("h1,h2,h3,h4,strong,b,div"));
+    const head = els.find(function(el){
+      const txt = (el.innerText || "").trim();
+      return txt.indexOf(exam.date) !== -1 || txt.toLowerCase().indexOf("eksamen") !== -1;
     });
 
-    candidates.sort(function(a,b){
-      return text(a).length - text(b).length;
-    });
-
-    return candidates[0] || null;
-  }
-
-  function markTitle(block, exam){
-    const possible = Array.from(block.querySelectorAll("h1,h2,h3,h4,strong,b,div"));
-    let heading = possible.find(function(el){
-      const t = text(el);
-      return t.indexOf(exam.date) !== -1;
-    });
-
-    if(!heading){
-      heading = block.firstElementChild;
-    }
-
-    if(heading){
-      heading.classList.add("teae-exam-title");
-      if(text(heading).toLowerCase().indexOf("eksamen") === -1){
-        heading.innerText = text(heading) + " - " + exam.title;
+    if(head){
+      head.classList.add("teae-exam-title");
+      if(head.innerText.indexOf("Eksamen") === -1 && head.innerText.indexOf("eksamen") === -1){
+        head.innerText = head.innerText + " - " + exam.title;
       }
     }
   }
 
-  function replaceTime(block){
+  function replaceFirstTime(block){
     const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT);
     let node;
     while(node = walker.nextNode()){
       const oldText = node.nodeValue || "";
       if(/\b\d{2}:\d{2}\s*-\s*\d{2}:\d{2}\b/.test(oldText)){
         node.nodeValue = oldText.replace(/\b\d{2}:\d{2}\s*-\s*\d{2}:\d{2}\b/, "09:00 - Eksamen begin");
-        return;
+        break;
       }
     }
   }
@@ -1925,13 +1910,14 @@ setTimeout(teaeClearDayHeaders, 1000);
     const msg = document.createElement("div");
     msg.className = "teae-final-exam-message";
     msg.innerHTML =
-      '<span class="ready">Jy is nou reg vir jou ' + exam.title + '.</span>' +
-      '<span class="time">Eksamen begin 09:00.</span><br>' +
+      '<span class="teae-exam-ready">Jy is nou reg vir jou ' + exam.title + '.</span>' +
+      '<span class="teae-final-exam-time">Eksamen begin 09:00.</span><br>' +
       'Log nou in op die hoof eksamen app en begin jou finale toets vir kwartaal 2.<br>' +
-      'Lees elke vraag mooi, dink rustig voordat jy antwoord, en werk netjies. Sterkte — jy kan dit doen!';
+      'Lees elke vraag mooi, dink rustig voordat jy antwoord, en werk netjies. ' +
+      'Sterkte — jy kan dit doen!';
 
     const title = block.querySelector(".teae-exam-title") || block.firstElementChild;
-    if(title){
+    if(title && title.parentNode){
       title.insertAdjacentElement("afterend", msg);
     } else {
       block.insertBefore(msg, block.firstChild);
@@ -1940,12 +1926,12 @@ setTimeout(teaeClearDayHeaders, 1000);
 
   function applyExamDays(){
     exams.forEach(function(exam){
-      const block = findExamBlock(exam);
+      const block = findSmallestDayBlock(exam);
       if(!block) return;
 
       block.classList.add("teae-exam-day-highlight");
-      markTitle(block, exam);
-      replaceTime(block);
+      markHeading(block, exam);
+      replaceFirstTime(block);
       insertMessage(block, exam);
     });
   }
@@ -1954,16 +1940,14 @@ setTimeout(teaeClearDayHeaders, 1000);
     applyExamDays();
     setTimeout(applyExamDays, 300);
     setTimeout(applyExamDays, 1000);
-    setTimeout(applyExamDays, 2000);
   });
 
-  setTimeout(applyExamDays, 2500);
+  setTimeout(applyExamDays, 1500);
 })();
 </script>
-<!-- TEAE_EXAM_DAYS_0900_MESSAGE_V2_END -->
+<!-- TEAE_EXAM_DAYS_0900_MESSAGE_V1_END -->
 </body>
 </html>
-
 
 
 
