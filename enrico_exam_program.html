@@ -204,6 +204,13 @@ function clearAll(){
   Object.keys(localStorage).forEach(k=>{ if(k.startsWith("enricoProgramDone_")) localStorage.removeItem(k); });
   renderPlan();
 }
+function quizLinkHtml(title, di, ti){
+  const mustTest = title.includes("Sessie") || title.includes("Mock") || title.includes("Finale");
+  if(!mustTest) return "";
+  const url = "enrico_session_quiz.html?title=" + encodeURIComponent(title) + "&di=" + di + "&ti=" + ti + "&v=" + Date.now();
+  return `<a class="btn" href="${url}">Maak toets oop</a>`;
+}
+
 function renderPlan(){
   const box = document.getElementById("plan");
   let html = "";
@@ -216,7 +223,7 @@ function renderPlan(){
         <div class="title">${t[1]}</div>
         <div class="small">${t[2]}</div>
         <span class="${done ? "doneText":"waitText"}">${done ? "Klaar ✓":"Nog nie klaar nie"}</span><br>
-        <button class="green" onclick="setDone(${di},${ti})">Klaar</button>
+        ${quizLinkHtml(t[1], di, ti)}<button class="green" onclick="setDone(${di},${ti})">Klaar</button>
         <button onclick="whatsapp(${di},${ti})">WhatsApp Dad</button>
       </div>`;
     });
@@ -238,3 +245,4 @@ renderPlan();
 </script>
 </body>
 </html>
+

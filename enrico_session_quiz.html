@@ -1,0 +1,360 @@
+﻿<!DOCTYPE html>
+<html lang="af" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enrico Sessie Toets</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#eef3ff;color:#0f172a}
+header{background:#0f172a;color:white;text-align:center;padding:28px 12px}
+header h1{margin:0;font-size:34px}
+.wrap{max-width:950px;margin:24px auto;padding:12px}
+.card{background:white;border-radius:18px;padding:22px;box-shadow:0 12px 30px rgba(15,23,42,.14)}
+.banner{border:2px solid #16a34a;background:#f0fdf4;border-radius:16px;padding:14px;margin-bottom:16px}
+.topic{font-weight:900;color:#2563eb;margin-bottom:8px}
+.question{font-size:24px;font-weight:900;margin:14px 0}
+.option{display:block;width:100%;text-align:left;background:#f8fafc;color:#0f172a;border:1px solid #cbd5e1;border-radius:12px;padding:13px;margin:8px 0;font-size:17px;font-weight:800;cursor:pointer}
+.option:hover{background:#e0f2fe}
+.option.selected{background:#dbeafe;border-color:#2563eb}
+button,a.btn{display:inline-block;text-decoration:none;padding:12px 15px;border:0;border-radius:12px;background:#2563eb;color:white;font-weight:900;font-size:16px;cursor:pointer;margin:6px 4px}
+.green{background:#16a34a!important}.gray{background:#475569!important}.orange{background:#f97316!important}
+.ok{color:#16a34a;font-weight:900;font-size:19px}.bad{color:#dc2626;font-weight:900;font-size:19px}
+.small{color:#64748b;font-size:15px}.result{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin-top:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Enrico Sessie Toets</h1>
+  <p>25 vrae | Outomaties gemerk | WhatsApp update</p>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <div class="banner">
+      <div style="font-size:23px;font-weight:900" id="titleBox"></div>
+      <div class="small" id="subBox"></div>
+    </div>
+
+    <div class="result" id="progress"></div>
+
+    <div id="quizBox">
+      <div class="topic" id="topic"></div>
+      <div class="question" id="question"></div>
+      <div id="options"></div>
+
+      <button class="green" onclick="markAnswer()">Merk antwoord</button>
+      <button onclick="nextQuestion()">Volgende vraag</button>
+
+      <div id="feedback" style="margin-top:14px"></div>
+      <div class="small" id="explain" style="margin-top:8px"></div>
+    </div>
+
+    <div id="finalResult" class="result" style="display:none"></div>
+
+    <a class="btn gray" href="enrico_exam_program.html?v=back">Terug na program</a>
+    <a class="btn gray" href="index.html?v=back">Terug main</a>
+  </div>
+</div>
+
+<script>
+const DAD = "27642203726";
+const params = new URLSearchParams(location.search);
+const sessionTitle = params.get("title") || "Enrico Sessie";
+const di = params.get("di");
+const ti = params.get("ti");
+
+let current = 0;
+let score = 0;
+let selected = null;
+let marked = false;
+let wrongList = [];
+
+function shuffle(arr){
+  arr = arr.slice();
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function q(topic, text, correct, wrongs, explain){
+  return {topic,text,correct,options:shuffle([correct,...wrongs].slice(0,4)),explain};
+}
+
+function subjectFromTitle(title){
+  const t = title.toLowerCase();
+  if(t.includes("k53")) return "K53";
+  if(t.includes("rtt")) return "RTT / CAT";
+  if(t.includes("landbou")) return "Landbouwetenskappe";
+  if(t.includes("wisk")) return "Wiskundige Geletterdheid";
+  if(t.includes("afrikaans")) return "Afrikaans HT";
+  if(t.includes("english")) return "English FAL";
+  if(t.includes("besigheid")) return "Besigheidstudies";
+  return "Algemeen";
+}
+
+function buildBank(subject){
+  let b = [];
+
+  if(subject === "K53"){
+    b = [
+      q("K53","Wat beteken ’n stopteken?", "Jy moet heeltemal stop", ["Jy mag stadig ry","Jy mag nie stop nie","Net vragmotors stop"], "By ’n stopteken moet jy heeltemal stop."),
+      q("K53","Wat beteken ’n driehoekige rooi waarskuwingsteken?", "Gevaar of waarskuwing vorentoe", ["Parkering toegelaat","Snelweg begin","Jy moet stop"], "Waarskuwingstekens waarsku jou van gevaar."),
+      q("K53","Wanneer moet jy jou veiligheidsgordel dra?", "Altyd wanneer jy ry", ["Net op snelweë","Net snags","Net as die polisie naby is"], "Veiligheidsgordels moet gedra word."),
+      q("K53","Wat moet jy doen by ’n rooi verkeerslig?", "Stop", ["Ry vinniger","Toeter en ry","Draai altyd links"], "Rooi beteken stop."),
+      q("K53","Wat beteken ’n spoedgrensbord?", "Maksimum spoed wat jy mag ry", ["Minimum spoed","Pad is toe","Voetgangers alleen"], "Spoedgrens is die maksimum spoed."),
+      q("K53","Wat is defensiewe bestuur?", "Om vooruit te dink en gevare te voorkom", ["Om vinnig te ry","Om naby ander karre te ry","Om ander bestuurders te jaag"], "Defensiewe bestuur help ongelukke voorkom."),
+      q("K53","Wanneer moet jy flikker gebruik?", "Voor jy draai of baan verander", ["Net as jy wil stop","Net in reën","Nooit in dorpe nie"], "Flikker wys ander bestuurders jou plan."),
+      q("K53","Wat beteken ’n geel verkeerslig?", "Maak gereed om te stop as dit veilig is", ["Ry altyd vinniger","Stop in die middel van die pad","Draai onmiddellik"], "Geel waarsku dat rooi kom."),
+      q("K53","Wat moet jy doen as ’n voetganger by ’n voetoorgang is?", "Gee voorkeur en stop indien nodig", ["Ry om hom","Toeter en gaan","Ignoreer hom"], "Voetgangers by oorgange kry voorkeur."),
+      q("K53","Wat beteken ’n eenrigtingbord?", "Verkeer mag net in een rigting beweeg", ["Jy mag omdraai","Pad is toe","Net busse mag ry"], "Eenrigting beteken net een rigting.")
+    ];
+  }
+
+  if(subject === "RTT / CAT"){
+    b = [
+      q("RTT","Wat is hardeware?", "Fisiese dele van ’n rekenaar", ["Programme","Internet data","Wagwoorde"], "Hardeware is dele wat jy kan aanraak."),
+      q("RTT","Wat is sagteware?", "Programme wat op ’n rekenaar werk", ["Skerm en muis","Netwerkkabel","Elektrisiteit"], "Sagteware is programme."),
+      q("RTT","Wat doen ’n bedryfstelsel?", "Bestuur die rekenaar se hulpbronne", ["Maak net dokumente mooi","Druk papier","Meet internetspoed"], "Windows is ’n voorbeeld van ’n bedryfstelsel."),
+      q("RTT","Wat is ’n netwerk?", "Rekenaars wat gekoppel is om data te deel", ["’n Enkele muis","’n Papierlêer","’n Drukkerpatroon"], "Netwerke laat toestelle kommunikeer."),
+      q("RTT","Wat is ’n sigblad?", "’n Program soos Excel vir berekeninge", ["’n E-pos program","’n Foto editor","’n Webblaaier"], "Sigblaaie gebruik selle en formules."),
+      q("RTT","Watter formule tel selle op in Excel?", "SUM", ["PRINT","SAVE","OPEN"], "SUM tel waardes bymekaar."),
+      q("RTT","Wat is ’n lêergids?", "’n Plek waar lêers georganiseer word", ["’n Virus","’n Wagwoord","’n Webwerf"], "Folders hou lêers georganiseerd."),
+      q("RTT","Wat beteken backup?", "’n Kopie van data vir veiligheid", ["Data uitvee","Skerm afsit","Internet oopmaak"], "Backups beskerm teen data verlies."),
+      q("RTT","Wat is phishing?", "’n Bedrogpoging om persoonlike inligting te steel", ["’n Drukkerfout","’n Tipe muis","’n Word-funksie"], "Phishing steel inligting."),
+      q("RTT","Wat is cloud storage?", "Data wat aanlyn gestoor word", ["Data op papier","Net in RAM","Net op ’n muismat"], "Cloud storage gebruik internetdienste.")
+    ];
+  }
+
+  if(subject === "Landbouwetenskappe"){
+    b = [
+      q("Landbou","Wat is agro-ekologie?", "Die studie van landbou en die omgewing saam", ["Net boekhouding","Net rekenaars","Net padtekens"], "Agro-ekologie kyk na boerdery binne ekosisteme."),
+      q("Landbou","Wat is volhoubare landbou?", "Boerdery wat hulpbronne beskerm vir die toekoms", ["Alles vinnig gebruik","Geen grond beskerm nie","Net uitvoere"], "Volhoubaar beteken dit kan aanhou."),
+      q("Landbou","Waarom is grond belangrik?", "Plante groei daarin en kry voedingstowwe", ["Dit maak internet vinniger","Dit vervang water","Dit is net vir paaie"], "Grond ondersteun plantgroei."),
+      q("Landbou","Wat is erosie?", "Wanneer grond deur wind of water weggedra word", ["Wanneer plante groei","Wanneer diere eet","Wanneer pryse styg"], "Erosie verloor vrugbare grond."),
+      q("Landbou","Wat is kompos?", "Ontbinde organiese materiaal wat grond verbeter", ["Plastiek afval","Diesel","Soutwater"], "Kompos verbeter grondvrugbaarheid."),
+      q("Landbou","Waarom het plante water nodig?", "Vir groei en fotosintese", ["Vir geraas","Vir padtekens","Vir bankdienste"], "Water is noodsaaklik vir plante."),
+      q("Landbou","Wat is vee?", "Diere wat op ’n plaas aangehou word", ["Wolke","Masjiene alleen","Rekenaarlêers"], "Vee sluit beeste, skape, bokke ens. in."),
+      q("Landbou","Waarom is biodiversiteit belangrik?", "Dit hou ekosisteme gesond", ["Dit maak papier groter","Dit stop alle reën","Dit verwyder sonlig"], "Biodiversiteit help balans."),
+      q("Landbou","Wat beteken grondvrugbaarheid?", "Die grond se vermoë om plante te ondersteun", ["Hoe hard ’n pad is","Hoe vinnig ’n trekker ry","Hoe warm ’n skuur is"], "Vrugbare grond gee voedingstowwe."),
+      q("Landbou","Wat is besproeiing?", "Water aan gewasse gee", ["Oes verkoop","Diere tel","Grond verbrand"], "Besproeiing help plante wanneer water kort is.")
+    ];
+  }
+
+  if(subject === "Wiskundige Geletterdheid"){
+    b = [
+      q("Wisk Geletterdheid","Wat is ’n tarief?", "’n Koste per eenheid of gebruik", ["’n Gedig","’n Padteken","’n Dieresoort"], "Tariewe wys hoe koste bereken word."),
+      q("Wisk Geletterdheid","Wat wys ’n bankstaat?", "Geld wat inkom en uitgaan", ["Net diere","Net padtekens","Net grammatika"], "Bankstate wys transaksies."),
+      q("Wisk Geletterdheid","As R100 + R50 = ?", "R150", ["R50","R100","R500"], "Tel die bedrae bymekaar."),
+      q("Wisk Geletterdheid","Wat is wins?", "Inkomste minus uitgawes", ["Uitgawes plus skuld","Net belasting","Net afstand"], "Wins = inkomste - uitgawes."),
+      q("Wisk Geletterdheid","Wat meet afstand op ’n kaart?", "Skaal", ["Rente","BTW","Eienaarskap"], "Skaal help afstand bereken."),
+      q("Wisk Geletterdheid","Wat beteken waarskynlikheid?", "Kans dat iets gebeur", ["Hoeveel geld in bank","Lengte van ’n lyn","Naam van ’n winkel"], "Waarskynlikheid is kans."),
+      q("Wisk Geletterdheid","1 meter is hoeveel sentimeter?", "100 cm", ["10 cm","1000 cm","1 cm"], "1 m = 100 cm."),
+      q("Wisk Geletterdheid","Wat is ’n faktuur?", "Dokument wat wys wat gekoop en betaal moet word", ["’n Padkaart","’n Gedig","’n Foto"], "Fakture wys items en bedrae."),
+      q("Wisk Geletterdheid","Wat is ’n kwitansie?", "Bewys van betaling", ["’n Vraagteken","’n Rekenaar virus","’n Landbou dier"], "Kwitansie bewys betaling."),
+      q("Wisk Geletterdheid","Wat is BTW?", "Belasting op toegevoegde waarde", ["Basiese voertuig toets","Bome teen wind","Bank tarief waarde"], "BTW is belasting.")
+    ];
+  }
+
+  if(subject === "Afrikaans HT"){
+    b = [
+      q("Afrikaans","Wat is ’n werkwoord?", "’n Doenwoord", ["’n Naamwoord","’n Voornaamwoord","’n Leesteken"], "Werkwoorde wys aksie."),
+      q("Afrikaans","Wat is ’n selfstandige naamwoord?", "’n Naam van iets", ["’n Aksie","’n Vraag","’n Punt"], "Naamwoorde benoem mense/dinge/plekke."),
+      q("Afrikaans","Wat is ’n hoofletter?", "Groot beginletter", ["Klein letter","Komma","Vraagteken"], "Sinne begin met hoofletters."),
+      q("Afrikaans","Wat is ’n opsomming?", "Kort weergawe van belangrike punte", ["’n Lang storie sonder punt","Net prente","Net dialoog"], "Opsomming vat kernpunte saam."),
+      q("Afrikaans","Wat beteken begripstoets?", "Lees en verstaan van ’n teks", ["Net somme","Net teken","Net luister na musiek"], "Begrip toets verstaan."),
+      q("Afrikaans","Wat is ’n sinoniem?", "Woord met dieselfde betekenis", ["Teenoorgestelde woord","Leesteken","Hoofletter"], "Sinonieme beteken soortgelyk."),
+      q("Afrikaans","Wat is ’n antoniem?", "Woord met teenoorgestelde betekenis", ["Dieselfde betekenis","Naam van ’n plek","Werkwoord"], "Antonieme is teenoorgesteldes."),
+      q("Afrikaans","Wat is direkte rede?", "Iemand se presiese woorde", ["’n Som","’n Kaart","’n Rekening"], "Direkte rede gebruik aanhalingstekens."),
+      q("Afrikaans","Wat is indirekte rede?", "Iemand se woorde oorvertel", ["’n Gedig se rym","Net ’n komma","Net ’n titel"], "Indirekte rede vertel dit oor."),
+      q("Afrikaans","Wat is ’n paragraaf?", "’n Groep sinne oor een idee", ["Net een letter","Net ’n komma","Net ’n getal"], "Paragrawe organiseer idees.")
+    ];
+  }
+
+  if(subject === "English FAL"){
+    b = [
+      q("English","What is a noun?", "A naming word", ["An action word","A punctuation mark","A question"], "A noun names a person, place or thing."),
+      q("English","What is a verb?", "An action word", ["A name","A full stop","A title"], "A verb shows action."),
+      q("English","What must a sentence start with?", "Capital letter", ["Small letter only","Comma","Number"], "Sentences start with capital letters."),
+      q("English","What should a sentence end with?", "Full stop or punctuation", ["Nothing","Only a capital letter","A heading"], "Sentences need punctuation."),
+      q("English","What is a folktale?", "A traditional story", ["A bank statement","A road sign","A spreadsheet"], "Folktales are traditional stories."),
+      q("English","What is a viewpoint?", "Someone’s opinion or way of seeing something", ["A ruler","A computer cable","A farm tool"], "Viewpoint means opinion/perspective."),
+      q("English","What is a summary?", "A short version of main ideas", ["A very long copy","A picture only","A calculation"], "Summaries keep key ideas."),
+      q("English","What is a myth?", "A traditional story often explaining something", ["A receipt","A password","A keyboard"], "Myths often explain beliefs/events."),
+      q("English","What is grammar?", "Rules of language", ["A type of food","A road rule","A farm animal"], "Grammar helps sentences work."),
+      q("English","What is comprehension?", "Understanding what you read", ["Drawing only","Typing only","Driving only"], "Comprehension is reading understanding.")
+    ];
+  }
+
+  if(subject === "Besigheidstudies"){
+    b = [
+      q("Besigheidstudies","Wat is ’n entrepreneur?", "Iemand wat ’n besigheid begin en risiko neem", ["Net ’n kliënt","Net ’n werknemer","Net ’n belastingvorm"], "Entrepreneurs begin besighede."),
+      q("Besigheidstudies","Wat is sosiale verantwoordelikheid?", "Besigheid se plig om gemeenskap te help", ["Net wins vat","Net pryse verhoog","Net voorraad tel"], "Besighede moet verantwoordelik optree."),
+      q("Besigheidstudies","Wat is werkloosheid?", "Wanneer mense wil werk maar nie werk kry nie", ["Wanneer pryse daal","Wanneer voorraad verkoop","Wanneer ’n winkel oopmaak"], "Werkloosheid is ’n sosio-ekonomiese kwessie."),
+      q("Besigheidstudies","Wat is armoede?", "Wanneer mense nie basiese behoeftes kan bekostig nie", ["Groot wins","Nuwe eienaar","Goeie advertensie"], "Armoede is ’n sosio-ekonomiese probleem."),
+      q("Besigheidstudies","Wat is ’n eenmansaak?", "Besigheid met een eienaar", ["Besigheid met baie aandeelhouers","Regeringsdepartement","Skoolvak"], "Eenmansaak het een eienaar."),
+      q("Besigheidstudies","Wat is ’n vennootskap?", "Twee of meer mense besit ’n besigheid saam", ["Net een eienaar","Geen eienaar","Slegs kliënte"], "Vennootskap het meer as een eienaar."),
+      q("Besigheidstudies","Wat is kapitaal?", "Geld/hulpbronne om ’n besigheid te begin", ["Net klagtes","Net padtekens","Net grammatika"], "Kapitaal help ’n besigheid begin."),
+      q("Besigheidstudies","Wat is wins?", "Inkomste minus uitgawes", ["Uitgawes plus skuld","Net belasting","Net water"], "Wins is wat oorbly."),
+      q("Besigheidstudies","Wat is ’n behoefte?", "Iets wat mense nodig het", ["Iets altyd luuks","Net advertensie","Net wins"], "Behoeftes is nodig vir lewe of werk."),
+      q("Besigheidstudies","Wat is ’n produk?", "Iets wat verkoop word", ["Net ’n gedig","Net ’n formule","Net ’n pad"], "Produkte kan goedere of dienste wees.")
+    ];
+  }
+
+  if(b.length === 0){
+    b = [q("Algemeen","Kies die beste antwoord.", "Reg", ["Verkeerd","Nie seker","Geen antwoord"], "Lees elke vraag stadig.")];
+  }
+
+  let expanded = [];
+  for(let i=0;i<30;i++){
+    b.forEach((item,idx)=>{
+      expanded.push({
+        topic:item.topic,
+        text:item.text,
+        correct:item.correct,
+        options:shuffle(item.options),
+        explain:item.explain
+      });
+    });
+  }
+
+  return expanded;
+}
+
+function sessionNumber(title){
+  const m = title.match(/(\d+)/);
+  return m ? Number(m[1]) : 1;
+}
+
+const subject = subjectFromTitle(sessionTitle);
+const bank = buildBank(subject);
+const start = ((sessionNumber(sessionTitle)-1) * 25) % bank.length;
+const questions = [];
+for(let i=0;i<25;i++){
+  questions.push(bank[(start+i) % bank.length]);
+}
+
+document.getElementById("titleBox").textContent = sessionTitle;
+document.getElementById("subBox").textContent = subject + " | 25 vrae";
+
+function render(){
+  selected = null;
+  marked = false;
+
+  document.getElementById("progress").textContent = `Vraag ${current+1} van ${questions.length} | Reg: ${score}`;
+  const item = questions[current];
+
+  document.getElementById("topic").textContent = item.topic;
+  document.getElementById("question").textContent = item.text;
+  document.getElementById("feedback").innerHTML = "";
+  document.getElementById("explain").textContent = "";
+
+  const box = document.getElementById("options");
+  box.innerHTML = "";
+
+  item.options.forEach(opt=>{
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = opt;
+    btn.onclick = function(){
+      document.querySelectorAll(".option").forEach(b=>b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selected = opt;
+    };
+    box.appendChild(btn);
+  });
+}
+
+function markAnswer(){
+  if(marked) return;
+
+  const item = questions[current];
+
+  if(!selected){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Kies eers ’n antwoord.</span>";
+    return;
+  }
+
+  marked = true;
+
+  if(selected === item.correct){
+    score++;
+    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Reg!</span>";
+  } else {
+    wrongList.push({
+      q:item.text,
+      your:selected,
+      correct:item.correct
+    });
+    document.getElementById("feedback").innerHTML = "<span class='bad'>☹ Verkeerd. Regte antwoord: " + item.correct + "</span>";
+  }
+
+  document.getElementById("explain").textContent = "Verduideliking: " + item.explain;
+  document.getElementById("progress").textContent = `Vraag ${current+1} van ${questions.length} | Reg: ${score}`;
+}
+
+function nextQuestion(){
+  if(!marked){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Merk eers die antwoord.</span>";
+    return;
+  }
+
+  if(current < questions.length - 1){
+    current++;
+    render();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz(){
+  document.getElementById("quizBox").style.display = "none";
+  const wrong = questions.length - score;
+
+  if(di !== null && ti !== null){
+    localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
+  }
+
+  let html = `<h2>Sessie klaar</h2>
+    <p><b>${sessionTitle}</b></p>
+    <p style="font-size:22px;font-weight:900">Punt: ${score} uit ${questions.length}</p>
+    <p>Verkeerd: ${wrong}</p>`;
+
+  if(wrongList.length > 0){
+    html += "<h3>Verkeerde antwoorde</h3>";
+    wrongList.slice(0,10).forEach(w=>{
+      html += `<div class="result"><b>Vraag:</b> ${w.q}<br><b>Sy antwoord:</b> ${w.your}<br><b>Reg:</b> ${w.correct}</div>`;
+    });
+  }
+
+  html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Dad</button>
+           <a class="btn gray" href="enrico_exam_program.html?v=${Date.now()}">Terug na program</a>`;
+
+  document.getElementById("finalResult").innerHTML = html;
+  document.getElementById("finalResult").style.display = "block";
+}
+
+function sendWhatsapp(){
+  const wrong = questions.length - score;
+  let msg = `Enrico toets update:
+Vak: ${subject}
+Sessie: ${sessionTitle}
+Punt: ${score}/${questions.length}
+Verkeerd: ${wrong}`;
+
+  if(wrongList.length > 0){
+    msg += "\\nEerste foute:";
+    wrongList.slice(0,5).forEach((w,i)=>{
+      msg += `\\n${i+1}) ${w.q} | Reg: ${w.correct}`;
+    });
+  }
+
+  window.open("https://wa.me/" + DAD + "?text=" + encodeURIComponent(msg), "_blank");
+}
+
+render();
+</script>
+</body>
+</html>
