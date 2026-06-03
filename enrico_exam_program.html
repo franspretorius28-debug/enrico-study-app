@@ -626,6 +626,74 @@ div.doneText,
   color:#ef4444 !important;
   font-weight:900 !important;
 }
+/* TEAE_CLEAR_DAY_HEADERS_V1 */
+
+/* Maak elke dag duidelik apart */
+.day,
+.dayCard,
+.programDay,
+.card .day{
+  background:#111827 !important;
+  border:2px solid #374151 !important;
+  border-radius:14px !important;
+  margin:24px 0 !important;
+  padding:18px !important;
+}
+
+/* Dag datum heading baie duidelik */
+.day h3,
+.dayCard h3,
+.programDay h3,
+.card h3{
+  background:#b51fa5 !important;
+  color:#ffffff !important;
+  border-radius:10px !important;
+  padding:12px 14px !important;
+  margin:0 0 16px 0 !important;
+  font-size:24px !important;
+  font-weight:900 !important;
+  letter-spacing:.3px !important;
+}
+
+/* Fokus lyn onder datum moet ook duidelik wees */
+.day h3 + div,
+.dayCard h3 + div,
+.programDay h3 + div,
+.card h3 + div{
+  color:#d1d5db !important;
+  font-weight:800 !important;
+}
+
+/* Meer spasie tussen take binne elke dag */
+.day .task,
+.dayCard .task,
+.programDay .task,
+.card .task{
+  border-top:1px solid #303030 !important;
+  padding-top:16px !important;
+  margin-top:16px !important;
+}
+
+/* As die program nie classes gebruik nie, force date headings met JS class */
+.teaeDayHeader{
+  display:block !important;
+  background:#b51fa5 !important;
+  color:#ffffff !important;
+  border-radius:10px !important;
+  padding:12px 14px !important;
+  margin:0 0 16px 0 !important;
+  font-size:24px !important;
+  font-weight:900 !important;
+  letter-spacing:.3px !important;
+}
+
+.teaeDayBlock{
+  background:#111827 !important;
+  border:2px solid #374151 !important;
+  border-radius:14px !important;
+  margin:26px 0 !important;
+  padding:18px !important;
+}
 </style>
 </head>
 <body>
@@ -1174,6 +1242,74 @@ div.doneText,
   color:#ef4444 !important;
   font-weight:900 !important;
 }
+/* TEAE_CLEAR_DAY_HEADERS_V1 */
+
+/* Maak elke dag duidelik apart */
+.day,
+.dayCard,
+.programDay,
+.card .day{
+  background:#111827 !important;
+  border:2px solid #374151 !important;
+  border-radius:14px !important;
+  margin:24px 0 !important;
+  padding:18px !important;
+}
+
+/* Dag datum heading baie duidelik */
+.day h3,
+.dayCard h3,
+.programDay h3,
+.card h3{
+  background:#b51fa5 !important;
+  color:#ffffff !important;
+  border-radius:10px !important;
+  padding:12px 14px !important;
+  margin:0 0 16px 0 !important;
+  font-size:24px !important;
+  font-weight:900 !important;
+  letter-spacing:.3px !important;
+}
+
+/* Fokus lyn onder datum moet ook duidelik wees */
+.day h3 + div,
+.dayCard h3 + div,
+.programDay h3 + div,
+.card h3 + div{
+  color:#d1d5db !important;
+  font-weight:800 !important;
+}
+
+/* Meer spasie tussen take binne elke dag */
+.day .task,
+.dayCard .task,
+.programDay .task,
+.card .task{
+  border-top:1px solid #303030 !important;
+  padding-top:16px !important;
+  margin-top:16px !important;
+}
+
+/* As die program nie classes gebruik nie, force date headings met JS class */
+.teaeDayHeader{
+  display:block !important;
+  background:#b51fa5 !important;
+  color:#ffffff !important;
+  border-radius:10px !important;
+  padding:12px 14px !important;
+  margin:0 0 16px 0 !important;
+  font-size:24px !important;
+  font-weight:900 !important;
+  letter-spacing:.3px !important;
+}
+
+.teaeDayBlock{
+  background:#111827 !important;
+  border:2px solid #374151 !important;
+  border-radius:14px !important;
+  margin:26px 0 !important;
+  padding:18px !important;
+}
 </style>
 
 <script>
@@ -1267,8 +1403,38 @@ document.addEventListener("DOMContentLoaded", teaeRedNotDoneStatus);
 setTimeout(teaeRedNotDoneStatus, 300);
 setTimeout(teaeRedNotDoneStatus, 1000);
 </script>
+<script>
+/* TEAE_CLEAR_DAY_HEADERS_SCRIPT_V1 */
+function teaeClearDayHeaders(){
+  const dayNames = [
+    "Maandag","Dinsdag","Woensdag","Donderdag","Vrydag"
+  ];
+
+  document.querySelectorAll("h3, h4, div, b").forEach(function(el){
+    const t = (el.textContent || "").trim();
+
+    const isDayHeader = dayNames.some(function(d){
+      return t.startsWith(d + " ");
+    });
+
+    if(isDayHeader){
+      el.classList.add("teaeDayHeader");
+
+      let parent = el.closest(".day, .dayCard, .programDay, .card");
+      if(parent && !parent.classList.contains("gapTopCard")){
+        parent.classList.add("teaeDayBlock");
+      }
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", teaeClearDayHeaders);
+setTimeout(teaeClearDayHeaders, 300);
+setTimeout(teaeClearDayHeaders, 1000);
+</script>
 </body>
 </html>
+
 
 
 
