@@ -196,6 +196,8 @@ function quizLinkHtml(title, di, ti){
     file = "enrico_landbou_quiz.html";
   } else if(lower.includes("wisk")){
     file = "enrico_wisk_geletterdheid_quiz.html";
+  } else if(lower.includes("afrikaans")){
+    file = "enrico_afrikaans_quiz.html";
   }
 
   const url = file + "?title=" + encodeURIComponent(title) + "&di=" + di + "&ti=" + ti + "&v=" + Date.now();
@@ -307,6 +309,7 @@ renderPlan();
 </script>
 </body>
 </html>
+
 
 
 

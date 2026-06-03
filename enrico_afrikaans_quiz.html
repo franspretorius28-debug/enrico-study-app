@@ -1,0 +1,476 @@
+﻿<!DOCTYPE html>
+<html lang="af" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enrico Afrikaans HT</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#eef3ff;color:#0f172a}
+header{background:#7c2d12;color:white;text-align:center;padding:28px 12px}
+header h1{margin:0;font-size:34px}
+.wrap{max-width:950px;margin:24px auto;padding:12px}
+.card{background:white;border-radius:18px;padding:22px;box-shadow:0 12px 30px rgba(15,23,42,.14)}
+.banner{border:2px solid #ea580c;background:#fff7ed;border-radius:16px;padding:14px;margin-bottom:16px}
+.topic{font-weight:900;color:#ea580c;margin-bottom:8px}
+.question{font-size:25px;font-weight:900;margin:14px 0;line-height:1.35}
+.option{display:block;width:100%;text-align:left;background:#f8fafc;color:#0f172a;border:1px solid #cbd5e1;border-radius:12px;padding:13px;margin:8px 0;font-size:17px;font-weight:800;cursor:pointer}
+.option:hover{background:#ffedd5}
+.option.selected{background:#fed7aa;border-color:#ea580c}
+button,a.btn{display:inline-block;text-decoration:none;padding:12px 15px;border:0;border-radius:12px;background:#2563eb;color:white;font-weight:900;font-size:16px;cursor:pointer;margin:6px 4px}
+.green{background:#16a34a!important}.gray{background:#475569!important}.orange{background:#f97316!important}
+.ok{color:#16a34a;font-weight:900;font-size:19px}.bad{color:#dc2626;font-weight:900;font-size:19px}
+.small{color:#64748b;font-size:15px}.result{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin-top:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Enrico Afrikaans HT</h1>
+  <p>250-vraag bank | Kwartaal 2 | Verkeerde vrae moet reggemaak word</p>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <div class="banner">
+      <div style="font-size:23px;font-weight:900" id="titleBox"></div>
+      <div class="small">Afrikaans Huistaal | 25 vrae</div>
+    </div>
+
+    <div class="result" id="progress"></div>
+
+    <div id="quizBox">
+      <div class="topic" id="topic"></div>
+      <div class="question" id="question"></div>
+      <div id="options"></div>
+
+      <button class="green" onclick="markAnswer()">Merk antwoord</button>
+      <button onclick="nextQuestion()">Volgende vraag</button>
+
+      <div id="feedback" style="margin-top:14px"></div>
+      <div class="small" id="explain" style="margin-top:8px"></div>
+    </div>
+
+    <div id="finalResult" class="result" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+const DAD = "27642203726";
+const params = new URLSearchParams(location.search);
+const sessionTitle = params.get("title") || "Afrikaans Sessie";
+const di = params.get("di");
+const ti = params.get("ti");
+
+let current = 0;
+let score = 0;
+let selected = null;
+let marked = false;
+let wrongList = [];
+let retryMode = false;
+let retryQuestions = [];
+let retryOriginalCount = 0;
+let retryCorrectCount = 0;
+
+function shuffle(arr){
+  arr = arr.slice();
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function q(topic, text, correct, wrongs, explain){
+  return {topic,text,correct,options:shuffle([correct,...wrongs].slice(0,4)),explain};
+}
+
+function buildAfrikaansBank(){
+  const b = [];
+
+  const fixed = [
+    ["Taal","Wat is n werkwoord?","n Doenwoord",["n Naam van iets","n Leesteken","n Beskrywende woord"],"n Werkwoord wys wat iemand of iets doen."],
+    ["Taal","Wat is n selfstandige naamwoord?","n Naam van n mens, plek, ding of idee",["n Aksie","n Vraagteken","n Sinsoort"],"Selfstandige naamwoorde benoem dinge."],
+    ["Taal","Wat is n byvoeglike naamwoord?","n Woord wat n selfstandige naamwoord beskryf",["n Doenwoord","n Leesteken","n Voegwoord"],"Byvoeglike naamwoorde beskryf hoe iets lyk of is."],
+    ["Taal","Wat is n bywoord?","n Woord wat n werkwoord beskryf",["n Naamwoord","n Titel","n Paragraaf"],"Bywoorde beskryf hoe, waar of wanneer iets gebeur."],
+    ["Taal","Wat is n voornaamwoord?","n Woord wat in die plek van n naamwoord gebruik word",["n Hoofletter","n Komma","n Werkwoord"],"Voornaamwoorde soos hy, sy, hulle vervang name."],
+    ["Taal","Wat is n voegwoord?","n Woord wat sinne of woorde verbind",["n Klank","n Tydsvorm","n Vraag"],"Voegwoorde sluit in: en, maar, want, omdat."],
+    ["Leestekens","Waarvoor gebruik ons n punt?","Om n stelsin te eindig",["Om n vraag te begin","Om iemand se naam te verander","Om n woord te verkort"],"n Punt eindig n gewone sin."],
+    ["Leestekens","Waarvoor gebruik ons n vraagteken?","Aan die einde van n vraag",["Aan die einde van elke sin","Net na n naamwoord","Net in opsommings"],"n Vraagteken wys dat iets gevra word."],
+    ["Leestekens","Waarvoor gebruik ons aanhalingstekens?","Om direkte woorde aan te dui",["Om somme te wys","Om paragrawe te tel","Om n kaart te lees"],"Direkte rede gebruik aanhalingstekens."],
+    ["Direkte rede","Wat is direkte rede?","Iemand se presiese woorde",["n Opsomming","n Sinoniem","n Titel"],"Direkte rede gee die persoon se presiese woorde."],
+    ["Indirekte rede","Wat is indirekte rede?","Wanneer iemand se woorde oorvertel word",["Wanneer woorde presies aangehaal word","n Gedig","n Leesteken"],"Indirekte rede vertel wat iemand gese het."],
+    ["Sinonieme","Wat is n sinoniem?","n Woord met dieselfde of amper dieselfde betekenis",["n Teenoorgestelde woord","n Leesteken","n Sinsoort"],"Sinonieme beteken soortgelyk."],
+    ["Antonieme","Wat is n antoniem?","n Woord met die teenoorgestelde betekenis",["n Woord met dieselfde betekenis","n Voornaamwoord","n Opsomming"],"Antonieme is teenoorgesteldes."],
+    ["Begrip","Wat is die hoofgedagte van n teks?","Die belangrikste idee in die teks",["Die laaste woord","Die skrywer se adres","Die aantal paragrawe"],"Die hoofgedagte som die kern van die teks op."],
+    ["Opsomming","Wat is n opsomming?","n Kort weergawe van die belangrikste punte",["n Lang kopie van die hele teks","n Lys van alle leestekens","n Prent"],"Opsommings hou net kernpunte."],
+    ["Paragrawe","Wat is n paragraaf?","n Groep sinne oor een hoofgedagte",["Net een letter","n Komma","n Los titel"],"Paragrawe organiseer idees."],
+    ["Skryfwerk","Wat moet n goeie inleiding doen?","Die onderwerp bekendstel",["Die einde verklap sonder rede","Net n datum gee","Net n leesteken wees"],"Die inleiding lei die leser in."],
+    ["Skryfwerk","Wat moet n slot doen?","Die skryfstuk mooi afsluit",["n Nuwe onderwerp begin","Alle woorde herhaal","Net n vraagteken wees"],"Die slot rond die skryfwerk af."],
+    ["Kwartaal 2","Watter tema pas by Leef groen?","Omgewingsbewustheid en verantwoordelike leefwyse",["Padtekens","Slegs sportuitslae","Net wiskundeformules"],"Leef groen handel oor omgewing en volhoubaarheid."],
+    ["Kwartaal 2","Watter tema pas by Supersterre, helde en rolmodelle?","Mense wat ander inspireer",["Net weerkaarte","Net bankstate","Net verkeersreels"],"Rolmodelle inspireer mense deur dade of karakter."]
+  ];
+
+  fixed.forEach(x=>b.push(q(x[0],x[1],x[2],x[3],x[4])));
+
+  const synonyms = [
+    ["gelukkig","bly"],["vinnig","rats"],["kwaad","woedend"],["mooi","pragtig"],["groot","enorm"],
+    ["klein","piepklein"],["slim","intelligent"],["bang","bevrees"],["hartseer","bedroef"],["maklik","eenvoudig"],
+    ["moeilik","ingewikkeld"],["begin","aanvang"],["einde","slot"],["praat","gesels"],["help","ondersteun"]
+  ];
+  synonyms.forEach(s=>{
+    b.push(q("Sinonieme","Kies die beste sinoniem vir: " + s[0],s[1],["teenoorgestelde","werkwoord","leesteken"],"n Sinoniem het dieselfde of amper dieselfde betekenis."));
+  });
+
+  const antonyms = [
+    ["warm","koud"],["hoog","laag"],["lig","donker"],["vroeg","laat"],["sterk","swak"],
+    ["oop","toe"],["voor","agter"],["bo","onder"],["vinnig","stadig"],["goed","sleg"],
+    ["gelukkig","hartseer"],["ryk","arm"],["hard","sag"],["nuut","oud"],["breed","smal"]
+  ];
+  antonyms.forEach(a=>{
+    b.push(q("Antonieme","Kies die beste antoniem vir: " + a[0],a[1],["sinoniem","dieselfde betekenis","hoofgedagte"],"n Antoniem is die teenoorgestelde betekenis."));
+  });
+
+  const directIndirect = [
+    ["Jan se: Ek gaan huis toe.","Jan se dat hy huis toe gaan."],
+    ["Sara se: Ek is moeg.","Sara se dat sy moeg is."],
+    ["Piet se: Ek skryf môre toets.","Piet se dat hy môre toets skryf."],
+    ["Ma se: Jy moet leer.","Ma se dat ek moet leer."],
+    ["Die onderwyser se: Die werk is belangrik.","Die onderwyser se dat die werk belangrik is."],
+    ["Enrico se: Ek verstaan die vraag.","Enrico se dat hy die vraag verstaan."],
+    ["Die seun se: Ek het my boek vergeet.","Die seun se dat hy sy boek vergeet het."],
+    ["Die meisie se: Ek lees die storie.","Die meisie se dat sy die storie lees."]
+  ];
+  directIndirect.forEach(d=>{
+    b.push(q("Indirekte rede","Kies die beste indirekte rede vir: " + d[0],d[1],["Dit is n sinoniem.","Die sin het geen werkwoord nie.","Gebruik n vraagteken."],"Indirekte rede vertel die persoon se woorde oor."));
+  });
+
+  const comprehension = [
+    ["As n teks oor herwinning gaan, wat is waarskynlik die hoofgedagte?","Mense moet afval hergebruik en die omgewing beskerm",["Mense moet meer mors","Sport is altyd belangrik","Alle diere is gevaarlik"],"Hoofgedagte is die belangrikste idee."],
+    ["As n karakter ander mense help, watter eienskap wys hy?","Behulpsaamheid",["Selfsug","Luiheid","Onbeskofheid"],"n Karakter se dade wys sy eienskappe."],
+    ["As n teks jou wil oortuig, wat is die doel?","Om die leser te beinvloed",["Net om letters te tel","Net om n kaart te wys","Net om somme te gee"],"Oortuigende tekste probeer jou mening verander."],
+    ["As n teks feite gee oor n onderwerp, wat is die doel?","Om in te lig",["Om te steel","Om te jaag","Om te sing"],"Inligtingstekste gee feite."],
+    ["As die skrywer humor gebruik, wat wil hy waarskynlik doen?","Die leser laat lag of ontspan",["Die leser verwar met somme","n Bankstaat maak","n Padkaart teken"],"Humor skep n ligter stemming."],
+    ["Wat beteken konteks?","Die woorde en situasie rondom n woord of idee",["Net die titel","Net die skrywer se naam","Net die laaste punt"],"Konteks help jou verstaan."],
+    ["Wat is n afleiding?","n Gevolgtrekking uit leidrade in die teks",["n Direkte kopie","n Leesteken","n Opskrif"],"Afleidings gebruik leidrade."],
+    ["Wat is die doel van n titel?","Om te wys waaroor die teks gaan",["Om die teks langer te maak","Om spelling te verwyder","Om paragrawe te tel"],"n Titel gee n leidraad oor die onderwerp."]
+  ];
+  comprehension.forEach(c=>{
+    b.push(q("Begrip",c[0],c[1],c[2],c[3]));
+    b.push(q("Begrip",c[0] + " Kies die beste antwoord.",c[1],c[2],c[3]));
+  });
+
+  const grammar = [
+    ["Die hond hardloop vinnig.","hardloop","werkwoord"],
+    ["Die groen boom is hoog.","groen","byvoeglike naamwoord"],
+    ["Sy lees die boek.","Sy","voornaamwoord"],
+    ["Die seun speel buite.","seun","selfstandige naamwoord"],
+    ["Hy praat sag.","sag","bywoord"],
+    ["Ek wil leer, want ek skryf toets.","want","voegwoord"],
+    ["Die meisie sing mooi.","sing","werkwoord"],
+    ["Die groot huis staan daar.","groot","byvoeglike naamwoord"],
+    ["Hulle gaan skool toe.","Hulle","voornaamwoord"],
+    ["Die kat slaap rustig.","rustig","bywoord"]
+  ];
+  grammar.forEach(g=>{
+    b.push(q("Woordsoorte","In die sin '" + g[0] + "' watter woord is n " + g[2] + "?",g[1],["die hele sin","n punt","geen woord"],"Kyk na die funksie van die woord in die sin."));
+  });
+
+  const writing = [
+    ["Wat moet jy eerste doen voor jy n opstel skryf?","Beplan jou idees",["Net begin sonder plan","Net die slot skryf","Net leestekens tel"],"Beplanning help jou skryfwerk orden."],
+    ["Wat maak n paragraaf sterk?","Een hoofgedagte met ondersteunende sinne",["Baie los idees","Geen onderwerp","Net een komma"],"Elke paragraaf moet fokus hê."],
+    ["Wat moet jy doen nadat jy klaar geskryf het?","Proeflees en foute regmaak",["Alles uitvee","Nooit weer lees nie","Net die titel verander"],"Proeflees verbeter taal en spelling."],
+    ["Wat is n gepaste toon in n formele brief?","Respekvol en netjies",["Onbeskof","Slordig","Net grappies"],"Formele skryfwerk moet professioneel wees."],
+    ["Hoekom is leestekens belangrik?","Dit help betekenis en leesbaarheid",["Dit maak woorde verdwyn","Dit vervang alle werkwoorde","Dit maak sinne altyd verkeerd"],"Leestekens help die leser verstaan."]
+  ];
+  writing.forEach(w=>{
+    b.push(q("Skryfwerk",w[0],w[1],w[2],w[3]));
+    b.push(q("Skryfwerk",w[0] + " Kies die beste antwoord.",w[1],w[2],w[3]));
+  });
+
+  const trueFalse = [
+    ["n Werkwoord wys gewoonlik n aksie.","Waar"],
+    ["n Sinoniem is n teenoorgestelde woord.","Onwaar"],
+    ["n Antoniem is n teenoorgestelde woord.","Waar"],
+    ["n Opsomming moet korter as die oorspronklike teks wees.","Waar"],
+    ["Direkte rede gebruik aanhalingstekens.","Waar"],
+    ["n Paragraaf handel gewoonlik oor een hoofgedagte.","Waar"],
+    ["n Vraagteken kom aan die einde van n vraag.","Waar"],
+    ["n Titel gee dikwels n leidraad oor die teks.","Waar"],
+    ["Proeflees is onnodig in skryfwerk.","Onwaar"],
+    ["Leef groen kan met die omgewing verband hou.","Waar"]
+  ];
+  trueFalse.forEach(tf=>{
+    b.push(q("Waar of Onwaar",tf[0],tf[1],tf[1]==="Waar"?["Onwaar","Net soms","Nooit"]:["Waar","Net soms","Altyd"],"Lees die stelling en kies Waar of Onwaar."));
+  });
+
+  while(b.length < 250){
+    const base = b[b.length % Math.min(b.length,100)];
+    const wrongs = base.options.filter(o=>o !== base.correct);
+    b.push(q(base.topic, base.text + " Kies die beste antwoord.", base.correct, shuffle(wrongs).slice(0,3), base.explain));
+  }
+
+  return b.slice(0,250);
+}
+
+function sessionNumber(title){
+  const m = title.match(/(\d+)/);
+  return m ? Number(m[1]) : 1;
+}
+
+const bank = buildAfrikaansBank();
+const start = ((sessionNumber(sessionTitle)-1) * 25) % bank.length;
+const questions = [];
+for(let i=0;i<25;i++){
+  questions.push(bank[(start+i) % bank.length]);
+}
+
+document.getElementById("titleBox").textContent = sessionTitle;
+
+function render(){
+  selected = null;
+  marked = false;
+  document.getElementById("progress").textContent = `Vraag ${current+1} van ${questions.length} | Reg: ${score}`;
+  const item = questions[current];
+
+  document.getElementById("topic").textContent = item.topic;
+  document.getElementById("question").textContent = item.text;
+  document.getElementById("feedback").innerHTML = "";
+  document.getElementById("explain").textContent = "";
+
+  const box = document.getElementById("options");
+  box.innerHTML = "";
+
+  item.options.forEach(opt=>{
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = opt;
+    btn.onclick = function(){
+      document.querySelectorAll(".option").forEach(b=>b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selected = opt;
+    };
+    box.appendChild(btn);
+  });
+}
+
+function markAnswer(){
+  if(marked) return;
+  const item = questions[current];
+
+  if(!selected){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Kies eers n antwoord.</span>";
+    return;
+  }
+
+  marked = true;
+
+  if(selected === item.correct){
+    score++;
+    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Reg!</span>";
+  } else {
+    wrongList.push({q:item.text,your:selected,correct:item.correct,explain:item.explain});
+    document.getElementById("feedback").innerHTML = "<span class='bad'>☹ Verkeerd. Regte antwoord: " + item.correct + "</span>";
+  }
+
+  document.getElementById("explain").textContent = "Verduideliking: " + item.explain;
+  document.getElementById("progress").textContent = `Vraag ${current+1} van ${questions.length} | Reg: ${score}`;
+}
+
+function nextQuestion(){
+  if(!marked){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Merk eers die antwoord.</span>";
+    return;
+  }
+
+  if(current < questions.length - 1){
+    current++;
+    render();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz(){
+  document.getElementById("quizBox").style.display = "none";
+  const wrong = questions.length - score;
+
+  let html = `<h2>Sessie klaar</h2>
+    <p><b>${sessionTitle}</b></p>
+    <p style="font-size:22px;font-weight:900">Punt: ${score} uit ${questions.length}</p>
+    <p>Verkeerd: ${wrong}</p>`;
+
+  if(wrongList.length > 0){
+    html += "<h3>Verkeerde antwoorde</h3>";
+    wrongList.slice(0,10).forEach(w=>{
+      html += `<div class="result"><b>Vraag:</b> ${w.q}<br><b>Sy antwoord:</b> ${w.your}<br><b>Reg:</b> ${w.correct}</div>`;
+    });
+
+    html += `<div class="result"><span class="bad">Hy moet eers sy verkeerde vrae reg oefen voordat hierdie sessie klaar tel.</span></div>`;
+    html += `<button class="orange" onclick="startWrongRetry()">Oefen verkeerde vrae weer</button>`;
+  } else {
+    if(di !== null && ti !== null){
+      localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
+    }
+
+    html += `<div class="result"><span class="ok">🎉 Alles eerste keer reg!</span></div>`;
+    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
+  }
+
+  document.getElementById("finalResult").innerHTML = html;
+  document.getElementById("finalResult").style.display = "block";
+}
+
+function startWrongRetry(){
+  if(wrongList.length === 0) return;
+
+  retryMode = true;
+  retryOriginalCount = wrongList.length;
+  retryCorrectCount = 0;
+
+  retryQuestions = wrongList.map(w => ({
+    topic: "Wrong Retry",
+    text: w.q,
+    correct: w.correct,
+    options: shuffle([w.correct, w.your, "Nie seker nie", "Hersien weer"]),
+    explain: w.explain || "Hierdie vraag was vroeer verkeerd."
+  }));
+
+  current = 0;
+  score = 0;
+  selected = null;
+  marked = false;
+  wrongList = [];
+
+  document.getElementById("finalResult").style.display = "none";
+  document.getElementById("quizBox").style.display = "block";
+  renderRetry();
+}
+
+function renderRetry(){
+  selected = null;
+  marked = false;
+
+  if(retryQuestions.length === 0){
+    finishWrongRetry();
+    return;
+  }
+
+  const item = retryQuestions[current];
+
+  document.getElementById("progress").textContent =
+    "Wrong Retry: " + (current + 1) + " van " + retryQuestions.length + " | Reggemaak: " + retryCorrectCount + " van " + retryOriginalCount;
+
+  document.getElementById("topic").textContent = item.topic;
+  document.getElementById("question").textContent = item.text;
+  document.getElementById("feedback").innerHTML = "";
+  document.getElementById("explain").textContent = "";
+
+  const box = document.getElementById("options");
+  box.innerHTML = "";
+
+  item.options.forEach(opt=>{
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = opt;
+    btn.onclick = function(){
+      document.querySelectorAll(".option").forEach(b=>b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selected = opt;
+    };
+    box.appendChild(btn);
+  });
+}
+
+function markRetryAnswer(){
+  if(marked) return;
+
+  const item = retryQuestions[current];
+
+  if(!selected){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Kies eers n antwoord.</span>";
+    return;
+  }
+
+  marked = true;
+
+  if(selected === item.correct){
+    retryCorrectCount++;
+    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Reg! Hierdie fout val nou weg.</span>";
+    retryQuestions.splice(current, 1);
+    if(current >= retryQuestions.length){ current = 0; }
+  } else {
+    document.getElementById("feedback").innerHTML =
+      "<span class='bad'>☹ Nog verkeerd. Regte antwoord: " + item.correct + ". Jy gaan hierdie vraag weer kry.</span>";
+  }
+
+  document.getElementById("explain").textContent = item.explain;
+}
+
+function nextRetryQuestion(){
+  if(!marked){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Merk eers die antwoord.</span>";
+    return;
+  }
+
+  if(retryQuestions.length === 0){
+    finishWrongRetry();
+    return;
+  }
+
+  if(current < retryQuestions.length - 1){ current++; } else { current = 0; }
+  renderRetry();
+}
+
+function finishWrongRetry(){
+  document.getElementById("quizBox").style.display = "none";
+
+  if(di !== null && ti !== null){
+    localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
+  }
+
+  const html = `<h2>Wrong Retry klaar 🎉</h2>
+    <p style="font-size:22px;font-weight:900">Al ${retryOriginalCount} verkeerde vrae is nou reggemaak.</p>
+    <p>Mooi Enrico — nou tel hierdie sessie as klaar.</p>
+    <div class="result"><span class="ok">Stuur nou die WhatsApp update na Dad.</span></div>
+    <button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
+
+  document.getElementById("finalResult").innerHTML = html;
+  document.getElementById("finalResult").style.display = "block";
+}
+
+const originalMarkAnswer = markAnswer;
+markAnswer = function(){
+  if(retryMode){ markRetryAnswer(); } else { originalMarkAnswer(); }
+};
+
+const originalNextQuestion = nextQuestion;
+nextQuestion = function(){
+  if(retryMode){ nextRetryQuestion(); } else { originalNextQuestion(); }
+};
+
+function sendWhatsapp(){
+  const originalWrong = retryOriginalCount > 0 ? retryOriginalCount : (25 - score);
+
+  let msg = `Enrico Afrikaans update:
+Sessie: ${sessionTitle}
+Vraagbank: 250 Afrikaans HT vrae
+Punt: ${25 - originalWrong}/25
+Oorspronklik verkeerd: ${originalWrong}`;
+
+  if(retryOriginalCount > 0 && retryQuestions.length === 0){
+    msg += `\nWrong Retry: Klaar - ${retryOriginalCount}/${retryOriginalCount} foute reggemaak`;
+  } else if(retryOriginalCount === 0){
+    msg += `\nWrong Retry: Nie nodig nie - alles eerste keer reg`;
+  }
+
+  window.open("https://wa.me/" + DAD + "?text=" + encodeURIComponent(msg), "_blank");
+
+  setTimeout(function(){
+    window.location.href = "enrico_exam_program.html?v=" + Date.now();
+  }, 1200);
+}
+
+render();
+</script>
+</body>
+</html>
