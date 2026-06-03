@@ -443,71 +443,162 @@ function sessionNumber(title){
   return m ? Number(m[1]) : 1;
 }
 
-/* TEAE_PROFESSIONAL_UNIQUE_QUESTION_BANK_V1 */
-function teaeNormQuestionText(v){
+/* TEAE_STRICT_UNIQUE_BANK_AND_SESSIONS_V1 */
+function teaeStrictNorm(v){
   return String(v || "")
     .toLowerCase()
-    .replace(/[^a-z0-9áéíóúêëïöüàèìòùâîôûäëïöü\s]/gi, " ")
-    .replace(/\s+/g, " ")
+    .replace(/[’']/g,"")
+    .replace(/[^a-z0-9áéíóúêëïöüàèìòùâîôûäëïöü\s\/\-]/gi," ")
+    .replace(/\s+/g," ")
     .trim();
 }
 
-function teaeIsTrueFalseOptionSet(optionKey){
-  return optionKey.includes("true") ||
-         optionKey.includes("false") ||
-         optionKey.includes("waar") ||
-         optionKey.includes("onwaar");
+function teaeStrictOptionKey(item){
+  const opts = (item && item.options ? item.options : [])
+    .map(teaeStrictNorm)
+    .filter(Boolean)
+    .sort();
+  return opts.join(" | ");
 }
 
-function teaeProfessionalizeBank(list){
-  const seenQuestion = new Set();
-  const seenOptionSet = new Set();
-  const seenCorrectOptionSet = new Set();
-  const clean = [];
+function teaeStrictConceptKey(item){
+  const text = teaeStrictNorm((item && (item.text || item.q)) || "");
+  const correct = teaeStrictNorm((item && item.correct) || "");
+  const topic = teaeStrictNorm((item && item.topic) || "");
 
-  (list || []).forEach(function(item){
+  let m = text.match(/\b(slippery road|roundabout|stop sign|amber traffic light|red traffic light|green traffic light|yield sign|give way|no entry|speed limit|pedestrian crossing|school zone|road works|traffic light|seat belt|following distance|defensive driving|emergency vehicle|roadworthy|overtake|intersection)\b/i);
+  if(m) return "k53:" + m[1].replace(/\s+/g," ");
+
+  m = text.match(/\b(lan|wi[\-\s]?fi|wan|html|cpu|ram|rom|usb|url|www|excel|word|powerpoint|database|spreadsheet|email|internet|browser|operating system|virus|firewall|backup|cloud|folder|file|keyboard|mouse|monitor|printer|network|router|password|software|hardware)\b/i);
+  if(m) return "rtt:" + m[1].replace(/\s+/g,"").replace("-","");
+
+  if(correct && correct.length > 3 && !["true","false","waar","onwaar","ja","nee"].includes(correct)){
+    return "answer:" + topic + ":" + correct;
+  }
+
+  return "text:" + text.split(" ").slice(0,7).join(" ");
+}
+
+function teaeStrictUniqueBank(rawList){
+  const seenText = new Set();
+  const seenOption = new Set();
+  const seenCorrectOption = new Set();
+  const seenConceptOption = new Set();
+  const unique = [];
+
+  (rawList || []).forEach(function(item){
     if(!item) return;
 
-    const qText = teaeNormQuestionText(item.text || item.q || "");
-    const correct = teaeNormQuestionText(item.correct || "");
-    const opts = (item.options || []).map(teaeNormQuestionText).filter(Boolean);
-    const optionKey = opts.slice().sort().join(" | ");
+    const text = teaeStrictNorm(item.text || item.q || "");
+    const correct = teaeStrictNorm(item.correct || "");
+    const optionKey = teaeStrictOptionKey(item);
+    const concept = teaeStrictConceptKey(item);
+
+    if(!text || !correct || !optionKey) return;
+
     const correctOptionKey = correct + " || " + optionKey;
-    const isTrueFalse = teaeIsTrueFalseOptionSet(optionKey);
+    const conceptOptionKey = concept + " || " + optionKey;
 
-    if(!qText || opts.length < 4) return;
+    // Hard stops vir duplicate gevoel
+    if(seenText.has(text)) return;
+    if(seenOption.has(optionKey)) return;
+    if(seenCorrectOption.has(correctOptionKey)) return;
+    if(seenConceptOption.has(conceptOptionKey)) return;
 
-    if(seenQuestion.has(qText)) return;
-
-    // Hierdie stop die copy/paste gevoel:
-    // dieselfde 4 opsies moet nie oor en oor in dieselfde bank/session voorkom nie.
-    // True/False vrae word toegelaat omdat hulle natuurlik dieselfde opsies kan hê.
-    if(!isTrueFalse && seenOptionSet.has(optionKey)) return;
-    if(!isTrueFalse && seenCorrectOptionSet.has(correctOptionKey)) return;
-
-    seenQuestion.add(qText);
-    seenOptionSet.add(optionKey);
-    seenCorrectOptionSet.add(correctOptionKey);
-    clean.push(item);
+    seenText.add(text);
+    seenOption.add(optionKey);
+    seenCorrectOption.add(correctOptionKey);
+    seenConceptOption.add(conceptOptionKey);
+    unique.push(item);
   });
 
-  // Safety fallback: as 'n vak te min oorhou, voeg unieke vrae terug,
-  // maar steeds nie dieselfde vraag-teks nie.
-  if(clean.length < 80){
-    (list || []).forEach(function(item){
-      if(!item) return;
-      const qText = teaeNormQuestionText(item.text || item.q || "");
-      if(!qText || seenQuestion.has(qText)) return;
-      seenQuestion.add(qText);
-      clean.push(item);
+  window.TEAE_RAW_BANK_COUNT = (rawList || []).length;
+  window.TEAE_UNIQUE_BANK_COUNT = unique.length;
+
+  if(unique.length < 200){
+    console.warn("TEAE WARNING: Unique bank is below 200", {
+      raw: window.TEAE_RAW_BANK_COUNT,
+      unique: window.TEAE_UNIQUE_BANK_COUNT
     });
   }
 
-  return clean;
+  return unique;
+}
+
+function teaeHashSeed(s){
+  s = String(s || "");
+  let h = 2166136261;
+  for(let i=0;i<s.length;i++){
+    h ^= s.charCodeAt(i);
+    h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24);
+  }
+  return h >>> 0;
+}
+
+function teaeShuffleForTitle(list){
+  const params = new URLSearchParams(window.location.search);
+  const title = params.get("title") || "";
+  const seed = title + "|" + (params.get("di") || "") + "|" + (params.get("ti") || "");
+  return (list || []).slice().sort(function(a,b){
+    const ah = teaeHashSeed(seed + "|" + (a.text || a.q || "") + "|" + (a.correct || ""));
+    const bh = teaeHashSeed(seed + "|" + (b.text || b.q || "") + "|" + (b.correct || ""));
+    return ah - bh;
+  });
+}
+
+let teaeStrictSessionFixed = false;
+
+function teaeStrictFixSession(){
+  if(teaeStrictSessionFixed) return;
+  teaeStrictSessionFixed = true;
+
+  if(typeof questions === "undefined" || !Array.isArray(questions)) return;
+  if(typeof bank === "undefined" || !Array.isArray(bank)) return;
+
+  const wanted = questions.length || 25;
+  const source = teaeShuffleForTitle(bank);
+
+  const usedText = new Set();
+  const usedConcept = new Set();
+  const usedOption = new Set();
+  const clean = [];
+
+  function add(item){
+    if(!item || clean.length >= wanted) return;
+
+    const text = teaeStrictNorm(item.text || item.q || "");
+    const concept = teaeStrictConceptKey(item);
+    const optionKey = teaeStrictOptionKey(item);
+
+    if(!text || !optionKey) return;
+    if(usedText.has(text)) return;
+    if(usedConcept.has(concept)) return;
+    if(usedOption.has(optionKey)) return;
+
+    usedText.add(text);
+    usedConcept.add(concept);
+    usedOption.add(optionKey);
+    clean.push(item);
+  }
+
+  source.forEach(add);
+
+  // Safety: as daar nie 25 is nie, vul net met unieke vraagteks, maar geen exact duplicates nie.
+  source.forEach(function(item){
+    if(clean.length >= wanted) return;
+    const text = teaeStrictNorm(item && (item.text || item.q));
+    if(text && !usedText.has(text)){
+      usedText.add(text);
+      clean.push(item);
+    }
+  });
+
+  questions.length = 0;
+  clean.slice(0,wanted).forEach(function(x){ questions.push(x); });
 }
 
 const rawBank = buildLandbouBank();
-const bank = teaeProfessionalizeBank(rawBank);
+const bank = teaeStrictUniqueBank(rawBank);
 const start = ((sessionNumber(sessionTitle)-1) * 25) % bank.length;
 const questions = [];
 for(let i=0;i<25;i++){
@@ -764,6 +855,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 
