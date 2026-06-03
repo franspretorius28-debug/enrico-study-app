@@ -1,0 +1,460 @@
+﻿<!DOCTYPE html>
+<html lang="af" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enrico Landbou</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#eef3ff;color:#0f172a}
+header{background:#14532d;color:white;text-align:center;padding:28px 12px}
+header h1{margin:0;font-size:34px}
+.wrap{max-width:950px;margin:24px auto;padding:12px}
+.card{background:white;border-radius:18px;padding:22px;box-shadow:0 12px 30px rgba(15,23,42,.14)}
+.banner{border:2px solid #16a34a;background:#f0fdf4;border-radius:16px;padding:14px;margin-bottom:16px}
+.topic{font-weight:900;color:#16a34a;margin-bottom:8px}
+.question{font-size:25px;font-weight:900;margin:14px 0}
+.option{display:block;width:100%;text-align:left;background:#f8fafc;color:#0f172a;border:1px solid #cbd5e1;border-radius:12px;padding:13px;margin:8px 0;font-size:17px;font-weight:800;cursor:pointer}
+.option:hover{background:#dcfce7}
+.option.selected{background:#bbf7d0;border-color:#16a34a}
+button,a.btn{display:inline-block;text-decoration:none;padding:12px 15px;border:0;border-radius:12px;background:#2563eb;color:white;font-weight:900;font-size:16px;cursor:pointer;margin:6px 4px}
+.green{background:#16a34a!important}.gray{background:#475569!important}.orange{background:#f97316!important}
+.ok{color:#16a34a;font-weight:900;font-size:19px}.bad{color:#dc2626;font-weight:900;font-size:19px}
+.small{color:#64748b;font-size:15px}.result{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin-top:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Enrico Landbou</h1>
+  <p>250-vraag bank | 25 vrae per sessie | Verkeerde vrae moet reggemaak word</p>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <div class="banner">
+      <div style="font-size:23px;font-weight:900" id="titleBox"></div>
+      <div class="small">Landbouwetenskappe | Kwartaal 2 | 25 vrae</div>
+    </div>
+
+    <div class="result" id="progress"></div>
+
+    <div id="quizBox">
+      <div class="topic" id="topic"></div>
+      <div class="question" id="question"></div>
+      <div id="options"></div>
+
+      <button class="green" onclick="markAnswer()">Merk antwoord</button>
+      <button onclick="nextQuestion()">Volgende vraag</button>
+
+      <div id="feedback" style="margin-top:14px"></div>
+      <div class="small" id="explain" style="margin-top:8px"></div>
+    </div>
+
+    <div id="finalResult" class="result" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+const DAD = "27642203726";
+const params = new URLSearchParams(location.search);
+const sessionTitle = params.get("title") || "Landbou Sessie";
+const di = params.get("di");
+const ti = params.get("ti");
+const subject = "Landbouwetenskappe";
+
+let current = 0;
+let score = 0;
+let selected = null;
+let marked = false;
+let wrongList = [];
+let retryMode = false;
+let retryQuestions = [];
+let retryOriginalCount = 0;
+let retryCorrectCount = 0;
+
+function shuffle(arr){
+  arr = arr.slice();
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function q(topic, text, correct, wrongs, explain){
+  return {topic,text,correct,options:shuffle([correct,...wrongs].slice(0,4)),explain};
+}
+
+function buildLandbouBank(){
+  const b = [];
+
+  const fixed = [
+    ["Agro-ekologie","Wat beteken agro-ekologie?","Die studie van landbou en die omgewing saam",["Net besigheid se wins","Net rekenaars op n plaas","Net padtekens"],"Agro-ekologie kyk hoe boerdery met die natuurlike omgewing saamwerk."],
+    ["Ekosisteem","Wat is n ekosisteem?","Lewende en nie-lewende dele wat saam in n area werk",["Net n trekker","Net n plaaswinkel","Net n enkele plant"],"n Ekosisteem sluit plante, diere, grond, water en klimaat in."],
+    ["Volhoubaarheid","Wat beteken volhoubare landbou?","Boerdery wat hulpbronne beskerm vir die toekoms",["Om alles so vinnig moontlik op te gebruik","Om grond te vernietig","Om net vandag se wins te tel"],"Volhoubaar beteken dit kan aanhou sonder om hulpbronne uit te put."],
+    ["Grond","Hoekom is grond belangrik in landbou?","Plante groei daarin en kry water en voedingstowwe",["Dit vervang sonlig","Dit maak internet vinniger","Dit is net vir paaie"],"Grond ondersteun plantgroei."],
+    ["Grondvrugbaarheid","Wat beteken grondvrugbaarheid?","Die grond se vermoe om plante goed te laat groei",["Hoe hard n pad is","Hoe vinnig n trekker ry","Hoeveel hekke daar is"],"Vrugbare grond bevat voedingstowwe en goeie struktuur."],
+    ["Erosie","Wat is erosie?","Wanneer grond deur wind of water weggedra word",["Wanneer plante water kry","Wanneer diere eet","Wanneer pryse styg"],"Erosie verwyder waardevolle bogrond."],
+    ["Kompos","Wat is kompos?","Ontbinde organiese materiaal wat grond verbeter",["Plastiek afval","Diesel","Soutwater"],"Kompos voeg organiese materiaal en voeding by grond."],
+    ["Besproeiing","Wat is besproeiing?","Om water aan gewasse te gee",["Om diere te tel","Om grond te verbrand","Om pryse te bereken"],"Besproeiing help plante as natuurlike reen nie genoeg is nie."],
+    ["Biodiversiteit","Hoekom is biodiversiteit belangrik?","Dit hou ekosisteme gesond en gebalanseerd",["Dit stop alle reen","Dit maak papier groter","Dit verwyder sonlig"],"Verskillende organismes help met balans in die natuur."],
+    ["Natuurlike hulpbronne","Watter een is n natuurlike hulpbron?","Water",["n Excel-lêer","n Winkelrak","n Selfoon"],"Water, grond, plante en diere is natuurlike hulpbronne."],
+    ["Landbou-ekonomie","Wat beteken produksiekoste?","Die koste om n produk te produseer",["Die hoeveelheid reen","Die kleur van grond","Die ouderdom van n trekker"],"Produksiekoste help bepaal wins."],
+    ["Landbou-ekonomie","Wat is wins?","Inkomste minus uitgawes",["Uitgawes plus skuld","Net belasting","Net produksie"],"Wins is wat oorbly nadat koste betaal is."],
+    ["Mark","Wat is n mark in landbou?","Plek of sisteem waar produkte gekoop en verkoop word",["Net n dam","Net n skuur","Net n heining"],"Landbouprodukte word op markte verkoop."],
+    ["Vraag en aanbod","Wat gebeur as vraag hoog is en aanbod laag is?","Pryse kan styg",["Pryse moet altyd daal","Produkte verdwyn permanent","Koste word altyd nul"],"Hoë vraag en lae aanbod druk pryse op."],
+    ["Dierestudies","Wat is vee?","Diere wat op n plaas aangehou word",["Rekenaarprogramme","Wolke","Slegs plante"],"Vee sluit beeste, skape, bokke, varke en pluimvee in."],
+    ["Dierestudies","Hoekom is skoon water belangrik vir diere?","Dit hou diere gesond en help groei",["Dit maak diere onsigbaar","Dit vervang kos","Dit stop alle siektes outomaties"],"Diere het water nodig vir gesondheid."],
+    ["Dierestudies","Wat is dierevoeding?","Kos en voedingstowwe wat diere nodig het",["Net die kleur van n dier","Net n hok","Net n pryslys"],"Goeie voeding help produksie en gesondheid."],
+    ["Plantstudies","Wat het plante nodig vir fotosintese?","Lig, water en koolstofdioksied",["Net petrol","Net klank","Net sout"],"Fotosintese help plante kos maak."],
+    ["Plantstudies","Hoekom is onkruid n probleem?","Dit kompeteer met gewasse vir water en voeding",["Dit maak altyd meer wins","Dit vervang kunsmis","Dit is altyd n gewas"],"Onkruid kan groei en opbrengs benadeel."],
+    ["Plantstudies","Wat is n gewas?","n Plant wat gekweek word vir gebruik of verkoop",["n Rekenaarlêer","n Padteken","n Bankrekening"],"Gewasse word deur boere geplant en bestuur."],
+    ["Klimaat","Hoekom is klimaat belangrik in landbou?","Dit beinvloed watter plante en diere goed kan produseer",["Dit verander n trekker se kleur","Dit vervang grond","Dit maak pryse altyd dieselfde"],"Temperatuur en reenval beinvloed produksie."],
+    ["Waterbewaring","Wat beteken waterbewaring?","Om water verstandig te gebruik en vermorsing te beperk",["Om water te mors","Om damme leeg te maak","Om plante sonder water te los"],"Water is n beperkte hulpbron."],
+    ["Grondbewaring","Hoe kan boere erosie verminder?","Deur grondbedekking en goeie bewerking te gebruik",["Deur alle plante uit te trek","Deur hellings kaal te los","Deur water te mors"],"Grondbedekking beskerm grond teen wind en water."],
+    ["Plaasbestuur","Hoekom is rekordhouding belangrik?","Dit help boere om besluite te neem en koste te beheer",["Dit maak diere groter sonder kos","Dit vervang water","Dit stop alle siektes"],"Rekords wys produksie, koste en inkomste."],
+    ["Veiligheid","Hoekom moet plaaswerkers veilig met toerusting werk?","Om beserings te voorkom",["Om werk stadiger te maak","Om toerusting te breek","Om water te mors"],"Veiligheid voorkom ongelukke."]
+  ];
+
+  fixed.forEach(x=>b.push(q(x[0],x[1],x[2],x[3],x[4])));
+
+  const terms = [
+    ["Agro-ekologie","landbou binne n natuurlike ekosisteem",["net rekeningkunde","net padtekens","net rekenaars"]],
+    ["Ekologie","studie van organismes en hul omgewing",["studie van pryse alleen","studie van motors","studie van winkels"]],
+    ["Habitat","plek waar n organisme leef",["n bankstaat","n trekkerband","n markprys"]],
+    ["Produksie","die maak of lewer van landbouprodukte",["net rus","net afval","net pryse kyk"]],
+    ["Hulpbron","iets wat gebruik word om te produseer",["n fout in spelling","n sportspan","n musieknote"]],
+    ["Organiese materiaal","plant- of diermateriaal wat grond kan verbeter",["plastiek speelgoed","metaal heining","diesel alleen"]],
+    ["pH","maatstaf van hoe suur of alkalies grond is",["hoe vinnig n trekker ry","hoe groot n skuur is","hoe duur n produk is"]],
+    ["Kunsmis","stof wat voedingstowwe aan grond of plante gee",["n vorm van vervoer","n tipe e-pos","n padteken"]],
+    ["Plaag","organisme wat gewasse of diere benadeel",["n goeie bemarker","n boekhoudingsterm","n tipe wins"]],
+    ["Siekte","toestand wat plante of diere siek maak",["n prysstrategie","n grondtipe alleen","n verkoopsvorm"]],
+    ["Opbrengs","hoeveelheid produk wat geproduseer word",["hoeveelheid musiek","hoeveelheid papier in n printer","hoeveelheid wagwoorde"]],
+    ["Inkomste","geld wat uit verkope ontvang word",["geld wat spandeer is","net reenval","net grondkleur"]],
+    ["Uitgawe","geld wat betaal word vir koste",["geld wat inkom","n plantwortel","n diersoort"]],
+    ["Kontantvloei","beweging van geld in en uit n besigheid",["beweging van diere in n kamp","windrigting","grondtekstuur alleen"]],
+    ["Entrepreneur","iemand wat n besigheid begin en risiko neem",["net n kliënt","net n padteken","net n dier"]],
+    ["Arbeid","menslike werk in produksie",["net grond","net water","net sonlig"]],
+    ["Kapitaal","geld of toerusting wat produksie help",["net reen","net onkruid","net wind"]],
+    ["Natuurlike hulpbronne","grond, water, plante en diere",["net Word en Excel","net telefoonnommers","net skoolpunte"]],
+    ["Bewerking","voorbereiding van grond vir gewasse",["skryf van e-pos","verkoop van skoene","verander van wagwoord"]],
+    ["Dreinering","verwydering van oortollige water uit grond",["byvoeg van malware","verkoop van melk","skryf van toets"]]
+  ];
+
+  terms.forEach(t=>{
+    b.push(q("Begrippe","Wat beteken " + t[0] + "?",t[1],t[2],"Ken die definisie van die begrip."));
+    b.push(q("Begrippe","Kies die beste beskrywing van " + t[0] + ".",t[1],t[2],"Die beskrywing moet by die term pas."));
+    b.push(q("Begrippe",t[0] + " verwys na:",t[1],t[2],"Hierdie begrip kom gereeld in Landbou voor."));
+  });
+
+  const trueFalse = [
+    ["Grondvrugbaarheid beinvloed plantgroei.","Waar"],
+    ["Erosie kan waardevolle bogrond wegneem.","Waar"],
+    ["Kompos kan grondkwaliteit verbeter.","Waar"],
+    ["Water is nie belangrik vir diere nie.","Onwaar"],
+    ["Biodiversiteit help ekosisteme gesond hou.","Waar"],
+    ["Vraag en aanbod kan pryse beinvloed.","Waar"],
+    ["Wins beteken inkomste minus uitgawes.","Waar"],
+    ["Onkruid kompeteer nie met gewasse nie.","Onwaar"],
+    ["Fotosintese het lig nodig.","Waar"],
+    ["Volhoubare landbou beskerm hulpbronne vir die toekoms.","Waar"],
+    ["n Plaas hoef nooit rekords te hou nie.","Onwaar"],
+    ["Skoon water is belangrik vir dieregesondheid.","Waar"],
+    ["Klimaat kan produksie beinvloed.","Waar"],
+    ["Grondbedekking kan erosie help verminder.","Waar"],
+    ["Peste en siektes kan produksie benadeel.","Waar"]
+  ];
+
+  trueFalse.forEach(tf=>{
+    b.push(q("Waar of Onwaar",tf[0],tf[1],tf[1]==="Waar"?["Onwaar","Net soms","Nooit"]:["Waar","Net soms","Altyd"],"Lees die stelling en kies Waar of Onwaar."));
+  });
+
+  const situations = [
+    ["n Boer sien dat grond teen n helling wegspoel na swaar reen.","erosie beheer met grondbedekking of kontoerbewerking",["meer grond kaal los","alle plante verwyder","water mors"]],
+    ["Gewasse groei swak en blare lyk geel.","ondersoek voedingstowwe of grondvrugbaarheid",["ignoreer dit altyd","plant sonder water","stop alle sonlig"]],
+    ["Diere drink vuil water.","gee skoon water en voorkom siektes",["laat hulle vuil water drink","verminder alle kos","sluit hulle sonder water toe"]],
+    ["n Plaas gebruik te veel water.","gebruik waterbesparing en beter besproeiing",["laat krane oop","besproei in hitte sonder beheer","breek pype"]],
+    ["Onkruid groei tussen mielies.","beheer onkruid omdat dit kompeteer met gewasse",["los dit altyd","gee net meer onkruid kos","plant geen gewasse"]],
+    ["n Boer wil wins bereken.","trek uitgawes van inkomste af",["tel net uitgawes","ignoreer verkope","gebruik net reenval"]],
+    ["n Boer wil weet watter produk goed verkoop.","hou verkoopsrekords",["gooi rekords weg","raai altyd","ignoreer markte"]],
+    ["n Plaas se grond is arm aan organiese materiaal.","voeg kompos of organiese materiaal by",["verwyder alle plantreste","gebruik net plastiek","stop grondbewaring"]],
+    ["n Plaag beskadig gewasse.","identifiseer en beheer die plaag verantwoordelik",["ignoreer alle skade","plant minder versigtig","verkoop besmette produkte as kos"]],
+    ["Die markprys daal omdat aanbod baie hoog is.","verstaan vraag en aanbod se invloed op prys",["dink pryse verander nooit","ignoreer aanbod","verkoop sonder pryskennis"]]
+  ];
+
+  situations.forEach(s=>{
+    b.push(q("Scenario","Wat is die beste landbou-oplossing? " + s[0],s[1],s[2],"Kies die praktiese en volhoubare antwoord."));
+    b.push(q("Scenario","n Praktiese besluit vir hierdie situasie: " + s[0],s[1],s[2],"Boere neem besluite op grond van waarneming en kennis."));
+  });
+
+  while(b.length < 250){
+    const base = b[b.length % Math.min(b.length,100)];
+    const wrongs = base.options.filter(o=>o !== base.correct);
+    b.push(q(base.topic, base.text + " Kies die beste antwoord.", base.correct, shuffle(wrongs).slice(0,3), base.explain));
+  }
+
+  return b.slice(0,250);
+}
+
+function sessionNumber(title){
+  const m = title.match(/(\d+)/);
+  return m ? Number(m[1]) : 1;
+}
+
+const bank = buildLandbouBank();
+const start = ((sessionNumber(sessionTitle)-1) * 25) % bank.length;
+const questions = [];
+for(let i=0;i<25;i++){
+  questions.push(bank[(start+i) % bank.length]);
+}
+
+document.getElementById("titleBox").textContent = sessionTitle;
+
+function render(){
+  selected = null;
+  marked = false;
+  document.getElementById("progress").textContent = `Vraag ${current+1} van ${questions.length} | Reg: ${score}`;
+  const item = questions[current];
+
+  document.getElementById("topic").textContent = item.topic;
+  document.getElementById("question").textContent = item.text;
+  document.getElementById("feedback").innerHTML = "";
+  document.getElementById("explain").textContent = "";
+
+  const box = document.getElementById("options");
+  box.innerHTML = "";
+
+  item.options.forEach(opt=>{
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = opt;
+    btn.onclick = function(){
+      document.querySelectorAll(".option").forEach(b=>b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selected = opt;
+    };
+    box.appendChild(btn);
+  });
+}
+
+function markAnswer(){
+  if(marked) return;
+  const item = questions[current];
+
+  if(!selected){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Kies eers n antwoord.</span>";
+    return;
+  }
+
+  marked = true;
+
+  if(selected === item.correct){
+    score++;
+    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Reg!</span>";
+  } else {
+    wrongList.push({q:item.text,your:selected,correct:item.correct,explain:item.explain});
+    document.getElementById("feedback").innerHTML = "<span class='bad'>☹ Verkeerd. Regte antwoord: " + item.correct + "</span>";
+  }
+
+  document.getElementById("explain").textContent = "Verduideliking: " + item.explain;
+  document.getElementById("progress").textContent = `Vraag ${current+1} van ${questions.length} | Reg: ${score}`;
+}
+
+function nextQuestion(){
+  if(!marked){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Merk eers die antwoord.</span>";
+    return;
+  }
+
+  if(current < questions.length - 1){
+    current++;
+    render();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz(){
+  document.getElementById("quizBox").style.display = "none";
+  const wrong = questions.length - score;
+
+  let html = `<h2>Sessie klaar</h2>
+    <p><b>${sessionTitle}</b></p>
+    <p style="font-size:22px;font-weight:900">Punt: ${score} uit ${questions.length}</p>
+    <p>Verkeerd: ${wrong}</p>`;
+
+  if(wrongList.length > 0){
+    html += "<h3>Verkeerde antwoorde</h3>";
+    wrongList.slice(0,10).forEach(w=>{
+      html += `<div class="result"><b>Vraag:</b> ${w.q}<br><b>Sy antwoord:</b> ${w.your}<br><b>Reg:</b> ${w.correct}</div>`;
+    });
+
+    html += `<div class="result"><span class="bad">Hy moet eers sy verkeerde vrae reg oefen voordat hierdie sessie klaar tel.</span></div>`;
+    html += `<button class="orange" onclick="startWrongRetry()">Oefen verkeerde vrae weer</button>`;
+  } else {
+    if(di !== null && ti !== null){
+      localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
+    }
+
+    html += `<div class="result"><span class="ok">🎉 Alles eerste keer reg!</span></div>`;
+    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
+  }
+
+  document.getElementById("finalResult").innerHTML = html;
+  document.getElementById("finalResult").style.display = "block";
+}
+
+function startWrongRetry(){
+  if(wrongList.length === 0) return;
+
+  retryMode = true;
+  retryOriginalCount = wrongList.length;
+  retryCorrectCount = 0;
+
+  retryQuestions = wrongList.map(w => ({
+    topic: "Wrong Retry",
+    text: w.q,
+    correct: w.correct,
+    options: shuffle([w.correct, w.your, "Nie seker nie", "Hersien weer"]),
+    explain: w.explain || "Hierdie vraag was vroeer verkeerd."
+  }));
+
+  current = 0;
+  score = 0;
+  selected = null;
+  marked = false;
+  wrongList = [];
+
+  document.getElementById("finalResult").style.display = "none";
+  document.getElementById("quizBox").style.display = "block";
+  renderRetry();
+}
+
+function renderRetry(){
+  selected = null;
+  marked = false;
+
+  if(retryQuestions.length === 0){
+    finishWrongRetry();
+    return;
+  }
+
+  const item = retryQuestions[current];
+
+  document.getElementById("progress").textContent =
+    "Wrong Retry: " + (current + 1) + " van " + retryQuestions.length + " | Reggemaak: " + retryCorrectCount + " van " + retryOriginalCount;
+
+  document.getElementById("topic").textContent = item.topic;
+  document.getElementById("question").textContent = item.text;
+  document.getElementById("feedback").innerHTML = "";
+  document.getElementById("explain").textContent = "";
+
+  const box = document.getElementById("options");
+  box.innerHTML = "";
+
+  item.options.forEach(opt=>{
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = opt;
+    btn.onclick = function(){
+      document.querySelectorAll(".option").forEach(b=>b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selected = opt;
+    };
+    box.appendChild(btn);
+  });
+}
+
+function markRetryAnswer(){
+  if(marked) return;
+
+  const item = retryQuestions[current];
+
+  if(!selected){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Kies eers n antwoord.</span>";
+    return;
+  }
+
+  marked = true;
+
+  if(selected === item.correct){
+    retryCorrectCount++;
+    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Reg! Hierdie fout val nou weg.</span>";
+    retryQuestions.splice(current, 1);
+    if(current >= retryQuestions.length){ current = 0; }
+  } else {
+    document.getElementById("feedback").innerHTML =
+      "<span class='bad'>☹ Nog verkeerd. Regte antwoord: " + item.correct + ". Jy gaan hierdie vraag weer kry.</span>";
+  }
+
+  document.getElementById("explain").textContent = item.explain;
+}
+
+function nextRetryQuestion(){
+  if(!marked){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Merk eers die antwoord.</span>";
+    return;
+  }
+
+  if(retryQuestions.length === 0){
+    finishWrongRetry();
+    return;
+  }
+
+  if(current < retryQuestions.length - 1){ current++; } else { current = 0; }
+  renderRetry();
+}
+
+function finishWrongRetry(){
+  document.getElementById("quizBox").style.display = "none";
+
+  if(di !== null && ti !== null){
+    localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
+  }
+
+  const html = `<h2>Wrong Retry klaar 🎉</h2>
+    <p style="font-size:22px;font-weight:900">Al ${retryOriginalCount} verkeerde vrae is nou reggemaak.</p>
+    <p>Mooi Enrico — nou tel hierdie sessie as klaar.</p>
+    <div class="result"><span class="ok">Stuur nou die WhatsApp update na Dad.</span></div>
+    <button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
+
+  document.getElementById("finalResult").innerHTML = html;
+  document.getElementById("finalResult").style.display = "block";
+}
+
+const originalMarkAnswer = markAnswer;
+markAnswer = function(){
+  if(retryMode){ markRetryAnswer(); } else { originalMarkAnswer(); }
+};
+
+const originalNextQuestion = nextQuestion;
+nextQuestion = function(){
+  if(retryMode){ nextRetryQuestion(); } else { originalNextQuestion(); }
+};
+
+function sendWhatsapp(){
+  const originalWrong = retryOriginalCount > 0 ? retryOriginalCount : (25 - score);
+
+  let msg = `Enrico Landbou update:
+Sessie: ${sessionTitle}
+Vraagbank: 250 Landbou vrae
+Punt: ${25 - originalWrong}/25
+Oorspronklik verkeerd: ${originalWrong}`;
+
+  if(retryOriginalCount > 0 && retryQuestions.length === 0){
+    msg += `\nWrong Retry: Klaar - ${retryOriginalCount}/${retryOriginalCount} foute reggemaak`;
+  } else if(retryOriginalCount === 0){
+    msg += `\nWrong Retry: Nie nodig nie - alles eerste keer reg`;
+  }
+
+  window.open("https://wa.me/" + DAD + "?text=" + encodeURIComponent(msg), "_blank");
+
+  setTimeout(function(){
+    window.location.href = "enrico_exam_program.html?v=" + Date.now();
+  }, 1200);
+}
+
+render();
+</script>
+</body>
+</html>
