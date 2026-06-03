@@ -430,7 +430,71 @@ function sessionNumber(title){
   return m ? Number(m[1]) : 1;
 }
 
-const bank = buildRTTBank();
+/* TEAE_PROFESSIONAL_UNIQUE_QUESTION_BANK_V1 */
+function teaeNormQuestionText(v){
+  return String(v || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9áéíóúêëïöüàèìòùâîôûäëïöü\s]/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function teaeIsTrueFalseOptionSet(optionKey){
+  return optionKey.includes("true") ||
+         optionKey.includes("false") ||
+         optionKey.includes("waar") ||
+         optionKey.includes("onwaar");
+}
+
+function teaeProfessionalizeBank(list){
+  const seenQuestion = new Set();
+  const seenOptionSet = new Set();
+  const seenCorrectOptionSet = new Set();
+  const clean = [];
+
+  (list || []).forEach(function(item){
+    if(!item) return;
+
+    const qText = teaeNormQuestionText(item.text || item.q || "");
+    const correct = teaeNormQuestionText(item.correct || "");
+    const opts = (item.options || []).map(teaeNormQuestionText).filter(Boolean);
+    const optionKey = opts.slice().sort().join(" | ");
+    const correctOptionKey = correct + " || " + optionKey;
+    const isTrueFalse = teaeIsTrueFalseOptionSet(optionKey);
+
+    if(!qText || opts.length < 4) return;
+
+    if(seenQuestion.has(qText)) return;
+
+    // Hierdie stop die copy/paste gevoel:
+    // dieselfde 4 opsies moet nie oor en oor in dieselfde bank/session voorkom nie.
+    // True/False vrae word toegelaat omdat hulle natuurlik dieselfde opsies kan hê.
+    if(!isTrueFalse && seenOptionSet.has(optionKey)) return;
+    if(!isTrueFalse && seenCorrectOptionSet.has(correctOptionKey)) return;
+
+    seenQuestion.add(qText);
+    seenOptionSet.add(optionKey);
+    seenCorrectOptionSet.add(correctOptionKey);
+    clean.push(item);
+  });
+
+  // Safety fallback: as 'n vak te min oorhou, voeg unieke vrae terug,
+  // maar steeds nie dieselfde vraag-teks nie.
+  if(clean.length < 80){
+    (list || []).forEach(function(item){
+      if(!item) return;
+      const qText = teaeNormQuestionText(item.text || item.q || "");
+      if(!qText || seenQuestion.has(qText)) return;
+      seenQuestion.add(qText);
+      clean.push(item);
+    });
+  }
+
+  return clean;
+}
+
+const rawBank = buildRTTBank();
+const bank = teaeProfessionalizeBank(rawBank);
 const start = ((sessionNumber(sessionTitle)-1) * 25) % bank.length;
 const questions = [];
 for(let i=0;i<25;i++){
@@ -687,6 +751,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 
