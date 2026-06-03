@@ -947,7 +947,7 @@ function teaeK53FillTo250V2(bank){
   const seenOpt = new Set(out.map(x => teaeK53OptKey(x)));
 
   function addUnique(topic, text, correct, wrong1, wrong2, wrong3, exp){
-    const item = q(topic, text, correct, [correct, wrong1, wrong2, wrong3], exp || "This question checks safe driving judgement.");
+    const item = q(topic, text, correct, wrong1, wrong2, wrong3, exp || "This question checks safe driving judgement.");
     const qk = teaeK53CleanKey(item.text);
     const ok = teaeK53OptKey(item);
     const inside = new Set(item.options.map(teaeK53CleanKey).filter(Boolean));
@@ -1303,6 +1303,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 
