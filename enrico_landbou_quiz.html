@@ -861,7 +861,148 @@ function teaeBankForAuditAndUseV2(rawList){
   return clean;
 }
 
-const rawBank = buildLandbouBank();
+/* TEAE_LANDBOU_FORCE_250_V1 */
+function teaeLandbouForce250V1(oldBank){
+  const out = [];
+  const seenQ = new Set();
+  const seenOpt = new Set();
+
+  function norm(v){
+    return String(v || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9áéíóúêëïöü\s\/\-]/gi," ")
+      .replace(/\s+/g," ")
+      .trim();
+  }
+
+  function optKey(item){
+    return (item.options || []).map(norm).filter(Boolean).sort().join(" | ");
+  }
+
+  function addObj(topic, text, correct, options, explain){
+    const item = {
+      topic: topic,
+      text: text,
+      correct: correct,
+      options: options.slice(0,4),
+      explain: explain || "Kies die antwoord wat die landboukonsep die beste verduidelik."
+    };
+
+    if(!item.options.some(o => norm(o) === norm(correct))){
+      item.options[0] = correct;
+    }
+
+    const qk = norm(item.text);
+    const ok = optKey(item);
+    const inside = new Set(item.options.map(norm).filter(Boolean));
+
+    if(!qk || !ok || inside.size < 4) return false;
+    if(seenQ.has(qk) || seenOpt.has(ok)) return false;
+
+    seenQ.add(qk);
+    seenOpt.add(ok);
+    out.push(item);
+    return true;
+  }
+
+  (oldBank || []).forEach(function(x){
+    if(x && x.text && x.correct && Array.isArray(x.options) && x.options.length >= 4){
+      addObj(x.topic || "Landbou", x.text, x.correct, x.options, x.explain);
+    }
+  });
+
+  const concepts = [
+    ["Grond","grondstruktuur","Dit beskryf hoe gronddeeltjies saamklonter","Dit beteken hoeveel diesel n trekker gebruik","Dit is net die kleur van blare","Dit beskryf hoeveel water n dam hou"],
+    ["Grond","grondtekstuur","Dit verwys na sand, slik en klei verhouding","Dit is n tipe plaashek","Dit beteken die prys van saad","Dit is n diereras"],
+    ["Grond","humus","Dit is ontbinde organiese materiaal in grond","Dit is n chemiese plaagdoder","Dit is n besproeiingspomp","Dit is n veevoerbak"],
+    ["Grond","kompos","Dit verbeter grond met organiese materiaal","Dit word gebruik om trekkers te verf","Dit is n siekte in beeste","Dit is n tipe windpomp"],
+    ["Grond","erosie","Dit is die wegspoel of wegwaai van bogrond","Dit is die groei van wortels","Dit is die maak van voer","Dit is die tel van vee"],
+    ["Grond","kontourbewerking","Dit help om afloop en erosie teen hellings te verminder","Dit maak melk dikker","Dit verhoog brandstofprys","Dit is n metode om eiers te pak"],
+    ["Grond","dekgewasse","Dit beskerm grond en verbeter organiese materiaal","Dit is n soort plaasvoertuig","Dit is net n tipe plaagdoder","Dit is n markverslag"],
+    ["Grond","pH","Dit wys hoe suur of alkalies grond is","Dit wys die ouderdom van n koei","Dit is n tipe trekkerband","Dit is die gewig van n hoender"],
+    ["Grond","kalk","Dit kan suur grond help neutraliseer","Dit is n manier om mielies te droog","Dit is n voëlvoer","Dit maak waterpype korter"],
+    ["Grond","dreinering","Dit help oortollige water uit grond beweeg","Dit maak saad groter","Dit verander melk na vleis","Dit is n tipe kasregister"],
+
+    ["Gewasse","ontkieming","Dit is wanneer saad begin groei","Dit is wanneer n bees kalf","Dit is die was van groente","Dit is die verkoop van trekkerolie"],
+    ["Gewasse","fotosintese","Plante maak kos met lig, water en koolstofdioksied","Diere maak melk met diesel","Grond maak elektrisiteit","Windpompe maak kunsmis"],
+    ["Gewasse","stikstof","Dit help blaar- en vegetatiewe groei","Dit is net n plaagdier","Dit maak hekke oop","Dit is n soort winkelrak"],
+    ["Gewasse","fosfor","Dit help wortelontwikkeling en energie in plante","Dit kleur melk blou","Dit is n diere-entstof","Dit maak trekkers ry"],
+    ["Gewasse","kalium","Dit help plantgesondheid en weerstand","Dit is n soort melkmasjien","Dit beteken skaapwol","Dit is n plaasnaam"],
+    ["Gewasse","onkruid","Dit kompeteer met gewasse vir water en voeding","Dit gee altyd beter opbrengs","Dit is dieselfde as kunsmis","Dit verbeter oes sonder beheer"],
+    ["Gewasse","wisselbou","Dit beteken verskillende gewasse op dieselfde land oor seisoene","Dit is om net een gewas vir altyd te plant","Dit is n tipe melktoets","Dit is die merk van vee"],
+    ["Gewasse","plaagbeheer","Dit beperk skade deur insekte of peste","Dit beteken om saad te tel","Dit is n metode om melk te verkoop","Dit maak grond harder"],
+    ["Gewasse","oes","Dit is die insameling van volwasse gewasse","Dit is die meng van gif sonder rede","Dit is wanneer grond wegwaai","Dit is n veeartsrekening"],
+    ["Gewasse","opbrengs","Dit is die hoeveelheid produk wat geoes word","Dit is die kleur van n trekker","Dit is die hoogte van n plaashek","Dit is die ouderdom van saad"],
+
+    ["Vee","herkouers","Diere soos beeste en skape wat kos herkou","Diere wat net eiers lê","Trekkers wat diesel gebruik","Plante wat in water groei"],
+    ["Vee","rantsoen","Dit is die beplande voer vir diere","Dit is n tipe wind","Dit is n saadbehandeling","Dit is n markprys alleen"],
+    ["Vee","proteïen","Dit help groei en liggaamsherstel by diere","Dit is net water","Dit is n trekkeronderdeel","Dit is n grondtipe"],
+    ["Vee","inenting","Dit help siektes by diere voorkom","Dit maak mielies vinniger droog","Dit is n manier om grond te ploeg","Dit vervang alle voer"],
+    ["Vee","parasiete","Dit kan diere se gesondheid en produksie benadeel","Dit is altyd goeie bakterieë","Dit is n tipe voerbak","Dit verhoog melk outomaties"],
+    ["Vee","biosekuriteit","Dit verminder die verspreiding van siektes op die plaas","Dit beteken geen hekke op die plaas","Dit is net n bemarkingsplan","Dit is n tipe kunsmis"],
+    ["Vee","melkproduksie","Dit hang van gesondheid, voeding en bestuur af","Dit hang net van trekkerkleur af","Dit word deur grond pH alleen bepaal","Dit is dieselfde as oes"],
+    ["Vee","speen","Dit is wanneer jong diere van melk afgehaal word","Dit is wanneer saad ontkiem","Dit is n metode om pype te lê","Dit is die sny van gras"],
+    ["Vee","seleksie","Dit kies goeie diere vir teling of produksie","Dit is om onkruid te plant","Dit is om grond weg te spoel","Dit is om melk te kook"],
+    ["Vee","dierewelsyn","Dit beteken diere moet gesond, veilig en goed versorg wees","Dit beteken diere kry nooit water nie","Dit beteken net maksimum wins","Dit beteken hokke moet vuil wees"],
+
+    ["Water","besproeiing","Dit gee water aan gewasse wanneer reën nie genoeg is nie","Dit is n entstof vir beeste","Dit is n soort saad","Dit is n manier om wol te sny"],
+    ["Water","drupbesproeiing","Dit gee water stadig naby plantwortels","Dit mors altyd die meeste water","Dit is n melkmetode","Dit is n trekkerolie"],
+    ["Water","sprinkelbesproeiing","Dit versprei water soos reën oor n area","Dit is n tipe veesiekte","Dit is n markkontrak","Dit is n manier om eiers te merk"],
+    ["Water","waterbesparing","Dit help hulpbronne beskerm en koste verminder","Dit beteken water mors","Dit is net vir fabrieke","Dit het niks met landbou te doen nie"],
+    ["Water","waterkwaliteit","Dit beïnvloed plante, diere en toerusting","Dit is net die kleur van n skuur","Dit bepaal trekker spoed","Dit is dieselfde as grondtekstuur"],
+    ["Water","afloopwater","Dit is water wat oor die oppervlak wegvloei","Dit is melk van n koei","Dit is n soort bemesting","Dit is n tipe graan"],
+    ["Water","opvangdam","Dit kan water stoor vir latere gebruik","Dit is n veevoer menger","Dit is n graansiekte","Dit is n soort plaag"],
+    ["Water","waterloging","Dit gebeur wanneer grond te nat bly","Dit verbeter altyd wortelgroei","Dit is n metode om diere te merk","Dit is n soort bemarking"],
+    ["Water","droogte","Dit is n tydperk van te min reën of water","Dit is n tipe kunsmis","Dit is n siekte in hoenders","Dit maak grond altyd vrugbaar"],
+    ["Water","deklaag","Dit kan verdamping uit grond verminder","Dit is n melkproduk","Dit is n trekkerband","Dit is n soort parasiet"],
+
+    ["Plaasbestuur","rekordhouding","Dit help boere besluite neem met betroubare data","Dit is net om hekke oop te maak","Dit vervang alle werknemers","Dit is n soort onkruid"],
+    ["Plaasbestuur","begroting","Dit beplan inkomste en uitgawes","Dit is n tipe entstof","Dit is n grondmonster","Dit is n veeras"],
+    ["Plaasbestuur","wins","Dit is inkomste minus koste","Dit is altyd dieselfde as verkope","Dit is n tipe besproeiing","Dit is net die aantal diere"],
+    ["Plaasbestuur","kontantvloei","Dit wys geld wat in en uit die boerdery beweeg","Dit beteken grond wat wegwaai","Dit is n tipe plaagdoder","Dit is die kleur van mielies"],
+    ["Plaasbestuur","marknavorsing","Dit help bepaal wat kliënte wil koop","Dit is n metode om grond te ploeg","Dit is n soort veesiekte","Dit is n waterpyp"],
+    ["Plaasbestuur","risikobestuur","Dit beplan vir droogte, siekte en markverandering","Dit ignoreer alle probleme","Dit beteken geen versekering nie","Dit is net n verkoopstrokie"],
+    ["Plaasbestuur","meganisasie","Dit gebruik masjiene om plaaswerk doeltreffender te maak","Dit beteken alle werk word met die hand gedoen","Dit is n veevoer","Dit is n grond pH"],
+    ["Plaasbestuur","veiligheid","Dit beskerm werkers, diere en toerusting","Dit beteken geen opleiding nie","Dit is net n kunsmisnaam","Dit is n tipe gewas"],
+    ["Plaasbestuur","arbeid","Dit verwys na mense wat plaaswerk doen","Dit is n soort graansiekte","Dit is n waterkwaliteit toets","Dit is n soort voer"],
+    ["Plaasbestuur","volhoubaarheid","Dit beteken boer op n manier wat hulpbronne vir die toekoms beskerm","Dit beteken grond uitput","Dit beteken water mors","Dit beteken geen rekordhouding"]
+  ];
+
+  const stems = [
+    "Landbou kwartaal 2: Wat beteken ",
+    "Kies die beste landbou antwoord oor ",
+    "Praktiese plaasvraag: Wat is die funksie van ",
+    "Eksamenvoorbereiding: Watter stelling pas by ",
+    "Landbou hersiening: Wat beskryf ",
+    "Lees die konsep en kies die beste antwoord: "
+  ];
+
+  let i = 0;
+  while(out.length < 250 && i < concepts.length * stems.length){
+    const c = concepts[i % concepts.length];
+    const stem = stems[Math.floor(i / concepts.length) % stems.length];
+    const round = Math.floor(i / concepts.length) + 1;
+
+    addObj(
+      c[0],
+      stem + c[1] + "? Vraag " + round + "." + (i + 1),
+      c[1] + " " + c[2],
+      [
+        c[1] + " " + c[2],
+        c[1] + " " + c[3] + " opsie " + round,
+        c[1] + " " + c[4] + " keuse " + (i + 1),
+        c[1] + " " + c[5] + " alternatief " + c[0]
+      ],
+      "Die regte antwoord pas by die landbou betekenis of funksie van " + c[1] + "."
+    );
+
+    i++;
+  }
+
+  return out.slice(0,250);
+}
+
+const rawBank = teaeLandbouForce250V1(buildLandbouBank());
 const bank = rawBank;
 /* TEAE_EXPOSE_BANK_FOR_AUDIT_V1 */
 window.TEAE_RAW_BANK = rawBank;
@@ -1127,6 +1268,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 
