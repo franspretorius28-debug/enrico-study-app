@@ -332,10 +332,6 @@ function finishQuiz(){
   document.getElementById("quizBox").style.display = "none";
   const wrong = questions.length - score;
 
-  if(di !== null && ti !== null && wrong === 0){
-    localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
-  }
-
   let html = `<h2>Sessie klaar</h2>
     <p><b>${sessionTitle}</b></p>
     <p style="font-size:22px;font-weight:900">Punt: ${score} uit ${questions.length}</p>
@@ -347,9 +343,13 @@ function finishQuiz(){
       html += `<div class="result"><b>Vraag:</b> ${w.q}<br><b>Sy antwoord:</b> ${w.your}<br><b>Reg:</b> ${w.correct}</div>`;
     });
 
-    html += `<div class="result"><span class="bad">Hy moet eers sy verkeerde vrae reg oefen voordat hy klaar is.</span></div>`;
+    html += `<div class="result"><span class="bad">Hy moet eers sy verkeerde vrae reg oefen voordat hierdie sessie klaar tel.</span></div>`;
     html += `<button class="orange" onclick="startWrongRetry()">Oefen verkeerde vrae weer</button>`;
   } else {
+    if(di !== null && ti !== null){
+      localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
+    }
+
     html += `<div class="result"><span class="ok">🎉 Alles eerste keer reg!</span></div>`;
     html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Dad</button>
              <a class="btn gray" href="enrico_exam_program.html?v=${Date.now()}">Terug na program</a>`;
@@ -358,7 +358,6 @@ function finishQuiz(){
   document.getElementById("finalResult").innerHTML = html;
   document.getElementById("finalResult").style.display = "block";
 }
-
 function startWrongRetry(){
   if(wrongList.length === 0) return;
 
@@ -471,18 +470,19 @@ function nextRetryQuestion(){
 function finishWrongRetry(){
   document.getElementById("quizBox").style.display = "none";
 
-  if(di !== null && ti !== null && wrong === 0){ localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1"); }
+  if(di !== null && ti !== null){
+    localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
+  }
 
   const html = `<h2>Wrong Retry klaar 🎉</h2>
     <p style="font-size:22px;font-weight:900">Al ${retryOriginalCount} verkeerde vrae is nou reggemaak.</p>
-    <p>Mooi Enrico — nou is die sessie reg klaar.</p>
+    <p>Mooi Enrico — nou tel die sessie as klaar.</p>
     <button class="green" onclick="sendWhatsapp()">WhatsApp Dad</button>
     <a class="btn gray" href="enrico_exam_program.html?v=${Date.now()}">Terug na program</a>`;
 
   document.getElementById("finalResult").innerHTML = html;
   document.getElementById("finalResult").style.display = "block";
 }
-
 const originalMarkAnswer = markAnswer;
 markAnswer = function(){
   if(retryMode){
@@ -539,6 +539,7 @@ document.addEventListener("DOMContentLoaded", function(){
 </script>
 </body>
 </html>
+
 
 
 

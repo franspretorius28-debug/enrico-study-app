@@ -174,43 +174,25 @@ const plan = [
   ]}
 ];
 
-function keyFor(dayIndex, taskIndex){ return "enricoProgramDone_" + dayIndex + "_" + taskIndex; }
-function isDone(dayIndex, taskIndex){ return localStorage.getItem(keyFor(dayIndex, taskIndex)) === "1"; }
-function setDone(dayIndex, taskIndex){ localStorage.setItem(keyFor(dayIndex, taskIndex), "1"); renderPlan(); }
-function countTotal(){ return plan.reduce((n,d)=>n+d.tasks.length,0); }
-function countDone(){
-  let n=0;
-  plan.forEach((d,di)=>d.tasks.forEach((t,ti)=>{ if(isDone(di,ti)) n++; }));
-  return n;
+function keyFor(dayIndex, taskIndex){
+  return "enricoProgramDone_" + dayIndex + "_" + taskIndex;
 }
-function nextTaskText(dayIndex, taskIndex){
-  if(taskIndex + 1 < plan[dayIndex].tasks.length) return plan[dayIndex].tasks[taskIndex+1][1];
-  if(dayIndex + 1 < plan.length) return plan[dayIndex+1].label + " - " + plan[dayIndex+1].tasks[0][1];
-  return "Program klaar";
+
+function isDone(dayIndex, taskIndex){
+  return localStorage.getItem(keyFor(dayIndex, taskIndex)) === "1";
 }
-function whatsapp(dayIndex, taskIndex){
-  const day = plan[dayIndex], t = day.tasks[taskIndex];
-  const msg = `Enrico update:
-Dag: ${day.label}
-Sessie klaar: ${t[1]}
-Tyd: ${t[0]}
-Nota: ${t[2]}
-Vordering: ${countDone()}/${countTotal()} take klaar.
-Volgende: ${nextTaskText(dayIndex, taskIndex)}`;
-  window.open("https://wa.me/" + DAD + "?text=" + encodeURIComponent(msg), "_blank");
-}
-function clearAll(){
-  if(!confirm("Maak Enrico se program vordering skoon?")) return;
-  Object.keys(localStorage).forEach(k=>{ if(k.startsWith("enricoProgramDone_")) localStorage.removeItem(k); });
+
+function setDone(dayIndex, taskIndex){
+  localStorage.setItem(keyFor(dayIndex, taskIndex), "1");
   renderPlan();
 }
+
 function isTestTask(title){
   return title.includes("Sessie") || title.includes("Mock") || title.includes("Finale");
 }
 
 function quizLinkHtml(title, di, ti){
-  const mustTest = title.includes("Sessie") || title.includes("Mock") || title.includes("Finale");
-  if(!mustTest) return "";
+  if(!isTestTask(title)) return "";
 
   let file = "enrico_session_quiz.html";
   if(title.toLowerCase().includes("k53")){
@@ -221,25 +203,97 @@ function quizLinkHtml(title, di, ti){
   return `<a class="btn" href="${url}">Maak toets oop</a>`;
 }
 
+function countTotal(){
+  return plan.reduce((n,d)=>n+d.tasks.length,0);
+}
+
+function countDone(){
+  let n = 0;
+  plan.forEach((d,di)=>{
+    d.tasks.forEach((t,ti)=>{
+      if(isDone(di,ti)) n++;
+    });
+  });
+  return n;
+}
+
+function nextTaskText(dayIndex, taskIndex){
+  if(taskIndex + 1 < plan[dayIndex].tasks.length){
+    return plan[dayIndex].tasks[taskIndex+1][1];
+  }
+  if(dayIndex + 1 < plan.length){
+    return plan[dayIndex+1].label + " - " + plan[dayIndex+1].tasks[0][1];
+  }
+  return "Program klaar";
+}
+
+function whatsapp(dayIndex, taskIndex){
+  const day = plan[dayIndex];
+  const t = day.tasks[taskIndex];
+
+  const msg = `Enrico update:
+Dag: ${day.label}
+Taak klaar: ${t[1]}
+Tyd: ${t[0]}
+Nota: ${t[2]}
+Vordering: ${countDone()}/${countTotal()} take klaar.
+Volgende: ${nextTaskText(dayIndex, taskIndex)}`;
+
+  window.open("https://wa.me/" + DAD + "?text=" + encodeURIComponent(msg), "_blank");
+}
+
+function clearAll(){
+  if(!confirm("Maak Enrico se program vordering skoon?")) return;
+
+  Object.keys(localStorage).forEach(k=>{
+    if(k.startsWith("enricoProgramDone_")){
+      localStorage.removeItem(k);
+    }
+  });
+
+  renderPlan();
+}
+
 function renderPlan(){
   const box = document.getElementById("plan");
   let html = "";
-  plan.forEach((day,di)=>{
-    html += `<div class="day"><h3>${day.label}</h3><div class="small"><b>Fokus:</b> ${day.focus}</div>`;
-    day.tasks.forEach((t,ti)=>{
-      const done = isDone(di,ti);
+
+  plan.forEach((day, di)=>{
+    html += `<div class="day">
+      <h3>${day.label}</h3>
+      <div class="small"><b>Fokus:</b> ${day.focus}</div>`;
+
+    day.tasks.forEach((t, ti)=>{
+      const done = isDone(di, ti);
+      const test = isTestTask(t[1]);
+
+      let buttons = "";
+
+      if(test){
+        buttons = done
+          ? `<span class="doneText">Toets klaar ✓</span><br>${quizLinkHtml(t[1], di, ti)}`
+          : `${quizLinkHtml(t[1], di, ti)}`;
+      } else {
+        buttons = `
+          <button class="green" onclick="setDone(${di},${ti})">Klaar</button>
+          <button onclick="whatsapp(${di},${ti})">WhatsApp Dad</button>`;
+      }
+
       html += `<div class="task">
         <div class="time">${t[0]}</div>
         <div class="title">${t[1]}</div>
         <div class="small">${t[2]}</div>
-        <span class="${done ? "doneText":"waitText"}">${done ? "Klaar ✓":"Nog nie klaar nie"}</span><br>
-        ${isTestTask(t[1]) ? quizLinkHtml(t[1], di, ti) : `${isTestTask(t[1]) ? "" : `<button class="green" onclick="setDone(${di},${ti})">Klaar</button><button onclick="whatsapp(${di},${ti})">WhatsApp Dad</button>`}`}
+        <span class="${done ? "doneText" : "waitText"}">${done ? "Klaar ✓" : "Nog nie klaar nie"}</span><br>
+        ${buttons}
       </div>`;
     });
+
     html += `</div>`;
   });
+
   box.innerHTML = html;
-  document.getElementById("overallProgress").textContent = "Totale vordering: " + countDone() + " uit " + countTotal() + " take klaar.";
+  document.getElementById("overallProgress").textContent =
+    "Totale vordering: " + countDone() + " uit " + countTotal() + " take klaar.";
 
   if(!document.getElementById("clearBtn")){
     const btn = document.createElement("button");
@@ -250,10 +304,12 @@ function renderPlan(){
     document.querySelector(".card").appendChild(btn);
   }
 }
+
 renderPlan();
 </script>
 </body>
 </html>
+
 
 
 
