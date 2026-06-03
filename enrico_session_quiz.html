@@ -51,8 +51,6 @@ button,a.btn{display:inline-block;text-decoration:none;padding:12px 15px;border:
     </div>
 
     <div id="finalResult" class="result" style="display:none"></div>
-
-    <a class="btn gray" href="enrico_exam_program.html?v=back">Terug na program</a>
     <a class="btn gray" href="index.html?v=back">Terug main</a>
   </div>
 </div>
@@ -476,6 +474,7 @@ function finishWrongRetry(){
   const html = `<h2>Wrong Retry klaar 🎉</h2>
     <p style="font-size:22px;font-weight:900">Al ${retryOriginalCount} verkeerde vrae is nou reggemaak.</p>
     <p>Mooi Enrico — nou tel die sessie as klaar.</p>
+    <div class="result"><span class="ok">Stuur nou eers die WhatsApp update na Dad.</span></div>
     <button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
 
   document.getElementById("finalResult").innerHTML = html;
@@ -539,8 +538,22 @@ document.addEventListener("DOMContentLoaded", function(){
   });
 });
 </script>
+<script>
+/* TEAE_HIDE_FINAL_BACK_BUTTONS_V2 */
+setInterval(function(){
+  const finalBox = document.getElementById("finalResult");
+  if(finalBox && finalBox.style.display !== "none"){
+    finalBox.querySelectorAll("a").forEach(function(a){
+      if(a.textContent.includes("Terug na program") || a.textContent.includes("Terug main")){
+        a.remove();
+      }
+    });
+  }
+}, 300);
+</script>
 </body>
 </html>
+
 
 
 
