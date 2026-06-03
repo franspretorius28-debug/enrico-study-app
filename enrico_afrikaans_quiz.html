@@ -615,6 +615,14 @@ function teaeStrictFixSession(){
 
 const rawBank = buildAfrikaansBank();
 const bank = teaeStrictUniqueBank(rawBank);
+/* TEAE_EXPOSE_BANK_FOR_AUDIT_V1 */
+window.TEAE_RAW_BANK = rawBank;
+window.TEAE_BANK = bank;
+window.TEAE_BANK_INFO = {
+  raw: rawBank.length,
+  unique: bank.length,
+  subject: document.title || location.pathname
+};
 const start = ((sessionNumber(sessionTitle)-1) * 25) % bank.length;
 const questions = [];
 for(let i=0;i<25;i++){
@@ -871,6 +879,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 

@@ -1,0 +1,168 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Enrico Question Bank Audit</title>
+<style>
+body{font-family:Arial;background:#050505;color:#fff;margin:0;padding:30px}
+h1{font-size:34px}
+.card{background:#1a1a1a;border:1px solid #333;border-radius:14px;padding:18px;margin:16px 0}
+.good{border-color:#22c55e}
+.bad{border-color:#ef4444}
+.warn{border-color:#f59e0b}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+td,th{border-bottom:1px solid #333;padding:10px;text-align:left}
+.ok{color:#22c55e;font-weight:900}
+.err{color:#ef4444;font-weight:900}
+.warning{color:#f59e0b;font-weight:900}
+.small{color:#cbd5e1;font-size:13px}
+iframe{display:none}
+</style>
+</head>
+<body>
+<h1>Enrico Question Bank Audit</h1>
+<p class="small">Elke vak moet 200+ unieke vrae hê. Geen duplicate vraagtekste of duplicate antwoordstelle mag deurkom nie.</p>
+<div id="results">Loading...</div>
+
+<script>
+const files = [
+  ["K53", "enrico_k53_english_quiz.html?title=K53%20Sessie%201&di=0&ti=0&v=" + Date.now()],
+  ["RTT / CAT", "enrico_rtt_cat_quiz.html?title=RTT%20Sessie%204&di=3&ti=2&v=" + Date.now()],
+  ["Landbou", "enrico_landbou_quiz.html?title=Landbou%20Sessie%201&di=0&ti=0&v=" + Date.now()],
+  ["Wisk Geletterdheid", "enrico_wisk_geletterdheid_quiz.html?title=Wisk%20Geletterdheid%20Sessie%201&di=0&ti=0&v=" + Date.now()],
+  ["Afrikaans", "enrico_afrikaans_quiz.html?title=Afrikaans%20Sessie%201&di=0&ti=0&v=" + Date.now()],
+  ["English FAL", "enrico_english_quiz.html?title=English%20Sessie%201&di=0&ti=0&v=" + Date.now()],
+  ["Besigheidstudies", "enrico_besigheid_quiz.html?title=Besigheidstudies%20Sessie%201&di=0&ti=0&v=" + Date.now()]
+];
+
+function norm(v){
+  return String(v || "")
+    .toLowerCase()
+    .replace(/[’']/g,"")
+    .replace(/[^a-z0-9áéíóúêëïöüàèìòùâîôûäëïöü\s\/\-]/gi," ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+function optKey(q){
+  return (q.options || []).map(norm).filter(Boolean).sort().join(" | ");
+}
+
+function auditBank(name, rawBank, bank){
+  const raw = rawBank || [];
+  const uniqueBank = bank || [];
+
+  const textCounts = {};
+  const optCounts = {};
+  const badInside = [];
+
+  raw.forEach(q => {
+    const text = norm(q.text || q.q);
+    const options = q.options || [];
+    const key = optKey(q);
+
+    if(text) textCounts[text] = (textCounts[text] || 0) + 1;
+    if(key) optCounts[key] = (optCounts[key] || 0) + 1;
+
+    const uniqueOptions = new Set(options.map(norm).filter(Boolean));
+    if(options.length >= 4 && uniqueOptions.size < 4){
+      badInside.push(q.text || q.q || "Unknown question");
+    }
+  });
+
+  const duplicateTexts = Object.entries(textCounts).filter(x => x[1] > 1);
+  const duplicateOptions = Object.entries(optCounts).filter(x => x[1] > 1);
+
+  const uniqueTextCount = Object.keys(textCounts).length;
+  const uniqueOptionCount = Object.keys(optCounts).length;
+
+  const pass =
+    uniqueBank.length >= 200 &&
+    uniqueTextCount >= 200 &&
+    duplicateTexts.length === 0 &&
+    badInside.length === 0;
+
+  return {
+    name,
+    rawCount: raw.length,
+    filteredCount: uniqueBank.length,
+    uniqueTextCount,
+    uniqueOptionCount,
+    duplicateTexts,
+    duplicateOptions,
+    badInside,
+    pass
+  };
+}
+
+function loadOne(name, src){
+  return new Promise(resolve => {
+    const frame = document.createElement("iframe");
+    frame.src = src;
+    document.body.appendChild(frame);
+
+    frame.onload = () => {
+      setTimeout(() => {
+        try{
+          const w = frame.contentWindow;
+          resolve(auditBank(name, w.TEAE_RAW_BANK, w.TEAE_BANK));
+        }catch(e){
+          resolve({name, error:e.message, pass:false});
+        }
+        frame.remove();
+      }, 700);
+    };
+  });
+}
+
+async function run(){
+  const results = [];
+  for(const [name,src] of files){
+    results.push(await loadOne(name,src));
+  }
+
+  let html = "";
+
+  results.forEach(r => {
+    const cls = r.pass ? "good" : "bad";
+    html += `<div class="card ${cls}">`;
+    html += `<h2>${r.name} ${r.pass ? '<span class="ok">PASS</span>' : '<span class="err">NEEDS WORK</span>'}</h2>`;
+
+    if(r.error){
+      html += `<p class="err">Error: ${r.error}</p></div>`;
+      return;
+    }
+
+    html += `<table>
+      <tr><th>Check</th><th>Result</th></tr>
+      <tr><td>Raw questions</td><td>${r.rawCount}</td></tr>
+      <tr><td>Filtered unique bank</td><td class="${r.filteredCount >= 200 ? 'ok' : 'err'}">${r.filteredCount}</td></tr>
+      <tr><td>Unique question text</td><td class="${r.uniqueTextCount >= 200 ? 'ok' : 'err'}">${r.uniqueTextCount}</td></tr>
+      <tr><td>Unique option sets</td><td>${r.uniqueOptionCount}</td></tr>
+      <tr><td>Duplicate question text</td><td class="${r.duplicateTexts.length === 0 ? 'ok' : 'err'}">${r.duplicateTexts.length}</td></tr>
+      <tr><td>Duplicate options inside same question</td><td class="${r.badInside.length === 0 ? 'ok' : 'err'}">${r.badInside.length}</td></tr>
+    </table>`;
+
+    if(r.duplicateTexts.length){
+      html += `<h3>Duplicate questions</h3><ul>`;
+      r.duplicateTexts.slice(0,20).forEach(x => html += `<li>x${x[1]}: ${x[0]}</li>`);
+      html += `</ul>`;
+    }
+
+    if(r.filteredCount < 200 || r.uniqueTextCount < 200){
+      html += `<p class="err">Hierdie vak het minder as 200 unieke vrae. Ons moet nuwe vrae bybou.</p>`;
+    }
+
+    html += `</div>`;
+  });
+
+  const allPass = results.every(r => r.pass);
+  html = `<div class="card ${allPass ? 'good' : 'bad'}"><h2>Final Result: ${allPass ? '<span class="ok">ALL SUBJECTS CLEAN</span>' : '<span class="err">SOME SUBJECTS NEED MORE UNIQUE QUESTIONS</span>'}</h2></div>` + html;
+
+  document.getElementById("results").innerHTML = html;
+}
+
+run();
+</script>
+</body>
+</html>
