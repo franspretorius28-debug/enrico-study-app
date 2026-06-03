@@ -343,8 +343,7 @@ function finishQuiz(){
     }
 
     html += `<div class="result"><span class="ok">🎉 Alles eerste keer reg!</span></div>`;
-    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Dad</button>
-             <a class="btn gray" href="enrico_exam_program.html?v=${Date.now()}">Terug na program</a>`;
+    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
   }
 
   document.getElementById("finalResult").innerHTML = html;
@@ -469,8 +468,7 @@ function finishWrongRetry(){
   const html = `<h2>Wrong Retry klaar 🎉</h2>
     <p style="font-size:22px;font-weight:900">Al ${retryOriginalCount} verkeerde vrae is nou reggemaak.</p>
     <p>Mooi Enrico — nou tel die sessie as klaar.</p>
-    <button class="green" onclick="sendWhatsapp()">WhatsApp Dad</button>
-    <a class="btn gray" href="enrico_exam_program.html?v=${Date.now()}">Terug na program</a>`;
+    <button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
 
   document.getElementById("finalResult").innerHTML = html;
   document.getElementById("finalResult").style.display = "block";
@@ -507,13 +505,17 @@ Verkeerd: ${wrong}`;
   }
 
   if(wrongList.length > 0){
-    msg += "\\nEerste foute:";
+    msg += "\nEerste foute:";
     wrongList.slice(0,5).forEach((w,i)=>{
-      msg += `\\n${i+1}) ${w.q} | Reg: ${w.correct}`;
+      msg += `\n${i+1}) ${w.q} | Reg: ${w.correct}`;
     });
   }
 
   window.open("https://wa.me/" + DAD + "?text=" + encodeURIComponent(msg), "_blank");
+
+  setTimeout(function(){
+    window.location.href = "enrico_exam_program.html?v=" + Date.now();
+  }, 1200);
 }
 
 render();
@@ -531,6 +533,7 @@ document.addEventListener("DOMContentLoaded", function(){
 </script>
 </body>
 </html>
+
 
 
 
