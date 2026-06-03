@@ -864,7 +864,83 @@ function teaeBankForAuditAndUseV2(rawList){
   return clean;
 }
 
-const rawBank = buildK53Bank();
+/* TEAE_K53_REAL_REBUILD_PART1_V1 */
+function teaeK53CleanKey(v){
+  return String(v || "").toLowerCase().replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
+}
+function teaeK53OptKey(q){
+  return (q.options || []).map(teaeK53CleanKey).filter(Boolean).sort().join(" | ");
+}
+function teaeK53ProfessionalBankPart1(raw){
+  const out = [];
+  const seenQ = new Set();
+  const seenOpt = new Set();
+
+  function add(item){
+    if(!item || !item.text || !item.correct || !Array.isArray(item.options)) return;
+    const qk = teaeK53CleanKey(item.text);
+    const ok = teaeK53OptKey(item);
+    const inside = new Set(item.options.map(teaeK53CleanKey).filter(Boolean));
+    if(!qk || !ok || item.options.length < 4 || inside.size < 4) return;
+    if(seenQ.has(qk) || seenOpt.has(ok)) return;
+    seenQ.add(qk);
+    seenOpt.add(ok);
+    out.push(item);
+  }
+
+  (raw || []).forEach(add);
+
+  const stems = [
+    "What should you do when you face this situation: ",
+    "Choose the safest K53 action for: ",
+    "In the driving test, what is correct for: ",
+    "What is the safest response for: ",
+    "Which answer best matches this road rule: "
+  ];
+
+  const defs = [
+    ["Intersections","arriving first at a four-way stop","Proceed carefully after stopping",["Drive without stopping","Wait forever","Hoot and force your way","Reverse out of the road","Ignore the other drivers","Stop in the middle"]],
+    ["Intersections","two cars arriving at the same time at a four-way stop","Give way to the vehicle on your right",["Drive first because you are confident","Wave everyone through without checking","Speed through quickly","Stop only after the line","Use hazard lights and go","Ignore right-of-way"]],
+    ["Traffic lights","a traffic light that is not working","Treat it as a four-way stop",["Treat it as green","Drive faster before traffic arrives","Park in the intersection","Ignore cross traffic","Follow the biggest vehicle","Use the pavement"]],
+    ["Traffic lights","an amber light while you can stop safely","Prepare to stop before the line",["Speed up immediately","Stop in the intersection","Ignore the light","Turn without looking","Close your eyes briefly","Hoot at pedestrians"]],
+    ["Pedestrians","a person already crossing at a marked crossing","Stop and allow the person to cross safely",["Drive around the person","Hoot until the person runs","Speed up before they cross","Stop on the crossing","Wave from far away only","Block the crossing"]],
+    ["Children","a ball rolling into the road","Slow down because a child may follow it",["Drive over the ball quickly","Ignore it if no child is visible","Speed up to pass first","Swerve into oncoming traffic","Hoot and continue fast","Stop in the middle lane"]],
+    ["Following distance","driving behind another vehicle in rain","Increase your following distance",["Drive closer for safety","Overtake on a blind bend","Use no brakes","Switch off your lights","Follow the tyre tracks closely","Ignore wet conditions"]],
+    ["Following distance","a vehicle tailgating you from behind","Stay calm and avoid sudden braking",["Brake hard to teach them","Speed away aggressively","Block both lanes","Stop without warning","Throw objects back","Reverse toward them"]],
+    ["Overtaking","a blind rise ahead","Do not overtake",["Overtake quickly","Use the shoulder to pass","Hoot and pass anyway","Follow the truck closely","Move into oncoming traffic","Speed up on the rise"]],
+    ["Overtaking","another driver overtaking you","Keep left and do not speed up",["Speed up to block them","Move toward them","Brake suddenly","Race them","Use the wrong lane","Close the gap"]],
+    ["Roundabouts","entering a roundabout","Give way to traffic already in the circle",["Enter without checking","Stop forever","Drive straight over the island","Reverse around it","Ignore vehicles from the right","Park inside the circle"]],
+    ["Roundabouts","leaving a roundabout","Signal left before exiting",["Signal right forever","Use no signal","Use hazards only","Stop inside the circle","Cut across lanes","Exit without checking"]],
+    ["Night driving","oncoming headlights dazzling you","Slow down and look toward the left edge of the road",["Stare into the headlights","Switch off all lights","Drive in the centre","Speed up to escape","Close your eyes","Use bright lights back"]],
+    ["Night driving","using bright lights near oncoming traffic","Dip your headlights",["Keep brights on","Flash continuously","Drive toward the lights","Switch off the engine","Park in the lane","Ignore other drivers"]],
+    ["Tyres","worn tyre tread","Replace or fix the tyres before unsafe driving",["Drive faster in rain","Ignore the tread","Reduce mirror checks","Overload the car","Brake harder always","Use the handbrake only"]],
+    ["Brakes","brakes feeling weak","Stop safely and get them checked",["Continue as normal","Drive downhill faster","Use only gears forever","Ignore until next month","Pump once and speed up","Carry more load"]],
+    ["Emergency vehicles","a siren behind you","Make way safely without causing danger",["Stop anywhere instantly","Race the emergency vehicle","Block the lane","Drive through a red light blindly","Panic and swerve","Ignore the siren"]],
+    ["Railway crossings","barriers starting to close","Stop before the crossing",["Drive around the barrier","Stop on the tracks","Race the train","Park next to the line","Reverse slowly over tracks","Ignore warning lights"]],
+    ["Parking","opening a door next to traffic","Check for vehicles, cyclists and pedestrians first",["Open quickly","Let passengers open without checking","Ignore cyclists","Open into the lane","Use the door to stop traffic","Only check the radio"]],
+    ["Parking","parking near emergency access","Keep the access clear",["Block it for a short time","Park if hazards are on","Park across it","Leave only a small gap","Use it as loading zone","Ignore emergency markings"]],
+    ["Hazards","animals near the road","Slow down and prepare to stop",["Hoot and speed up","Drive closer to scare them","Ignore them","Swerve suddenly","Overtake immediately","Follow them closely"]],
+    ["Hazards","a bus stopped with passengers nearby","Watch for pedestrians crossing",["Speed past closely","Ignore the bus","Hoot at passengers","Overtake without checking","Stop next to the bus door","Block the bus"]],
+    ["Breakdowns","your vehicle breaks down","Move as far off the road as safely possible",["Stop in the middle lane","Park on a blind bend","Leave it without warning","Block the road","Stand behind the car in traffic","Push it into traffic"]],
+    ["Breakdowns","warning other drivers after a breakdown","Use hazard lights and warning triangle if safe",["Use no warning","Hide behind the car","Place triangle next to your bumper only","Stand in the road","Switch off all lights","Walk in the lane"]],
+    ["Safe attitude","another driver makes a mistake","Stay calm and avoid revenge driving",["Chase the driver","Block them","Hoot forever","Brake suddenly","Race beside them","Force them off the road"]]
+  ];
+
+  defs.forEach((d, di) => {
+    for(let si=0; si<stems.length; si++){
+      const topic = d[0];
+      const concept = d[1];
+      const correct = d[2];
+      const wrongs = d[3];
+      const opts = [correct, wrongs[(si*2)%wrongs.length], wrongs[(si*2+1)%wrongs.length], wrongs[(si*2+2)%wrongs.length]];
+      add(q(topic, stems[si] + concept + "?", correct, opts, "This is a safe K53 driving rule."));
+    }
+  });
+
+  return out.slice(0,250);
+}
+
+const rawBank = teaeK53ProfessionalBankPart1(buildK53Bank());
 const bank = rawBank;
 /* TEAE_EXPOSE_BANK_FOR_AUDIT_V1 */
 window.TEAE_RAW_BANK = rawBank;
@@ -1132,6 +1208,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 
