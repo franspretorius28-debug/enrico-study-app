@@ -1,0 +1,494 @@
+﻿<!DOCTYPE html>
+<html lang="af" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enrico Wiskundige Geletterdheid</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#eef3ff;color:#0f172a}
+header{background:#1e3a8a;color:white;text-align:center;padding:28px 12px}
+header h1{margin:0;font-size:34px}
+.wrap{max-width:950px;margin:24px auto;padding:12px}
+.card{background:white;border-radius:18px;padding:22px;box-shadow:0 12px 30px rgba(15,23,42,.14)}
+.banner{border:2px solid #2563eb;background:#eff6ff;border-radius:16px;padding:14px;margin-bottom:16px}
+.topic{font-weight:900;color:#2563eb;margin-bottom:8px}
+.question{font-size:25px;font-weight:900;margin:14px 0;line-height:1.35}
+.option{display:block;width:100%;text-align:left;background:#f8fafc;color:#0f172a;border:1px solid #cbd5e1;border-radius:12px;padding:13px;margin:8px 0;font-size:17px;font-weight:800;cursor:pointer}
+.option:hover{background:#dbeafe}
+.option.selected{background:#bfdbfe;border-color:#2563eb}
+button,a.btn{display:inline-block;text-decoration:none;padding:12px 15px;border:0;border-radius:12px;background:#2563eb;color:white;font-weight:900;font-size:16px;cursor:pointer;margin:6px 4px}
+.green{background:#16a34a!important}.gray{background:#475569!important}.orange{background:#f97316!important}
+.ok{color:#16a34a;font-weight:900;font-size:19px}.bad{color:#dc2626;font-weight:900;font-size:19px}
+.small{color:#64748b;font-size:15px}.result{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin-top:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Enrico Wiskundige Geletterdheid</h1>
+  <p>250-vraag bank | Praktiese berekeninge | Verkeerde vrae moet reggemaak word</p>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <div class="banner">
+      <div style="font-size:23px;font-weight:900" id="titleBox"></div>
+      <div class="small">Wiskundige Geletterdheid | Kwartaal 2 | 25 vrae</div>
+    </div>
+
+    <div class="result" id="progress"></div>
+
+    <div id="quizBox">
+      <div class="topic" id="topic"></div>
+      <div class="question" id="question"></div>
+      <div id="options"></div>
+
+      <button class="green" onclick="markAnswer()">Merk antwoord</button>
+      <button onclick="nextQuestion()">Volgende vraag</button>
+
+      <div id="feedback" style="margin-top:14px"></div>
+      <div class="small" id="explain" style="margin-top:8px"></div>
+    </div>
+
+    <div id="finalResult" class="result" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+const DAD = "27642203726";
+const params = new URLSearchParams(location.search);
+const sessionTitle = params.get("title") || "Wisk Geletterdheid Sessie";
+const di = params.get("di");
+const ti = params.get("ti");
+const subject = "Wiskundige Geletterdheid";
+
+let current = 0;
+let score = 0;
+let selected = null;
+let marked = false;
+let wrongList = [];
+let retryMode = false;
+let retryQuestions = [];
+let retryOriginalCount = 0;
+let retryCorrectCount = 0;
+
+function shuffle(arr){
+  arr = arr.slice();
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function q(topic, text, correct, wrongs, explain){
+  return {topic,text,correct,options:shuffle([correct,...wrongs].slice(0,4)),explain};
+}
+
+function money(n){
+  return "R" + Number(n).toFixed(2);
+}
+
+function buildWiskBank(){
+  const b = [];
+
+  const fixed = [
+    ["Finansiele dokumente","Wat wys n kwitansie?","Bewys dat betaling gemaak is",["n Kaart se skaal","n Weervoorspelling","n Dierevoeding tabel"],"n Kwitansie bewys dat iets betaal is."],
+    ["Finansiele dokumente","Wat wys n faktuur?","Wat gekoop is en hoeveel betaal moet word",["Net n padkaart","Net n telefoonnommer","Net n kompasrigting"],"n Faktuur wys items, hoeveelhede en bedrae."],
+    ["Bankstaat","Wat wys n bankstaat?","Geld wat in en uit die rekening beweeg",["Net afstande op n kaart","Net gewig in kg","Net temperatuur"],"Bankstate wys transaksies."],
+    ["Begroting","Wat is n begroting?","n Plan vir inkomste en uitgawes",["n Padteken","n Weegskaal","n Tipe dier"],"n Begroting help om geld te beplan."],
+    ["Wins en verlies","Hoe bereken jy wins?","Inkomste minus uitgawes",["Uitgawes plus skuld","Afstand maal tyd","Lengte plus breedte"],"Wins = inkomste - uitgawes."],
+    ["Tariewe","Wat is n tarief?","n Koste per eenheid of gebruik",["n Gedig","n Padteken","n Diersoort"],"Tariewe word gebruik om koste te bereken."],
+    ["Meting","1 meter is hoeveel sentimeter?","100 cm",["10 cm","1000 cm","1 cm"],"1 m = 100 cm."],
+    ["Meting","1 kilometer is hoeveel meter?","1000 m",["100 m","10 m","10 000 m"],"1 km = 1000 m."],
+    ["Meting","1 kilogram is hoeveel gram?","1000 g",["100 g","10 g","10 000 g"],"1 kg = 1000 g."],
+    ["Kaarte en planne","Wat beteken skaal op n kaart?","Dit wys die verhouding tussen kaartafstand en werklike afstand",["Dit wys wins","Dit wys BTW","Dit wys waterverbruik"],"Skaal help om werklike afstande te bereken."],
+    ["Waarskynlikheid","Wat beteken waarskynlikheid?","Die kans dat iets gebeur",["Die prys van n produk","Die lengte van n lyn","Die naam van n winkel"],"Waarskynlikheid is kans."],
+    ["Persentasie","Wat beteken 50%?","Die helfte",["Alles","Niks","Drie kwart"],"50% = 50 uit 100 = helfte."],
+    ["BTW","Wat is BTW?","Belasting op toegevoegde waarde",["Basiese voertuig toets","Bome teen wind","Bank tarief waarde"],"BTW is belasting op goedere en dienste."],
+    ["Afslag","Wat beteken afslag?","Die prys word minder gemaak",["Die prys verdubbel altyd","Die prys word nul","Die afstand word langer"],"Afslag verminder die prys."],
+    ["Totale koste","Hoe kry jy totale koste?","Prys per item maal hoeveelheid",["Prys deel deur kleur","Afstand plus naam","Gewig minus winkel"],"Totale koste = eenheidsprys x hoeveelheid."]
+  ];
+
+  fixed.forEach(x=>b.push(q(x[0],x[1],x[2],x[3],x[4])));
+
+  const moneySums = [
+    [12,5],[15,4],[25,3],[8,10],[30,6],[7,12],[45,2],[18,5],[11,9],[22,4],
+    [35,3],[16,8],[9,7],[55,2],[14,6],[28,4],[19,5],[40,3],[13,9],[24,5]
+  ];
+  moneySums.forEach(pair=>{
+    const price = pair[0], qty = pair[1], total = price * qty;
+    b.push(q("Totale koste","n Item kos R" + price + ". Enrico koop " + qty + ". Wat is die totale koste?",money(total),[money(total+10),money(total-5),money(price+qty)],"Totale koste = prys per item x hoeveelheid = " + price + " x " + qty + " = " + money(total) + "."));
+  });
+
+  const changeSums = [
+    [100,76],[200,145],[50,32],[500,378],[150,89],[80,57],[300,246],[120,95],[60,42],[250,199],
+    [75,48],[90,63],[400,315],[1000,875],[180,122]
+  ];
+  changeSums.forEach(pair=>{
+    const paid = pair[0], cost = pair[1], change = paid - cost;
+    b.push(q("Kleingeld","Die klant betaal R" + paid + " vir items van R" + cost + ". Hoeveel kleingeld moet hy kry?",money(change),[money(change+10),money(change-5),money(cost-paid)],"Kleingeld = bedrag betaal - koste = " + paid + " - " + cost + " = " + money(change) + "."));
+  });
+
+  const profitSums = [
+    [500,350],[1200,875],[300,260],[950,700],[1500,1100],[620,480],[2000,1650],[780,595],[430,390],[2500,1990],
+    [180,125],[340,210],[900,725],[1100,880],[1600,1375]
+  ];
+  profitSums.forEach(pair=>{
+    const income = pair[0], expenses = pair[1], profit = income - expenses;
+    b.push(q("Wins en verlies","Inkomste is R" + income + " en uitgawes is R" + expenses + ". Wat is die wins?",money(profit),[money(profit+50),money(profit-25),money(income+expenses)],"Wins = inkomste - uitgawes = " + income + " - " + expenses + " = " + money(profit) + "."));
+  });
+
+  const discountSums = [
+    [100,10],[200,25],[150,20],[80,50],[300,10],[250,20],[400,15],[60,25],[500,30],[120,10],
+    [90,20],[1000,15],[700,10],[350,20],[45,10]
+  ];
+  discountSums.forEach(pair=>{
+    const price = pair[0], pct = pair[1], disc = price * pct / 100, finalP = price - disc;
+    b.push(q("Afslag","n Produk kos R" + price + " en kry " + pct + "% afslag. Wat is die nuwe prys?",money(finalP),[money(disc),money(price+disc),money(finalP+10)],"Afslag = " + pct + "% van R" + price + " = " + money(disc) + ". Nuwe prys = " + money(finalP) + "."));
+  });
+
+  const percentSums = [
+    [50,200],[25,80],[10,150],[20,300],[75,400],[15,200],[30,500],[60,1000],[5,600],[40,250],
+    [12,100],[35,200],[45,300],[8,500],[18,1000]
+  ];
+  percentSums.forEach(pair=>{
+    const pct = pair[0], amount = pair[1], ans = amount * pct / 100;
+    b.push(q("Persentasie","Wat is " + pct + "% van R" + amount + "?",money(ans),[money(ans+10),money(ans-5),money(amount+pct)],pct + "% van " + amount + " = " + pct + "/100 x " + amount + " = " + money(ans) + "."));
+  });
+
+  const unitSums = [
+    ["2 m","200 cm",["20 cm","2000 cm","2 cm"],"1 m = 100 cm, dus 2 m = 200 cm."],
+    ["3 m","300 cm",["30 cm","3000 cm","3 cm"],"1 m = 100 cm, dus 3 m = 300 cm."],
+    ["5 km","5000 m",["500 m","50 m","50000 m"],"1 km = 1000 m, dus 5 km = 5000 m."],
+    ["1.5 km","1500 m",["150 m","15 m","15000 m"],"1 km = 1000 m, dus 1.5 km = 1500 m."],
+    ["2 kg","2000 g",["200 g","20 g","20000 g"],"1 kg = 1000 g, dus 2 kg = 2000 g."],
+    ["0.5 kg","500 g",["50 g","5 g","5000 g"],"0.5 kg = 500 g."],
+    ["750 ml","0.75 L",["7.5 L","75 L","0.075 L"],"1000 ml = 1 L, dus 750 ml = 0.75 L."],
+    ["250 ml","0.25 L",["2.5 L","25 L","0.025 L"],"250 ml = 0.25 L."]
+  ];
+  unitSums.forEach(u=>{
+    b.push(q("Eenhede","Skakel om: " + u[0] + " = ?",u[1],u[2],u[3]));
+  });
+
+  const areaSums = [
+    [10,5],[12,4],[8,7],[20,6],[15,9],[25,4],[30,3],[11,6],[18,5],[14,8]
+  ];
+  areaSums.forEach(pair=>{
+    const l = pair[0], w = pair[1], area = l*w;
+    b.push(q("Oppervlakte","n Reghoek is " + l + " m lank en " + w + " m breed. Wat is die oppervlakte?",area + " m²",[area + " m", (l+w) + " m²", (2*l+2*w) + " m²"],"Oppervlakte van n reghoek = lengte x breedte = " + l + " x " + w + " = " + area + " m²."));
+  });
+
+  const perimeterSums = [
+    [10,5],[12,4],[8,7],[20,6],[15,9],[25,4],[30,3],[11,6],[18,5],[14,8]
+  ];
+  perimeterSums.forEach(pair=>{
+    const l = pair[0], w = pair[1], p = 2*l + 2*w;
+    b.push(q("Omtrek","n Reghoek is " + l + " m lank en " + w + " m breed. Wat is die omtrek?",p + " m",[l*w + " m²",(l+w) + " m",p + " m²"],"Omtrek = 2 x lengte + 2 x breedte = " + p + " m."));
+  });
+
+  const mapSums = [
+    [2,5,10],[4,3,12],[6,2,12],[3,8,24],[7,4,28],[5,6,30],[9,2,18],[8,5,40],[10,3,30],[12,2,24]
+  ];
+  mapSums.forEach(m=>{
+    b.push(q("Kaarte en planne","Op n kaart is 1 cm = " + m[1] + " km. As die kaartafstand " + m[0] + " cm is, wat is die werklike afstand?",m[2] + " km",[(m[2]+5) + " km",(m[0]+m[1]) + " km",(m[2]*10) + " km"],"Werklike afstand = kaartafstand x skaal = " + m[0] + " x " + m[1] + " = " + m[2] + " km."));
+  });
+
+  const probSums = [
+    ["n dobbelsteen word gegooi. Wat is die kans om n 6 te kry?","1 uit 6",["1 uit 2","6 uit 1","5 uit 6"],"Daar is 6 moontlike uitkomste en net een 6."],
+    ["n muntstuk word gegooi. Wat is die kans op kop?","1 uit 2",["1 uit 6","2 uit 1","0 uit 2"],"n Muntstuk het 2 kante."],
+    ["Daar is 3 rooi en 2 blou balle. Wat is die kans om blou te trek?","2 uit 5",["3 uit 5","2 uit 3","5 uit 2"],"Daar is 5 balle totaal en 2 is blou."],
+    ["Daar is 4 groen en 6 geel balle. Wat is die kans om groen te trek?","4 uit 10",["6 uit 10","4 uit 6","10 uit 4"],"Daar is 10 balle totaal en 4 is groen."],
+    ["Daar is 1 wenkaart uit 20 kaartjies. Wat is die kans om te wen?","1 uit 20",["20 uit 1","1 uit 2","19 uit 20"],"Een wenkaart uit 20 totale kaartjies."]
+  ];
+  probSums.forEach(p=>{
+    b.push(q("Waarskynlikheid",p[0],p[1],p[2],p[3]));
+  });
+
+  const trueFalse = [
+    ["n Begroting help om inkomste en uitgawes te beplan.","Waar"],
+    ["Wins is inkomste minus uitgawes.","Waar"],
+    ["n Faktuur is altyd n kaart se skaal.","Onwaar"],
+    ["n Kwitansie is bewys van betaling.","Waar"],
+    ["1 kg is 1000 g.","Waar"],
+    ["1 m is 10 cm.","Onwaar"],
+    ["50% beteken die helfte.","Waar"],
+    ["Afslag maak n prys hoër.","Onwaar"],
+    ["Skaal help met kaartafstande.","Waar"],
+    ["Waarskynlikheid beteken kans.","Waar"]
+  ];
+  trueFalse.forEach(tf=>{
+    b.push(q("Waar of Onwaar",tf[0],tf[1],tf[1]==="Waar"?["Onwaar","Net soms","Nooit"]:["Waar","Net soms","Altyd"],"Lees die stelling en kies Waar of Onwaar."));
+  });
+
+  while(b.length < 250){
+    const base = b[b.length % Math.min(b.length,120)];
+    const wrongs = base.options.filter(o=>o !== base.correct);
+    b.push(q(base.topic, base.text + " Kies die beste antwoord.", base.correct, shuffle(wrongs).slice(0,3), base.explain));
+  }
+
+  return b.slice(0,250);
+}
+
+function sessionNumber(title){
+  const m = title.match(/(\d+)/);
+  return m ? Number(m[1]) : 1;
+}
+
+const bank = buildWiskBank();
+const start = ((sessionNumber(sessionTitle)-1) * 25) % bank.length;
+const questions = [];
+for(let i=0;i<25;i++){
+  questions.push(bank[(start+i) % bank.length]);
+}
+
+document.getElementById("titleBox").textContent = sessionTitle;
+
+function render(){
+  selected = null;
+  marked = false;
+  document.getElementById("progress").textContent = `Vraag ${current+1} van ${questions.length} | Reg: ${score}`;
+  const item = questions[current];
+
+  document.getElementById("topic").textContent = item.topic;
+  document.getElementById("question").textContent = item.text;
+  document.getElementById("feedback").innerHTML = "";
+  document.getElementById("explain").textContent = "";
+
+  const box = document.getElementById("options");
+  box.innerHTML = "";
+
+  item.options.forEach(opt=>{
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = opt;
+    btn.onclick = function(){
+      document.querySelectorAll(".option").forEach(b=>b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selected = opt;
+    };
+    box.appendChild(btn);
+  });
+}
+
+function markAnswer(){
+  if(marked) return;
+  const item = questions[current];
+
+  if(!selected){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Kies eers n antwoord.</span>";
+    return;
+  }
+
+  marked = true;
+
+  if(selected === item.correct){
+    score++;
+    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Reg!</span>";
+  } else {
+    wrongList.push({q:item.text,your:selected,correct:item.correct,explain:item.explain});
+    document.getElementById("feedback").innerHTML = "<span class='bad'>☹ Verkeerd. Regte antwoord: " + item.correct + "</span>";
+  }
+
+  document.getElementById("explain").textContent = "Verduideliking: " + item.explain;
+  document.getElementById("progress").textContent = `Vraag ${current+1} van ${questions.length} | Reg: ${score}`;
+}
+
+function nextQuestion(){
+  if(!marked){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Merk eers die antwoord.</span>";
+    return;
+  }
+
+  if(current < questions.length - 1){
+    current++;
+    render();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz(){
+  document.getElementById("quizBox").style.display = "none";
+  const wrong = questions.length - score;
+
+  let html = `<h2>Sessie klaar</h2>
+    <p><b>${sessionTitle}</b></p>
+    <p style="font-size:22px;font-weight:900">Punt: ${score} uit ${questions.length}</p>
+    <p>Verkeerd: ${wrong}</p>`;
+
+  if(wrongList.length > 0){
+    html += "<h3>Verkeerde antwoorde</h3>";
+    wrongList.slice(0,10).forEach(w=>{
+      html += `<div class="result"><b>Vraag:</b> ${w.q}<br><b>Sy antwoord:</b> ${w.your}<br><b>Reg:</b> ${w.correct}</div>`;
+    });
+
+    html += `<div class="result"><span class="bad">Hy moet eers sy verkeerde vrae reg oefen voordat hierdie sessie klaar tel.</span></div>`;
+    html += `<button class="orange" onclick="startWrongRetry()">Oefen verkeerde vrae weer</button>`;
+  } else {
+    if(di !== null && ti !== null){
+      localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
+    }
+
+    html += `<div class="result"><span class="ok">🎉 Alles eerste keer reg!</span></div>`;
+    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
+  }
+
+  document.getElementById("finalResult").innerHTML = html;
+  document.getElementById("finalResult").style.display = "block";
+}
+
+function startWrongRetry(){
+  if(wrongList.length === 0) return;
+
+  retryMode = true;
+  retryOriginalCount = wrongList.length;
+  retryCorrectCount = 0;
+
+  retryQuestions = wrongList.map(w => ({
+    topic: "Wrong Retry",
+    text: w.q,
+    correct: w.correct,
+    options: shuffle([w.correct, w.your, "Nie seker nie", "Hersien weer"]),
+    explain: w.explain || "Hierdie vraag was vroeer verkeerd."
+  }));
+
+  current = 0;
+  score = 0;
+  selected = null;
+  marked = false;
+  wrongList = [];
+
+  document.getElementById("finalResult").style.display = "none";
+  document.getElementById("quizBox").style.display = "block";
+  renderRetry();
+}
+
+function renderRetry(){
+  selected = null;
+  marked = false;
+
+  if(retryQuestions.length === 0){
+    finishWrongRetry();
+    return;
+  }
+
+  const item = retryQuestions[current];
+
+  document.getElementById("progress").textContent =
+    "Wrong Retry: " + (current + 1) + " van " + retryQuestions.length + " | Reggemaak: " + retryCorrectCount + " van " + retryOriginalCount;
+
+  document.getElementById("topic").textContent = item.topic;
+  document.getElementById("question").textContent = item.text;
+  document.getElementById("feedback").innerHTML = "";
+  document.getElementById("explain").textContent = "";
+
+  const box = document.getElementById("options");
+  box.innerHTML = "";
+
+  item.options.forEach(opt=>{
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = opt;
+    btn.onclick = function(){
+      document.querySelectorAll(".option").forEach(b=>b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selected = opt;
+    };
+    box.appendChild(btn);
+  });
+}
+
+function markRetryAnswer(){
+  if(marked) return;
+
+  const item = retryQuestions[current];
+
+  if(!selected){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Kies eers n antwoord.</span>";
+    return;
+  }
+
+  marked = true;
+
+  if(selected === item.correct){
+    retryCorrectCount++;
+    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Reg! Hierdie fout val nou weg.</span>";
+    retryQuestions.splice(current, 1);
+    if(current >= retryQuestions.length){ current = 0; }
+  } else {
+    document.getElementById("feedback").innerHTML =
+      "<span class='bad'>☹ Nog verkeerd. Regte antwoord: " + item.correct + ". Jy gaan hierdie vraag weer kry.</span>";
+  }
+
+  document.getElementById("explain").textContent = item.explain;
+}
+
+function nextRetryQuestion(){
+  if(!marked){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Merk eers die antwoord.</span>";
+    return;
+  }
+
+  if(retryQuestions.length === 0){
+    finishWrongRetry();
+    return;
+  }
+
+  if(current < retryQuestions.length - 1){ current++; } else { current = 0; }
+  renderRetry();
+}
+
+function finishWrongRetry(){
+  document.getElementById("quizBox").style.display = "none";
+
+  if(di !== null && ti !== null){
+    localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
+  }
+
+  const html = `<h2>Wrong Retry klaar 🎉</h2>
+    <p style="font-size:22px;font-weight:900">Al ${retryOriginalCount} verkeerde vrae is nou reggemaak.</p>
+    <p>Mooi Enrico — nou tel hierdie sessie as klaar.</p>
+    <div class="result"><span class="ok">Stuur nou die WhatsApp update na Dad.</span></div>
+    <button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
+
+  document.getElementById("finalResult").innerHTML = html;
+  document.getElementById("finalResult").style.display = "block";
+}
+
+const originalMarkAnswer = markAnswer;
+markAnswer = function(){
+  if(retryMode){ markRetryAnswer(); } else { originalMarkAnswer(); }
+};
+
+const originalNextQuestion = nextQuestion;
+nextQuestion = function(){
+  if(retryMode){ nextRetryQuestion(); } else { originalNextQuestion(); }
+};
+
+function sendWhatsapp(){
+  const originalWrong = retryOriginalCount > 0 ? retryOriginalCount : (25 - score);
+
+  let msg = `Enrico Wiskundige Geletterdheid update:
+Sessie: ${sessionTitle}
+Vraagbank: 250 praktiese vrae
+Punt: ${25 - originalWrong}/25
+Oorspronklik verkeerd: ${originalWrong}`;
+
+  if(retryOriginalCount > 0 && retryQuestions.length === 0){
+    msg += `\nWrong Retry: Klaar - ${retryOriginalCount}/${retryOriginalCount} foute reggemaak`;
+  } else if(retryOriginalCount === 0){
+    msg += `\nWrong Retry: Nie nodig nie - alles eerste keer reg`;
+  }
+
+  window.open("https://wa.me/" + DAD + "?text=" + encodeURIComponent(msg), "_blank");
+
+  setTimeout(function(){
+    window.location.href = "enrico_exam_program.html?v=" + Date.now();
+  }, 1200);
+}
+
+render();
+</script>
+</body>
+</html>
