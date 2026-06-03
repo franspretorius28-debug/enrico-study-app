@@ -202,6 +202,9 @@ function quizLinkHtml(title, di, ti){
   else if(lower.includes("english")){
     file = "enrico_english_quiz.html";
   }
+  else if(lower.includes("besigheid")){
+    file = "enrico_besigheid_quiz.html";
+  }
 
   const url = file + "?title=" + encodeURIComponent(title) + "&di=" + di + "&ti=" + ti + "&v=" + Date.now();
   return `<a class="btn" href="${url}">Maak toets oop</a>`;
@@ -312,6 +315,7 @@ renderPlan();
 </script>
 </body>
 </html>
+
 
 
 

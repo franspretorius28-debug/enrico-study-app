@@ -1,0 +1,477 @@
+﻿<!DOCTYPE html>
+<html lang="af" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enrico Besigheidstudies</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#eef3ff;color:#0f172a}
+header{background:#7c2d12;color:white;text-align:center;padding:28px 12px}
+header h1{margin:0;font-size:34px}
+.wrap{max-width:950px;margin:24px auto;padding:12px}
+.card{background:white;border-radius:18px;padding:22px;box-shadow:0 12px 30px rgba(15,23,42,.14)}
+.banner{border:2px solid #ea580c;background:#fff7ed;border-radius:16px;padding:14px;margin-bottom:16px}
+.topic{font-weight:900;color:#ea580c;margin-bottom:8px}
+.question{font-size:25px;font-weight:900;margin:14px 0;line-height:1.35}
+.option{display:block;width:100%;text-align:left;background:#f8fafc;color:#0f172a;border:1px solid #cbd5e1;border-radius:12px;padding:13px;margin:8px 0;font-size:17px;font-weight:800;cursor:pointer}
+.option:hover{background:#ffedd5}
+.option.selected{background:#fed7aa;border-color:#ea580c}
+button,a.btn{display:inline-block;text-decoration:none;padding:12px 15px;border:0;border-radius:12px;background:#2563eb;color:white;font-weight:900;font-size:16px;cursor:pointer;margin:6px 4px}
+.green{background:#16a34a!important}.gray{background:#475569!important}.orange{background:#f97316!important}
+.ok{color:#16a34a;font-weight:900;font-size:19px}.bad{color:#dc2626;font-weight:900;font-size:19px}
+.small{color:#64748b;font-size:15px}.result{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin-top:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Enrico Besigheidstudies</h1>
+  <p>250-vraag bank | Kwartaal 2 | Verkeerde vrae moet reggemaak word</p>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <div class="banner">
+      <div style="font-size:23px;font-weight:900" id="titleBox"></div>
+      <div class="small">Besigheidstudies | 25 vrae</div>
+    </div>
+
+    <div class="result" id="progress"></div>
+
+    <div id="quizBox">
+      <div class="topic" id="topic"></div>
+      <div class="question" id="question"></div>
+      <div id="options"></div>
+
+      <button class="green" onclick="markAnswer()">Merk antwoord</button>
+      <button onclick="nextQuestion()">Volgende vraag</button>
+
+      <div id="feedback" style="margin-top:14px"></div>
+      <div class="small" id="explain" style="margin-top:8px"></div>
+    </div>
+
+    <div id="finalResult" class="result" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+const DAD = "27642203726";
+const params = new URLSearchParams(location.search);
+const sessionTitle = params.get("title") || "Besigheidstudies Sessie";
+const di = params.get("di");
+const ti = params.get("ti");
+
+let current = 0;
+let score = 0;
+let selected = null;
+let marked = false;
+let wrongList = [];
+let retryMode = false;
+let retryQuestions = [];
+let retryOriginalCount = 0;
+let retryCorrectCount = 0;
+
+function shuffle(arr){
+  arr = arr.slice();
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function q(topic, text, correct, wrongs, explain){
+  return {topic,text,correct,options:shuffle([correct,...wrongs].slice(0,4)),explain};
+}
+
+function buildBesigheidBank(){
+  const b = [];
+
+  const fixed = [
+    ["Sosio-ekonomiese kwessies","Wat is werkloosheid?","Wanneer mense wil werk maar nie werk kry nie",["Wanneer pryse daal","Wanneer voorraad verkoop","Wanneer n winkel oopmaak"],"Werkloosheid is n belangrike sosio-ekonomiese kwessie."],
+    ["Sosio-ekonomiese kwessies","Wat is armoede?","Wanneer mense nie basiese behoeftes kan bekostig nie",["Groot wins","Nuwe eienaar","Goeie advertensie"],"Armoede beteken mense sukkel om basiese behoeftes te betaal."],
+    ["Sosio-ekonomiese kwessies","Wat is misdaad se invloed op besighede?","Dit kan koste en risiko verhoog",["Dit verlaag altyd koste","Dit maak alle besighede winsgewend","Dit stop alle belasting"],"Misdaad kan sekuriteitskoste en verlies verhoog."],
+    ["Sosiale verantwoordelikheid","Wat beteken sosiale verantwoordelikheid?","n Besigheid tree verantwoordelik teenoor gemeenskap en omgewing op",["Net wins vat","Net pryse verhoog","Net voorraad tel"],"Besighede moet nie net aan wins dink nie."],
+    ["Sosiale verantwoordelikheid","Wat is n voorbeeld van sosiale verantwoordelikheid?","Om die gemeenskap te ondersteun",["Om afval in riviere te gooi","Om werknemers sleg te behandel","Om klante te mislei"],"Gemeenskapsondersteuning is n positiewe sosiale aksie."],
+    ["Entrepreneur","Wat is n entrepreneur?","Iemand wat n besigheid begin en risiko neem",["Net n klient","Net n werknemer","Net n belastingvorm"],"Entrepreneurs begin besighede en neem risiko."],
+    ["Entrepreneur","Watter eienskap pas by n entrepreneur?","Inisiatief",["Luiheid","Oneerlikheid","Geen beplanning"],"Entrepreneurs neem inisiatief."],
+    ["Entrepreneur","Waarom moet n entrepreneur kreatief wees?","Om nuwe idees en oplossings te kry",["Om nooit te beplan nie","Om klante te ignoreer","Om geld te mors"],"Kreatiwiteit help n besigheid uitstaan."],
+    ["Eienaarskap","Wat is n eenmansaak?","n Besigheid met een eienaar",["n Besigheid met baie aandeelhouers","n Regeringsdepartement","n Skoolvak"],"Eenmansaak het een eienaar."],
+    ["Eienaarskap","Wat is n vennootskap?","Twee of meer mense besit n besigheid saam",["Net een eienaar","Geen eienaar","Slegs klante"],"Vennootskap het meer as een eienaar."],
+    ["Eienaarskap","Wat is n maatskappy?","n Besigheid met n aparte regspersoonlikheid",["n Los straatverkoper sonder struktuur","n Persoon se stokperdjie","n Skooltaak"],"n Maatskappy is apart van sy eienaars."],
+    ["Besigheid","Wat is wins?","Inkomste minus uitgawes",["Uitgawes plus skuld","Net belasting","Net water"],"Wins is wat oorbly nadat koste betaal is."],
+    ["Besigheid","Wat is kapitaal?","Geld of hulpbronne om n besigheid te begin of bedryf",["Net klagtes","Net padtekens","Net grammatika"],"Kapitaal help n besigheid begin of groei."],
+    ["Besigheid","Wat is n produk?","Iets wat verkoop word",["Net n gedig","Net n formule","Net n pad"],"Produkte kan goedere of dienste wees."],
+    ["Besigheid","Wat is n diens?","Werk wat vir n klant gedoen word",["n Fisiese item alleen","n Padteken","n Skoolbank"],"Dienste is nie altyd tasbaar nie."],
+    ["Klantediens","Waarom is goeie klantediens belangrik?","Dit help om klante te behou",["Dit jaag klante weg","Dit verhoog altyd skuld","Dit verwyder alle produkte"],"Goeie diens bou lojaliteit."],
+    ["Mark","Wat is n teikenmark?","Die groep klante waarop n besigheid fokus",["Alle padtekens","Net werknemers","Net belastingvorms"],"Teikenmark help met bemarking."],
+    ["Bemarking","Wat is bemarking?","Aktiwiteite om produkte of dienste aan klante bekend te stel",["Net voorraad weggooi","Net werkloosheid meet","Net rekenaars herstel"],"Bemarking help verkope."],
+    ["Etiek","Wat beteken etiese besigheidsgedrag?","Eerlik en regverdig optree",["Klante mislei","Werknemers uitbuit","Wet breek"],"Etiek is regte en eerlike gedrag."],
+    ["Omgewing","Hoe kan n besigheid die omgewing help?","Herwin en verminder afval",["Meer besoedel","Water mors","Afval oral los"],"Omgewingsorg is deel van verantwoordelikheid."]
+  ];
+
+  fixed.forEach(x=>b.push(q(x[0],x[1],x[2],x[3],x[4])));
+
+  const terms = [
+    ["Werkloosheid","mense wat kan werk maar nie werk kry nie",["wins na koste","n tipe eienaarskap","n produkprys"]],
+    ["Armoede","gebrek aan geld vir basiese behoeftes",["oormaat wins","n bemarkingslogo","n vennootskap"]],
+    ["MIV/Vigs","n gesondheidskwessie wat werkers en gemeenskappe kan raak",["n tipe wins","n advertensieplan","n voorraadlys"]],
+    ["Misdaad","onwettige aktiwiteite wat besighede kan benadeel",["n tipe diens","n voordeel van wins","n produknaam"]],
+    ["Sosiale verantwoordelikheid","besigheid se verantwoordelike rol teenoor gemeenskap",["net pryse verhoog","alle afval mors","geen klante help"]],
+    ["Entrepreneur","persoon wat n besigheid begin en risiko neem",["net n klant","net n kassier","net n bankstaat"]],
+    ["Inisiatief","om self te begin en aksie te neem",["om niks te doen","om altyd te wag","om nooit te probeer"]],
+    ["Kreatiwiteit","om nuwe idees te ontwikkel",["om alles te kopieer","om klante te ignoreer","om nooit te dink"]],
+    ["Risiko","kans dat iets verkeerd kan gaan",["gewaarborgde wins","geen kans op verlies","n seker sukses"]],
+    ["Eenmansaak","besigheid met een eienaar",["baie aandeelhouers","geen eienaar","n regering alleen"]],
+    ["Vennootskap","besigheid met twee of meer eienaars",["een eienaar alleen","net klante","geen bestuur"]],
+    ["Maatskappy","besigheid met aparte regspersoonlikheid",["net n stokperdjie","net n los idee","geen wetlike vorm"]],
+    ["Kapitaal","geld of hulpbronne vir n besigheid",["net klagtes","net n gedig","net n padteken"]],
+    ["Wins","inkomste minus uitgawes",["uitgawes plus skuld","net belasting","net voorraad"]],
+    ["Inkomste","geld wat n besigheid ontvang",["geld wat uitgegee word","net afval","net verlies"]],
+    ["Uitgawe","geld wat betaal word vir koste",["geld wat inkom","n produkfoto","n slagspreuk"]],
+    ["Teikenmark","spesifieke groep klante",["alle padtekens","net belasting","net verskaffers"]],
+    ["Bemarking","bekendstelling en bevordering van produkte",["misdaad pleeg","afval mors","werkloosheid verhoog"]],
+    ["Klantediens","hoe n besigheid klante behandel",["net voorraad tel","net huur betaal","net bankkoste"]],
+    ["Etiek","regte en eerlike optrede",["oneerlikheid","misleiding","wet breek"]]
+  ];
+
+  terms.forEach(t=>{
+    b.push(q("Begrippe","Wat beteken " + t[0] + "?",t[1],t[2],"Ken die definisie van die begrip."));
+    b.push(q("Begrippe","Kies die beste beskrywing van " + t[0] + ".",t[1],t[2],"Die beskrywing moet by die term pas."));
+    b.push(q("Begrippe",t[0] + " verwys na:",t[1],t[2],"Hierdie is n belangrike kwartaal 2 begrip."));
+  });
+
+  const ownership = [
+    ["Eenmansaak","maklik om te begin",["baie wetlike vereistes soos groot maatskappye","geen risiko ooit","altyd onbeperkte kapitaal"]],
+    ["Eenmansaak","eienaar kry al die wins maar dra ook risiko",["wins gaan net aan staat","geen eienaar nie","alle klante besit dit"]],
+    ["Vennootskap","vennote deel verantwoordelikheid en wins",["net een persoon besluit altyd alleen","geen ooreenkoms nodig nie","geen risiko nie"]],
+    ["Vennootskap","meer vaardighede en kapitaal kan beskikbaar wees",["minder idees altyd","geen samewerking","geen besluitneming"]],
+    ["Maatskappy","het aparte regspersoonlikheid",["is altyd net een persoon","kan nie kontrakte aangaan nie","het geen struktuur"]],
+    ["Maatskappy","kan kapitaal deur aandeelhouers kry",["kan nooit groei nie","mag nie werknemers he nie","het geen eienaars nie"]]
+  ];
+
+  ownership.forEach(o=>{
+    b.push(q("Soorte eienaarskap","Watter stelling pas by " + o[0] + "?",o[1],o[2],"Ken voordele en nadele van eienaarskapvorme."));
+  });
+
+  const scenarios = [
+    ["n Besigheid skenk kos aan n plaaslike skool.","sosiale verantwoordelikheid",["misdaad","oneerlike bemarking","werkloosheid"]],
+    ["n Entrepreneur begin n nuwe snoepwinkel met eie geld.","entrepreneurskap",["belastingontduiking","werkloosheid","besoedeling"]],
+    ["n Winkel behandel klante vriendelik en help met klagtes.","goeie klantediens",["slegte etiek","armoede","geen bemarking"]],
+    ["n Besigheid gooi afval in n rivier.","onverantwoordelike omgewingsgedrag",["goeie herwinning","goeie etiek","sosiale verantwoordelikheid"]],
+    ["Twee mense begin saam n besigheid en deel wins.","vennootskap",["eenmansaak","geen eienaar","werkloosheid"]],
+    ["n Besigheid wil weet wie sy produkte sal koop.","teikenmark",["erosie","grammatika","n padkaart"]],
+    ["n Entrepreneur probeer n nuwe idee wat kan misluk.","risiko",["gewaarborgde wins","geen besluit","net uitgawe"]],
+    ["n Besigheid lieg oor n produk se kwaliteit.","onetiese gedrag",["goeie diens","sosiale verantwoordelikheid","gemeenskaphulp"]],
+    ["n Maatskappy bied opleiding vir jongmense aan.","gemeenskapsontwikkeling",["misdaad","afval","oneerlikheid"]],
+    ["n Besigheid adverteer n nuwe produk op sosiale media.","bemarking",["vennootskap","armoede","belasting"]]
+  ];
+
+  scenarios.forEach(s=>{
+    b.push(q("Scenario","Kies die beste begrip vir hierdie scenario: " + s[0],s[1],s[2],"Koppel die scenario aan die regte besigheidsbegrip."));
+    b.push(q("Scenario","Wat wys hierdie voorbeeld? " + s[0],s[1],s[2],"Lees die situasie en kies die beste antwoord."));
+  });
+
+  const trueFalse = [
+    ["Werkloosheid is n sosio-ekonomiese kwessie.","Waar"],
+    ["Armoede kan gemeenskappe en besighede raak.","Waar"],
+    ["Sosiale verantwoordelikheid beteken n besigheid ignoreer die gemeenskap.","Onwaar"],
+    ["n Entrepreneur neem risiko.","Waar"],
+    ["Kreatiwiteit is belangrik vir entrepreneurs.","Waar"],
+    ["n Eenmansaak het baie aandeelhouers.","Onwaar"],
+    ["n Vennootskap het twee of meer eienaars.","Waar"],
+    ["Wins is inkomste minus uitgawes.","Waar"],
+    ["Klantediens kan klante help behou.","Waar"],
+    ["Etiese gedrag beteken om oneerlik op te tree.","Onwaar"],
+    ["Bemarking help om produkte bekend te stel.","Waar"],
+    ["n Teikenmark is die groep klante waarop n besigheid fokus.","Waar"],
+    ["Misdaad kan sekuriteitskoste verhoog.","Waar"],
+    ["n Besigheid hoef nooit aan die omgewing te dink nie.","Onwaar"],
+    ["Kapitaal kan geld of toerusting wees.","Waar"]
+  ];
+
+  trueFalse.forEach(tf=>{
+    b.push(q("Waar of Onwaar",tf[0],tf[1],tf[1]==="Waar"?["Onwaar","Net soms","Nooit"]:["Waar","Net soms","Altyd"],"Lees die stelling en kies Waar of Onwaar."));
+  });
+
+  const shortCalcs = [
+    [500,350],[1200,900],[800,650],[2500,1900],[300,450],[1500,1200],[700,540],[1000,875],[400,250],[950,700]
+  ];
+  shortCalcs.forEach(c=>{
+    const inc = c[0], exp = c[1], ans = inc - exp;
+    const label = ans >= 0 ? "wins" : "verlies";
+    b.push(q("Basiese finansies","Inkomste is R" + inc + " en uitgawes is R" + exp + ". Wat is die " + label + "?", "R" + Math.abs(ans).toFixed(2), ["R" + (inc+exp).toFixed(2), "R" + Math.abs(ans+50).toFixed(2), "R0.00"], "Wins/verlies = inkomste - uitgawes."));
+  });
+
+  while(b.length < 250){
+    const base = b[b.length % Math.min(b.length,120)];
+    const wrongs = base.options.filter(o=>o !== base.correct);
+    b.push(q(base.topic, base.text + " Kies die beste antwoord.", base.correct, shuffle(wrongs).slice(0,3), base.explain));
+  }
+
+  return b.slice(0,250);
+}
+
+function sessionNumber(title){
+  const m = title.match(/(\d+)/);
+  return m ? Number(m[1]) : 1;
+}
+
+const bank = buildBesigheidBank();
+const start = ((sessionNumber(sessionTitle)-1) * 25) % bank.length;
+const questions = [];
+for(let i=0;i<25;i++){
+  questions.push(bank[(start+i) % bank.length]);
+}
+
+document.getElementById("titleBox").textContent = sessionTitle;
+
+function render(){
+  selected = null;
+  marked = false;
+  document.getElementById("progress").textContent = `Vraag ${current+1} van ${questions.length} | Reg: ${score}`;
+  const item = questions[current];
+
+  document.getElementById("topic").textContent = item.topic;
+  document.getElementById("question").textContent = item.text;
+  document.getElementById("feedback").innerHTML = "";
+  document.getElementById("explain").textContent = "";
+
+  const box = document.getElementById("options");
+  box.innerHTML = "";
+
+  item.options.forEach(opt=>{
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = opt;
+    btn.onclick = function(){
+      document.querySelectorAll(".option").forEach(b=>b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selected = opt;
+    };
+    box.appendChild(btn);
+  });
+}
+
+function markAnswer(){
+  if(marked) return;
+  const item = questions[current];
+
+  if(!selected){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Kies eers n antwoord.</span>";
+    return;
+  }
+
+  marked = true;
+
+  if(selected === item.correct){
+    score++;
+    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Reg!</span>";
+  } else {
+    wrongList.push({q:item.text,your:selected,correct:item.correct,explain:item.explain});
+    document.getElementById("feedback").innerHTML = "<span class='bad'>☹ Verkeerd. Regte antwoord: " + item.correct + "</span>";
+  }
+
+  document.getElementById("explain").textContent = "Verduideliking: " + item.explain;
+  document.getElementById("progress").textContent = `Vraag ${current+1} van ${questions.length} | Reg: ${score}`;
+}
+
+function nextQuestion(){
+  if(!marked){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Merk eers die antwoord.</span>";
+    return;
+  }
+
+  if(current < questions.length - 1){
+    current++;
+    render();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz(){
+  document.getElementById("quizBox").style.display = "none";
+  const wrong = questions.length - score;
+
+  let html = `<h2>Sessie klaar</h2>
+    <p><b>${sessionTitle}</b></p>
+    <p style="font-size:22px;font-weight:900">Punt: ${score} uit ${questions.length}</p>
+    <p>Verkeerd: ${wrong}</p>`;
+
+  if(wrongList.length > 0){
+    html += "<h3>Verkeerde antwoorde</h3>";
+    wrongList.slice(0,10).forEach(w=>{
+      html += `<div class="result"><b>Vraag:</b> ${w.q}<br><b>Sy antwoord:</b> ${w.your}<br><b>Reg:</b> ${w.correct}</div>`;
+    });
+
+    html += `<div class="result"><span class="bad">Hy moet eers sy verkeerde vrae reg oefen voordat hierdie sessie klaar tel.</span></div>`;
+    html += `<button class="orange" onclick="startWrongRetry()">Oefen verkeerde vrae weer</button>`;
+  } else {
+    if(di !== null && ti !== null){
+      localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
+    }
+
+    html += `<div class="result"><span class="ok">🎉 Alles eerste keer reg!</span></div>`;
+    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
+  }
+
+  document.getElementById("finalResult").innerHTML = html;
+  document.getElementById("finalResult").style.display = "block";
+}
+
+function startWrongRetry(){
+  if(wrongList.length === 0) return;
+
+  retryMode = true;
+  retryOriginalCount = wrongList.length;
+  retryCorrectCount = 0;
+
+  retryQuestions = wrongList.map(w => ({
+    topic: "Wrong Retry",
+    text: w.q,
+    correct: w.correct,
+    options: shuffle([w.correct, w.your, "Nie seker nie", "Hersien weer"]),
+    explain: w.explain || "Hierdie vraag was vroeer verkeerd."
+  }));
+
+  current = 0;
+  score = 0;
+  selected = null;
+  marked = false;
+  wrongList = [];
+
+  document.getElementById("finalResult").style.display = "none";
+  document.getElementById("quizBox").style.display = "block";
+  renderRetry();
+}
+
+function renderRetry(){
+  selected = null;
+  marked = false;
+
+  if(retryQuestions.length === 0){
+    finishWrongRetry();
+    return;
+  }
+
+  const item = retryQuestions[current];
+
+  document.getElementById("progress").textContent =
+    "Wrong Retry: " + (current + 1) + " van " + retryQuestions.length + " | Reggemaak: " + retryCorrectCount + " van " + retryOriginalCount;
+
+  document.getElementById("topic").textContent = item.topic;
+  document.getElementById("question").textContent = item.text;
+  document.getElementById("feedback").innerHTML = "";
+  document.getElementById("explain").textContent = "";
+
+  const box = document.getElementById("options");
+  box.innerHTML = "";
+
+  item.options.forEach(opt=>{
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = opt;
+    btn.onclick = function(){
+      document.querySelectorAll(".option").forEach(b=>b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selected = opt;
+    };
+    box.appendChild(btn);
+  });
+}
+
+function markRetryAnswer(){
+  if(marked) return;
+
+  const item = retryQuestions[current];
+
+  if(!selected){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Kies eers n antwoord.</span>";
+    return;
+  }
+
+  marked = true;
+
+  if(selected === item.correct){
+    retryCorrectCount++;
+    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Reg! Hierdie fout val nou weg.</span>";
+    retryQuestions.splice(current, 1);
+    if(current >= retryQuestions.length){ current = 0; }
+  } else {
+    document.getElementById("feedback").innerHTML =
+      "<span class='bad'>☹ Nog verkeerd. Regte antwoord: " + item.correct + ". Jy gaan hierdie vraag weer kry.</span>";
+  }
+
+  document.getElementById("explain").textContent = item.explain;
+}
+
+function nextRetryQuestion(){
+  if(!marked){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Merk eers die antwoord.</span>";
+    return;
+  }
+
+  if(retryQuestions.length === 0){
+    finishWrongRetry();
+    return;
+  }
+
+  if(current < retryQuestions.length - 1){ current++; } else { current = 0; }
+  renderRetry();
+}
+
+function finishWrongRetry(){
+  document.getElementById("quizBox").style.display = "none";
+
+  if(di !== null && ti !== null){
+    localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
+  }
+
+  const html = `<h2>Wrong Retry klaar 🎉</h2>
+    <p style="font-size:22px;font-weight:900">Al ${retryOriginalCount} verkeerde vrae is nou reggemaak.</p>
+    <p>Mooi Enrico — nou tel hierdie sessie as klaar.</p>
+    <div class="result"><span class="ok">Stuur nou die WhatsApp update na Dad.</span></div>
+    <button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
+
+  document.getElementById("finalResult").innerHTML = html;
+  document.getElementById("finalResult").style.display = "block";
+}
+
+const originalMarkAnswer = markAnswer;
+markAnswer = function(){
+  if(retryMode){ markRetryAnswer(); } else { originalMarkAnswer(); }
+};
+
+const originalNextQuestion = nextQuestion;
+nextQuestion = function(){
+  if(retryMode){ nextRetryQuestion(); } else { originalNextQuestion(); }
+};
+
+function sendWhatsapp(){
+  const originalWrong = retryOriginalCount > 0 ? retryOriginalCount : (25 - score);
+
+  let msg = `Enrico Besigheidstudies update:
+Sessie: ${sessionTitle}
+Vraagbank: 250 Besigheidstudies vrae
+Punt: ${25 - originalWrong}/25
+Oorspronklik verkeerd: ${originalWrong}`;
+
+  if(retryOriginalCount > 0 && retryQuestions.length === 0){
+    msg += `\nWrong Retry: Klaar - ${retryOriginalCount}/${retryOriginalCount} foute reggemaak`;
+  } else if(retryOriginalCount === 0){
+    msg += `\nWrong Retry: Nie nodig nie - alles eerste keer reg`;
+  }
+
+  window.open("https://wa.me/" + DAD + "?text=" + encodeURIComponent(msg), "_blank");
+
+  setTimeout(function(){
+    window.location.href = "enrico_exam_program.html?v=" + Date.now();
+  }, 1200);
+}
+
+render();
+</script>
+</body>
+</html>
+
