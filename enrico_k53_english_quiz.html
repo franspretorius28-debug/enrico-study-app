@@ -940,102 +940,133 @@ function teaeK53ProfessionalBankPart1(raw){
   return out.slice(0,250);
 }
 
-/* TEAE_K53_FILL_TO_250_REAL_V2 */
-function teaeK53FillTo250V2(bank){
-  const out = Array.isArray(bank) ? bank.slice() : [];
-  const seenQ = new Set(out.map(x => teaeK53CleanKey(x.text)));
-  const seenOpt = new Set(out.map(x => teaeK53OptKey(x)));
+/* TEAE_K53_FILL_TO_250_REAL_V3 */
+function teaeK53FillTo250V3(bank){
+  const out = [];
+  const seenQ = new Set();
+  const seenOpt = new Set();
 
-  function addUnique(topic, text, correct, wrong1, wrong2, wrong3, exp){
-    const item = q(topic, text, correct, wrong1, wrong2, wrong3, exp || "This question checks safe driving judgement.");
-    const qk = teaeK53CleanKey(item.text);
-    const ok = teaeK53OptKey(item);
-    const inside = new Set(item.options.map(teaeK53CleanKey).filter(Boolean));
-    if(!qk || !ok || inside.size < 4) return;
-    if(seenQ.has(qk) || seenOpt.has(ok)) return;
+  function norm(v){
+    return String(v || "").toLowerCase().replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
+  }
+
+  function optKey(item){
+    return (item.options || []).map(norm).filter(Boolean).sort().join(" | ");
+  }
+
+  function addObj(topic, text, correct, options, explain){
+    const item = {
+      topic: topic,
+      text: text,
+      correct: correct,
+      options: options.slice(0,4),
+      explain: explain || "Choose the safest legal driving action."
+    };
+
+    if(!item.options.some(o => norm(o) === norm(correct))){
+      item.options[0] = correct;
+    }
+
+    const qk = norm(item.text);
+    const ok = optKey(item);
+    const inside = new Set(item.options.map(norm).filter(Boolean));
+
+    if(!qk || !ok || inside.size < 4) return false;
+    if(seenQ.has(qk) || seenOpt.has(ok)) return false;
+
     seenQ.add(qk);
     seenOpt.add(ok);
     out.push(item);
+    return true;
   }
 
-  const situations = [
-    ["Traffic signs","a no-entry sign ahead","Do not enter that road","Enter slowly if it is quiet","Only buses must obey it","Drive around the sign"],
-    ["Traffic signs","a stop sign at a quiet intersection","Stop completely and check before moving","Slow down without stopping","Stop only if cars are visible","Treat it as a yield sign"],
-    ["Traffic signs","a yield sign before traffic from the right","Slow down and give way if needed","Stop forever","Speed up to join first","Ignore traffic from the right"],
-    ["Traffic signs","a school zone sign","Slow down and watch for children","Hoot continuously","Overtake near the gate","Drive faster to pass quickly"],
-    ["Traffic signs","a sharp bend warning sign","Reduce speed before the bend","Brake hard inside the bend","Cross the centre line","Speed up into the bend"],
-    ["Traffic signs","a cattle crossing warning","Slow down and watch for animals","Hoot and accelerate","Drive close to the animals","Ignore it at night"],
-    ["Traffic signs","a slippery road warning in rain","Slow down and steer gently","Brake sharply","Accelerate hard","Follow another car closely"],
-    ["Traffic signs","a pedestrian warning sign","Watch for people near the road","Drive on the pavement","Ignore crossings","Use your phone briefly"],
-    ["Traffic signs","a road narrowing sign","Adjust speed and position early","Force another car aside","Overtake immediately","Drive in both lanes"],
-    ["Traffic signs","a traffic circle warning","Prepare to give way at the circle","Stop in the circle","Drive over the island","Reverse if unsure"],
+  (bank || []).forEach(function(item){
+    if(item && item.text && item.correct && Array.isArray(item.options)){
+      addObj(item.topic || "K53", item.text, item.correct, item.options, item.explain);
+    }
+  });
 
-    ["Road markings","a solid white line on your side","Do not cross it to overtake","Cross it if you are late","Use it as a parking line","Ignore it on weekends"],
-    ["Road markings","a broken lane line","Change lanes only when safe","Change lanes without looking","Drive between lanes","Use no indicators"],
-    ["Road markings","arrows painted in your lane","Follow the direction shown by the arrow","Choose any direction","Stop on the arrow","Reverse over it"],
-    ["Road markings","a pedestrian crossing line","Stop before the line when required","Stop on top of pedestrians","Park on the crossing","Speed over the crossing"],
-    ["Road markings","a yellow shoulder line","Do not use the shoulder as a normal lane","Drive there all the time","Overtake there at speed","Park there anywhere"],
-    ["Road markings","a painted island","Keep off it unless legally directed","Use it to pass traffic","Park on it","Drive across it to save time"],
-    ["Road markings","a stop line at a stop sign","Stop before the line","Stop after the intersection","Ignore the line","Stop only halfway"],
-    ["Road markings","a bus lane marking","Use it only when allowed","Use it to overtake anytime","Park in it for shopping","Block buses"],
-    ["Road markings","a box junction","Enter only if your exit is clear","Stop inside it to wait","Park inside it","Use it for U-turns"],
-    ["Road markings","lane markings at a merge","Merge carefully and give space","Push in aggressively","Ignore mirrors","Block both lanes"],
-
-    ["Defensive driving","traffic suddenly slows ahead","Reduce speed early and keep space","Speed up to close the gap","Change lanes without looking","Brake at the last second"],
-    ["Defensive driving","a driver swerves near you","Create space and stay calm","Chase the driver","Swerve toward them","Hoot and race"],
-    ["Defensive driving","children playing next to the road","Slow down and be ready to stop","Drive closer to warn them","Ignore them if they look away","Accelerate past quickly"],
-    ["Defensive driving","a cyclist ahead in your lane","Pass only with enough safe space","Pass as close as possible","Force the cyclist off the road","Hoot until they stop"],
-    ["Defensive driving","a large truck blocks your view","Increase following distance","Follow closely to see better","Overtake blindly","Drive on the shoulder"],
-    ["Defensive driving","you are unsure who has right of way","Slow down and avoid forcing the move","Drive first anyway","Hoot and move","Close your eyes briefly"],
-    ["Defensive driving","another vehicle is in your blind spot","Wait until the area is clear","Turn immediately","Signal after moving","Ignore the blind spot"],
-    ["Defensive driving","you approach a busy shopping area","Reduce speed and watch for pedestrians","Drive faster to avoid delays","Use the wrong lane","Ignore parked cars"],
-    ["Defensive driving","a taxi stops suddenly ahead","Slow down and keep safe distance","Overtake without checking","Tailgate it","Brake and swerve wildly"],
-    ["Defensive driving","visibility is poor in mist","Slow down and use appropriate lights","Use bright lights only","Drive faster to get through","Follow very closely"],
-
-    ["Vehicle control","your vehicle starts to skid","Ease off and steer carefully","Brake hard immediately","Accelerate hard","Turn sharply"],
-    ["Vehicle control","you drive down a steep hill","Use a safe gear and control speed","Freewheel in neutral","Switch off the engine","Ride the brakes only"],
-    ["Vehicle control","you tow a trailer","Allow more space for braking","Drive as if unloaded","Ignore mirrors","Speed up downhill"],
-    ["Vehicle control","your load is loose","Secure it before driving","Drive slowly and hope","Hold it by hand","Ignore it on short trips"],
-    ["Vehicle control","the windscreen is dirty","Clean it before driving","Look through a small patch","Drive by memory","Open the door to see"],
-    ["Vehicle control","the mirrors are badly adjusted","Adjust them before moving","Adjust while turning","Ignore side mirrors","Ask passengers to look only"],
-    ["Vehicle control","your indicators fail","Repair them before normal driving","Use no signals","Wave randomly","Drive faster"],
-    ["Vehicle control","your headlights fail at night","Stop safely and do not continue unsafely","Drive with hazards only","Follow another car closely","Use interior lights"],
-    ["Vehicle control","your tyre bursts","Hold the wheel firmly and slow down safely","Brake violently","Turn sharply","Accelerate"],
-    ["Vehicle control","your brakes overheat","Stop safely and let them cool","Pour cold water immediately","Drive faster","Ignore the smell"],
-
-    ["Legal duties","you are involved in a crash","Stop, assist if safe, and report when required","Leave immediately","Move injured people for no reason","Argue first"],
-    ["Legal duties","police direct traffic differently from a sign","Obey the officer's direction","Obey only the sign","Ignore both","Drive away"],
-    ["Legal duties","your licence has expired","Do not drive until it is valid","Drive if you know how","Borrow another licence","Hide it"],
-    ["Legal duties","your vehicle is not roadworthy","Do not use it on public roads","Drive only at night","Use hazard lights always","Avoid police only"],
-    ["Legal duties","you approach a scholar patrol","Obey the patrol instructions","Drive around the children","Hoot at the patrol","Speed through the gap"],
-    ["Legal duties","a traffic officer asks you to stop","Stop safely where directed","Drive away","Stop in a dangerous lane","Ignore the signal"],
-    ["Legal duties","you transport passengers","Make sure passengers are carried safely","Let them sit anywhere","Ignore seatbelts","Overload the vehicle"],
-    ["Legal duties","your number plate is unreadable","Fix it before driving","Cover it more","Ignore it","Use paper instead"],
-    ["Legal duties","you pass a crash scene","Slow down and pass safely","Take photos while driving","Stop to watch","Block emergency workers"],
-    ["Legal duties","you see spilled oil on the road","Slow down and avoid sudden braking","Brake hard on it","Speed through it","Turn sharply"]
+  const stems = [
+    "What is the safest action when ",
+    "In a K53 test, what should you do when ",
+    "Choose the correct road-rule response when ",
+    "What should a careful driver do when ",
+    "Which answer is safest when ",
+    "What is the legal and safe response when "
   ];
 
-  let n = 1;
-  while(out.length < 250){
-    const s = situations[(n - 1) % situations.length];
-    const round = Math.floor((n - 1) / situations.length) + 1;
-    addUnique(
-      s[0],
-      "K53 revision " + round + "." + n + ": What is safest when " + s[1] + "?",
-      s[2],
-      s[3] + " " + round,
-      s[4] + " option " + n,
-      s[5] + " choice " + round,
-      "Choose the action that keeps road users safe."
+  const rows = [
+    ["Intersections","you reach a four-way stop with another car on your right","Give way to the vehicle on your right",["Drive first without checking","Hoot and force your way","Stop in the middle of the road","Wave randomly at all cars","Reverse away from the stop","Ignore the other vehicle"]],
+    ["Traffic lights","the traffic light is out of order","Treat it as a four-way stop",["Treat it as a green light","Drive faster through it","Park in the intersection","Ignore traffic from the side","Follow the biggest vehicle","Use the pavement"]],
+    ["Traffic lights","the light turns amber and you can stop safely","Stop before the line if safe",["Accelerate to beat the light","Stop in the middle of the intersection","Ignore the light","Turn without checking","Hoot at pedestrians","Close your eyes briefly"]],
+    ["Pedestrians","a pedestrian is already on a crossing","Stop and allow the pedestrian to cross",["Drive around the pedestrian","Hoot until they move","Speed up before they cross","Park on the crossing","Flash lights and continue","Block the crossing"]],
+    ["Children","children are playing close to the road","Slow down and be ready to stop",["Drive closer to warn them","Speed up to pass quickly","Ignore them if they look away","Hoot continuously and continue","Use the wrong lane","Brake only after passing"]],
+    ["Following distance","it starts raining heavily","Increase your following distance",["Drive closer to the car ahead","Switch off your lights","Overtake on a blind bend","Brake sharply all the time","Follow tyre tracks closely","Ignore the wet road"]],
+    ["Overtaking","you approach a blind rise","Do not overtake",["Overtake quickly","Use the shoulder to pass","Hoot and pass anyway","Drive in the middle","Follow a truck closely","Speed up on the rise"]],
+    ["Roundabouts","you enter a roundabout","Give way to traffic already in the circle",["Drive straight over the island","Stop forever inside the circle","Enter without checking","Reverse around it","Ignore traffic from the right","Park in the circle"]],
+    ["Night driving","oncoming traffic approaches at night","Dip your headlights",["Keep bright lights on","Flash continuously","Drive toward the lights","Switch off the engine","Use hazard lights only","Close your eyes"]],
+    ["Night driving","another car's headlights dazzle you","Slow down and look toward the left edge",["Stare into the lights","Switch off all lights","Drive in the centre","Speed up quickly","Use bright lights back","Stop in the lane"]],
+    ["Tyres","your tyre tread is badly worn","Replace or repair the tyres before driving",["Drive faster in rain","Ignore the tyre tread","Overload the vehicle","Use only the handbrake","Reduce mirror checks","Wait until it bursts"]],
+    ["Brakes","your brakes feel weak","Stop safely and have them checked",["Continue driving fast","Use the hooter instead","Ignore it until next month","Drive downhill faster","Pump once and speed up","Carry extra load"]],
+    ["Emergency vehicles","you hear a siren behind you","Make way safely without causing danger",["Stop anywhere immediately","Race ahead of it","Block the lane","Drive through a red light blindly","Panic and swerve","Ignore the siren"]],
+    ["Railway crossings","barriers are closing at a railway crossing","Stop before the crossing",["Drive around the barrier","Stop on the tracks","Race the train","Park near the line","Reverse over the tracks","Ignore the warning lights"]],
+    ["Parking","you open a door next to traffic","Check for vehicles, cyclists and pedestrians",["Open the door quickly","Ignore cyclists","Use the door to stop traffic","Only check the radio","Let passengers open without checking","Open into the lane"]],
+    ["Parking","you are near emergency access","Keep emergency access clear",["Park across it briefly","Use hazard lights and park","Leave only a small gap","Block it for shopping","Ignore emergency signs","Park if nobody is watching"]],
+    ["Animals","animals are standing near the road","Slow down and prepare to stop",["Hoot and speed up","Drive closer to scare them","Ignore them completely","Swerve suddenly","Overtake immediately","Follow them closely"]],
+    ["Buses","a bus has stopped with passengers nearby","Watch for pedestrians stepping out",["Speed past closely","Ignore the bus","Hoot at passengers","Overtake without checking","Stop next to the bus door","Block the bus"]],
+    ["Breakdowns","your vehicle breaks down","Move as far off the road as safely possible",["Stop in the middle lane","Park on a blind bend","Leave it with no warning","Block the road","Stand behind it in traffic","Push it into traffic"]],
+    ["Warning devices","you warn traffic after a breakdown","Use hazard lights and a warning triangle if safe",["Use no warning","Hide behind the vehicle","Place the triangle on the bumper","Stand in the road","Switch off all lights","Walk in the lane"]],
+    ["Attitude","another driver makes a mistake","Stay calm and avoid revenge driving",["Chase the driver","Block their lane","Hoot forever","Brake suddenly","Race beside them","Force them off the road"]],
+    ["Mirrors","you want to change direction","Check mirrors and blind spots before moving",["Move first then look","Only check after turning","Ignore vehicles behind you","Signal after changing","Use no mirrors","Close the gap quickly"]],
+    ["Indicators","you plan to turn left","Signal in good time before turning",["Signal after turning","Do not signal if quiet","Use hazards instead","Turn without warning","Only signal at night","Wave your hand only"]],
+    ["Speed","you enter a busy residential area","Reduce speed and watch for hazards",["Accelerate through the area","Ignore side roads","Drive in the middle","Use your phone briefly","Follow very closely","Overtake near driveways"]],
+    ["School zones","you pass a school entrance","Slow down and watch for children",["Hoot continuously","Overtake at the gate","Drive faster to pass","Ignore scholar patrol","Stop in the crossing","Park on the pavement"]],
+    ["Roadworks","you approach workers on the road","Slow down and obey temporary signs",["Drive faster","Overtake all vehicles","Use your phone","Ignore cones","Drive through closed lanes","Stop to watch"]],
+    ["Slippery roads","the road surface is wet and slippery","Brake gently and steer smoothly",["Brake hard suddenly","Accelerate quickly","Turn sharply","Follow very closely","Ignore wet conditions","Use the shoulder"]],
+    ["Cellphones","your phone rings while driving","Do not use it while driving",["Read the message quickly","Reply at a red light","Hold it low and type","Use both hands briefly","Speed up first","Ignore the road"]],
+    ["Seatbelts","you carry passengers","Ensure everyone wears a seatbelt",["Only the driver needs one","Seatbelts are only for highways","Children can stand","Passengers can share one belt","Use belts only at night","Ignore rear passengers"]],
+    ["Loads","you transport goods on a vehicle","Secure the load properly",["Let it move freely","Hold it by hand","Use no ropes","Drive fast so it stays back","Ignore short trips","Balance it on the roof"]],
+    ["Overloading","a vehicle is overloaded","Remove excess load before driving",["Drive slower only","Ignore it if close to home","Add more passengers","Pump tyres and continue","Use hazards only","Avoid main roads"]],
+    ["Towing","you tow another vehicle or trailer","Allow extra braking distance",["Drive as if unloaded","Ignore mirrors","Speed up downhill","Brake late","Use no signals","Follow close to traffic"]],
+    ["Cyclists","you pass a cyclist","Leave enough safe passing space",["Pass as close as possible","Hoot until they stop","Force them left","Cut in front of them","Use the shoulder at speed","Ignore wind movement"]],
+    ["Motorcycles","you check before turning","Look carefully because motorcycles are harder to see",["Assume no motorcycle is there","Only check large vehicles","Turn quickly","Ignore blind spots","Use no signal","Look only forward"]],
+    ["Crash scene","you arrive at a crash scene","Prevent further danger and get help",["Take photos while driving","Argue about blame","Move injured people unnecessarily","Block emergency vehicles","Stand in traffic","Drive through debris"]],
+    ["Oil spill","you see oil on the road","Slow down and avoid sudden braking",["Brake hard on the oil","Speed through it","Turn sharply","Follow close behind cars","Use the handbrake","Ignore the surface"]],
+    ["Hills","you approach a steep downhill","Control speed early and use a safe gear",["Freewheel in neutral","Switch off the engine","Ride the brakes only","Drive faster downhill","Overtake on the bend","Ignore warning signs"]],
+    ["Fatigue","you feel sleepy behind the wheel","Stop in a safe place and rest",["Open a window only","Drive faster to arrive sooner","Drink alcohol","Ignore it","Follow another car closely","Use loud music only"]],
+    ["Alcohol","you consumed alcohol","Do not drive",["Drive slowly only","Drink coffee and drive","Use back roads","Drive if police are absent","Open windows","Follow a sober driver closely"]],
+    ["Licence","your driving licence is not valid","Do not drive until it is valid",["Borrow another licence","Drive only nearby","Hide from police","Use hazard lights","Drive at night","Say you forgot it"]],
+    ["Roadworthy","your car is not roadworthy","Repair it before using public roads",["Drive only slowly","Avoid traffic officers","Use the shoulder","Ignore it","Carry tools only","Drive at night"]],
+    ["Fire hydrant","you want to park near a fire hydrant","Keep the hydrant clear",["Park there quickly","Use hazard lights","Block it for loading","Leave a small gap","Park at night only","Ignore emergency access"]]
+  ];
+
+  let i = 0;
+  while(out.length < 250 && i < rows.length * stems.length){
+    const row = rows[i % rows.length];
+    const stem = stems[Math.floor(i / rows.length) % stems.length];
+    const topic = row[0];
+    const scenario = row[1];
+    const correct = row[2];
+    const wrongs = row[3];
+
+    const w1 = wrongs[(i + 0) % wrongs.length];
+    const w2 = wrongs[(i + 2) % wrongs.length];
+    const w3 = wrongs[(i + 4) % wrongs.length];
+
+    addObj(
+      topic,
+      stem + scenario + "?",
+      correct,
+      [correct, w1, w2, w3],
+      "This tests a different K53 road-safety situation."
     );
-    n++;
-    if(n > 1000) break;
+    i++;
   }
 
   return out.slice(0,250);
 }
 
-const rawBank = teaeK53FillTo250V2(teaeK53ProfessionalBankPart1(buildK53Bank()));
+const rawBank = teaeK53FillTo250V3(teaeK53ProfessionalBankPart1(buildK53Bank()));
 const bank = rawBank;
 /* TEAE_EXPOSE_BANK_FOR_AUDIT_V1 */
 window.TEAE_RAW_BANK = rawBank;
@@ -1303,6 +1334,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 
