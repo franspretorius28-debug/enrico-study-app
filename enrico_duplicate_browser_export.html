@@ -1,0 +1,177 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Enrico Real Duplicate Browser Export</title>
+<style>
+body{font-family:Arial;background:#050505;color:#fff;margin:0;padding:28px}
+h1{font-size:32px}
+.card{background:#1a1a1a;border:1px solid #333;border-radius:14px;padding:16px;margin:16px 0}
+.bad{border-color:#ef4444}
+.good{border-color:#22c55e}
+pre{white-space:pre-wrap;background:#111827;border:1px solid #374151;border-radius:12px;padding:16px;color:#e5e7eb}
+button{background:#b51fa5;color:white;border:0;border-radius:10px;padding:12px 16px;font-weight:900;cursor:pointer}
+iframe{display:none}
+.err{color:#ef4444;font-weight:900}
+.ok{color:#22c55e;font-weight:900}
+</style>
+</head>
+<body>
+<h1>Enrico Real Duplicate Browser Export</h1>
+<p>Hierdie lees die vraagbank soos die browser dit bou. Copy die report onderaan en stuur dit vir ChatGPT.</p>
+<button onclick="copyReport()">Copy Full Report</button>
+<div id="results">Loading...</div>
+<pre id="reportText"></pre>
+
+<script>
+const files = [
+  ["K53", "enrico_k53_english_quiz.html?title=K53%20Audit&di=0&ti=0&v=" + Date.now()],
+  ["RTT / CAT", "enrico_rtt_cat_quiz.html?title=RTT%20Audit&di=0&ti=0&v=" + Date.now()],
+  ["Landbou", "enrico_landbou_quiz.html?title=Landbou%20Audit&di=0&ti=0&v=" + Date.now()],
+  ["Wisk Geletterdheid", "enrico_wisk_geletterdheid_quiz.html?title=Wisk%20Audit&di=0&ti=0&v=" + Date.now()],
+  ["Afrikaans", "enrico_afrikaans_quiz.html?title=Afrikaans%20Audit&di=0&ti=0&v=" + Date.now()],
+  ["English FAL", "enrico_english_quiz.html?title=English%20Audit&di=0&ti=0&v=" + Date.now()],
+  ["Besigheidstudies", "enrico_besigheid_quiz.html?title=Besigheid%20Audit&di=0&ti=0&v=" + Date.now()]
+];
+
+function norm(v){
+  return String(v || "")
+    .toLowerCase()
+    .replace(/[’']/g,"")
+    .replace(/[^a-z0-9áéíóúêëïöüàèìòùâîôûäëïöü\s\/\-]/gi," ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+function optKey(q){
+  return (q.options || []).map(norm).filter(Boolean).sort().join(" | ");
+}
+
+function loadOne(name, src){
+  return new Promise(resolve => {
+    const frame = document.createElement("iframe");
+    frame.src = src;
+    document.body.appendChild(frame);
+
+    frame.onload = () => {
+      setTimeout(() => {
+        try{
+          const w = frame.contentWindow;
+          const rawBank = w.TEAE_RAW_BANK || w.TEAE_BANK || [];
+          resolve({name, rawBank});
+        }catch(e){
+          resolve({name, error:e.message, rawBank:[]});
+        }
+        frame.remove();
+      }, 900);
+    };
+  });
+}
+
+function analyse(name, bank){
+  const textMap = new Map();
+  const optMap = new Map();
+  const badInside = [];
+
+  bank.forEach((q, idx) => {
+    const text = q.text || q.q || "";
+    const key = norm(text);
+    const ok = optKey(q);
+
+    if(!textMap.has(key)) textMap.set(key, []);
+    textMap.get(key).push({idx:idx+1, q});
+
+    if(!optMap.has(ok)) optMap.set(ok, []);
+    optMap.get(ok).push({idx:idx+1, q});
+
+    const opts = q.options || [];
+    const uniqueOpts = new Set(opts.map(norm).filter(Boolean));
+    if(opts.length >= 4 && uniqueOpts.size < 4){
+      badInside.push({idx:idx+1, q});
+    }
+  });
+
+  const duplicateTexts = Array.from(textMap.entries()).filter(x => x[1].length > 1);
+  const duplicateOptions = Array.from(optMap.entries()).filter(x => x[1].length > 1 && x[0].length > 10);
+
+  return {name, bank, duplicateTexts, duplicateOptions, badInside};
+}
+
+async function run(){
+  const loaded = [];
+  for(const [name,src] of files){
+    loaded.push(await loadOne(name, src));
+  }
+
+  let report = "";
+  let html = "";
+
+  loaded.forEach(item => {
+    report += "============================================================\n";
+    report += "SUBJECT: " + item.name + "\n";
+    report += "============================================================\n";
+
+    if(item.error){
+      report += "ERROR: " + item.error + "\n\n";
+      html += `<div class="card bad"><h2>${item.name}</h2><p class="err">${item.error}</p></div>`;
+      return;
+    }
+
+    const a = analyse(item.name, item.rawBank);
+
+    report += "Raw questions: " + a.bank.length + "\n";
+    report += "Duplicate question groups: " + a.duplicateTexts.length + "\n";
+    report += "Duplicate option-set groups: " + a.duplicateOptions.length + "\n";
+    report += "Duplicate options inside same question: " + a.badInside.length + "\n\n";
+
+    report += "---- DUPLICATE QUESTIONS ----\n";
+    a.duplicateTexts.slice(0,80).forEach(([key, rows]) => {
+      report += "\nDUPLICATE x" + rows.length + ": " + key + "\n";
+      rows.forEach(r => {
+        report += "  #" + r.idx + " Topic: " + (r.q.topic || "") + "\n";
+        report += "  Q: " + (r.q.text || r.q.q || "") + "\n";
+        report += "  Correct: " + (r.q.correct || "") + "\n";
+        report += "  Options: " + ((r.q.options || []).join(" | ")) + "\n";
+      });
+    });
+
+    report += "\n---- DUPLICATE OPTION SETS ----\n";
+    a.duplicateOptions.slice(0,50).forEach(([key, rows]) => {
+      report += "\nOPTION SET x" + rows.length + ": " + key + "\n";
+      rows.slice(0,8).forEach(r => {
+        report += "  #" + r.idx + " Q: " + (r.q.text || r.q.q || "") + "\n";
+        report += "  Correct: " + (r.q.correct || "") + "\n";
+      });
+    });
+
+    report += "\n---- BAD OPTIONS INSIDE SAME QUESTION ----\n";
+    a.badInside.forEach(r => {
+      report += "  #" + r.idx + " Q: " + (r.q.text || r.q.q || "") + "\n";
+      report += "  Options: " + ((r.q.options || []).join(" | ")) + "\n";
+    });
+
+    report += "\n\n";
+
+    const ok = a.duplicateTexts.length === 0 && a.badInside.length === 0 && a.bank.length >= 200;
+    html += `<div class="card ${ok ? 'good' : 'bad'}">
+      <h2>${item.name} ${ok ? '<span class="ok">OK</span>' : '<span class="err">NEEDS WORK</span>'}</h2>
+      <p>Raw: ${a.bank.length}</p>
+      <p>Duplicate question groups: ${a.duplicateTexts.length}</p>
+      <p>Duplicate option-set groups: ${a.duplicateOptions.length}</p>
+      <p>Bad options inside same question: ${a.badInside.length}</p>
+    </div>`;
+  });
+
+  document.getElementById("results").innerHTML = html;
+  document.getElementById("reportText").textContent = report;
+}
+
+function copyReport(){
+  const txt = document.getElementById("reportText").textContent;
+  navigator.clipboard.writeText(txt).then(() => alert("Report copied."));
+}
+
+run();
+</script>
+</body>
+</html>
