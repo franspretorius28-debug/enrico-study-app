@@ -593,6 +593,27 @@ button.gray,
 .gray{
   background:#374151 !important;
 }
+/* TEAE_GREEN_DONE_STATUS_V1 */
+
+/* Maak Klaar en Toets klaar groen */
+.doneText,
+.doneText *,
+span.doneText,
+div.doneText,
+.teaeDoneStatus,
+.teaeDoneStatus *{
+  color:#22c55e !important;
+  font-weight:900 !important;
+}
+
+/* Force enige status teks wat klaar sê groen */
+.card span,
+.card div,
+.card p{
+  text-shadow:none !important;
+}
+
+/* Hierdie JS onder merk status-lyne groen sonder om die app te hang */
 </style>
 </head>
 <body>
@@ -1108,6 +1129,27 @@ button.gray,
 .gray{
   background:#374151 !important;
 }
+/* TEAE_GREEN_DONE_STATUS_V1 */
+
+/* Maak Klaar en Toets klaar groen */
+.doneText,
+.doneText *,
+span.doneText,
+div.doneText,
+.teaeDoneStatus,
+.teaeDoneStatus *{
+  color:#22c55e !important;
+  font-weight:900 !important;
+}
+
+/* Force enige status teks wat klaar sê groen */
+.card span,
+.card div,
+.card p{
+  text-shadow:none !important;
+}
+
+/* Hierdie JS onder merk status-lyne groen sonder om die app te hang */
 </style>
 
 <script>
@@ -1155,8 +1197,32 @@ document.addEventListener("DOMContentLoaded", teaeFixExamOrderVisibility);
 setTimeout(teaeFixExamOrderVisibility, 300);
 setTimeout(teaeFixExamOrderVisibility, 1000);
 </script>
+<script>
+/* TEAE_GREEN_DONE_STATUS_SCRIPT_V1 */
+function teaeGreenDoneStatus(){
+  document.querySelectorAll("div, span, p, b").forEach(function(el){
+    const t = (el.textContent || "").trim();
+
+    if (
+      t === "Klaar ✓" ||
+      t === "Toets klaar ✓" ||
+      t === "Klaar" ||
+      t === "Toets klaar"
+    ){
+      el.style.setProperty("color", "#22c55e", "important");
+      el.style.setProperty("font-weight", "900", "important");
+      el.classList.add("teaeDoneStatus");
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", teaeGreenDoneStatus);
+setTimeout(teaeGreenDoneStatus, 300);
+setTimeout(teaeGreenDoneStatus, 1000);
+</script>
 </body>
 </html>
+
 
 
 
