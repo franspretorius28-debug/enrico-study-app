@@ -614,6 +614,18 @@ div.doneText,
 }
 
 /* Hierdie JS onder merk status-lyne groen sonder om die app te hang */
+/* TEAE_RED_NOT_DONE_STATUS_V1 */
+
+/* Maak Nog nie klaar nie rooi */
+.notDoneText,
+.notDoneText *,
+.pending,
+.pending *,
+.teaeNotDoneStatus,
+.teaeNotDoneStatus *{
+  color:#ef4444 !important;
+  font-weight:900 !important;
+}
 </style>
 </head>
 <body>
@@ -1150,6 +1162,18 @@ div.doneText,
 }
 
 /* Hierdie JS onder merk status-lyne groen sonder om die app te hang */
+/* TEAE_RED_NOT_DONE_STATUS_V1 */
+
+/* Maak Nog nie klaar nie rooi */
+.notDoneText,
+.notDoneText *,
+.pending,
+.pending *,
+.teaeNotDoneStatus,
+.teaeNotDoneStatus *{
+  color:#ef4444 !important;
+  font-weight:900 !important;
+}
 </style>
 
 <script>
@@ -1220,8 +1244,32 @@ document.addEventListener("DOMContentLoaded", teaeGreenDoneStatus);
 setTimeout(teaeGreenDoneStatus, 300);
 setTimeout(teaeGreenDoneStatus, 1000);
 </script>
+<script>
+/* TEAE_RED_NOT_DONE_STATUS_SCRIPT_V1 */
+function teaeRedNotDoneStatus(){
+  document.querySelectorAll("div, span, p, b").forEach(function(el){
+    const t = (el.textContent || "").trim();
+
+    if (
+      t === "Nog nie klaar nie" ||
+      t === "Nie klaar nie" ||
+      t === "Not done" ||
+      t === "Incomplete"
+    ){
+      el.style.setProperty("color", "#ef4444", "important");
+      el.style.setProperty("font-weight", "900", "important");
+      el.classList.add("teaeNotDoneStatus");
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", teaeRedNotDoneStatus);
+setTimeout(teaeRedNotDoneStatus, 300);
+setTimeout(teaeRedNotDoneStatus, 1000);
+</script>
 </body>
 </html>
+
 
 
 
