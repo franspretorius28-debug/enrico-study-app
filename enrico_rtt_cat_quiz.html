@@ -531,7 +531,7 @@ function finishQuiz(){
     }
 
     html += `<div class="result"><span class="ok">🎉 Alles eerste keer reg!</span></div>`;
-    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
+    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Teacher - submit progress</button>`;
   }
 
   document.getElementById("finalResult").innerHTML = html;
@@ -649,8 +649,8 @@ function finishWrongRetry(){
   const html = `<h2>Wrong Retry klaar 🎉</h2>
     <p style="font-size:22px;font-weight:900">Al ${retryOriginalCount} verkeerde vrae is nou reggemaak.</p>
     <p>Mooi Enrico — nou tel hierdie sessie as klaar.</p>
-    <div class="result"><span class="ok">Stuur nou die WhatsApp update na Dad.</span></div>
-    <button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
+    <div class="result"><span class="ok">Stuur nou die WhatsApp progress update na Teacher.</span></div>
+    <button class="green" onclick="sendWhatsapp()">WhatsApp Teacher - submit progress</button>`;
 
   document.getElementById("finalResult").innerHTML = html;
   document.getElementById("finalResult").style.display = "block";
@@ -671,6 +671,7 @@ function sendWhatsapp(){
 
   let msg = `Enrico RTT/CAT update:
 Sessie: ${sessionTitle}
+Teacher must submit progress to Head Office.
 Vraagbank: 250 RTT/CAT vrae
 Punt: ${25 - originalWrong}/25
 Oorspronklik verkeerd: ${originalWrong}`;
@@ -817,5 +818,6 @@ render();
 </script>
 </body>
 </html>
+
 
 

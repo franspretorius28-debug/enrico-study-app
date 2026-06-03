@@ -595,7 +595,7 @@ function finishQuiz(){
     }
 
     html += `<div class="result"><span class="ok">🎉 Alles eerste keer Correct!</span></div>`;
-    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Dad - send update</button>`;
+    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Teacher - submit progress</button>`;
   }
 
   document.getElementById("finalResult").innerHTML = html;
@@ -713,8 +713,8 @@ function finishWrongRetry(){
   const html = `<h2>Wrong Retry klaar 🎉</h2>
     <p style="font-size:22px;font-weight:900">All ${retryOriginalCount} wrong questions are now fixed.</p>
     <p>Good work Enrico — this session now counts as complete.</p>
-    <div class="result"><span class="ok">Send the WhatsApp update to Dad now.</span></div>
-    <button class="green" onclick="sendWhatsapp()">WhatsApp Dad - send update</button>`;
+    <div class="result"><span class="ok">Send the WhatsApp progress update to Teacher now.</span></div>
+    <button class="green" onclick="sendWhatsapp()">WhatsApp Teacher - submit progress</button>`;
 
   document.getElementById("finalResult").innerHTML = html;
   document.getElementById("finalResult").style.display = "block";
@@ -733,8 +733,9 @@ nextQuestion = function(){
 function sendWhatsapp(){
   const originalWrong = retryOriginalCount > 0 ? retryOriginalCount : (25 - score);
 
-  let msg = `Enrico English FAL update:
+  let msg = `Enrico English FAL progress update:
 Sessie: ${sessionTitle}
+Teacher must submit progress to Head Office.
 Question bank: 250 English FAL questions
 Punt: ${25 - originalWrong}/25
 Oorspronklik verkeerd: ${originalWrong}`;
@@ -881,6 +882,7 @@ render();
 </script>
 </body>
 </html>
+
 
 
 

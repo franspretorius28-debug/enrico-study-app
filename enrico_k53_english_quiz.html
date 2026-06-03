@@ -549,7 +549,7 @@ function finishQuiz(){
     }
 
     html += `<div class="result"><span class="ok">🎉 All correct first time!</span></div>`;
-    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Dad - send update</button>`;
+    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Teacher - submit progress</button>`;
   }
 
   document.getElementById("finalResult").innerHTML = html;
@@ -667,8 +667,8 @@ function finishWrongRetry(){
   const html = `<h2>Wrong Retry complete 🎉</h2>
     <p style="font-size:22px;font-weight:900">All ${retryOriginalCount} wrong questions are now fixed.</p>
     <p>Good work Enrico — now this session counts as complete.</p>
-    <div class="result"><span class="ok">Send the WhatsApp update to Dad now.</span></div>
-    <button class="green" onclick="sendWhatsapp()">WhatsApp Dad - send update</button>`;
+    <div class="result"><span class="ok">Send the WhatsApp progress update to Teacher now.</span></div>
+    <button class="green" onclick="sendWhatsapp()">WhatsApp Teacher - submit progress</button>`;
 
   document.getElementById("finalResult").innerHTML = html;
   document.getElementById("finalResult").style.display = "block";
@@ -687,8 +687,9 @@ nextQuestion = function(){
 function sendWhatsapp(){
   const originalWrong = retryOriginalCount > 0 ? retryOriginalCount : (25 - score);
 
-  let msg = `Enrico K53 update:
+  let msg = `Enrico K53 progress update:
 Session: ${sessionTitle}
+Teacher must submit progress to Head Office.
 Question bank: 250 English K53 questions
 Score: ${25 - originalWrong}/25
 Original wrong: ${originalWrong}`;
@@ -835,5 +836,6 @@ render();
 </script>
 </body>
 </html>
+
 
 
