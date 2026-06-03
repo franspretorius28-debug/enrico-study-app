@@ -85,7 +85,7 @@ function q(topic, text, correct, wrongs, explain){
 
 function subjectFromTitle(title){
   const t = title.toLowerCase();
-  if(t.includes("k53")) return "K53";
+  if(t.includes("k53")) return "K53 - English";
   if(t.includes("rtt")) return "RTT / CAT";
   if(t.includes("landbou")) return "Landbouwetenskappe";
   if(t.includes("wisk")) return "Wiskundige Geletterdheid";
@@ -98,18 +98,33 @@ function subjectFromTitle(title){
 function buildBank(subject){
   let b = [];
 
-  if(subject === "K53"){
+  if(subject === "K53 - English"){
     b = [
-      q("K53","Wat beteken ’n stopteken?", "Jy moet heeltemal stop", ["Jy mag stadig ry","Jy mag nie stop nie","Net vragmotors stop"], "By ’n stopteken moet jy heeltemal stop."),
-      q("K53","Wat beteken ’n driehoekige rooi waarskuwingsteken?", "Gevaar of waarskuwing vorentoe", ["Parkering toegelaat","Snelweg begin","Jy moet stop"], "Waarskuwingstekens waarsku jou van gevaar."),
-      q("K53","Wanneer moet jy jou veiligheidsgordel dra?", "Altyd wanneer jy ry", ["Net op snelweë","Net snags","Net as die polisie naby is"], "Veiligheidsgordels moet gedra word."),
-      q("K53","Wat moet jy doen by ’n rooi verkeerslig?", "Stop", ["Ry vinniger","Toeter en ry","Draai altyd links"], "Rooi beteken stop."),
-      q("K53","Wat beteken ’n spoedgrensbord?", "Maksimum spoed wat jy mag ry", ["Minimum spoed","Pad is toe","Voetgangers alleen"], "Spoedgrens is die maksimum spoed."),
-      q("K53","Wat is defensiewe bestuur?", "Om vooruit te dink en gevare te voorkom", ["Om vinnig te ry","Om naby ander karre te ry","Om ander bestuurders te jaag"], "Defensiewe bestuur help ongelukke voorkom."),
-      q("K53","Wanneer moet jy flikker gebruik?", "Voor jy draai of baan verander", ["Net as jy wil stop","Net in reën","Nooit in dorpe nie"], "Flikker wys ander bestuurders jou plan."),
-      q("K53","Wat beteken ’n geel verkeerslig?", "Maak gereed om te stop as dit veilig is", ["Ry altyd vinniger","Stop in die middel van die pad","Draai onmiddellik"], "Geel waarsku dat rooi kom."),
-      q("K53","Wat moet jy doen as ’n voetganger by ’n voetoorgang is?", "Gee voorkeur en stop indien nodig", ["Ry om hom","Toeter en gaan","Ignoreer hom"], "Voetgangers by oorgange kry voorkeur."),
-      q("K53","Wat beteken ’n eenrigtingbord?", "Verkeer mag net in een rigting beweeg", ["Jy mag omdraai","Pad is toe","Net busse mag ry"], "Eenrigting beteken net een rigting.")
+      q("K53","What does a STOP sign mean?", "You must come to a complete stop", ["You may drive slowly without stopping","Only trucks must stop","You may speed up"], "At a STOP sign you must come to a complete stop."),
+      q("K53","What does a red triangular road sign normally mean?", "Warning or danger ahead", ["Parking allowed","You must turn left","No fuel available"], "Triangular signs normally warn you about possible danger ahead."),
+      q("K53","When must you wear a seat belt?", "Always when driving or riding in a vehicle", ["Only on highways","Only at night","Only when police are nearby"], "Seat belts must be worn for safety."),
+      q("K53","What must you do at a red traffic light?", "Stop", ["Speed up","Drive through carefully","Only hoot and continue"], "A red traffic light means stop."),
+      q("K53","What does a speed limit sign show?", "The maximum speed allowed", ["The minimum speed only","The road width","The fuel price"], "A speed limit sign shows the maximum legal speed."),
+      q("K53","What is defensive driving?", "Driving carefully and anticipating danger", ["Driving as fast as possible","Driving close behind another vehicle","Ignoring other road users"], "Defensive driving helps prevent accidents."),
+      q("K53","When should you use your indicators?", "Before turning or changing lanes", ["Only after turning","Only in rain","Never in town"], "Indicators warn other road users what you plan to do."),
+      q("K53","What does an amber/yellow traffic light mean?", "Prepare to stop if it is safe", ["Speed up immediately","Stop in the middle of the intersection","Ignore it"], "Amber means the light is about to turn red."),
+      q("K53","What must you do when a pedestrian is crossing at a pedestrian crossing?", "Give way and stop if necessary", ["Drive around the pedestrian","Hoot and continue","Ignore the pedestrian"], "Pedestrians at crossings must be given right of way."),
+      q("K53","What does a one-way sign mean?", "Traffic may only move in one direction", ["You may make a U-turn anywhere","The road is closed","Only buses may use the road"], "A one-way sign means traffic flows in one direction only."),
+      q("K53","What must you check before changing lanes?", "Mirrors, blind spot and indicators", ["Only the radio","Only your speedometer","Only the fuel gauge"], "Before changing lanes, check mirrors, blind spot and signal."),
+      q("K53","What is a blind spot?", "An area you cannot see in your mirrors", ["A broken headlight","A road sign","A traffic fine"], "You must check blind spots by looking over your shoulder."),
+      q("K53","What should you do if an emergency vehicle approaches with siren on?", "Move out of the way safely", ["Race in front of it","Stop suddenly in the lane","Ignore it"], "Emergency vehicles must be given right of way safely."),
+      q("K53","What does a solid white line mean?", "You may not cross it unless allowed and safe", ["You must overtake there","It is only for pedestrians","It means parking only"], "Solid lines usually restrict crossing or overtaking."),
+      q("K53","When should headlights be used?", "When visibility is poor or at night", ["Only when parked","Only at noon","Never in rain"], "Headlights help you see and be seen."),
+      q("K53","What should you do before moving off?", "Check mirrors, blind spots and signal", ["Just accelerate","Open the door","Switch off the engine"], "Safe observation is required before moving off."),
+      q("K53","What does following distance help prevent?", "Rear-end collisions", ["Flat tyres","Running out of fuel","Engine noise"], "A safe following distance gives you time to stop."),
+      q("K53","What should you do at a yield sign?", "Slow down and give way if necessary", ["Always stop for 10 seconds","Speed up","Ignore other traffic"], "Yield means give way when needed."),
+      q("K53","What is the correct action at a railway crossing when a train is coming?", "Stop and wait until it is safe", ["Drive across quickly","Stop on the tracks","Reverse into traffic"], "Never cross when a train is approaching."),
+      q("K53","What must you do if your vehicle starts skidding?", "Steer gently and avoid harsh braking", ["Brake hard immediately","Close your eyes","Accelerate sharply"], "Smooth control helps recover from a skid."),
+      q("K53","What does a no-entry sign mean?", "You may not enter that road", ["Parking allowed","Only slow vehicles","Road is open"], "No-entry means vehicles may not enter."),
+      q("K53","What does a round blue sign usually give?", "An instruction that must be obeyed", ["A warning only","A shop advert","A fuel price"], "Mandatory signs tell road users what they must do."),
+      q("K53","What should you do when approaching a school zone?", "Slow down and watch for children", ["Speed up","Hoot continuously","Ignore pedestrians"], "School zones require extra care."),
+      q("K53","What does roadworthiness mean?", "The vehicle is safe and legally fit to drive", ["The car is expensive","The car is new","The car has loud music"], "A roadworthy vehicle is safe to use on public roads."),
+      q("K53","What should you do before overtaking?", "Make sure it is legal, clear and safe", ["Overtake on blind rises","Overtake without looking","Force other cars to brake"], "Overtaking must only happen when legal and safe.")
     ];
   }
 
@@ -358,3 +373,4 @@ render();
 </script>
 </body>
 </html>
+
