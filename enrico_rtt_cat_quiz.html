@@ -1,0 +1,447 @@
+﻿<!DOCTYPE html>
+<html lang="af" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enrico RTT / CAT</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#eef3ff;color:#0f172a}
+header{background:#0f172a;color:white;text-align:center;padding:28px 12px}
+header h1{margin:0;font-size:34px}
+.wrap{max-width:950px;margin:24px auto;padding:12px}
+.card{background:white;border-radius:18px;padding:22px;box-shadow:0 12px 30px rgba(15,23,42,.14)}
+.banner{border:2px solid #f97316;background:#fff7ed;border-radius:16px;padding:14px;margin-bottom:16px}
+.topic{font-weight:900;color:#f97316;margin-bottom:8px}
+.question{font-size:25px;font-weight:900;margin:14px 0}
+.option{display:block;width:100%;text-align:left;background:#f8fafc;color:#0f172a;border:1px solid #cbd5e1;border-radius:12px;padding:13px;margin:8px 0;font-size:17px;font-weight:800;cursor:pointer}
+.option:hover{background:#ffedd5}
+.option.selected{background:#fed7aa;border-color:#f97316}
+button,a.btn{display:inline-block;text-decoration:none;padding:12px 15px;border:0;border-radius:12px;background:#2563eb;color:white;font-weight:900;font-size:16px;cursor:pointer;margin:6px 4px}
+.green{background:#16a34a!important}.gray{background:#475569!important}.orange{background:#f97316!important}
+.ok{color:#16a34a;font-weight:900;font-size:19px}.bad{color:#dc2626;font-weight:900;font-size:19px}
+.small{color:#64748b;font-size:15px}.result{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin-top:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Enrico RTT / CAT</h1>
+  <p>250-vraag bank | 25 vrae per sessie | Verkeerde vrae moet reggemaak word</p>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <div class="banner">
+      <div style="font-size:23px;font-weight:900" id="titleBox"></div>
+      <div class="small">RTT / CAT | Kwartaal 2 | 25 vrae</div>
+    </div>
+
+    <div class="result" id="progress"></div>
+
+    <div id="quizBox">
+      <div class="topic" id="topic"></div>
+      <div class="question" id="question"></div>
+      <div id="options"></div>
+
+      <button class="green" onclick="markAnswer()">Merk antwoord</button>
+      <button onclick="nextQuestion()">Volgende vraag</button>
+
+      <div id="feedback" style="margin-top:14px"></div>
+      <div class="small" id="explain" style="margin-top:8px"></div>
+    </div>
+
+    <div id="finalResult" class="result" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+const DAD = "27642203726";
+const params = new URLSearchParams(location.search);
+const sessionTitle = params.get("title") || "RTT Sessie";
+const di = params.get("di");
+const ti = params.get("ti");
+const subject = "RTT / CAT";
+
+let current = 0;
+let score = 0;
+let selected = null;
+let marked = false;
+let wrongList = [];
+let retryMode = false;
+let retryQuestions = [];
+let retryOriginalCount = 0;
+let retryCorrectCount = 0;
+
+function shuffle(arr){
+  arr = arr.slice();
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function q(topic, text, correct, wrongs, explain){
+  return {topic,text,correct,options:shuffle([correct,...wrongs].slice(0,4)),explain};
+}
+
+function buildRTTBank(){
+  const b = [];
+
+  const fixed = [
+    ["Hardeware","Wat is hardeware?","Fisiese dele van n rekenaar",["Programme op die rekenaar","n Internet wagwoord","n Lêer se naam"],"Hardeware is dele wat jy kan sien en aanraak."],
+    ["Sagteware","Wat is sagteware?","Programme wat instruksies vir die rekenaar gee",["Die skerm","Die muis","Die sleutelbord"],"Sagteware is programme soos Windows, Word en Excel."],
+    ["Bedryfstelsel","Wat doen n bedryfstelsel?","Dit bestuur die rekenaar se hulpbronne",["Dit is net n speletjie","Dit vervang die muis","Dit druk papier sonder n drukker"],"Windows is n voorbeeld van n bedryfstelsel."],
+    ["Netwerke","Wat is n netwerk?","Rekenaars/toestelle wat gekoppel is om data te deel",["n Enkele los muis","n Papierlêer","n Skerm se helderheid"],"n Netwerk laat toestelle kommunikeer."],
+    ["Internet","Wat is die internet?","n Wêreldwye netwerk van gekoppelde rekenaars",["Net Microsoft Word","Net n plaaslike gids","Net n drukker"],"Die internet verbind mense en dienste wêreldwyd."],
+    ["E-pos","Waarvoor word e-pos gebruik?","Om elektroniese boodskappe te stuur en ontvang",["Om die skerm skoon te maak","Om RAM te vergroot","Om die rekenaar af te koel"],"E-pos is elektroniese kommunikasie."],
+    ["Woordverwerking","Watter program gebruik jy vir tikwerk en dokumente?","Word processor",["Spreadsheet","Database","Antivirus"],"n Word processor word vir dokumente gebruik."],
+    ["Sigblad","Waarvoor gebruik mens n spreadsheet?","Berekeninge, tabelle en grafieke",["Net prente teken","Net virusse stop","Net klank speel"],"Spreadsheets soos Excel werk met selle en formules."],
+    ["Formules","Watter simbool begin gewoonlik n formule in Excel?","=",["#","@","&"],"Excel formules begin gewoonlik met =."],
+    ["SUM","Wat doen SUM in n spreadsheet?","Tel waardes bymekaar",["Maak teks vet","Verwyder virusse","Stuur e-pos"],"SUM tel getalle op."],
+    ["Lêerbestuur","Wat is n folder?","n Plek waar lêers georganiseer word",["n Virus","n Wagwoord","n Webblad"],"Folders help om lêers te organiseer."],
+    ["Backup","Wat beteken backup?","n Kopie van data vir veiligheid",["Data permanent uitvee","Die skerm afsit","n Nuwe muis koop"],"Backups beskerm jou teen dataverlies."],
+    ["Kuberveiligheid","Wat is phishing?","n Bedrogpoging om persoonlike inligting te steel",["n Tipe drukker","n Word-funksie","n Reël in Excel"],"Phishing probeer wagwoorde of bankbesonderhede steel."],
+    ["Wagwoorde","Wat maak n wagwoord sterker?","Letters, syfers en simbole gemeng",["Jou naam alleen","1234","password"],"Sterk wagwoorde is moeilik om te raai."],
+    ["Cloud","Wat is cloud storage?","Data wat aanlyn gestoor word",["Data net op papier","RAM geheue","n Skermknoppie"],"Cloud storage gebruik internetdienste."],
+    ["Virusse","Wat is n rekenaarvirus?","Skadelike sagteware",["n Nuwe monitor","n Goeie backup","n Tipe sleutelbord"],"Virusse kan data beskadig of steel."],
+    ["Antivirus","Waarvoor is antivirus sagteware?","Om skadelike sagteware te help opspoor en blok",["Om skermgrootte te verander","Om e-pos vinniger te tik","Om papier te sny"],"Antivirus help teen malware."],
+    ["Data","Wat is data?","Rou feite wat verwerk kan word",["Net n muis","Net n stoel","Net elektrisiteit"],"Data word verwerk tot inligting."],
+    ["Inligting","Wat is inligting?","Data wat betekenisvol verwerk is",["Rou data sonder betekenis","Net n kabel","n Leë lêer"],"Inligting help met besluitneming."],
+    ["Invoer","Watter een is n invoertoestel?","Sleutelbord",["Monitor","Drukker","Luidspreker"],"n Sleutelbord stuur data in die rekenaar in."],
+    ["Uitvoer","Watter een is n uitvoertoestel?","Monitor",["Muis","Skandeerder","Mikrofoon"],"n Monitor wys uitset."],
+    ["Berging","Waarvoor word n hardeskyf/SSD gebruik?","Om data permanent te stoor",["Om die skerm te was","Om net klank te speel","Om die muis te beweeg"],"Storage hou lêers selfs as die rekenaar af is."],
+    ["RAM","Wat is RAM?","Tydelike geheue wat programme gebruik terwyl hulle loop",["Permanent papier","n Drukker ink","n Internet webwerf"],"RAM is vinnige tydelike geheue."],
+    ["CPU","Wat doen die CPU?","Verwerk instruksies",["Druk dokumente","Maak die skerm skoon","Hou papier vas"],"Die CPU is die verwerker."],
+    ["Ergonomie","Wat beteken ergonomie?","Om gemaklik en veilig met tegnologie te werk",["Om virusse te maak","Om lêers te steel","Om skerms te breek"],"Ergonomie help om spanning en beserings te voorkom."]
+  ];
+
+  fixed.forEach(x=>b.push(q(x[0],x[1],x[2],x[3],x[4])));
+
+  const topics = [
+    ["Hardeware","Die CPU","verwerk instruksies",["druk papier","stoor wagwoorde op papier","maak virusse"]],
+    ["Hardeware","RAM","hou data tydelik terwyl programme oop is",["is altyd permanent","is n drukker","is n webwerf"]],
+    ["Hardeware","n SSD","stoor data vinnig en permanent",["is net n skerm","is n virus","is n wagwoord"]],
+    ["Hardeware","n Monitor","wys uitset op die skerm",["voer data in","stoor lêers","maak formules"]],
+    ["Hardeware","n Skandeerder","voer prente/dokumente in",["wys net klank","druk papier","maak internet vinniger"]],
+    ["Sagteware","Word processor","word gebruik om dokumente te skep",["is n muis","is n skerm","is n kabel"]],
+    ["Sagteware","Spreadsheet","word gebruik vir berekeninge en tabelle",["is net vir musiek","is n sleutelbord","is n stoel"]],
+    ["Sagteware","Presentation software","word gebruik vir skyfies/slides",["stoor net backups","maak kabels","is n printer cartridge"]],
+    ["Netwerke","LAN","is n plaaslike netwerk in n klein area",["is wêreldwyd soos internet","is n virus","is n muis"]],
+    ["Netwerke","Wi-Fi","laat toestelle draadloos koppel",["druk papier sonder krag","is n lêernaam","is n spreadsheet formule"]],
+    ["Internet","URL","is n webadres",["is n hardeskyf","is n muis klik","is n battery"]],
+    ["Internet","Browser","word gebruik om webwerwe oop te maak",["is n antivirus alleen","is n monitor","is RAM"]],
+    ["E-pos","Attachment","is n lêer wat saam met e-pos gestuur word",["is n skerm","is n tipe CPU","is n router"]],
+    ["E-pos","CC","stuur n kopie van die e-pos aan ander",["verwyder die e-pos","maak die lêer groter","blok die internet"]],
+    ["Sigblad","Cell","is waar n ry en kolom kruis",["is n virus","is n drukker","is n kabel"]],
+    ["Sigblad","Column","loop vertikaal af in n spreadsheet",["loop net horisontaal","is n wagwoord","is n prentjie"]],
+    ["Sigblad","Row","loop horisontaal in n spreadsheet",["is n antivirus","is n webadres","is n CPU"]],
+    ["Sigblad","Chart","wys data visueel",["vee data altyd uit","maak n virus","vervang die sleutelbord"]],
+    ["Lêerbestuur","Rename","verander n lêer se naam",["verwyder altyd die lêer","maak internet af","druk die lêer"]],
+    ["Lêerbestuur","Delete","verwyder n lêer",["kopieer altyd n lêer","maak n grafiek","stuur e-pos"]],
+    ["Veiligheid","Two-factor authentication","gee ekstra sekuriteit",["maak n wagwoord swakker","verwyder backups","breek die monitor"]],
+    ["Veiligheid","Privacy","beteken persoonlike inligting moet beskerm word",["deel alles publiek","gebruik 1234 as wagwoord","ignoreer persoonlike data"]],
+    ["Veiligheid","Malware","is skadelike sagteware",["is goeie backup","is n nuwe monitor","is n tabel"]],
+    ["Veiligheid","Firewall","help om netwerkverkeer te beskerm",["is n stoel","is n prent","is n spreadsheet cell"]],
+    ["Ergonomie","Regte postuur","help om liggaamspyn te verminder",["maak virusse","delete lêers","breek internet"]]
+  ];
+
+  topics.forEach(t=>{
+    b.push(q(t[0],"Wat beskryf " + t[1] + " die beste?",t[2],t[3],"Leer die term en sy funksie."));
+    b.push(q(t[0],"Kies die regte funksie van " + t[1] + ".",t[2],t[3],"Die funksie moet by die term pas."));
+    b.push(q(t[0],"In RTT/CAT beteken " + t[1] + ": ",t[2],t[3],"Hierdie is n belangrike kwartaal 2 begrip."));
+  });
+
+  const trueFalse = [
+    ["n Sterk wagwoord moet moeilik wees om te raai.","Waar"],
+    ["Phishing is altyd veilig.","Onwaar"],
+    ["n Backup help as data verlore raak.","Waar"],
+    ["RAM is gewoonlik tydelike geheue.","Waar"],
+    ["n Spreadsheet kan formules gebruik.","Waar"],
+    ["n Monitor is n invoertoestel.","Onwaar"],
+    ["n Sleutelbord is n invoertoestel.","Waar"],
+    ["Cloud storage gebruik aanlyn berging.","Waar"],
+    ["Antivirus help teen malware.","Waar"],
+    ["Jy moet persoonlike inligting sommer oral deel.","Onwaar"],
+    ["n Folder help om lêers te organiseer.","Waar"],
+    ["Die internet is n wêreldwye netwerk.","Waar"],
+    ["n Browser word gebruik om webwerwe oop te maak.","Waar"],
+    ["SUM tel waardes bymekaar.","Waar"],
+    ["n E-pos attachment is n lêer wat saam gestuur word.","Waar"]
+  ];
+
+  trueFalse.forEach(tf=>{
+    b.push(q("Waar of Onwaar",tf[0],tf[1],tf[1]==="Waar"?["Onwaar","Net soms","Nooit"]:["Waar","Net soms","Altyd"],"Lees die stelling en kies Waar of Onwaar."));
+  });
+
+  while(b.length < 250){
+    const base = b[b.length % Math.min(b.length,100)];
+    const wrongs = base.options.filter(o=>o !== base.correct);
+    b.push(q(base.topic, base.text + " Kies die beste antwoord.", base.correct, shuffle(wrongs).slice(0,3), base.explain));
+  }
+
+  return b.slice(0,250);
+}
+
+function sessionNumber(title){
+  const m = title.match(/(\d+)/);
+  return m ? Number(m[1]) : 1;
+}
+
+const bank = buildRTTBank();
+const start = ((sessionNumber(sessionTitle)-1) * 25) % bank.length;
+const questions = [];
+for(let i=0;i<25;i++){
+  questions.push(bank[(start+i) % bank.length]);
+}
+
+document.getElementById("titleBox").textContent = sessionTitle;
+
+function render(){
+  selected = null;
+  marked = false;
+  document.getElementById("progress").textContent = `Vraag ${current+1} van ${questions.length} | Reg: ${score}`;
+  const item = questions[current];
+
+  document.getElementById("topic").textContent = item.topic;
+  document.getElementById("question").textContent = item.text;
+  document.getElementById("feedback").innerHTML = "";
+  document.getElementById("explain").textContent = "";
+
+  const box = document.getElementById("options");
+  box.innerHTML = "";
+
+  item.options.forEach(opt=>{
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = opt;
+    btn.onclick = function(){
+      document.querySelectorAll(".option").forEach(b=>b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selected = opt;
+    };
+    box.appendChild(btn);
+  });
+}
+
+function markAnswer(){
+  if(marked) return;
+  const item = questions[current];
+
+  if(!selected){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Kies eers n antwoord.</span>";
+    return;
+  }
+
+  marked = true;
+
+  if(selected === item.correct){
+    score++;
+    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Reg!</span>";
+  } else {
+    wrongList.push({q:item.text,your:selected,correct:item.correct,explain:item.explain});
+    document.getElementById("feedback").innerHTML = "<span class='bad'>☹ Verkeerd. Regte antwoord: " + item.correct + "</span>";
+  }
+
+  document.getElementById("explain").textContent = "Verduideliking: " + item.explain;
+  document.getElementById("progress").textContent = `Vraag ${current+1} van ${questions.length} | Reg: ${score}`;
+}
+
+function nextQuestion(){
+  if(!marked){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Merk eers die antwoord.</span>";
+    return;
+  }
+
+  if(current < questions.length - 1){
+    current++;
+    render();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz(){
+  document.getElementById("quizBox").style.display = "none";
+  const wrong = questions.length - score;
+
+  let html = `<h2>Sessie klaar</h2>
+    <p><b>${sessionTitle}</b></p>
+    <p style="font-size:22px;font-weight:900">Punt: ${score} uit ${questions.length}</p>
+    <p>Verkeerd: ${wrong}</p>`;
+
+  if(wrongList.length > 0){
+    html += "<h3>Verkeerde antwoorde</h3>";
+    wrongList.slice(0,10).forEach(w=>{
+      html += `<div class="result"><b>Vraag:</b> ${w.q}<br><b>Sy antwoord:</b> ${w.your}<br><b>Reg:</b> ${w.correct}</div>`;
+    });
+
+    html += `<div class="result"><span class="bad">Hy moet eers sy verkeerde vrae reg oefen voordat hierdie sessie klaar tel.</span></div>`;
+    html += `<button class="orange" onclick="startWrongRetry()">Oefen verkeerde vrae weer</button>`;
+  } else {
+    if(di !== null && ti !== null){
+      localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
+    }
+
+    html += `<div class="result"><span class="ok">🎉 Alles eerste keer reg!</span></div>`;
+    html += `<button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
+  }
+
+  document.getElementById("finalResult").innerHTML = html;
+  document.getElementById("finalResult").style.display = "block";
+}
+
+function startWrongRetry(){
+  if(wrongList.length === 0) return;
+
+  retryMode = true;
+  retryOriginalCount = wrongList.length;
+  retryCorrectCount = 0;
+
+  retryQuestions = wrongList.map(w => ({
+    topic: "Wrong Retry",
+    text: w.q,
+    correct: w.correct,
+    options: shuffle([w.correct, w.your, "Nie seker nie", "Hersien weer"]),
+    explain: w.explain || "Hierdie vraag was vroeer verkeerd."
+  }));
+
+  current = 0;
+  score = 0;
+  selected = null;
+  marked = false;
+  wrongList = [];
+
+  document.getElementById("finalResult").style.display = "none";
+  document.getElementById("quizBox").style.display = "block";
+  renderRetry();
+}
+
+function renderRetry(){
+  selected = null;
+  marked = false;
+
+  if(retryQuestions.length === 0){
+    finishWrongRetry();
+    return;
+  }
+
+  const item = retryQuestions[current];
+
+  document.getElementById("progress").textContent =
+    "Wrong Retry: " + (current + 1) + " van " + retryQuestions.length + " | Reggemaak: " + retryCorrectCount + " van " + retryOriginalCount;
+
+  document.getElementById("topic").textContent = item.topic;
+  document.getElementById("question").textContent = item.text;
+  document.getElementById("feedback").innerHTML = "";
+  document.getElementById("explain").textContent = "";
+
+  const box = document.getElementById("options");
+  box.innerHTML = "";
+
+  item.options.forEach(opt=>{
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = opt;
+    btn.onclick = function(){
+      document.querySelectorAll(".option").forEach(b=>b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selected = opt;
+    };
+    box.appendChild(btn);
+  });
+}
+
+function markRetryAnswer(){
+  if(marked) return;
+
+  const item = retryQuestions[current];
+
+  if(!selected){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Kies eers n antwoord.</span>";
+    return;
+  }
+
+  marked = true;
+
+  if(selected === item.correct){
+    retryCorrectCount++;
+    document.getElementById("feedback").innerHTML = "<span class='ok'>⭐ Reg! Hierdie fout val nou weg.</span>";
+    retryQuestions.splice(current, 1);
+    if(current >= retryQuestions.length){ current = 0; }
+  } else {
+    document.getElementById("feedback").innerHTML =
+      "<span class='bad'>☹ Nog verkeerd. Regte antwoord: " + item.correct + ". Jy gaan hierdie vraag weer kry.</span>";
+  }
+
+  document.getElementById("explain").textContent = item.explain;
+}
+
+function nextRetryQuestion(){
+  if(!marked){
+    document.getElementById("feedback").innerHTML = "<span class='bad'>Merk eers die antwoord.</span>";
+    return;
+  }
+
+  if(retryQuestions.length === 0){
+    finishWrongRetry();
+    return;
+  }
+
+  if(current < retryQuestions.length - 1){ current++; } else { current = 0; }
+  renderRetry();
+}
+
+function finishWrongRetry(){
+  document.getElementById("quizBox").style.display = "none";
+
+  if(di !== null && ti !== null){
+    localStorage.setItem("enricoProgramDone_" + di + "_" + ti, "1");
+  }
+
+  const html = `<h2>Wrong Retry klaar 🎉</h2>
+    <p style="font-size:22px;font-weight:900">Al ${retryOriginalCount} verkeerde vrae is nou reggemaak.</p>
+    <p>Mooi Enrico — nou tel hierdie sessie as klaar.</p>
+    <div class="result"><span class="ok">Stuur nou die WhatsApp update na Dad.</span></div>
+    <button class="green" onclick="sendWhatsapp()">WhatsApp Dad - stuur update</button>`;
+
+  document.getElementById("finalResult").innerHTML = html;
+  document.getElementById("finalResult").style.display = "block";
+}
+
+const originalMarkAnswer = markAnswer;
+markAnswer = function(){
+  if(retryMode){ markRetryAnswer(); } else { originalMarkAnswer(); }
+};
+
+const originalNextQuestion = nextQuestion;
+nextQuestion = function(){
+  if(retryMode){ nextRetryQuestion(); } else { originalNextQuestion(); }
+};
+
+function sendWhatsapp(){
+  const originalWrong = retryOriginalCount > 0 ? retryOriginalCount : (25 - score);
+
+  let msg = `Enrico RTT/CAT update:
+Sessie: ${sessionTitle}
+Vraagbank: 250 RTT/CAT vrae
+Punt: ${25 - originalWrong}/25
+Oorspronklik verkeerd: ${originalWrong}`;
+
+  if(retryOriginalCount > 0 && retryQuestions.length === 0){
+    msg += `\nWrong Retry: Klaar - ${retryOriginalCount}/${retryOriginalCount} foute reggemaak`;
+  } else if(retryOriginalCount === 0){
+    msg += `\nWrong Retry: Nie nodig nie - alles eerste keer reg`;
+  }
+
+  window.open("https://wa.me/" + DAD + "?text=" + encodeURIComponent(msg), "_blank");
+
+  setTimeout(function(){
+    window.location.href = "enrico_exam_program.html?v=" + Date.now();
+  }, 1200);
+}
+
+render();
+</script>
+</body>
+</html>
