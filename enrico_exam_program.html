@@ -220,9 +220,37 @@ div[style*="background:#fef9c3"] *,
 div[style*="background: #fef9c3"] *{
   color:#111827 !important;
 }
+/* TEAE_ADD_EXAM_LOGOUT_V1 */
+.examLogoutBtn{
+  position:fixed;
+  right:18px;
+  top:18px;
+  z-index:9999;
+  background:#1a1a1a !important;
+  color:#ffffff !important;
+  border:1px solid #303030 !important;
+  border-radius:10px !important;
+  padding:11px 15px !important;
+  font-weight:900 !important;
+  text-decoration:none !important;
+  cursor:pointer !important;
+}
+.examLogoutBtn:hover{
+  background:#b51fa5 !important;
+}
+@media(max-width:700px){
+  .examLogoutBtn{
+    top:10px;
+    right:10px;
+    padding:9px 12px !important;
+    font-size:13px;
+  }
+}
 </style>
 </head>
 <body>
+<!-- TEAE_EXAM_LOGOUT_BUTTON_V1 -->
+<button class="examLogoutBtn" onclick="examLogout()">Logout</button>
 <header>
   <h1>Welcome, Student!</h1>
   <p>Grade 10 • Afrikaans • Exam Preparation Portal</p>
@@ -537,8 +565,17 @@ function renderPlan(){
 
 renderPlan();
 </script>
+<script>
+/* TEAE_EXAM_LOGOUT_SCRIPT_V1 */
+function examLogout(){
+  localStorage.removeItem("enricoExamLoggedIn");
+  localStorage.removeItem("enricoExamLoginName");
+  window.location.href = "enrico_exam_login.html?v=" + Date.now();
+}
+</script>
 </body>
 </html>
+
 
 
 
