@@ -1037,7 +1037,8 @@ const plan = [
 
   {date:"2026-06-26",label:"Vrydag 26 Junie - Besigheidstudies Eksamen",focus:"Eksamen dag: Besigheidstudies begin 09:00. Vrydag stop 12:00.",tasks:[
     ["09:00 - 10:30","FINALE EKSAMEN: Besigheidstudies","Jy is nou reg vir jou Besigheidstudies eksamen. Log in op die hoof eksamen app en begin jou finale toets vir kwartaal 2. Lees mooi, dink rustig, en doen jou beste. Sterkte!"],
-    ["10:30 - 12:00","Breek en klaar vir die dag","Rus na die eksamen. Geen ander toetse op Vrydag na 12:00 nie."]
+    ["10:30 - 12:00","Breek en klaar vir die dag","Rus na die eksamen. Geen ander toetse op Vrydag na 12:00 nie."],
+    ["12:00","KWARTAAL 2 KLAAR","Baie geluk! Jy is nou finaal klaar met kwartaal 2. Geniet jou vakansie, rus lekker uit, en wees trots op jou harde werk. Jou rapport behoort reg te wees op 30 Junie 2026. Sterkte, en mag jy n baie goeie rapport kry!"]
   ]}
 ];
 function keyFor(dayIndex, taskIndex){
@@ -1818,8 +1819,101 @@ setTimeout(teaeClearDayHeaders, 1000);
   setTimeout(protectClearButtons, 1000);
 })();
 </script>
+<!-- TEAE_EXAM_DAYS_STRONG_STYLE_V1_START -->
+<style>
+  .teaeExamDayHeaderStrong{
+    background:linear-gradient(90deg,#f59e0b,#facc15) !important;
+    color:#111827 !important;
+    border:3px solid #fde047 !important;
+    border-radius:14px !important;
+    padding:14px 16px !important;
+    font-size:28px !important;
+    font-weight:1000 !important;
+    text-shadow:none !important;
+    box-shadow:0 0 20px rgba(250,204,21,.35) !important;
+  }
+
+  .teaeFinalExamTaskStrong{
+    border:4px solid #facc15 !important;
+    background:#052e16 !important;
+    color:#ecfdf5 !important;
+    box-shadow:0 0 24px rgba(34,197,94,.35) !important;
+    border-radius:16px !important;
+  }
+
+  .teaeFinalExamTaskStrong *{
+    color:#ecfdf5 !important;
+  }
+
+  .teaeFinalExamTaskStrong h3,
+  .teaeFinalExamTaskStrong b,
+  .teaeFinalExamTaskStrong strong{
+    color:#facc15 !important;
+    font-size:22px !important;
+  }
+
+  .teaeQuarterDoneStrong{
+    border:4px solid #22c55e !important;
+    background:linear-gradient(180deg,#064e3b,#052e16) !important;
+    color:#ecfdf5 !important;
+    box-shadow:0 0 26px rgba(34,197,94,.45) !important;
+    border-radius:16px !important;
+  }
+
+  .teaeQuarterDoneStrong *{
+    color:#ecfdf5 !important;
+  }
+
+  .teaeQuarterDoneStrong h3,
+  .teaeQuarterDoneStrong b,
+  .teaeQuarterDoneStrong strong{
+    color:#86efac !important;
+    font-size:24px !important;
+  }
+</style>
+
+<script>
+(function(){
+  function clean(v){
+    return String(v || "").replace(/\s+/g," ").trim();
+  }
+
+  function applyStrongExamStyles(){
+    document.querySelectorAll("h1,h2,h3,h4,div").forEach(function(el){
+      const t = clean(el.innerText || el.textContent);
+
+      if(
+        t.length < 120 &&
+        /Junie\s+-/i.test(t) &&
+        /Eksamen/i.test(t) &&
+        /(K53|RTT|CAT|Landbou|Wiskundige|Afrikaans|English|Besigheidstudies)/i.test(t)
+      ){
+        el.classList.add("teaeExamDayHeaderStrong");
+      }
+
+      if(t.indexOf("FINALE EKSAMEN:") !== -1 && t.length < 1200){
+        el.classList.add("teaeFinalExamTaskStrong");
+      }
+
+      if(t.indexOf("KWARTAAL 2 KLAAR") !== -1 && t.length < 1200){
+        el.classList.add("teaeQuarterDoneStrong");
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    applyStrongExamStyles();
+    setTimeout(applyStrongExamStyles, 500);
+    setTimeout(applyStrongExamStyles, 1500);
+  });
+
+  setTimeout(applyStrongExamStyles, 2500);
+})();
+</script>
+<!-- TEAE_EXAM_DAYS_STRONG_STYLE_V1_END -->
 </body>
 </html>
+
 
 
 
