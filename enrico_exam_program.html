@@ -2453,7 +2453,7 @@ setTimeout(teaeClearDayHeaders, 1000);
 })();
 </script>
 <!-- TEAE_FORCE_LOCK_KLAAR_BUTTONS_V2_END -->
-<!-- TEAE_CATCHUP_AFTER_MISSED_TIME_V1_START -->
+<!-- TEAE_CATCHUP_AFTER_MISSED_TIME_V2_START -->
 <style>
   .teae-catchup-note{
     margin-top:8px !important;
@@ -2470,21 +2470,26 @@ setTimeout(teaeClearDayHeaders, 1000);
 <script>
 (function(){
   function pad(n){ return String(n).padStart(2,"0"); }
+
   function todayKey(){
     const d = new Date();
     return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate());
   }
+
   function nowMinutes(){
     const d = new Date();
     return d.getHours() * 60 + d.getMinutes();
   }
+
   function toMin(t){
     const p = String(t || "").split(":");
     return Number(p[0]) * 60 + Number(p[1]);
   }
+
   function clean(v){
     return String(v || "").replace(/\s+/g," ").trim();
   }
+
   function getPlan(){
     try{
       if(typeof plan !== "undefined" && Array.isArray(plan)) return plan;
@@ -2492,7 +2497,66 @@ setTimeout(teaeClearDayHeaders, 1000);
     return [];
   }
 
+  function getTaskCards(){
+    return Array.from(document.querySelectorAll("div")).filter(function(el){
+      const t = clean(el.innerText || el.textContent);
+      if(t.length < 20 || t.length > 900) return false;
+      return /\d{2}:\d{2}\s*-\s*\d{2}:\d{2}/.test(t);
+    });
+  }
+
+  function findExactTaskCard(time, title){
+    const candidates = getTaskCards().filter(function(el){
+      const t = clean(el.innerText || el.textContent);
+      return t.indexOf(time) !== -1 && t.indexOf(title) !== -1;
+    });
+
+    if(!candidates.length) return null;
+
+    candidates.sort(function(a,b){
+      const at = clean(a.innerText || a.textContent).length;
+      const bt = clean(b.innerText || b.textContent).length;
+      return at - bt;
+    });
+
+    return candidates[0];
+  }
+
+  function clearOldCatchupNotes(){
+    document.querySelectorAll(".teae-catchup-note").forEach(function(n){
+      n.remove();
+    });
+  }
+
+  function unlockCatchupButtons(card){
+    if(!card) return;
+
+    const buttons = Array.from(card.querySelectorAll("button, a"));
+    buttons.forEach(function(btn){
+      const txt = clean(btn.textContent);
+
+      if(btn.dataset){
+        btn.dataset.teaeLocked = "0";
+        btn.dataset.teaeForceLocked = "0";
+      }
+
+      btn.disabled = false;
+      btn.classList.remove("teae-locked-task-link");
+      btn.classList.remove("teae-klaar-locked-force");
+
+      if(btn.dataset && btn.dataset.originalHref){
+        btn.setAttribute("href", btn.dataset.originalHref);
+      }
+
+      if(txt === "Klaar gesluit"){
+        btn.textContent = "Klaar";
+      }
+    });
+  }
+
   function addCatchupNotes(){
+    clearOldCatchupNotes();
+
     const p = getPlan();
     const today = todayKey();
     const now = nowMinutes();
@@ -2509,42 +2573,23 @@ setTimeout(teaeClearDayHeaders, 1000);
         if(!m) return;
 
         const end = toMin(m[2]);
+
+        // BELANGRIK: Net as die tydblok klaar is, mag hy vang op.
+        // Future tasks moet gesluit bly.
         if(now <= end) return;
 
-        const cards = Array.from(document.querySelectorAll("div, section, article")).filter(function(el){
-          const t = clean(el.innerText || el.textContent);
-          return t.indexOf(time) !== -1 && t.indexOf(title) !== -1 && t.length < 1600;
-        });
+        const card = findExactTaskCard(time, title);
+        if(!card) return;
 
-        cards.forEach(function(card){
-          const txt = clean(card.innerText || card.textContent);
-          if(txt.indexOf("Klaar ✓") !== -1) return;
-          if(card.querySelector(".teae-catchup-note")) return;
+        const txt = clean(card.innerText || card.textContent);
+        if(txt.indexOf("Klaar ✓") !== -1) return;
 
-          const note = document.createElement("div");
-          note.className = "teae-catchup-note";
-          note.textContent = "Vang nou op - hierdie taak is nog nie klaar in sy tydperk nie.";
-          card.appendChild(note);
+        unlockCatchupButtons(card);
 
-          const buttons = Array.from(card.querySelectorAll("button, a"));
-          buttons.forEach(function(btn){
-            if(btn.dataset){
-              btn.dataset.teaeLocked = "0";
-              btn.dataset.teaeForceLocked = "0";
-            }
-            btn.disabled = false;
-            btn.classList.remove("teae-locked-task-link");
-            btn.classList.remove("teae-klaar-locked-force");
-
-            if(btn.dataset && btn.dataset.originalHref){
-              btn.setAttribute("href", btn.dataset.originalHref);
-            }
-
-            if(clean(btn.textContent) === "Klaar gesluit"){
-              btn.textContent = "Klaar";
-            }
-          });
-        });
+        const note = document.createElement("div");
+        note.className = "teae-catchup-note";
+        note.textContent = "Vang nou op - hierdie taak is nog nie klaar in sy tydperk nie.";
+        card.appendChild(note);
       });
     });
   }
@@ -2558,9 +2603,10 @@ setTimeout(teaeClearDayHeaders, 1000);
   setTimeout(addCatchupNotes, 4500);
 })();
 </script>
-<!-- TEAE_CATCHUP_AFTER_MISSED_TIME_V1_END -->
+<!-- TEAE_CATCHUP_AFTER_MISSED_TIME_V2_END -->
 </body>
 </html>
+
 
 
 
