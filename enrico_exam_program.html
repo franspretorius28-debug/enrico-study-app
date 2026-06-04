@@ -2060,14 +2060,14 @@ setTimeout(teaeClearDayHeaders, 1000);
     if(today !== day.date){
       return {
         ok:false,
-        reason:"Gesluit tot " + day.label + " om " + task[0] + "."
+        reason:"Gesluit tot " + day.label + " om " + task[0].split(" - ")[0] + "."
       };
     }
 
     if(now < time.start){
       return {
         ok:false,
-        reason:"Gesluit tot vandag om " + task[0] + "."
+        reason:"Gesluit tot vandag om " + task[0].split(" - ")[0] + "."
       };
     }
 
@@ -2217,6 +2217,7 @@ setTimeout(teaeClearDayHeaders, 1000);
 <!-- TEAE_TIME_LOCK_ALL_TASK_LINKS_V1_END -->
 </body>
 </html>
+
 
 
 
