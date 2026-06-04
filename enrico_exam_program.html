@@ -2178,8 +2178,149 @@ setTimeout(teaeClearDayHeaders, 1000);
 })();
 </script>
 <!-- TEAE_DATE_ONLY_LOCK_V1_END -->
+<!-- TEAE_DAY_DONE_MESSAGE_V2_START -->
+<style>
+  .teae-day-done-message{
+    margin:14px 0 10px 0 !important;
+    padding:16px 18px !important;
+    border-radius:14px !important;
+    background:linear-gradient(180deg,#064e3b 0%,#065f46 100%) !important;
+    border:3px solid #22c55e !important;
+    color:#ffffff !important;
+    font-weight:1000 !important;
+    font-size:18px !important;
+    line-height:1.45 !important;
+    box-shadow:0 0 20px rgba(34,197,94,.45) !important;
+  }
+
+  .teae-day-done-message strong{
+    color:#bbf7d0 !important;
+  }
+
+  .teae-day-done-message .warning{
+    display:block;
+    margin-top:8px;
+    color:#fde68a !important;
+    font-size:15px !important;
+    font-weight:900 !important;
+  }
+</style>
+
+<script>
+(function(){
+  function clean(v){
+    return String(v || "").replace(/\s+/g," ").trim();
+  }
+
+  function getPlan(){
+    try{
+      if(typeof plan !== "undefined" && Array.isArray(plan)) return plan;
+    }catch(e){}
+    return [];
+  }
+
+  function findDayCard(day){
+    const all = Array.from(document.querySelectorAll("div, section, article"));
+    const matches = all.filter(function(el){
+      const t = clean(el.innerText || el.textContent);
+      return t.indexOf(day.label) !== -1 && t.length < 9000;
+    });
+
+    if(!matches.length) return null;
+
+    matches.sort(function(a,b){
+      return clean(a.innerText || a.textContent).length - clean(b.innerText || b.textContent).length;
+    });
+
+    return matches[0];
+  }
+
+  function findTaskCard(dayCard, task){
+    if(!dayCard || !task) return null;
+
+    const time = task[0] || "";
+    const title = task[1] || "";
+
+    const candidates = Array.from(dayCard.querySelectorAll("div, section, article")).filter(function(el){
+      const t = clean(el.innerText || el.textContent);
+      return t.indexOf(time) !== -1 && t.indexOf(title) !== -1 && t.length < 1800;
+    });
+
+    if(!candidates.length) return null;
+
+    candidates.sort(function(a,b){
+      return clean(a.innerText || a.textContent).length - clean(b.innerText || b.textContent).length;
+    });
+
+    return candidates[0];
+  }
+
+  function isTaskDone(dayCard, task){
+    const taskCard = findTaskCard(dayCard, task);
+    if(!taskCard) return false;
+
+    const txt = clean(taskCard.innerText || taskCard.textContent);
+    return txt.indexOf("Klaar ✓") !== -1;
+  }
+
+  function updateDayDoneMessages(){
+    const p = getPlan();
+    if(!p || !p.length) return;
+
+    p.forEach(function(day){
+      if(!day || !Array.isArray(day.tasks) || !day.tasks.length) return;
+
+      const dayCard = findDayCard(day);
+      if(!dayCard) return;
+
+      const old = dayCard.querySelector(".teae-day-done-message");
+      if(old) old.remove();
+
+      let doneCount = 0;
+
+      day.tasks.forEach(function(task){
+        if(isTaskDone(dayCard, task)) doneCount++;
+      });
+
+      if(doneCount === day.tasks.length){
+        const msg = document.createElement("div");
+        msg.className = "teae-day-done-message";
+        msg.innerHTML =
+          "<strong>Mooi so! Jy is klaar met " + day.label + " se werk.</strong><br>" +
+          "Jy kan nou rus en môre vars begin." +
+          "<span class='warning'>Maak seker jy begin elke dag se take betyds en stuur jou updates na Teacher, sodat Teacher dit betyds na Head Office kan stuur. As jou take en updates laat is, kan dit die hele eksamenproses vertraag.</span>";
+
+        const heading = Array.from(dayCard.querySelectorAll("h1,h2,h3,div")).find(function(el){
+          return clean(el.innerText || el.textContent).indexOf(day.label) !== -1;
+        });
+
+        if(heading){
+          heading.insertAdjacentElement("afterend", msg);
+        } else {
+          dayCard.insertBefore(msg, dayCard.firstChild);
+        }
+      }
+    });
+  }
+
+  document.addEventListener("click", function(){
+    setTimeout(updateDayDoneMessages, 300);
+    setTimeout(updateDayDoneMessages, 1000);
+  }, true);
+
+  document.addEventListener("DOMContentLoaded", function(){
+    setTimeout(updateDayDoneMessages, 700);
+    setTimeout(updateDayDoneMessages, 1800);
+    setTimeout(updateDayDoneMessages, 3500);
+  });
+
+  setTimeout(updateDayDoneMessages, 4500);
+})();
+</script>
+<!-- TEAE_DAY_DONE_MESSAGE_V2_END -->
 </body>
 </html>
+
 
 
 
