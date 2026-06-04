@@ -1981,8 +1981,243 @@ setTimeout(teaeClearDayHeaders, 1000);
 })();
 </script>
 <!-- TEAE_FORCE_GAP_BUTTON_ON_FINAL_EXAMS_V1_END -->
+<!-- TEAE_TIME_LOCK_ALL_TASK_LINKS_V1_START -->
+<style>
+  .teae-locked-task-link{
+    opacity:.55 !important;
+    cursor:not-allowed !important;
+    background:#374151 !important;
+    color:#fca5a5 !important;
+    border:2px solid #ef4444 !important;
+    box-shadow:none !important;
+  }
+
+  .teae-lock-note{
+    margin-top:8px !important;
+    padding:8px 10px !important;
+    border-radius:10px !important;
+    border:1px solid #ef4444 !important;
+    background:#450a0a !important;
+    color:#fecaca !important;
+    font-weight:800 !important;
+    font-size:13px !important;
+  }
+</style>
+
+<script>
+(function(){
+  function pad(n){ return String(n).padStart(2,"0"); }
+
+  function todayKey(){
+    const d = new Date();
+    return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate());
+  }
+
+  function nowMinutes(){
+    const d = new Date();
+    return d.getHours() * 60 + d.getMinutes();
+  }
+
+  function parseStartEnd(timeText){
+    const m = String(timeText || "").match(/(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})/);
+    if(!m) return null;
+
+    return {
+      start: Number(m[1]) * 60 + Number(m[2]),
+      end: Number(m[3]) * 60 + Number(m[4]),
+      raw: m[0]
+    };
+  }
+
+  function clean(v){
+    return String(v || "").replace(/\s+/g," ").trim();
+  }
+
+  function getPlan(){
+    try{
+      if(typeof plan !== "undefined" && Array.isArray(plan)) return plan;
+    }catch(e){}
+    return [];
+  }
+
+  function taskStateByIndex(di, ti){
+    const p = getPlan();
+    if(!p[di] || !p[di].tasks || !p[di].tasks[ti]){
+      return {ok:false, reason:"Hierdie taak kon nie in die rooster gekry word nie."};
+    }
+
+    const day = p[di];
+    const task = day.tasks[ti];
+    const time = parseStartEnd(task[0]);
+
+    if(!time){
+      return {ok:false, reason:"Hierdie taak het nie 'n oopmaak-tyd nie."};
+    }
+
+    const today = todayKey();
+    const now = nowMinutes();
+
+    if(today !== day.date){
+      return {
+        ok:false,
+        reason:"Gesluit tot " + day.label + " om " + task[0] + "."
+      };
+    }
+
+    if(now < time.start){
+      return {
+        ok:false,
+        reason:"Gesluit tot vandag om " + task[0] + "."
+      };
+    }
+
+    if(now > time.end){
+      return {
+        ok:false,
+        reason:"Hierdie tydblok is klaar. Die tyd was " + task[0] + "."
+      };
+    }
+
+    return {ok:true, reason:"Oop"};
+  }
+
+  function taskStateByCard(card){
+    const p = getPlan();
+    const cardText = clean(card.innerText || card.textContent);
+
+    for(let di=0; di<p.length; di++){
+      const day = p[di];
+      if(!day || !day.tasks) continue;
+
+      for(let ti=0; ti<day.tasks.length; ti++){
+        const task = day.tasks[ti];
+        const time = task[0];
+        const title = task[1];
+
+        if(
+          cardText.indexOf(time) !== -1 &&
+          cardText.indexOf(title) !== -1
+        ){
+          return taskStateByIndex(di, ti);
+        }
+      }
+    }
+
+    return {ok:false, reason:"Hierdie link is gesluit totdat die regte datum en tyd bereik word."};
+  }
+
+  function setLocked(el, reason){
+    if(!el.dataset.originalHref && el.getAttribute("href")){
+      el.dataset.originalHref = el.getAttribute("href");
+    }
+
+    el.classList.add("teae-locked-task-link");
+    el.dataset.teaeLocked = "1";
+    el.dataset.teaeLockReason = reason;
+
+    if(el.tagName.toLowerCase() === "a"){
+      el.setAttribute("href", "javascript:void(0)");
+    }
+
+    if(!el.dataset.originalText){
+      el.dataset.originalText = clean(el.textContent);
+    }
+
+    el.textContent = "Gesluit - wag vir regte datum/tyd";
+
+    const card = el.closest("div, section, article");
+    if(card && !card.querySelector(".teae-lock-note")){
+      const note = document.createElement("div");
+      note.className = "teae-lock-note";
+      note.textContent = reason;
+      el.insertAdjacentElement("afterend", note);
+    }
+  }
+
+  function setUnlocked(el){
+    el.classList.remove("teae-locked-task-link");
+    el.dataset.teaeLocked = "0";
+    el.dataset.teaeLockReason = "";
+
+    if(el.dataset.originalHref){
+      el.setAttribute("href", el.dataset.originalHref);
+    }
+
+    if(el.dataset.originalText){
+      el.textContent = el.dataset.originalText;
+    }
+
+    const card = el.closest("div, section, article");
+    const note = card ? card.querySelector(".teae-lock-note") : null;
+    if(note) note.remove();
+  }
+
+  function lockLinks(){
+    const links = Array.from(document.querySelectorAll("a, button"));
+
+    links.forEach(function(el){
+      const text = clean(el.textContent);
+      const href = el.getAttribute("href") || "";
+
+      const isTaskOpen =
+        text.indexOf("Maak toets oop") !== -1 ||
+        text.indexOf("Login en begin jou finale eksamen") !== -1 ||
+        href.indexOf("title=") !== -1 ||
+        href.indexOf("app.gaponline.co.za/login") !== -1;
+
+      if(!isTaskOpen) return;
+
+      let state = null;
+
+      try{
+        const url = new URL(href, window.location.href);
+        const di = url.searchParams.get("di");
+        const ti = url.searchParams.get("ti");
+
+        if(di !== null && ti !== null){
+          state = taskStateByIndex(Number(di), Number(ti));
+        }
+      }catch(e){}
+
+      if(!state){
+        const card = el.closest("div, section, article");
+        state = taskStateByCard(card || el.parentElement || el);
+      }
+
+      if(state.ok){
+        setUnlocked(el);
+      }else{
+        setLocked(el, state.reason);
+      }
+    });
+  }
+
+  document.addEventListener("click", function(ev){
+    const el = ev.target.closest("a, button");
+    if(!el) return;
+
+    if(el.dataset && el.dataset.teaeLocked === "1"){
+      ev.preventDefault();
+      ev.stopPropagation();
+      alert(el.dataset.teaeLockReason || "Hierdie toets is gesluit tot die regte datum en tyd.");
+      return false;
+    }
+  }, true);
+
+  document.addEventListener("DOMContentLoaded", function(){
+    lockLinks();
+    setTimeout(lockLinks, 500);
+    setTimeout(lockLinks, 1500);
+    setTimeout(lockLinks, 3000);
+  });
+
+  setTimeout(lockLinks, 4000);
+})();
+</script>
+<!-- TEAE_TIME_LOCK_ALL_TASK_LINKS_V1_END -->
 </body>
 </html>
+
 
 
 
