@@ -1916,8 +1916,74 @@ setTimeout(teaeClearDayHeaders, 1000);
 })();
 </script>
 <!-- TEAE_EXAM_DAYS_STRONG_STYLE_V1_END -->
+<!-- TEAE_FORCE_GAP_BUTTON_ON_FINAL_EXAMS_V1_START -->
+<style>
+  .teae-gap-final-exam-button{
+    display:inline-block !important;
+    margin:12px 0 8px 0 !important;
+    padding:14px 18px !important;
+    border-radius:12px !important;
+    background:#f59e0b !important;
+    color:#111827 !important;
+    font-weight:1000 !important;
+    font-size:17px !important;
+    text-decoration:none !important;
+    border:3px solid #fde047 !important;
+    box-shadow:0 0 18px rgba(250,204,21,.40) !important;
+  }
+
+  .teae-gap-final-exam-button:hover{
+    transform:scale(1.02);
+  }
+</style>
+
+<script>
+(function(){
+  function clean(v){
+    return String(v || "").replace(/\s+/g," ").trim();
+  }
+
+  function addGapButtons(){
+    const all = Array.from(document.querySelectorAll("div, section, article"));
+    const cards = all.filter(function(el){
+      const t = clean(el.innerText || el.textContent);
+      if(t.length < 40 || t.length > 1400) return false;
+      return t.indexOf("FINALE EKSAMEN:") !== -1 && t.indexOf("09:00 - 11:40") !== -1;
+    });
+
+    cards.forEach(function(card){
+      if(card.querySelector(".teae-gap-final-exam-button")) return;
+
+      const btn = document.createElement("a");
+      btn.className = "teae-gap-final-exam-button";
+      btn.href = "https://app.gaponline.co.za/login";
+      btn.target = "_blank";
+      btn.rel = "noopener";
+      btn.textContent = "Klik hier: Login en begin jou finale eksamen";
+
+      const firstButton = card.querySelector("button, a.btn");
+      if(firstButton){
+        firstButton.insertAdjacentElement("beforebegin", btn);
+      } else {
+        card.appendChild(btn);
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    addGapButtons();
+    setTimeout(addGapButtons, 500);
+    setTimeout(addGapButtons, 1500);
+    setTimeout(addGapButtons, 3000);
+  });
+
+  setTimeout(addGapButtons, 4000);
+})();
+</script>
+<!-- TEAE_FORCE_GAP_BUTTON_ON_FINAL_EXAMS_V1_END -->
 </body>
 </html>
+
 
 
 
