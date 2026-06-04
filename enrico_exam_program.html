@@ -849,63 +849,6 @@ header p{
 </style>
 </head>
 <body>
-<!-- TEAE_SAFE_EXAM_NOTICE_CLEAN_V3_START -->
-<style>
-  .teae-safe-exam-notice-clean{
-    max-width:1100px;
-    margin:24px auto;
-    padding:18px;
-    border:4px solid #f59e0b;
-    border-radius:18px;
-    background:linear-gradient(180deg, rgba(245,158,11,.30), rgba(88,28,13,.25));
-    box-shadow:0 0 24px rgba(245,158,11,.35);
-    color:#fff;
-    font-weight:800;
-  }
-  .teae-safe-exam-notice-clean h2{
-    margin:0 0 12px 0;
-    color:#facc15;
-    font-size:28px;
-  }
-  .teae-safe-exam-notice-clean .exam-row{
-    background:#052e16;
-    border:2px solid #22c55e;
-    border-radius:12px;
-    padding:10px 12px;
-    margin:8px 0;
-    color:#ecfdf5;
-  }
-  .teae-safe-exam-notice-clean .time{
-    color:#facc15;
-    font-weight:1000;
-  }
-  .teae-safe-exam-notice-clean .motivation{
-    margin-top:14px;
-    padding:12px;
-    border-radius:12px;
-    background:#111827;
-    border:1px solid #334155;
-    color:#e5e7eb;
-  }
-</style>
-
-<div class="teae-safe-exam-notice-clean">
-  <h2>Finale Eksamen Dae - Kwartaal 2</h2>
-
-  <div class="exam-row">09 Junie - K53 eksamen: <span class="time">Begin 09:00</span></div>
-  <div class="exam-row">12 Junie - RTT / CAT eksamen: <span class="time">Begin 09:00</span></div>
-  <div class="exam-row">19 Junie - Landbou eksamen: <span class="time">Begin 09:00</span></div>
-  <div class="exam-row">23 Junie - Wiskundige Geletterdheid eksamen: <span class="time">Begin 09:00</span></div>
-  <div class="exam-row">24 Junie - Afrikaans eksamen: <span class="time">Begin 09:00</span></div>
-  <div class="exam-row">25 Junie - English eksamen: <span class="time">Begin 09:00</span></div>
-  <div class="exam-row">26 Junie - Besigheidstudies eksamen: <span class="time">Begin 09:00</span></div>
-
-  <div class="motivation">
-    Jy is nou reg vir jou finale eksamen. Log op die hoof eksamen app in en begin jou finale toets vir kwartaal 2.
-    Lees elke vraag mooi, dink rustig voordat jy antwoord, en werk netjies. Sterkte - jy kan dit doen!
-  </div>
-</div>
-<!-- TEAE_SAFE_EXAM_NOTICE_CLEAN_V3_END -->
 <!-- TEAE_EXAM_LOGOUT_BUTTON_V1 -->
 <button class="examLogoutBtn" onclick="examLogout()">Logout</button>
 <header>
@@ -984,48 +927,55 @@ const plan = [
     ["10:05 - 10:50","K53 Sessie 5","Mock toets. 25 vrae."]
   ]},
 
-  {date:"2026-06-08",label:"Maandag 08 Junie",focus:"Dag voor K53. Net toets-sessies, geen ekstra fouteboek nie.",tasks:[
+  {date:"2026-06-08",label:"Maandag 08 Junie",focus:"Dag voor K53. Net K53 finale voorbereiding.",tasks:[
     ["09:00 - 09:45","K53 Finale Mock 1","Mik vir 95%."],
     ["09:45 - 10:10","Breek","Kort breek."],
     ["10:10 - 10:55","K53 Finale Mock 2","Nog 25 vrae."],
     ["14:30 - 15:10","RTT Sessie 2","Kort RTT voorbereiding. 25 vrae."]
   ]},
 
-  {date:"2026-06-09",label:"Dinsdag 09 Junie - K53 Eksamen",focus:"Na K53 begin RTT.",tasks:[
-    ["15:00 - 15:45","RTT Sessie 3","Stelseltegnologiee en netwerke. 25 vrae."],
-    ["15:45 - 16:05","Breek","Kort breek."],
-    ["16:05 - 16:50","RTT Sessie 4","Word, Excel en PowerPoint begrippe. 25 vrae."]
+  {date:"2026-06-09",label:"Dinsdag 09 Junie - K53 Eksamen",focus:"Eksamen dag: K53 begin 09:00. Daarna lang breek voor RTT.",tasks:[
+    ["09:00 - 10:30","FINALE EKSAMEN: K53","Jy is nou reg vir jou K53 eksamen. Log in op die hoof eksamen app en begin jou finale toets vir kwartaal 2. Lees mooi, dink rustig, en doen jou beste. Sterkte!"],
+    ["10:30 - 13:30","Lang breek na eksamen","Rus, eet iets, en moenie dadelik weer toets skryf nie."],
+    ["13:30 - 14:15","Ligte RTT voorbereiding","Net ligte hersiening. Geen finale toets hier nie."],
+    ["14:15 - 14:35","Breek","Kort breek."],
+    ["14:35 - 15:20","RTT Sessie 3","Stelseltegnologiee en netwerke. 25 vrae."]
   ]},
 
   {date:"2026-06-10",label:"Woensdag 10 Junie",focus:"RTT hoofdag.",tasks:[
-    ["09:00 - 09:45","RTT Sessie 5","Teorie mixed 25 vrae."],
+    ["09:00 - 09:45","RTT Sessie 4","Word, Excel en PowerPoint begrippe. 25 vrae."],
     ["09:45 - 10:05","Breek","Kort breek."],
-    ["10:05 - 10:50","RTT Sessie 6","Praktiese begrippe. 25 vrae."],
+    ["10:05 - 10:50","RTT Sessie 5","Teorie mixed 25 vrae."],
     ["10:50 - 11:20","Lang breek","Rus bietjie."],
-    ["11:20 - 12:05","RTT Sessie 7","Internet, e-pos en leerbestuur. 25 vrae."],
+    ["11:20 - 12:05","RTT Sessie 6","Praktiese begrippe. 25 vrae."],
     ["14:30 - 15:15","RTT Mock 1","Gemengde 25 vrae."]
   ]},
 
-  {date:"2026-06-11",label:"Donderdag 11 Junie",focus:"Laaste RTT voorbereiding en begin Landbou.",tasks:[
+  {date:"2026-06-11",label:"Donderdag 11 Junie",focus:"Laaste RTT voorbereiding. Geen ander vak druk voor RTT eksamen nie.",tasks:[
     ["09:00 - 09:45","RTT Finale Mock 1","25 vrae."],
     ["09:45 - 10:10","Breek","Kort breek."],
     ["10:10 - 10:55","RTT Finale Mock 2","25 vrae."],
-    ["14:30 - 15:10","Landbou Sessie 1","Begin kwartaal 2 kernbegrippe. 25 vrae."]
+    ["14:30 - 15:00","RTT ligte hersiening","Kort hersiening, geen nuwe werk nie."]
+  ]},
+
+  {date:"2026-06-12",label:"Vrydag 12 Junie - RTT / CAT Eksamen",focus:"Eksamen dag: RTT / CAT begin 09:00. Vrydag stop 12:00.",tasks:[
+    ["09:00 - 10:30","FINALE EKSAMEN: RTT / CAT","Jy is nou reg vir jou RTT / CAT eksamen. Log in op die hoof eksamen app en begin jou finale toets vir kwartaal 2. Lees mooi, dink rustig, en doen jou beste. Sterkte!"],
+    ["10:30 - 12:00","Breek en klaar vir die dag","Rus na die eksamen. Geen ander toetse op Vrydag na 12:00 nie."]
   ]},
 
   {date:"2026-06-15",label:"Maandag 15 Junie",focus:"Landbou week begin.",tasks:[
-    ["09:00 - 09:45","Landbou Sessie 2","25 vrae."],
+    ["09:00 - 09:45","Landbou Sessie 1","Kwartaal 2 kernbegrippe. 25 vrae."],
     ["09:45 - 10:05","Breek","Kort breek."],
-    ["10:05 - 10:50","Landbou Sessie 3","25 vrae."],
+    ["10:05 - 10:50","Landbou Sessie 2","25 vrae."],
     ["10:50 - 11:20","Lang breek","Rus bietjie."],
-    ["11:20 - 12:05","Landbou Sessie 4","25 vrae."],
+    ["11:20 - 12:05","Landbou Sessie 3","25 vrae."],
     ["14:30 - 15:10","Wisk Geletterdheid Sessie 1","Finansiele dokumente. 25 vrae."]
   ]},
 
   {date:"2026-06-16",label:"Dinsdag 16 Junie",focus:"Landbou en ligte tale.",tasks:[
-    ["09:00 - 09:45","Landbou Sessie 5","25 vrae."],
+    ["09:00 - 09:45","Landbou Sessie 4","25 vrae."],
     ["09:45 - 10:05","Breek","Kort breek."],
-    ["10:05 - 10:50","Landbou Sessie 6","25 vrae."],
+    ["10:05 - 10:50","Landbou Sessie 5","25 vrae."],
     ["10:50 - 11:20","Lang breek","Rus bietjie."],
     ["11:20 - 12:05","Landbou Mock 1","Gemengde vrae."],
     ["14:30 - 15:10","Afrikaans Sessie 1","Kwartaal 2 werk. 25 vrae."],
@@ -1033,16 +983,22 @@ const plan = [
   ]},
 
   {date:"2026-06-17",label:"Woensdag 17 Junie",focus:"Landbou finale werk en Wisk Geletterdheid.",tasks:[
-    ["09:00 - 09:45","Landbou Sessie 7","25 vrae."],
+    ["09:00 - 09:45","Landbou Sessie 6","25 vrae."],
     ["09:45 - 10:05","Breek","Kort breek."],
     ["10:05 - 10:50","Landbou Finale Mock 1","25 vrae."],
     ["14:30 - 15:10","Wisk Geletterdheid Sessie 2","Meting. 25 vrae."]
   ]},
 
-  {date:"2026-06-18",label:"Donderdag 18 Junie",focus:"Dag voor Landbou. Net finale toets.",tasks:[
+  {date:"2026-06-18",label:"Donderdag 18 Junie",focus:"Dag voor Landbou. Net finale Landbou voorbereiding.",tasks:[
     ["09:00 - 09:45","Landbou Finale Mock 2","25 vrae."],
     ["09:45 - 10:10","Breek","Kort breek."],
+    ["10:10 - 10:40","Landbou ligte hersiening","Kort hersiening, geen nuwe werk nie."],
     ["14:30 - 15:10","Wisk Geletterdheid Sessie 3","Kaarte en planne. 25 vrae."]
+  ]},
+
+  {date:"2026-06-19",label:"Vrydag 19 Junie - Landbou Eksamen",focus:"Eksamen dag: Landbou begin 09:00. Vrydag stop 12:00.",tasks:[
+    ["09:00 - 10:30","FINALE EKSAMEN: Landbou","Jy is nou reg vir jou Landbou eksamen. Log in op die hoof eksamen app en begin jou finale toets vir kwartaal 2. Lees mooi, dink rustig, en doen jou beste. Sterkte!"],
+    ["10:30 - 12:00","Breek en klaar vir die dag","Rus na die eksamen. Geen ander toetse op Vrydag na 12:00 nie."]
   ]},
 
   {date:"2026-06-22",label:"Maandag 22 Junie",focus:"Wisk Geletterdheid en tale.",tasks:[
@@ -1055,25 +1011,35 @@ const plan = [
     ["15:25 - 16:05","English Sessie 2","Term 2 werk. 25 vrae."]
   ]},
 
-  {date:"2026-06-23",label:"Dinsdag 23 Junie - Wisk Geletterdheid Eksamen",focus:"Na Wisk Geletterdheid skuif hy Afrikaans toe.",tasks:[
-    ["15:00 - 15:45","Afrikaans Sessie 3","Begrip en taal. 25 vrae."],
-    ["15:45 - 16:05","Breek","Kort breek."],
-    ["16:05 - 16:50","Afrikaans Sessie 4","Skryfwerk en opsomming. 25 vrae."]
+  {date:"2026-06-23",label:"Dinsdag 23 Junie - Wiskundige Geletterdheid Eksamen",focus:"Eksamen dag: Wiskundige Geletterdheid begin 09:00. Daarna lang breek voor Afrikaans.",tasks:[
+    ["09:00 - 10:30","FINALE EKSAMEN: Wiskundige Geletterdheid","Jy is nou reg vir jou Wiskundige Geletterdheid eksamen. Log in op die hoof eksamen app en begin jou finale toets vir kwartaal 2. Lees mooi, werk stap vir stap, en doen jou beste. Sterkte!"],
+    ["10:30 - 13:30","Lang breek na eksamen","Rus, eet iets, en moenie dadelik weer toets skryf nie."],
+    ["13:30 - 14:15","Afrikaans ligte voorbereiding","Net ligte hersiening. Geen finale toets hier nie."],
+    ["14:15 - 14:35","Breek","Kort breek."],
+    ["14:35 - 15:20","Afrikaans Sessie 3","Begrip en taal. 25 vrae."]
   ]},
 
-  {date:"2026-06-24",label:"Woensdag 24 Junie - Afrikaans Eksamen",focus:"Na Afrikaans skuif hy English toe.",tasks:[
-    ["15:00 - 15:45","English Sessie 3","Comprehension and grammar. 25 vrae."],
-    ["15:45 - 16:05","Breek","Kort breek."],
-    ["16:05 - 16:50","English Sessie 4","Writing and literature. 25 vrae."]
+  {date:"2026-06-24",label:"Woensdag 24 Junie - Afrikaans Eksamen",focus:"Eksamen dag: Afrikaans begin 09:00. Daarna lang breek voor English.",tasks:[
+    ["09:00 - 10:30","FINALE EKSAMEN: Afrikaans","Jy is nou reg vir jou Afrikaans eksamen. Log in op die hoof eksamen app en begin jou finale toets vir kwartaal 2. Lees mooi, dink rustig, en doen jou beste. Sterkte!"],
+    ["10:30 - 13:30","Lang breek na eksamen","Rus, eet iets, en moenie dadelik weer toets skryf nie."],
+    ["13:30 - 14:15","English ligte voorbereiding","Net ligte hersiening. Geen finale toets hier nie."],
+    ["14:15 - 14:35","Breek","Kort breek."],
+    ["14:35 - 15:20","English Sessie 3","Comprehension and grammar. 25 vrae."]
   ]},
 
-  {date:"2026-06-25",label:"Donderdag 25 Junie - English Eksamen",focus:"Na English doen hy Besigheidstudies.",tasks:[
-    ["15:00 - 15:45","Besigheidstudies Sessie 1","Sosio-ekonomiese kwessies. 25 vrae."],
-    ["15:45 - 16:05","Breek","Kort breek."],
-    ["16:05 - 16:50","Besigheidstudies Sessie 2","Sosiale verantwoordelikheid. 25 vrae."]
+  {date:"2026-06-25",label:"Donderdag 25 Junie - English Eksamen",focus:"Eksamen dag: English begin 09:00. Daarna lang breek voor Besigheidstudies.",tasks:[
+    ["09:00 - 10:30","FINALE EKSAMEN: English","Jy is nou reg vir jou English eksamen. Log in op die hoof eksamen app en begin jou finale toets vir kwartaal 2. Lees mooi, dink rustig, en doen jou beste. Sterkte!"],
+    ["10:30 - 13:30","Lang breek na eksamen","Rus, eet iets, en moenie dadelik weer toets skryf nie."],
+    ["13:30 - 14:15","Besigheidstudies ligte voorbereiding","Net ligte hersiening. Geen finale toets hier nie."],
+    ["14:15 - 14:35","Breek","Kort breek."],
+    ["14:35 - 15:20","Besigheidstudies Sessie 1","Sosio-ekonomiese kwessies. 25 vrae."]
+  ]},
+
+  {date:"2026-06-26",label:"Vrydag 26 Junie - Besigheidstudies Eksamen",focus:"Eksamen dag: Besigheidstudies begin 09:00. Vrydag stop 12:00.",tasks:[
+    ["09:00 - 10:30","FINALE EKSAMEN: Besigheidstudies","Jy is nou reg vir jou Besigheidstudies eksamen. Log in op die hoof eksamen app en begin jou finale toets vir kwartaal 2. Lees mooi, dink rustig, en doen jou beste. Sterkte!"],
+    ["10:30 - 12:00","Breek en klaar vir die dag","Rus na die eksamen. Geen ander toetse op Vrydag na 12:00 nie."]
   ]}
 ];
-
 function keyFor(dayIndex, taskIndex){
   return "enricoProgramDone_" + dayIndex + "_" + taskIndex;
 }
@@ -1854,6 +1820,7 @@ setTimeout(teaeClearDayHeaders, 1000);
 </script>
 </body>
 </html>
+
 
 
 
