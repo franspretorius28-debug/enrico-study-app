@@ -849,63 +849,6 @@ header p{
 </style>
 </head>
 <body>
-<!-- TEAE_SAFE_EXAM_NOTICE_CLEAN_V3_START -->
-<style>
-  .teae-safe-exam-notice-clean{
-    max-width:1100px;
-    margin:24px auto;
-    padding:18px;
-    border:4px solid #f59e0b;
-    border-radius:18px;
-    background:linear-gradient(180deg, rgba(245,158,11,.30), rgba(88,28,13,.25));
-    box-shadow:0 0 24px rgba(245,158,11,.35);
-    color:#fff;
-    font-weight:800;
-  }
-  .teae-safe-exam-notice-clean h2{
-    margin:0 0 12px 0;
-    color:#facc15;
-    font-size:28px;
-  }
-  .teae-safe-exam-notice-clean .exam-row{
-    background:#052e16;
-    border:2px solid #22c55e;
-    border-radius:12px;
-    padding:10px 12px;
-    margin:8px 0;
-    color:#ecfdf5;
-  }
-  .teae-safe-exam-notice-clean .time{
-    color:#facc15;
-    font-weight:1000;
-  }
-  .teae-safe-exam-notice-clean .motivation{
-    margin-top:14px;
-    padding:12px;
-    border-radius:12px;
-    background:#111827;
-    border:1px solid #334155;
-    color:#e5e7eb;
-  }
-</style>
-
-<div class="teae-safe-exam-notice-clean">
-  <h2>Finale Eksamen Dae - Kwartaal 2</h2>
-
-  <div class="exam-row">09 Junie - K53 eksamen: <span class="time">Begin 09:00</span></div>
-  <div class="exam-row">12 Junie - RTT / CAT eksamen: <span class="time">Begin 09:00</span></div>
-  <div class="exam-row">19 Junie - Landbou eksamen: <span class="time">Begin 09:00</span></div>
-  <div class="exam-row">23 Junie - Wiskundige Geletterdheid eksamen: <span class="time">Begin 09:00</span></div>
-  <div class="exam-row">24 Junie - Afrikaans eksamen: <span class="time">Begin 09:00</span></div>
-  <div class="exam-row">25 Junie - English eksamen: <span class="time">Begin 09:00</span></div>
-  <div class="exam-row">26 Junie - Besigheidstudies eksamen: <span class="time">Begin 09:00</span></div>
-
-  <div class="motivation">
-    Jy is nou reg vir jou finale eksamen. Log op die hoof eksamen app in en begin jou finale toets vir kwartaal 2.
-    Lees elke vraag mooi, dink rustig voordat jy antwoord, en werk netjies. Sterkte - jy kan dit doen!
-  </div>
-</div>
-<!-- TEAE_SAFE_EXAM_NOTICE_CLEAN_V3_END -->
 <!-- TEAE_EXAM_LOGOUT_BUTTON_V1 -->
 <button class="examLogoutBtn" onclick="examLogout()">Logout</button>
 <header>
@@ -1852,8 +1795,124 @@ setTimeout(teaeClearDayHeaders, 1000);
   setTimeout(protectClearButtons, 1000);
 })();
 </script>
+<!-- TEAE_EXAM_DAY_INLINE_NOTICE_V1_START -->
+<style>
+  .teae-inline-exam-day{
+    border:3px solid #f59e0b !important;
+    box-shadow:0 0 18px rgba(245,158,11,.32) !important;
+  }
+
+  .teae-inline-exam-message{
+    background:#052e16 !important;
+    border:2px solid #22c55e !important;
+    color:#ecfdf5 !important;
+    border-radius:14px !important;
+    padding:12px 14px !important;
+    margin:12px 0 14px 0 !important;
+    font-weight:900 !important;
+    line-height:1.45 !important;
+  }
+
+  .teae-inline-exam-message .ready{
+    display:block !important;
+    color:#86efac !important;
+    font-size:20px !important;
+    margin-bottom:5px !important;
+  }
+
+  .teae-inline-exam-message .time{
+    color:#facc15 !important;
+    font-weight:1000 !important;
+  }
+</style>
+
+<script>
+(function(){
+  const exams = [
+    {date:"09 Junie", title:"K53 eksamen"},
+    {date:"12 Junie", title:"RTT / CAT eksamen"},
+    {date:"19 Junie", title:"Landbou eksamen"},
+    {date:"23 Junie", title:"Wiskundige Geletterdheid eksamen"},
+    {date:"24 Junie", title:"Afrikaans eksamen"},
+    {date:"25 Junie", title:"English eksamen"},
+    {date:"26 Junie", title:"Besigheidstudies eksamen"}
+  ];
+
+  function txt(el){
+    return String((el && el.innerText) || "").replace(/\s+/g," ").trim();
+  }
+
+  function findDayBlock(exam){
+    const all = Array.from(document.querySelectorAll("section, article, div"));
+    const matches = all.filter(function(el){
+      const t = txt(el);
+      if(t.length < 60 || t.length > 5000) return false;
+      if(t.indexOf(exam.date) === -1) return false;
+      return /Maak toets oop|Nog nie klaar nie|Klaar|Fokus|Eksamen/i.test(t);
+    });
+
+    matches.sort(function(a,b){
+      return txt(a).length - txt(b).length;
+    });
+
+    return matches[0] || null;
+  }
+
+  function replaceFirstTime(block){
+    const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT);
+    let node;
+    while((node = walker.nextNode())){
+      const oldText = node.nodeValue || "";
+      if(/\b\d{2}:\d{2}\s*-\s*\d{2}:\d{2}\b/.test(oldText)){
+        node.nodeValue = oldText.replace(/\b\d{2}:\d{2}\s*-\s*\d{2}:\d{2}\b/, "09:00 - Eksamen begin");
+        return;
+      }
+    }
+  }
+
+  function addMessage(block, exam){
+    if(block.querySelector(".teae-inline-exam-message")) return;
+
+    const msg = document.createElement("div");
+    msg.className = "teae-inline-exam-message";
+    msg.innerHTML =
+      '<span class="ready">Jy is nou reg vir jou ' + exam.title + '.</span>' +
+      '<span class="time">Eksamen begin 09:00.</span><br>' +
+      'Log nou in op die hoof eksamen app en begin jou finale toets vir kwartaal 2.<br>' +
+      'Lees elke vraag mooi, dink rustig voordat jy antwoord, en werk netjies. Sterkte - jy kan dit doen!';
+
+    const firstButton = block.querySelector("button");
+    if(firstButton){
+      firstButton.insertAdjacentElement("beforebegin", msg);
+    } else {
+      block.appendChild(msg);
+    }
+  }
+
+  function apply(){
+    exams.forEach(function(exam){
+      const block = findDayBlock(exam);
+      if(!block) return;
+
+      block.classList.add("teae-inline-exam-day");
+      replaceFirstTime(block);
+      addMessage(block, exam);
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    apply();
+    setTimeout(apply, 500);
+    setTimeout(apply, 1500);
+  });
+
+  setTimeout(apply, 2500);
+})();
+</script>
+<!-- TEAE_EXAM_DAY_INLINE_NOTICE_V1_END -->
 </body>
 </html>
+
 
 
 
