@@ -951,9 +951,7 @@ const plan = [
   {date:"2026-06-11",label:"Donderdag 11 Junie",focus:"Laaste RTT voorbereiding. Geen ander vak druk voor RTT eksamen nie.",tasks:[
     ["09:00 - 09:45","RTT Finale Mock 1","25 vrae."],
     ["09:45 - 10:10","Breek","Kort breek."],
-    ["10:10 - 10:55","RTT Finale Mock 2","25 vrae."],
-    ["14:30 - 15:00","RTT ligte hersiening","Kort hersiening, geen nuwe werk nie."]
-  ]},
+    ["10:10 - 10:55","RTT Finale Mock 2","25 vrae."]]},
 
   {date:"2026-06-12",label:"Vrydag 12 Junie - RTT / CAT Eksamen",focus:"Eksamen dag: RTT / CAT begin 09:00 en duur 160 minute. Vrydag stop 12:00.",tasks:[
     ["09:00 - 11:40","FINALE EKSAMEN: RTT / CAT","Jy is nou reg vir jou RTT / CAT eksamen. Log in op die hoof eksamen app en begin jou finale toets vir kwartaal 2. Jy het 160 minute. Lees mooi, dink rustig, en doen jou beste. Sterkte!"],
@@ -989,7 +987,6 @@ const plan = [
   {date:"2026-06-18",label:"Donderdag 18 Junie",focus:"Dag voor Landbou. Net finale Landbou voorbereiding.",tasks:[
     ["09:00 - 09:45","Landbou Finale Mock 2","25 vrae."],
     ["09:45 - 10:10","Breek","Kort breek."],
-    ["10:10 - 10:40","Landbou ligte hersiening","Kort hersiening, geen nuwe werk nie."],
     ["14:30 - 15:10","Wisk Geletterdheid Sessie 3","Kaarte en planne. 25 vrae."]
   ]},
 
@@ -2111,7 +2108,11 @@ setTimeout(teaeClearDayHeaders, 1000);
       el.dataset.originalText = clean(el.textContent);
     }
 
-    el.textContent = "Gesluit - wag vir regte datum/tyd";
+        if(el.dataset.originalText && el.dataset.originalText.trim() === "Klaar"){
+      el.textContent = "Klaar gesluit";
+    } else {
+      el.textContent = "Gesluit - wag vir regte datum/tyd";
+    }
 
     const card = el.closest("div, section, article");
     if(card && !card.querySelector(".teae-lock-note")){
@@ -2205,6 +2206,7 @@ setTimeout(teaeClearDayHeaders, 1000);
 <!-- TEAE_TIME_LOCK_ALL_TASK_LINKS_V1_END -->
 </body>
 </html>
+
 
 
 
